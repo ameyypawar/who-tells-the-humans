@@ -1,0 +1,11 @@
+# withheld stimuli (pre-registered by hash only; never published)
+prereg/private/
+# secrets and local run data
+*.env
+.env*
+runs/
+*.sqlite
+*.sqlite-wal
+*.sqlite-shm
+__pycache__/
+.venv/
