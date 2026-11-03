@@ -22,3 +22,9 @@ Every change after the freeze is recorded here with a timestamp, the reason, and
 - **Effect on the design:**
   - No change to cells, outcomes, hypotheses, tests or seeds.
   - The agent's system-level context may differ (for example, `--bare` may drop Claude Code's identity line). Whatever it is, it is the same in every cell and is recorded by the G0 audit.
+
+## D-002 — 2026-11-03 (before the sprint): pinned CLI version
+- **Was (PREREG §21):** the pinned 2.1.311 binary.
+- **Now:** the pinned **2.1.317** binary, a copy kept outside the auto-updater's folder, with its SHA-256 recorded.
+- **Reason:** the auto-updater installed 2.1.314, 2.1.316 and 2.1.317 and pruned 2.1.311 before it could be copied.
+- **Effect:** none on the design. The version is asserted on every call (`init.claude_code_version`).
