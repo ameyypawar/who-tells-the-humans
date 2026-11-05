@@ -100,7 +100,9 @@ def validate_result(rec: StreamRecord, exp: dict, req: TurnRequest) -> list[str]
     if sub not in rexp["known_subtypes"]:
         _mismatch(out, "result.subtype", rexp["known_subtypes"], sub)
     if sub == "success":
-        if res.get("is_error") is not False:
+        refusal_shape = (res.get("is_error") is True and res.get("api_error_status") is None
+                         and (res.get("stop_reason") == "refusal" or "refusal" in rec.assistant_stop_reasons))
+        if res.get("is_error") is not False and not refusal_shape:   # real refusals are success + is_error
             _mismatch(out, "result.is_error", False, res.get("is_error"))
         if res.get("api_error_status") is not None:
             _mismatch(out, "result.api_error_status", None, res.get("api_error_status"))
@@ -140,6 +142,8 @@ def check_replies(rec: StreamRecord, toolset: Toolset | None) -> list[str]:
         tool = _parse_tool_name(tu.name)
         if tool is None or not tu.has_result or tu.result_is_error:
             continue
+        if tu.result_text and re.search(r"(?i)safety classifier|partially or fully completed", tu.result_text):
+            continue    # a safety-classifier interrupt is a refusal artefact, not a reply mismatch
         if tool not in replies:
             out.append(f"reply.unknown_tool: {tu.name!r} is not in toolset {toolset.name!r}")
             continue

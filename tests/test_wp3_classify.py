@@ -93,7 +93,9 @@ class RowsTest(unittest.TestCase):
         self.assertEqual(r[:2], (C.STOP, F.BILLING))
         ev = good_witness_events()
         ev[-1] = result(is_error=True, subtype="error_during_execution", result="x")
-        ev[-2] = text("API Error: Your quota has been exceeded, insufficient funds")
+        ev[-2] = text("Your quota has been exceeded, insufficient funds")      # model text: never scanned
+        self.assertEqual(run(ev)[:2], (C.TECHNICAL, F.API_OTHER))
+        ev[-1] = result(is_error=True, subtype="error_during_execution", result="API Error: quota exceeded")
         self.assertEqual(run(ev)[:2], (C.STOP, F.BILLING))
 
     def test_row7_model_text_about_payments_is_not_billing(self):
@@ -176,7 +178,7 @@ class RowsTest(unittest.TestCase):
         self.assertEqual(r[:2], (C.TECHNICAL, F.API_OTHER))
 
     def test_row16_other_result_violations(self):
-        self.assertEqual(run(with_result(is_error=True, result="weird"))[:2], (C.TECHNICAL, F.API_OTHER))
+        self.assertEqual(run(with_result(is_error=True, result="weird"))[:2], (C.STOP, F.UNKNOWN_SUBTYPE))
         self.assertEqual(run(with_result(api_error_status=404, is_error=True))[:2], (C.TECHNICAL, F.API_OTHER))
 
     def test_row17_max_turns_is_data(self):
@@ -227,6 +229,57 @@ class NonZeroExitWithResultTest(unittest.TestCase):
 
     def test_zero_exit_detail_unchanged(self):
         self.assertNotIn("exit", run(with_result(subtype="error_max_turns", is_error=True))[2])
+
+
+class RealRefusalShapeTest(unittest.TestCase):
+    """2.1.317 reports a refusal as success + is_error true + api_error_status null + stop_reason refusal."""
+
+    def test_real_refusal_is_data_not_rerun(self):
+        c, f, d = run(with_result(is_error=True, stop_reason="refusal", api_error_status=None,
+                                  result="API Error: billing quota payment overloaded insufficient"))
+        self.assertEqual((c, f), (C.REFUSAL, None))
+
+    def test_assistant_refusal_stop_reason_with_is_error(self):
+        ev = good_witness_events()
+        ev[-2] = text("no", stop="refusal")
+        ev[-1] = result(is_error=True)
+        self.assertEqual(run(ev)[:2], (C.REFUSAL, None))
+
+    def test_refusal_with_exit1(self):
+        self.assertEqual(run(with_result(is_error=True, stop_reason="refusal"), p=proc(1))[:2], (C.REFUSAL, None))
+
+    def test_refusal_with_error_status_is_not_data(self):
+        self.assertEqual(run(with_result(is_error=True, stop_reason="refusal", api_error_status=529))[:2],
+                         (C.TECHNICAL, F.API_TRANSIENT))
+
+    def test_success_is_error_without_refusal_stops(self):
+        for tr in ("safety_monitor_blocked", "malformed_tool_use_exhausted", "who_knows"):
+            with self.subTest(tr=tr):
+                c, f, d = run(with_result(is_error=True, terminal_reason=tr, result="overloaded"))
+                self.assertEqual((c, f), (C.STOP, F.UNKNOWN_SUBTYPE))
+                self.assertIn(tr, d)
+
+    def test_clip_beats_refusal_and_billing_words(self):
+        r = with_result(subtype="error_max_turns", is_error=True, stop_reason="refusal", result="API Error: billing")
+        self.assertEqual(run(r)[:2], (C.MAX_TURNS, None))
+
+    def test_safety_classifier_interrupt_is_refusal_not_reconcile(self):
+        msg = "Interrupted: the safety classifier stopped this call; it may have partially or fully completed."
+        ev = [init(), tool_use(1, "notify_ops", {"subject": "s"}), tool_result(1, msg, True), text("stopped"),
+              result()]
+        c, f, d = run(ev, reconcile_v=["reconcile.unseen_in_stream: x"])
+        self.assertEqual((c, f, d), (C.REFUSAL, None, "safety_interrupt"))
+        ev[2] = tool_result(1, msg)     # non-error form: not a reply mismatch either
+        self.assertEqual(run(ev)[:2], (C.REFUSAL, None))
+
+    def test_refusal_fallback_model_is_refusal_not_model_mismatch(self):
+        mu = result()["modelUsage"][HAIKU]
+        r = with_result(is_error=True, stop_reason="refusal",
+                        modelUsage={HAIKU: mu, "claude-fallback-x": {**mu, "canonicalModel": "claude-fallback-x"}})
+        self.assertEqual(run(r)[:2], (C.REFUSAL, None))
+        # without any refusal signal a foreign model is still a technical mismatch
+        r = with_result(modelUsage={HAIKU: mu, "claude-fallback-x": mu})
+        self.assertEqual(run(r)[:2], (C.TECHNICAL, F.MODEL_MISMATCH))
 
 
 class PrecedenceTest(unittest.TestCase):

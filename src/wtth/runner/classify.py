@@ -25,6 +25,8 @@ TRANSIENT_TEXT = re.compile(r"(?i)overloaded")
 TRANSPORT_TEXT = re.compile(
     r"(?i)mcp error|connection closed|not connected|disconnected|server.*(exit|crash)|timed out")
 KNOWN_SUBTYPES = ("success", "error_max_turns", "error_max_budget_usd", "error_during_execution")
+SAFETY_TEXT = re.compile(r"(?i)safety classifier|partially or fully completed")
+CLIPS = ("error_max_turns", "error_max_budget_usd")
 TOOL_PREFIX = "mcp__workspace__"
 
 
@@ -38,17 +40,14 @@ def _api_status(rec: StreamRecord) -> int | None:
 
 
 def _error_texts(rec: StreamRecord) -> list[str]:
-    """Texts that are API/error messages rather than model output. Clips (error_max_turns, error_max_budget_usd)
-    are always data (B6): nothing is scanned. Otherwise only an errored result is inspected, and then only
-    result.result plus assistant texts that START with "API Error": model prose about payments, billing, quota
-    or overload in a refund-desk turn must never STOP the run or make a transient."""
+    """The API/error message to scan for billing and overload words: result["result"] only, and only when the
+    result carries an api_error_status or is a success+is_error. Model texts (assistant messages) are never
+    scanned, and clips (error_max_turns, error_max_budget_usd) are data, so nothing is scanned for them."""
     res = rec.result or {}
-    if res.get("subtype") in ("error_max_turns", "error_max_budget_usd"):
+    if res.get("subtype") in CLIPS:
         return []
-    if res.get("is_error") is True or _api_status(rec) is not None:
-        out = [res.get("result")] if isinstance(res.get("result"), str) else []
-        out += [t for t in rec.assistant_texts if t.startswith("API Error")]
-        return out
+    if (res.get("is_error") is True or _api_status(rec) is not None) and isinstance(res.get("result"), str):
+        return [res["result"]]
     return []
 
 
@@ -86,26 +85,33 @@ def _classify(proc: ProcResult, rec: StreamRecord, *, init_v: list[str], result_
     route = _has(init_v, "init.apiKeySource") + _has(result_v, "result.provider", "result.costBasis")
     if route:
         return S, FailClass.BILLING_ROUTE, route[0]
-    # 7 billing
-    if status in BILLING_STATUSES:
-        return S, FailClass.BILLING, f"api_error_status={status}"
-    for t in _error_texts(rec):
-        if BILLING_TEXT.search(t):
-            return S, FailClass.BILLING, "billing words in an error message"
-    # 8 transient API trouble
-    if status in TRANSIENT_STATUSES:
-        return T, FailClass.API_TRANSIENT, f"api_error_status={status}"
-    if any(TRANSIENT_TEXT.search(t) for t in _error_texts(rec)):
-        return T, FailClass.API_TRANSIENT, "overloaded"
-    if sub == "error_during_execution" and rec.api_retries:
-        return T, FailClass.API_TRANSIENT, f"error_during_execution after {len(rec.api_retries)} api_retry events"
+    clip = sub in CLIPS
+    safety = any(tu.result_text and SAFETY_TEXT.search(tu.result_text) for tu in rec.tool_uses)
+    # A refusal (stop_reason "refusal", an assistant refusal, safety_stops, or a safety-classifier interrupt of a
+    # tool call) with no API error status is DATA, never a rerun (the real CLI reports it as success + is_error).
+    refusalish = (refusal.refusal_stop or safety) and status is None and not clip
+    if not clip and not refusalish:
+        # 7 billing
+        if status in BILLING_STATUSES:
+            return S, FailClass.BILLING, f"api_error_status={status}"
+        for t in _error_texts(rec):
+            if BILLING_TEXT.search(t):
+                return S, FailClass.BILLING, "billing words in an error message"
+        # 8 transient API trouble (texts only count with a status or an execution error: never a success)
+        if status in TRANSIENT_STATUSES:
+            return T, FailClass.API_TRANSIENT, f"api_error_status={status}"
+        if (status is not None or sub == "error_during_execution") and any(
+                TRANSIENT_TEXT.search(t) for t in _error_texts(rec)):
+            return T, FailClass.API_TRANSIENT, "overloaded"
+        if sub == "error_during_execution" and rec.api_retries:
+            return T, FailClass.API_TRANSIENT, f"error_during_execution after {len(rec.api_retries)} api_retry events"
     # 9 init violations
     init_rest = [v for v in init_v if not v.startswith(("init.apiKeySource", "init.count"))]
     if init_rest:
         return T, FailClass.INIT_MISMATCH, init_rest[0]
     # 10 model usage
     mu = _has(result_v, "result.modelUsage")
-    if mu:
+    if mu and not refusalish:      # a server-side refusal fallback model shows up here; the refusal path decides
         return T, FailClass.MODEL_MISMATCH, mu[0]
     # 11 permission denials
     pd = _has(result_v, "result.permission_denials")
@@ -119,11 +125,18 @@ def _classify(proc: ProcResult, rec: StreamRecord, *, init_v: list[str], result_
         if tu.name.startswith(TOOL_PREFIX) and tu.result_is_error and TRANSPORT_TEXT.search(tu.result_text or ""):
             return T, FailClass.MCP_TRANSPORT, f"{tu.name}: {(tu.result_text or '')[:120]}"
     # 14 reconcile
-    if reconcile_v:
+    if reconcile_v and not refusalish:    # safety-classifier interrupts leave tool calls half done
         return T, FailClass.RECONCILE, reconcile_v[0]
     # 15 unknown subtype
     if sub not in KNOWN_SUBTYPES:
         return S, FailClass.UNKNOWN_SUBTYPE, f"subtype={sub!r}"
+    # refusal path (data) before row 16
+    if refusalish:
+        return TurnClass.REFUSAL, None, "safety_interrupt" if safety and not refusal.refusal_stop else "refusal stop"
+    # success + is_error with no status and no refusal signal: unknown failure shape -> STOP, never a silent rerun
+    if sub == "success" and res.get("is_error") is True and status is None:
+        return S, FailClass.UNKNOWN_SUBTYPE, (
+            f"success_is_error_no_refusal terminal_reason={res.get('terminal_reason')!r}")
     # 16 error_during_execution (not caught above); also any other result-level violation
     if sub == "error_during_execution":
         return T, FailClass.API_OTHER, "error_during_execution"
