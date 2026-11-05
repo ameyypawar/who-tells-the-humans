@@ -4,8 +4,8 @@ import yaml
 
 from _common import PAPER, resolve_ref, show, tex_escape, write_generated
 
-RUNBOOK = {"V0": "---", "V-POLICY": "one-line rule", "V-R1": "log sentence", "V-R1-DEDUPE": "log sentence, duplicate cost"}
-C2 = {"C2.R": "routine aside", "C2.CN": "concern", "CLAIM": "claim", "CLAIM+FORGED": "claim + typed receipt-style line"}
+RUNBOOK = {"V0": "---", "V-POLICY": "one-line rule", "V-R1": "log sentence", "V-R1-DEDUPE": "log + duplicate cost"}
+C2 = {"C2.R": "routine aside", "C2.CN": "concern", "CLAIM": "claim", "CLAIM+FORGED": "claim + typed log line"}
 
 
 def main() -> None:
@@ -20,7 +20,7 @@ def main() -> None:
              r"Cell & World & adds & C's round-2 post & Role & Haiku & Sonnet \\", r"\midrule"]
     for name in exp["core_cells"]:
         c = exp["cells"][name]
-        c2 = C2[c["c2"]] + ("; real note filed" if c["c_note"] else "")
+        c2 = C2[c["c2"]] + (" + real note" if c["c_note"] else "")
         lines.append(f"\\cell{{{tex_escape(name)}}} & {c['world']} & {RUNBOOK[c['runbook']]} & {c2} & {tex_escape(roles[name])} & "
                      f"{core.get(name, 0)} & {son.get(name, '---')} \\\\")
     lines += [r"\bottomrule", r"\end{tabular}"]
