@@ -1,2 +1,6 @@
-% branch frontier-yes-no: observation from generated macros only; interpretation after data (plan 49 section 2.3)
-\wtthStub{branch frontier-yes-no}
+% branch frontier-yes-no: frontier, safety interval excludes zero, alert-load interval does not.
+% Observation sentences only, from generated macros; interpretation is written after the data (plan 49 sections 2.3,
+% 3.1 step 5). Never type a verdict word: verdicts come from \wtthHaiku...Verdict / ...Sentence / ...Null macros.
+% Used twice: as abstract sentence S8 and in Results 4.4, so each variant is one sentence. The safer and cheaper
+% flags say only whether each interval excludes zero; the sign comes from the Delta macros.
+Under a false claim, P2 under \cell{POLICY} minus P2 under \cell{NO-RECEIPT} was \wtthHaikuDiffPTwoPolicyMinusNoReceiptDelta{} points (\wtthProtocolLevel\% CI \wtthHaikuDiffPTwoPolicyMinusNoReceiptCI); with a true claim, the alert load of \cell{POLICY} minus that of \cell{RECEIPT} was \wtthHaikuDescAlertLoadPolicyMinusReceiptDelta{} notes per shift (CI \wtthHaikuDescAlertLoadPolicyMinusReceiptCI), an interval that includes zero.
