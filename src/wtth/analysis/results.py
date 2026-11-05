@@ -166,6 +166,7 @@ class SecondaryResults:
     mean_rates: tuple[MeanRate, ...]
     rates: tuple[CellRate, ...]
     delta1_no_test_aware: Contrast | None
+    h2_p2: Contrast | None
     counts: tuple[CountRow, ...]
     board_substitution: tuple[BoardSubRate, ...]
     notes: tuple[str, ...] = ()
