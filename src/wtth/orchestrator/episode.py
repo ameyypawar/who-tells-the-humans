@@ -5,6 +5,7 @@ import asyncio
 import dataclasses
 import json
 import os
+import re
 import sqlite3
 import time
 import uuid
@@ -109,6 +110,34 @@ def ensure_denyprobe_settings(settings: Any) -> Path:
     return path
 
 
+# the exact rendered header (render.LOG_HEADER) at the start of a line
+LOG_HEADER_RE = re.compile("(?m)^" + re.escape(render.LOG_HEADER.split("{clock}")[0]))
+
+
+def probe_outcome_ok(o: TurnOutcome) -> bool:
+    """Both deny-probe outcomes pass: the denied tool is absent from init.tools (the runner reports that as an
+    init_mismatch on init.tools only), or it is present plus a permission_denials entry (class probe)."""
+    if o.cls == TurnClass.PROBE:
+        return True
+    if o.cls != TurnClass.TECHNICAL or o.fail != FailClass.INIT_MISMATCH or not o.violations:
+        return False
+    for v in o.violations:
+        if not v.startswith("init.tools"):
+            return False
+        got = v.split(" got ", 1)[-1]
+        if "submit_reviews" in got:
+            return False
+    return True
+
+
+def stored_d1_answer(db: Any, episode_id: int, attempt: int, slot: int, default: str) -> str:
+    """The D1 answer exactly as stored in debrief_answers (what the analysis sees)."""
+    row = db.read(lambda c: c.execute(
+        "SELECT answer_text FROM debrief_answers WHERE episode_id=? AND attempt=? AND slot=? AND question='D1'",
+        (episode_id, attempt, slot)).fetchone())
+    return row[0] if row is not None else default
+
+
 # ---- mechanical exposure check (42 S-19) ---------------------------------------------------------------
 
 def exposure_checks(spec: EpisodeSpec, texts: Any, state: Any, prompt: Any, r: int) -> dict[str, bool]:
@@ -119,13 +148,13 @@ def exposure_checks(spec: EpisodeSpec, texts: Any, state: Any, prompt: Any, r: i
         posts = stimuli.scripted_posts(spec, texts, k)
         checks[f"scripted_r{k}"] = all(p.text in text for p in posts)
     log_rows = [x for x in state.log if x.visible_from_round <= r]
-    has_log = "#escalation-log (as of" in text
+    m = LOG_HEADER_RE.search(text)   # line-anchored: board lines start with "[", so a quoted header never matches
+    has_log = m is not None
     if spec.cell.world.value == "R0":
         checks["r0_no_log"] = not has_log and not log_rows
     else:
         checks["log_block_present"] = has_log
-        i = text.find("#escalation-log (as of")
-        block = text[i:].split("\n\n", 1)[0] if i >= 0 else ""  # a forged line in a post is outside this block
+        block = text[m.start():].split("\n\n", 1)[0] if m else ""  # E- lines are counted inside the block only
         checks["log_entry_count"] = sum(1 for ln in block.split("\n") if ln.startswith("E-")) == len(log_rows)
         if not log_rows:
             checks["log_empty_line"] = "No entries." in text
@@ -269,15 +298,22 @@ async def _protocol(ctx: Any, spec: EpisodeSpec, episode_id: int, attempt: int):
             cancel.set()
         elif not _failed(o) and not record_exposure(ctx, req, spec, texts, state):
             cancel.set()
+            # the failed check is the ROOT failure, so no next-round turn is launched
+            return dataclasses.replace(o, cls=TurnClass.TECHNICAL, fail=FailClass.RECONCILE,
+                                       detail="exposure_check_failed")
         return o
 
     for r in range(1, ROUNDS + 1):
+        if cancel.is_set():
+            return "failed", FailClass.CANCELLED, "cancelled before round launch", None
         stimuli.inject_round(db, spec, episode_id, attempt, r, texts, ctx.run_id)
         state = db.read(lambda c: stimuli.load_state(c, spec, episode_id, attempt))
         prompts = {slot: render.round_prompt(state, texts, r, slot) for slot in SLOTS}  # before any launch
         results, root = await _run_group([witness(r, slot, prompts[slot], state) for slot in SLOTS])
         if root is not None:
             return "failed", root.fail, root.detail, root.turn_id
+    if cancel.is_set():
+        return "failed", FailClass.CANCELLED, "cancelled before debrief", None
     # debrief
     state = db.read(lambda c: stimuli.load_state(c, spec, episode_id, attempt))
 
@@ -296,7 +332,8 @@ async def _protocol(ctx: Any, spec: EpisodeSpec, episode_id: int, attempt: int):
                                   s.paths.cc_settings, _turn_dir(ctx, episode_id, attempt, which.lower(), None, slot, turn_id))
                 o = await _launch(ctx, req, cancel, key, try_no)
                 if not _failed(o):
-                    d1_answer = o.final_text or ""
+                    if which == "D1":
+                        d1_answer = stored_d1_answer(db, episode_id, attempt, slot, o.final_text or "")
                     break
                 if o.cls == TurnClass.STOP or o.fail == FailClass.CANCELLED or try_no == tries:
                     if o.fail != FailClass.CANCELLED:
@@ -354,7 +391,13 @@ async def run_probe(ctx: Any, spec: EpisodeSpec, episode_id: int) -> AttemptResu
     except asyncio.CancelledError:
         close_attempt(db, s, episode_id, attempt, status="failed", fail=FailClass.STOPPED, detail="cancelled")
         raise
-    if o.cls == TurnClass.STOP or (o.cls == TurnClass.TECHNICAL):
+    except Exception as exc:  # never leave a probe attempt 'running'
+        detail = f"probe_exception: {type(exc).__name__}: {exc}"
+        log_event(db, ctx.run_id, "error", "probe_exception", episode_id=episode_id, attempt=attempt,
+                  detail={"error": f"{type(exc).__name__}: {exc}"})
+        close_attempt(db, s, episode_id, attempt, status="failed", fail=FailClass.API_OTHER, detail=detail)
+        return AttemptResult(episode_id, attempt, "failed", FailClass.API_OTHER, detail, None)
+    if o.cls == TurnClass.STOP or (o.cls == TurnClass.TECHNICAL and not probe_outcome_ok(o)):
         close_attempt(db, s, episode_id, attempt, status="failed", fail=o.fail, detail=o.detail)
         return AttemptResult(episode_id, attempt, "failed", o.fail, o.detail, o.turn_id)
     finish_attempt_ok(db, episode_id, attempt)
