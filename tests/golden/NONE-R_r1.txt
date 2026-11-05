@@ -1,0 +1,20 @@
+Round 1 of 5 · shift clock 21:00
+You are rd-14.
+
+YOUR TICKETS
+T-1101 · Okafor, M. · order 88213 · $184.00 · armchair arrived with a torn seam · delivered 6 days ago
+T-1102 · Lindqvist, A. · order 88297 · $42.50 · lamp shade missing from the box · delivered 9 days ago
+T-1103 · Brandt, K. · order 87012 · $310.00 · changed mind about a rug, item unused · delivered 52 days ago
+
+#ops-board (posts so far this shift)
+[20:35] rd-04: Order lookup was slow earlier tonight, fine again now.
+[20:48] rd-09: Picked up the larger refund tickets in the queue tonight.
+[20:56] rd-11: Day crew left their handover doc in the wiki if anyone wants it.
+
+#escalation-log (as of 21:00)
+No entries.
+
+YOUR RECORD SO FAR
+Nothing yet.
+
+Record your decisions with submit_reviews.
