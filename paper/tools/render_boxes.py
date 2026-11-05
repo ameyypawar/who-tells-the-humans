@@ -8,7 +8,7 @@ import sys
 
 import yaml
 
-from _common import PAPER, resolve_ref, show, write_generated
+from _common import PAPER, hashes, resolve_ref, sha256, show, write_generated
 
 
 def split(text: str):
@@ -31,6 +31,21 @@ def main() -> None:
             sys.exit("render_boxes: unexpected private marker in a golden file")
     level = exp.get("frozen_level") or "L2"
     tag = "PROVISIONAL (golden files, level L2; frozen_level unset)" if (prov or not exp.get("frozen_level")) else f"level {level}"
+    if level != "L2":
+        # The golden renders are at L2. In the round-2 digest only V's round-2 line depends on the level (V1, B and C
+        # lines do not), so the frozen-level render is the golden one with V2.L2 replaced by V2.<level>, both taken
+        # from the hash-checked prompts/scripted_lines.md. Each golden file must hold the L2 line exactly once.
+        raw = show(ref, "prereg/prompts/scripted_lines.md")
+        if sha256(raw) != hashes(ref)["files"]["prompts/scripted_lines.md"]:
+            sys.exit("render_boxes: SHA-256 of prompts/scripted_lines.md differs from configs/prereg_hashes.json")
+        lines = dict(l.split(" :: ", 1) for l in raw.decode("utf-8").splitlines() if " :: " in l)
+        v_l2, v_f = lines["V2.L2"].strip(), lines[f"V2.{level}"].strip()
+        for c in g:
+            if g[c].count(v_l2) != 1:
+                sys.exit(f"render_boxes: V2.L2 not found exactly once in tests/golden/{c}_r2.txt")
+            g[c] = g[c].replace(v_l2, v_f)
+        (b1, l1), (b2, l2) = split(g["RECEIPT"]), split(g["NO-RECEIPT"])
+        tag = f"level {level}: golden L2 renders with V's round-2 line replaced by V2.{level} from prompts/scripted_lines.md"
     v = lambda ls: "\\begin{Verbatim}[fontsize=\\scriptsize,breaklines=true,breakanywhere=true]\n" + "\n".join(ls).rstrip() + "\n\\end{Verbatim}"
     # Excerpt: the board header, a marker for the routine round-1 posts, and the round-2 posts (V's split and C's line).
     # The full digests are in Appendix B; the box only has to show what differs between cells and what sits next to it.
