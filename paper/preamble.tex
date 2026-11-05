@@ -1,0 +1,43 @@
+% preamble.tex: packages and layout. Engine: tectonic (XeTeX). No shell escape, no biber.
+% Allowed packages only (plan 49 section 1.3).
+\usepackage{fontspec}                 % default Latin Modern
+\usepackage[letterpaper,margin=1in]{geometry}
+\usepackage{microtype}
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage[table]{xcolor}
+\usepackage{booktabs,array,tabularx}
+\usepackage{adjustbox}
+\usepackage{caption,subcaption}
+\usepackage{enumitem}
+\usepackage{fancyvrb}                 % verbatim prompts and Box 1 (UTF-8 is fine under XeTeX)
+\usepackage{etoolbox}                 % branch logic
+\usepackage[numbers,sort&compress]{natbib}
+\usepackage{xurl}
+\usepackage{hyperref}                 % loaded last
+\hypersetup{colorlinks=true,linkcolor=blue!50!black,citecolor=blue!50!black,urlcolor=blue!50!black,
+  pdftitle={Who Tells the Humans? Phantom Escalation and Channel-Written Receipts in Agent Swarms}}
+
+% ---- layout ----
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.5ex plus 0.2ex}
+\setlist{nosep,leftmargin=*}
+\captionsetup{font=small,labelfont=bf}
+\renewcommand{\topfraction}{0.9}
+\renewcommand{\bottomfraction}{0.7}
+\renewcommand{\textfraction}{0.1}
+\renewcommand{\floatpagefraction}{0.8}
+\setcounter{topnumber}{3}
+\setcounter{totalnumber}{5}
+
+% ---- cell names: sans-serif, matching the figures (never break at the hyphen) ----
+\newcommand{\cell}[1]{\mbox{\textsf{\small #1}}}
+
+% ---- marks for comparison tables (Table 3): amssymb checkmark ----
+\newcommand{\wtthYes}{\ensuremath{\checkmark}}
+\newcommand{\wtthNo}{\ensuremath{\times}}
+\newcommand{\wtthPart}{\ensuremath{\circ}}
+\newcommand{\wtthNR}{---}
+
+% ---- verbatim stimulus helpers ----
+\DefineVerbatimEnvironment{wtthverb}{Verbatim}{fontsize=\footnotesize,breaklines=true,breakanywhere=true}
