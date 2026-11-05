@@ -59,11 +59,11 @@ A protocol in which every inter-agent claim carries evidence from an append-only
 We test whether LLM witnesses use such evidence, including its absence.
 
 \paragraph{Other nearby work.}
-A Claude model resisted a forged authorization claim in small swarms and escalated \citep{zhang2026troy}.
+A Claude model resisted a forged authorization claim in small swarms and escalated \citep{zhang2026troy}, so we do not assume that Claude is credulous.
 LLM auditors accept false assurances more readily than false alarms \citep{trustingtool2026}.
 A pilot asks whether a watching sibling changes what a worker tells its principal \citep{verdogan2026sibling}, and a benchmark specification keeps peer statements apart from trusted action records \citep{lmmontoya2026peerreporting}.
 Verified tool calls and deterministic gates check agents' claims against records \citep{verifiedtoolcalls2026,reasonlessverifymore2026}.
-A same-event entry follows an unverified ``done'' along an agent chain \citep{swarmhandoff2026}.
+A same-event entry follows an unverified ``done'' along an agent chain \citep{swarmhandoff2026}; it studies unverified task claims, not escalation to a human.
 The words ``receipt'' and ``phantom'' are already in use \citep{swarmreceipts2026}; ours always refer to escalation to a human.
 
 \paragraph{Search coverage.}
