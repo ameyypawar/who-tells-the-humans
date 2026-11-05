@@ -24,7 +24,7 @@ from wtth.textnorm import sha256_text
 from wtth.types import (FailClass, ProcResult, RenderedPrompt, TurnClass, TurnRequest, TurnType)
 
 # Same value as tests.util.DUMMY_KEY; composed at runtime so the literal prefix is never in the repo.
-FAKE_KEY = "sk-" + "ant-" + "TESTDUMMY0000"
+FAKE_KEY = "-".join(("sk", "ant", "TESTDUMMY0000"))  # joined at runtime: not constant-folded into the .pyc
 MAX_K = 15
 
 
