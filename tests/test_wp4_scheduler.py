@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import asyncio
 import json
+import os
 import time
 import unittest
 import uuid
@@ -11,6 +12,7 @@ from tests.wp4_common import ledger, make_ctx, patch_stimuli_if_needed
 from wtth import db as dbmod
 from wtth.config import load_settings
 from wtth.orchestrator import episode as ep
+from wtth.orchestrator import guards
 from wtth.orchestrator import scheduler as sch
 from wtth.orchestrator.context import Breaker, CostTracker, KGate, LaunchGate, SlotPool
 from wtth.types import AttemptResult, FailClass, TurnClass
@@ -73,6 +75,27 @@ class QueueTests(unittest.TestCase):
         self.assertEqual({"L2"}, {x.level for x in sch.build_queue(self.s, "g0", None)})
         frozen = load_settings(overrides={"frozen_level": "L1"})
         self.assertEqual({"L1"}, {x.level for x in sch.build_queue(frozen, "core", None)})
+
+    def test_cli_level_must_match_frozen_level(self) -> None:
+        from wtth.config import ConfigError
+        frozen = load_settings(overrides={"frozen_level": "L1"})
+        for phase in ("core", "sonnet", "mvp"):
+            with self.assertRaises(ConfigError):
+                sch.build_queue(frozen, phase, "L2")
+            self.assertTrue(sch.build_queue(frozen, phase, "L1"))
+            self.assertTrue(sch.build_queue(frozen, phase, None))
+        self.assertTrue(sch.build_queue(frozen, "g2", "L3"))  # pilot phases may take any level
+
+    def test_probe_keys_recorded(self) -> None:
+        g0 = sch.build_queue(self.s, "g0", "L2")
+        self.assertEqual({"g0probe/main/claude-haiku-5-5/NONE/L2/s9000",
+                          "g0/main/claude-haiku-5-5/FORGED/L2/s9003",
+                          "g0/main/claude-sonnet-5-5/NONE/L2/s9004"}, g0.probe_keys)
+        ctx, _ = make_ctx("probe_keys")
+        sch.enqueue(ctx.db, g0)
+        rows = ctx.db.read(lambda c: c.execute("SELECT episode_key FROM episodes WHERE probe=1").fetchall())
+        self.assertEqual(g0.probe_keys, {r[0] for r in rows})
+        self.assertEqual(2, ctx.db.read(lambda c: c.execute("SELECT COUNT(*) FROM episodes WHERE probe=0").fetchone()[0]))
 
     def test_pilot_blocks(self) -> None:
         g1 = sch.build_queue(self.s, "g1", "L2")
@@ -305,13 +328,13 @@ class SchedulerRunTests(unittest.IsolatedAsyncioTestCase):
         ctx, sc, _ = self.run_sched("press3", {**ov, "scheduler.k_init": 9}, lambda *a: "done", pressure=lambda: 2, delay=0.2)
         await sc.run()
         self.assertEqual(5, ctx.kgate.k)
-        # critical pressure halves K down to k_min
+        # critical pressure halves K (once a minute: 12 -> 6)
         ctx, sc, _ = self.run_sched("press4", {**ov, "scheduler.k_init": 12}, lambda *a: "done", pressure=lambda: 4, delay=0.4)
         await sc.run()
-        self.assertEqual(3, ctx.kgate.k)
+        self.assertEqual(6, ctx.kgate.k)
 
     async def test_cap_stops_launching_exit_4(self) -> None:
-        ctx, sc, state = self.run_sched("cap", {"budget.cap_usd": 1.0, "scheduler.k_init": 3}, lambda *a: "done", cost=0.4)
+        ctx, sc, state = self.run_sched("cap", {"budget.cap_usd": 1.0, "budget.judge_reserve_usd": 0, "scheduler.k_init": 3}, lambda *a: "done", cost=0.4)
         code = await sc.run()
         self.assertEqual(4, code)
         st = self.statuses(ctx)
@@ -322,7 +345,7 @@ class SchedulerRunTests(unittest.IsolatedAsyncioTestCase):
         self.assertLessEqual(ctx.cost.spent(), 1.0)
 
     async def test_cap_counts_committed_calls(self) -> None:
-        ctx, d = make_ctx("cap2", {**SMALL, "budget.cap_usd": 0.6, "budget.prior_spend_usd": 0.1})
+        ctx, d = make_ctx("cap2", {**SMALL, "budget.cap_usd": 0.6, "budget.judge_reserve_usd": 0, "budget.prior_spend_usd": 0.1})
         self.assertTrue(ctx.cost.can_launch("claude-haiku-5-5"))   # 0.1 + 0.42 <= 0.6
         ctx.cost.reserve("a", "claude-haiku-5-5", 21)
         self.assertFalse(ctx.cost.can_launch("claude-haiku-5-5"))
@@ -408,6 +431,225 @@ class SchedulerRunTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(0, state["calls"])  # nothing launched after the stop time
         self.assertFalse(ctx.settings.paths.alert_path.exists())
 
+    async def test_resume_with_cut_exits_zero_and_records_cut(self) -> None:
+        ctx, d = make_ctx("cutresume", SMALL)
+        full = sch.build_queue(ctx.settings, "g2", "L2")
+        sch.enqueue(ctx.db, full)  # the earlier run enqueued all 8
+        s2 = load_settings(overrides={**{"fake": True, "paths.runs_dir": str(ctx.settings.paths.runs_dir),
+                                         "paths.slots_root": str(ctx.settings.paths.slots_root),
+                                         "paths.cwd": str(ctx.settings.paths.cwd), "scheduler.requeue_delay_s": 0},
+                                      **SMALL, "cuts.max_seed_by_cell": {"NEG": 9052, "POS": 9052}})
+        ctx.settings = s2
+        ctx.cost.settings = s2
+        stub, state = make_stub(lambda *a: "done")
+        self.patch(stub)
+        sc = sch.Scheduler(ctx, "g2", level="L2", tick=0.01, rss_fn=lambda: 0.0)
+        code = await asyncio.wait_for(sc.run(), 30)
+        self.assertEqual(0, code)
+        self.assertEqual({"done": 4, "queued": 4}, self.statuses(ctx))
+        cuts = ctx.db.read(lambda c: c.execute("SELECT detail_json FROM events WHERE kind='cut'").fetchall())
+        self.assertEqual(1, len(cuts))
+        d = json.loads(cuts[0][0])
+        self.assertEqual((4, 4), (d["n_queue"], d["n_excluded"]))
+        # same cut again: no second events row
+        sc2 = sch.Scheduler(ctx, "g2", level="L2", tick=0.01, rss_fn=lambda: 0.0)
+        self.assertEqual(0, await asyncio.wait_for(sc2.run(), 30))
+        self.assertEqual(1, ctx.db.read(lambda c: c.execute("SELECT COUNT(*) FROM events WHERE kind='cut'").fetchone()[0]))
+
+    async def test_k_regrows_to_target_after_trip(self) -> None:
+        samples = []
+
+        def behavior(ctx, spec, eid, attempt, n):
+            samples.append(ctx.kgate.k)
+            return FailClass.TIMEOUT if n <= 1 else "done"  # one failing attempt = 3 breaker records = one trip
+        ctx, sc, state = self.run_sched(
+            "regrow", {"scheduler.k_init": 12, "scheduler.k_target": 12, "scheduler.k_max": 15,
+                       "scheduler.breaker_pause_s": 0.05, "scheduler.k_grow_interval_s": 0.03,
+                       "scheduler.ramp_interval_s": 0.01, "phases.g2.arms": [
+                           {"model": "haiku", "scenario": "main", "level": "F",
+                            "cells": [{"cell": "NEG", "seed_start": 9051, "count": 30}]}]},
+            behavior, delay=0.05)
+        code = await sc.run()
+        self.assertEqual(0, code)
+        self.assertEqual(1, len(ctx.breaker.trips))
+        low = min(samples)
+        self.assertEqual(6, low)                # halved at the trip
+        self.assertGreater(samples[-1], low)    # regrew without waiting 30 min
+        post = samples[samples.index(low):]
+        self.assertLessEqual(max(post), 12)     # but not above k_target within 15 min of the trip
+        self.assertLessEqual(ctx.kgate.k, 12)
+
+    async def test_k_clamped_to_slot_count(self) -> None:
+        ctx, sc, state = self.run_sched("clamp", {"scheduler.k_init": 40, "scheduler.k_max": 40, "scheduler.slots": 6},
+                                        lambda *a: "done", k=40, delay=0.05)
+        await sc.run()
+        self.assertLessEqual(ctx.kgate.k, 6)
+        self.assertLessEqual(state["max_live"], 2)
+
+    async def test_critical_pressure_halves_at_most_once_a_minute(self) -> None:
+        ctx, sc, _ = self.run_sched("halve", {"scheduler.k_init": 15, "scheduler.pressure_interval_s": 0.01},
+                                    lambda *a: "done", pressure=lambda: 4, delay=0.3)
+        await sc.run()
+        self.assertEqual(7, ctx.kgate.k)  # 15 // 2 once, not down to k_min
+
+    async def test_dead_output_pipe_does_not_crash(self) -> None:
+        ctx, d = make_ctx("deadpipe", SMALL)
+
+        def broken(line: str) -> None:
+            raise BrokenPipeError(32, "Broken pipe")
+        stub, _ = make_stub(lambda *a: "done")
+        self.patch(stub)
+        sc = sch.Scheduler(ctx, "g2", level="L2", tick=0.01, rss_fn=lambda: 0.0, out=broken)
+        self.assertEqual(0, await sc.run())
+        self.assertTrue(ctx.settings.paths.health_log.exists())  # the health file is still written
+
+    async def test_backup_failure_is_visible(self) -> None:
+        import contextlib, io
+        ctx, d = make_ctx("backupfail", SMALL)
+        orig = dbmod.backup
+
+        def boom(*a, **k):
+            raise OSError("disk full")
+        dbmod.backup = boom
+        self.addCleanup(setattr, dbmod, "backup", orig)
+        sc = sch.Scheduler(ctx, "g2", level="L2", rss_fn=lambda: 0.0)
+        err = io.StringIO()
+        with contextlib.redirect_stderr(err):
+            sc._backup()
+        self.assertIn("backup failed", err.getvalue())
+        row = ctx.db.read(lambda c: c.execute("SELECT kind FROM events WHERE kind='backup_failed'").fetchone())
+        self.assertIsNotNone(row)
+
+    def test_rss_is_cached_for_two_seconds(self) -> None:
+        ctx, d = make_ctx("rsscache", SMALL)
+        sc = sch.Scheduler(ctx, "g2", level="L2")
+        calls = []
+        sc._read_rss_mb = lambda: calls.append(1) or 5.0
+        self.assertEqual((5.0, 5.0), (sc._total_rss_mb(), sc._total_rss_mb()))
+        self.assertEqual(1, len(calls))
+
+    def test_first_sight_of_policy_limits_is_not_a_change(self) -> None:
+        ctx, d = make_ctx("policy", SMALL)
+        sc = sch.Scheduler(ctx, "g2", level="L2")
+        ctx.slots.ensure()
+        sc._remote_settings_check()                                   # baseline: no files yet
+        (ctx.slots.root / "w00" / "config" / "policy-limits.json").write_text("{}")
+        sc._remote_settings_check()                                   # first sight: silent
+        self.assertEqual(0, ctx.db.read(lambda c: c.execute("SELECT COUNT(*) FROM events WHERE kind='policy_limits_changed'").fetchone()[0]))
+        (ctx.slots.root / "w00" / "config" / "policy-limits.json").write_text('{"a":1}')
+        sc._remote_settings_check()                                   # a real change warns
+        self.assertEqual(1, ctx.db.read(lambda c: c.execute("SELECT COUNT(*) FROM events WHERE kind='policy_limits_changed'").fetchone()[0]))
+
+    def test_alerts_label_stop_vs_page(self) -> None:
+        import contextlib, io
+        from wtth.orchestrator import alerts
+        ctx, d = make_ctx("alertlabel", SMALL)
+        buf = io.StringIO()
+        with contextlib.redirect_stdout(buf):
+            alerts.page(ctx.settings, ctx.db, "run-t", "g2", "episode_failed", {}, 0)
+            alerts.page(ctx.settings, ctx.db, "run-t", "g2", "billing", {}, 3)
+        self.assertEqual(["PAGE: episode_failed", "STOP: billing"], buf.getvalue().splitlines())
+
+
+    async def test_judge_reserve_is_held_back(self) -> None:
+        ctx, d = make_ctx("reserve", {**SMALL, "budget.cap_usd": 80.0, "budget.judge_reserve_usd": 15.0})
+        self.assertTrue(ctx.cost.can_launch("claude-sonnet-5-5"))
+        ctx.cost.settings = load_settings(overrides={"fake": True, "budget.prior_spend_usd": 63.5})
+        self.assertFalse(ctx.cost.can_launch("claude-sonnet-5-5"))   # 63.5 + 2.1 > 65
+        self.assertTrue(ctx.cost.can_launch("claude-haiku-5-5"))     # 63.5 + 0.42 <= 65
+        ctx.cost.settings = load_settings(overrides={"fake": True, "budget.prior_spend_usd": 64.8})
+        self.assertFalse(ctx.cost.can_launch("claude-haiku-5-5"))
+
+    async def test_retry_adds_to_committed(self) -> None:
+        ctx, d = make_ctx("retrycommit", SMALL)
+        ctx.cost.reserve("e", "claude-haiku-5-5", 2)
+        ctx.cost.turn_done("e")
+        ctx.cost.turn_done("e")
+        self.assertEqual(0.0, ctx.cost.committed())
+        ctx.cost.add_calls("e", 1)
+        self.assertAlmostEqual(0.02, ctx.cost.committed())
+
+    async def test_b3_stop_when_halving_goes_below_k_min(self) -> None:
+        ctx, sc, _ = self.run_sched("brk_k5", {"scheduler.k_init": 5, "scheduler.breaker_pause_s": 0.05},
+                                    lambda *a: FailClass.TIMEOUT, delay=0.01)
+        self.assertEqual(3, await sc.run())
+        self.assertEqual("breaker_k_floor", json.loads(ctx.settings.paths.alert_path.read_text())["reason"])
+
+    async def test_config_drift_stops_the_run(self) -> None:
+        ctx, d = make_ctx("drift", {**SMALL, "scheduler.drift_check_interval_s": 0.05})
+        stub, _ = make_stub(lambda *a: "done", delay=0.2)
+        self.patch(stub)
+        sc = sch.Scheduler(ctx, "g2", level="L2", tick=0.01, rss_fn=lambda: 0.0)
+        sc._cfg_fp = None
+        orig = guards.config_fingerprint
+        self.addCleanup(setattr, guards, "config_fingerprint", orig)
+        # first call (startup) returns A; the next periodic check returns B
+        calls_first = {"n": 0}
+
+        def fp(st):
+            calls_first["n"] += 1
+            return "A" if calls_first["n"] == 1 else "B"
+        guards.config_fingerprint = fp
+        code = await sc.run()
+        self.assertEqual(3, code)
+        self.assertEqual("config_drift", json.loads(ctx.settings.paths.alert_path.read_text())["reason"])
+
+    async def test_error_rate_stop(self) -> None:
+        ov = {"scheduler.error_rate_check_after_s": 0.45, "scheduler.error_rate_min_attempts": 2,
+              "scheduler.error_rate_abs_check": "", "scheduler.breaker_trip_after": 1000, "scheduler.k_init": 3}
+        ctx, sc, _ = self.run_sched("errrate", ov, lambda ctx_, spec, eid, attempt, n: FailClass.NO_RESULT if n == 1 else "done",
+                                    delay=0.1)
+        code = await sc.run()
+        self.assertEqual(3, code)
+        alert = json.loads(ctx.settings.paths.alert_path.read_text())
+        self.assertEqual("error_rate", alert["reason"])
+        ev = ctx.db.read(lambda c: c.execute("SELECT detail_json FROM events WHERE kind='error_rate_check'").fetchone())
+        self.assertGreaterEqual(json.loads(ev[0])["rate"], 0.02)
+
+    async def test_error_rate_ok_below_threshold(self) -> None:
+        ov = {"scheduler.error_rate_check_after_s": 0.25, "scheduler.error_rate_min_attempts": 2,
+              "scheduler.error_rate_abs_check": "", "scheduler.k_init": 3}
+        ctx, sc, _ = self.run_sched("errrate_ok", ov, lambda *a: "done", delay=0.1)
+        self.assertEqual(0, await sc.run())
+
+    async def test_killed_turns_are_charged_whatever_the_attempt_status(self) -> None:
+        from tests.util import seed_turn
+        patch_stimuli_if_needed(self)
+        ctx, d = make_ctx("chargeall", SMALL)
+        sch.enqueue(ctx.db, sch.build_queue(ctx.settings, "g2", "L2")[:1])
+        a = ep.begin_attempt(ctx.db, ctx.run_id, 1)
+        ctx.db.write(lambda c: seed_turn(c, "cancelled-turn", 1, a, cls=None))
+        ep.close_attempt(ctx.db, ctx.settings, 1, a, status="failed", fail=FailClass.STOPPED, detail="stop")  # not 'running'
+        self.assertEqual(1, sch.charge_unfinished(ctx))
+        row = ctx.db.read(lambda c: c.execute("SELECT cost_usd, estimated FROM cost_ledger").fetchone())
+        self.assertEqual((0.02, 1), tuple(row))
+        t = ctx.db.read(lambda c: c.execute("SELECT class, ended_at IS NOT NULL FROM turns").fetchone())
+        self.assertEqual(("technical", 1), tuple(t))
+        self.assertEqual(0, sch.charge_unfinished(ctx))  # idempotent
+
+    async def test_scheduler_run_charges_cancelled_turns_at_the_end(self) -> None:
+        from tests.util import seed_turn
+
+        def behavior(ctx_, spec, eid, attempt, n):
+            ctx_.db.write(lambda c: seed_turn(c, f"open-{n}", eid, attempt, cls=None))
+            return ("stop", FailClass.BILLING) if n == 2 else "done"
+        ctx, sc, _ = self.run_sched("chargeend", {"scheduler.k_init": 6, "scheduler.ramp_interval_s": 0.01}, behavior, delay=0.1)
+        self.assertEqual(3, await sc.run())
+        left = ctx.db.read(lambda c: c.execute("SELECT COUNT(*) FROM turns WHERE ended_at IS NULL OR class IS NULL").fetchone()[0])
+        self.assertEqual(0, left)
+
+    async def test_orchestrator_exception_is_uncounted_and_pages(self) -> None:
+        ctx, d = make_ctx("orchexc", {**SMALL, "phases.g2.arms": [
+            {"model": "haiku", "scenario": "main", "level": "F", "cells": [{"cell": "NEG", "seed_start": 9051, "count": 1}]}]})
+        sch.enqueue(ctx.db, sch.build_queue(ctx.settings, "g2", "L2"))
+        eid = 1
+        a = ep.begin_attempt(ctx.db, ctx.run_id, eid)
+        for i in range(5):
+            ep.close_attempt(ctx.db, ctx.settings, eid, a, status="failed", fail=FailClass.ORCH_RESTART, detail="orchestrator_exception: x")
+            a = ep.begin_attempt(ctx.db, ctx.run_id, eid)
+        ep.close_attempt(ctx.db, ctx.settings, eid, a, status="failed", fail=FailClass.ORCH_RESTART, detail="x")
+        self.assertEqual("queued", ctx.db.read(lambda c: c.execute("SELECT status FROM episodes").fetchone()[0]))  # never failed
+
 
 class ResumeTests(unittest.TestCase):
     def test_resume_recover_abandons_and_charges_estimate(self) -> None:
@@ -448,6 +690,48 @@ class ResumeTests(unittest.TestCase):
             perm = ep.close_attempt(ctx.db, ctx.settings, eid, a, status="failed", fail=FailClass.TIMEOUT, detail="x")
         self.assertTrue(perm)
         self.assertEqual("failed", ctx.db.read(lambda c: c.execute("SELECT status FROM episodes").fetchone()[0]))
+
+
+class GuardsTests(unittest.TestCase):
+    def test_import_path_is_this_repo(self) -> None:
+        s = load_settings()
+        self.assertIsNone(guards.wtth_import_problem(s))
+        from types import SimpleNamespace
+        fake = SimpleNamespace(paths=SimpleNamespace(repo_root=__import__("pathlib").Path("/tmp/not-the-repo")))
+        self.assertIn("stray wtth.pth", guards.wtth_import_problem(fake))
+
+    def test_manifest_records_code_fingerprints(self) -> None:
+        from wtth.orchestrator import manifest
+        s = load_settings(overrides={"fake": True})
+        m = manifest.build_manifest(s, "r", "g0", "fake")
+        self.assertEqual(64, len(m["src_tree_sha"]))
+        self.assertEqual(64, len(m["config_fingerprint"]))
+        self.assertIsInstance(m["refusal_text_rule"], list)
+
+    def test_fingerprint_changes_with_a_config_edit(self) -> None:
+        import shutil
+        from pathlib import Path
+        from tests.util import REPO, tmp_dir
+        d = tmp_dir(f"fp_{os.getpid()}")
+        shutil.copytree(REPO / "configs", d / "configs")
+        from types import SimpleNamespace
+        st = SimpleNamespace(paths=SimpleNamespace(repo_root=d, prereg_dir=d / "prereg"))
+        before = guards.config_fingerprint(st)
+        (d / "configs" / "experiment.yaml").write_text((d / "configs" / "experiment.yaml").read_text() + "\n# edit\n")
+        self.assertNotEqual(before, guards.config_fingerprint(st))
+
+    def test_body_audit_hook(self) -> None:
+        from types import SimpleNamespace
+        from wtth import audit
+        from wtth.types import TurnType
+        ctx, d = make_ctx("bodyaudit", SMALL)
+        orig = getattr(audit, "check_turn_bodies", None)
+        audit.check_turn_bodies = lambda turn_dir, row, tools: ["system differs"]
+        self.addCleanup(lambda: setattr(audit, "check_turn_bodies", orig))
+        req = SimpleNamespace(audit_bodies=True, turn_type=TurnType.WITNESS, turn_id="t", turn_dir=d)
+        self.assertEqual(["system differs"], guards.body_audit(ctx, req))
+        req.audit_bodies = False
+        self.assertEqual([], guards.body_audit(ctx, req))
 
 
 if __name__ == "__main__":

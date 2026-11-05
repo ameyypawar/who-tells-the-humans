@@ -16,7 +16,8 @@ INDEXES = ("ux_attempt_done", "ux_attempt_running", "ux_scripted_post", "ux_scri
            "ix_posts_ep", "ix_notes_ep", "ix_log_ep", "ix_tc_turn", "ix_turns_ep")
 VIEWS = ("v_log_numbered", "v_final", "v_witnesses_final", "v_notes_final", "v_posts_final", "v_log_final",
          "v_tool_calls_final", "v_reviews_final", "v_turns_final", "v_exposures_final", "v_debrief_final",
-         "v_stream_tool_uses_final", "v_attempt_counts", "v_turn_classes", "v_cost")
+         "v_stream_tool_uses_final", "v_attempt_counts", "v_turn_classes", "v_cost", "v_confirmatory_haiku",
+         "v_confirmatory_sonnet")
 NO_UPDATE = ("posts", "tool_calls", "notes", "escalation_log", "reviews", "stream_tool_uses", "debrief_answers",
              "cost_ledger", "server_starts", "fallback_rows", "events", "exposure_checks")
 
@@ -221,6 +222,29 @@ class SchemaTests(unittest.TestCase):
         self.assertEqual("sqlite_locked", cm.exception.error_class)
         self.assertEqual(3, len(calls))  # sleeps between tries only
         self.assertEqual(1, self.db.write(lambda c: 1))  # connection recovered
+
+    def test_probe_column_and_confirmatory_views(self) -> None:
+        def populate(c: sqlite3.Connection) -> None:
+            seed_run(c)
+            ids = [seed_episode(c, "core/a", phase="core", seed=1, queue_pos=1, status="running"),
+                   seed_episode(c, "core/b", phase="core", seed=9001, queue_pos=2, status="running"),
+                   seed_episode(c, "core/c", phase="core", seed=2, queue_pos=3, status="running"),
+                   seed_episode(c, "son/a", phase="sonnet", model="claude-sonnet-5-5", seed=1, queue_pos=4, status="running"),
+                   seed_episode(c, "g1/a", phase="g1", seed=9011, queue_pos=5, status="running")]
+            c.execute("UPDATE episodes SET probe=1 WHERE episode_key='core/c'")
+            for ep in ids:
+                seed_attempt(c, ep)
+                c.execute("UPDATE attempts SET status='done', finished_at=1 WHERE episode_id=?", (ep,))
+                c.execute("UPDATE episodes SET status='done', final_attempt=1 WHERE episode_id=?", (ep,))
+        self.db.write(populate)
+        h = self.db.read(lambda c: [r[0] for r in c.execute("SELECT phase || '/' || seed FROM v_confirmatory_haiku").fetchall()])
+        s_ = self.db.read(lambda c: [r[0] for r in c.execute("SELECT phase || '/' || seed FROM v_confirmatory_sonnet").fetchall()])
+        self.assertEqual(["core/1"], h)  # seed < 9000, not a probe, haiku
+        self.assertEqual(["sonnet/1"], s_)
+        d = self.db.read(lambda c: c.execute("SELECT probe FROM episodes WHERE episode_key='core/a'").fetchone()[0])
+        self.assertEqual(0, d)
+        cols = self.db.read(lambda c: [r[1] for r in c.execute("PRAGMA table_info(stream_tool_uses)").fetchall()])
+        self.assertIn("db_row_ref", cols)
 
     def test_non_lock_operational_error_fails_at_once(self) -> None:
         import wtth.db as dbmod

@@ -165,6 +165,11 @@ class CostTracker:
     def committed(self) -> float:
         return sum(self.settings.models.budget_for(m) * n for m, n in self._res.values())
 
+    def add_calls(self, key: str, n: int = 1) -> None:
+        """A debrief retry needs one more call than the reservation covered."""
+        if key in self._res:
+            self._res[key][1] += n
+
     def reserve(self, key: str, model: str, calls: int = 21) -> None:
         self._res[key] = [model, calls]
 
@@ -178,7 +183,8 @@ class CostTracker:
     def can_launch(self, model: str) -> bool:
         b = self.settings.budget
         need = b.reserve_calls * self.settings.models.budget_for(model)
-        return self.spent() + self.committed() + need <= b.cap_usd
+        # runs launch against cap - judge reserve; the judge (WP6) may spend into the reserve, up to the global cap
+        return self.spent() + self.committed() + need <= b.cap_usd - b.judge_reserve_usd
 
     def over_warn(self) -> bool:
         return self.spent() >= self.settings.budget.warn_usd

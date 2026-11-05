@@ -13,6 +13,7 @@ from pathlib import Path
 from typing import Any
 
 from wtth import render, stimuli
+from wtth.orchestrator import guards  # WP4-ADD
 from wtth.runner import turn as turn_mod
 from wtth.db import WriteFailed
 from wtth.textnorm import canon_json, sha256_text
@@ -193,6 +194,8 @@ async def _launch(ctx: Any, req: TurnRequest, cancel: asyncio.Event, key: str, t
     """Acquire a slot dir, run the turn (run_turn itself takes the K permit and the launch gap; it also sets
     try_no and the cap columns), then feed the breaker and the cost reservation."""
     k_at = ctx.kgate.k
+    if try_no > 1:
+        ctx.cost.add_calls(key, 1)  # WP4-ADD: a debrief retry is one more call than the reservation covered
     slot = ctx.slots.acquire()
     try:
         outcome = await turn_mod.run_turn(ctx, req, slot, cancel=cancel)
@@ -200,6 +203,12 @@ async def _launch(ctx: Any, req: TurnRequest, cancel: asyncio.Event, key: str, t
         ctx.slots.release(slot)
     ctx.cost.turn_done(key)
     ctx.breaker.record(outcome.cls, outcome.fail)
+    if req.audit_bodies and not outcome.fail:  # WP4-ADD: B10 production raw-body sample; any problem is a STOP
+        problems = guards.body_audit(ctx, req)
+        if problems:
+            ctx.breaker.request_stop("raw_body_audit_failed")
+            log_event(ctx.db, ctx.run_id, "page", "raw_body_audit_failed", episode_id=req.episode_id,
+                      attempt=req.attempt, turn_id=req.turn_id, detail={"problems": problems[:10]})
 
     def fn(c: sqlite3.Connection) -> None:
         c.execute("UPDATE turns SET k_at_launch=? WHERE turn_id=? AND k_at_launch IS NULL", (k_at, req.turn_id))
@@ -257,9 +266,10 @@ async def run_attempt(ctx: Any, spec: EpisodeSpec, episode_id: int) -> AttemptRe
         log_event(db, ctx.run_id, "page", "db_write_failed", episode_id=episode_id, attempt=attempt, detail={"error": str(exc)})
         status, fail, detail, root_id = "failed", FailClass.API_OTHER, f"WriteFailed: {exc}", None
     except Exception as exc:  # orchestrator bug: fail the attempt visibly, do not kill the scheduler
-        log_event(db, ctx.run_id, "error", "attempt_exception", episode_id=episode_id, attempt=attempt,
+        # WP4-ADD: an orchestrator bug is not the episode's fault: close the attempt UNCOUNTED (orch_restart) and page
+        log_event(db, ctx.run_id, "page", "attempt_exception", episode_id=episode_id, attempt=attempt,
                   detail={"error": f"{type(exc).__name__}: {exc}"})
-        status, fail, detail, root_id = "failed", FailClass.API_OTHER, f"orchestrator_exception: {type(exc).__name__}: {exc}", None
+        status, fail, detail, root_id = "failed", FailClass.ORCH_RESTART, f"orchestrator_exception: {type(exc).__name__}: {exc}", None
     finally:
         ctx.cost.release(key)
     if status == "failed":

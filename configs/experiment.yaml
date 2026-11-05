@@ -39,10 +39,14 @@ budget:                      # B5: one global ledger across all phases including
   prior_spend_usd: 0.0
   reserve_calls: 21          # launch an episode only if spent + committed + reserve_calls * max_budget <= cap
   projection_after_episodes: 10
+  judge_reserve_usd: 15.0    # runs launch against cap_usd - judge_reserve_usd ($65); the judge may spend into it
   phase_soft_usd:
     g0: 1.0
     g1: 3.0
+    g1b: 3.0
     g2: 4.0
+    g2fix: 4.0
+    mvp: 30.0
     core: 30.0
     sonnet: 45.0
 
@@ -73,6 +77,12 @@ scheduler:
   breaker_resume_min: 30     # resume ramping after this long without a trip
   debrief_tries: 3           # B1: retried in place with identical inputs
   debrief_backoff_s: [5, 20]
+  error_rate_stop: 0.02                 # D-005 (42 A-21): STOP + page at >= 2% technical failures per attempt
+  error_rate_min_attempts: 50           # smaller samples are recorded, not acted on
+  error_rate_check_after_s: 7200        # phase launch + 2 h
+  error_rate_abs_check: "2026-11-06T07:56:00+05:30"   # T0 + 10.5 h
+  remote_check_interval_s: 30
+  drift_check_interval_s: 60
 
 timeouts:
   turn_s: 120

@@ -7,7 +7,8 @@
 --   turns.try_no (B1), turns.k_at_launch, turns.max_turns_cap, turns.max_budget_usd, turns.api_key_source,
 --   turns.canonical_model                                                         (42 section 4.3)
 --   notes.kw_hits_json (B8: {"subject":[..],"message":[..]} over the stored, cut fields)
---   episodes.runbook, c2_line_ref, c_real_note, forged_line_ref                    (42 section 4.2)
+--   episodes.runbook, c2_line_ref, c_real_note, forged_line_ref, probe             (42 section 4.2, review-2)
+--   views v_confirmatory_haiku / v_confirmatory_sonnet; events kind='cut' records the cut in force
 --   stream_tool_uses.error_kind, reconciled                                         (42 section 4.4)
 --   exposures.checks_json                                                           (42 section 4.9)
 --   tables exposure_checks (WP4, from WP3's note), gate_log                                                                  (42 section 4.13)
@@ -23,7 +24,8 @@ CREATE TABLE episodes(episode_id INTEGER PRIMARY KEY, episode_key TEXT NOT NULL 
   status TEXT NOT NULL CHECK(status IN('queued','running','done','failed')),
   final_attempt INTEGER, n_attempts INTEGER NOT NULL DEFAULT 0, not_before REAL, fail_reason TEXT,
   created_at REAL NOT NULL, updated_at REAL NOT NULL,
-  runbook TEXT, c2_line_ref TEXT, c_real_note INTEGER, forged_line_ref TEXT);
+  runbook TEXT, c2_line_ref TEXT, c_real_note INTEGER, forged_line_ref TEXT,
+  probe INTEGER NOT NULL DEFAULT 0);                         -- 1 for G0 integrity probes (ArmCell.probe, deny probe)
 
 CREATE TABLE attempts(episode_id INTEGER NOT NULL REFERENCES episodes(episode_id), attempt INTEGER NOT NULL,
   run_id TEXT NOT NULL REFERENCES runs(run_id),
@@ -92,7 +94,7 @@ CREATE TABLE reviews(id INTEGER PRIMARY KEY, tool_call_id INTEGER NOT NULL UNIQU
 
 CREATE TABLE stream_tool_uses(turn_id TEXT NOT NULL REFERENCES turns(turn_id), seq INTEGER NOT NULL, tool_use_id TEXT,
   name TEXT NOT NULL, input_json TEXT NOT NULL, has_result INTEGER NOT NULL, result_text TEXT, result_is_error INTEGER,
-  error_kind TEXT, reconciled INTEGER,                                               -- 42 section 4.4: 'validation'|'server'|NULL
+  error_kind TEXT, reconciled INTEGER, db_row_ref INTEGER,   -- db_row_ref: tool_calls.id the stream tool_use matched                                               -- 42 section 4.4: 'validation'|'server'|NULL
   PRIMARY KEY(turn_id, seq));
 
 CREATE TABLE debrief_answers(episode_id INTEGER NOT NULL, attempt INTEGER NOT NULL, slot INTEGER NOT NULL, handle TEXT NOT NULL,
@@ -192,6 +194,16 @@ CREATE VIEW v_stream_tool_uses_final AS
   SELECT s.*, t.episode_id, t.attempt, t.turn_type, t.round, t.slot, t.handle, t.model,
          t.phase, t.scenario, t.cell, t.level, t.seed, t.world
   FROM stream_tool_uses s JOIN v_turns_final t ON s.turn_id = t.turn_id;
+
+-- confirmatory data only: core/MVP Haiku and the Sonnet arm, seeds < 9000, final attempts of done episodes, no probes.
+-- (mvp is a prefix of the core; 'core or sonnet' in 43/review-2 plus the MVP fallback of PREREG section 8.)
+CREATE VIEW v_confirmatory_haiku AS
+  SELECT f.* FROM v_final f JOIN episodes e ON e.episode_id = f.episode_id
+  WHERE f.phase IN ('core', 'mvp') AND f.model = 'claude-haiku-5-5' AND f.seed < 9000 AND e.probe = 0;
+
+CREATE VIEW v_confirmatory_sonnet AS
+  SELECT f.* FROM v_final f JOIN episodes e ON e.episode_id = f.episode_id
+  WHERE f.phase = 'sonnet' AND f.model = 'claude-sonnet-5-5' AND f.seed < 9000 AND e.probe = 0;
 
 CREATE VIEW v_attempt_counts AS
   SELECT e.phase, e.model, e.cell,

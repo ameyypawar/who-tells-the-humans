@@ -22,7 +22,7 @@ def page(settings: Any, db: Any, run_id: str, phase: str, reason: str, detail: d
     tmp = path.with_name(path.name + ".tmp")
     tmp.write_text(json.dumps(alert, indent=2, sort_keys=True, default=str), encoding="utf-8")
     os.replace(tmp, path)
-    print(f"STOP: {reason}", flush=True)
+    print(("STOP: " if exit_code else "PAGE: ") + reason, flush=True)  # STOP only when the run is stopping
     if not getattr(settings, "fake", False) and not os.environ.get("WTTH_NO_NOTIFY"):
         msg = f"wtth {phase}: {reason}".replace('"', "'")[:180]
         try:

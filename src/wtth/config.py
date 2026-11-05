@@ -124,6 +124,7 @@ class Budget:
     reserve_calls: int
     projection_after_episodes: int
     phase_soft_usd: dict[str, float]
+    judge_reserve_usd: float = 15.0   # experiment launches test against cap_usd - judge_reserve_usd
 
 
 @dataclass(frozen=True, slots=True)
@@ -154,6 +155,12 @@ class Scheduler:
     breaker_resume_min: float
     debrief_tries: int
     debrief_backoff_s: tuple[float, ...]
+    error_rate_stop: float = 0.02            # D-005 / 42 A-21: STOP at >= this technical-failure rate per attempt
+    error_rate_min_attempts: int = 50        # below this the rate is recorded but not acted on
+    error_rate_check_after_s: float = 7200   # first check: phase launch + 2 h
+    error_rate_abs_check: str = ""            # second check: an absolute ISO time (T0 + 10.5 h)
+    remote_check_interval_s: float = 30
+    drift_check_interval_s: float = 60
 
 
 @dataclass(frozen=True, slots=True)
@@ -379,7 +386,8 @@ def load_settings(path: Path | None = None, overrides: dict | None = None) -> Se
     rb = raw["budget"]
     budget = Budget(float(rb["cap_usd"]), float(rb["warn_usd"]), float(rb["prior_spend_usd"]),
                     int(rb["reserve_calls"]), int(rb["projection_after_episodes"]),
-                    {k: float(v) for k, v in rb["phase_soft_usd"].items()})
+                    {k: float(v) for k, v in rb["phase_soft_usd"].items()},
+                    float(rb.get("judge_reserve_usd", 15.0)))
     rs = dict(raw["scheduler"])
     rs["debrief_backoff_s"] = tuple(float(x) for x in rs["debrief_backoff_s"])
     try:

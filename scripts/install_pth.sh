@@ -7,7 +7,7 @@
 set -eu
 R="$(cd "$(dirname "$0")/.." && pwd)"
 PY="${WTTH_PYTHON:-/Users/amey/.local/wtth/venv/bin/python}"
-SP="$("$PY" -I -c 'import sysconfig; print(sysconfig.get_paths()["purelib"])')"
+SP="${WTTH_SITE_PACKAGES:-$("$PY" -I -c 'import sysconfig; print(sysconfig.get_paths()["purelib"])')}"  # override: tests use a temp dir
 [ -d "$SP" ] || { echo "install_pth: site-packages not found: $SP" >&2; exit 1; }
 printf '%s\n%s\n' "$R/src" "$R" > "$SP/wtth.pth"
 echo "install_pth: wrote $SP/wtth.pth -> $R/src, $R"

@@ -26,6 +26,14 @@ SETTINGS_REQUIRED = {"switchModelsOnFlag": False, "disableAllHooks": True, "disa
                      "autoMemoryEnabled": False, "crossSessionInbound": "refuse"}
 
 
+def _refusal_patterns() -> list[str]:
+    try:
+        from wtth.runner.validate import REFUSAL_TEXT_PATTERNS
+        return list(REFUSAL_TEXT_PATTERNS)
+    except Exception:
+        return [REFUSAL_TEXT_RULE]
+
+
 def _sha_file(path: Path) -> str | None:
     """Digest only; content (including withheld private files) is never returned or printed."""
     try:
@@ -117,6 +125,10 @@ def verify_startup(settings: Any, mode: str, phase: str) -> list[str]:
         p.append("configs/prereg_hashes.json differs from the PREREG section 23 table")
     from wtth import prereg
     p.extend(prereg.verify_hashes(paths.prereg_dir, paths.private_dir, files))
+    from wtth.orchestrator import guards
+    bad = guards.wtth_import_problem(settings)
+    if bad:
+        p.append(bad)
     # binary
     if not paths.binary.exists() or not os.access(paths.binary, os.X_OK):
         p.append(f"binary missing or not executable: {paths.binary}")
@@ -197,6 +209,7 @@ def _git(settings: Any, *args: str) -> str:
 
 
 def build_manifest(settings: Any, run_id: str, phase: str, mode: str) -> dict:
+    from wtth.orchestrator import guards
     from wtth.orchestrator.scheduler import permutation
     paths = settings.paths
     pins = load_prereg_pins(CONFIGS_DIR / "prereg_hashes.json")
@@ -234,6 +247,7 @@ def build_manifest(settings: Any, run_id: str, phase: str, mode: str) -> dict:
         "models": {"haiku": settings.models.haiku, "sonnet": settings.models.sonnet, "judge": settings.models.judge,
                    "effort": settings.models.effort, "max_budget_usd": settings.models.max_budget_usd},
         "env_names": {"base": sorted(base), "audit": sorted(audit)},
+        "src_tree_sha": guards.src_tree_sha(settings), "config_fingerprint": guards.config_fingerprint(settings),
         "cc_settings_sha": _sha_file(paths.cc_settings),
         "tools_sha": {k: v.sha256 for k, v in toolsets.items()},
         "tools_yaml_sha": _sha_file(paths.tools_yaml),
@@ -249,7 +263,7 @@ def build_manifest(settings: Any, run_id: str, phase: str, mode: str) -> dict:
         "max_turns": {"witness": mt.witness, "debrief": mt.debrief, "frozen": mt.frozen},
         "max_attempts": settings.max_attempts,
         "caps": dataclasses.asdict(load_caps(paths.tools_yaml)),
-        "refusal_text_rule": REFUSAL_TEXT_RULE, "audit_sample_rule": AUDIT_SAMPLE_RULE,
+        "refusal_text_rule": _refusal_patterns(), "audit_sample_rule": AUDIT_SAMPLE_RULE,
         "host": {"macos": platform.mac_ver()[0], "machine": platform.machine(), "ram_bytes": mem},
         "slots": slots,
     }

@@ -71,8 +71,9 @@ def _write_shim(settings: Any, behavior: Path) -> Path:
     shim = d / "claude"
     doc = json.loads(Path(behavior).read_text(encoding="utf-8"))
     if "contract" not in doc:  # the fake checks the argv/env/cwd/slot contract; default it to this run's paths
-        doc["contract"] = {"cwd": str(settings.paths.cwd), "slots_root": str(settings.paths.slots_root),
-                           "api_key": FAKE_KEY, "models": [settings.models.haiku, settings.models.sonnet]}
+        from tests import fake_claude  # the contract stores only the key's sha256
+
+        doc["contract"] = fake_claude.contract_for(settings, FAKE_KEY)
     beh = d / "behavior.json"
     beh.write_text(json.dumps(doc, indent=1), encoding="utf-8")
     shim.write_text(f'#!/bin/sh\nexec {settings.paths.python} -I {REPO / "tests" / "fake_claude.py"} '
@@ -101,7 +102,7 @@ def make_context(settings: Any, mode: str, run_id: str, api_key: str) -> Any:
     allow = load_log_allowlists(CONFIGS_DIR / "log_allowlists.json")
     allow["env"] = env_allowlist(CONFIGS_DIR / "env_allowlist.json")
     return RunContext(settings, db, run_id, mode, load_toolsets(settings.paths.tools_yaml), texts, private,
-                      SlotPool(settings.paths.slots_root, settings.scheduler.slots), KGate(settings.scheduler.k_init),
+                      SlotPool(settings.paths.slots_root, settings.scheduler.slots), KGate(min(settings.scheduler.k_init, settings.scheduler.slots)),
                       launch, cost, breaker, exp, allow, _api_key=api_key)
 
 
@@ -159,7 +160,8 @@ def _cmd_run(args: argparse.Namespace) -> int:
     from wtth import secrets
     from wtth.orchestrator import manifest
     from wtth.orchestrator.lock import LockHeld, RunLock
-    from wtth.orchestrator.scheduler import Scheduler
+    from wtth.config import ConfigError
+    from wtth.orchestrator.scheduler import Scheduler, build_queue
 
     if args.live and args.fake:
         print("choose --live or --fake, not both", file=sys.stderr)
@@ -202,6 +204,11 @@ def _cmd_run(args: argparse.Namespace) -> int:
             ctx._ensure_run = lambda: ctx.db.write(start)  # runs row is written when the first episode launches
             if args.requeue_failed:
                 _requeue_failed(ctx, args.phase)
+            try:
+                build_queue(s, args.phase, args.level)  # validates level/freeze rules before anything launches
+            except ConfigError as exc:
+                print(f"PROBLEM: {exc}")
+                return 2
             sched = Scheduler(ctx, args.phase, level=args.level, stop_at=args.stop_at)
             code = asyncio.run(sched.run())
             ctx.db.write(lambda c: c.execute("UPDATE runs SET ended_at=?, exit_code=? WHERE run_id=?",

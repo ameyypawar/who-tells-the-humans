@@ -291,6 +291,7 @@ class KillResume(unittest.TestCase):
         argv = env.args("g0dry", cells, seed_start=1, count=5, k=12)
         cmd = [PYTHON, "-I", "-m", "wtth", *argv]
         log = open(env.d / "orch1.log", "wb")
+        self.addCleanup(log.close)
         p = subprocess.Popen(cmd, cwd="/", stdout=log, stderr=subprocess.STDOUT)
         deadline = time.time() + 120
         while time.time() < deadline:
@@ -310,7 +311,7 @@ class KillResume(unittest.TestCase):
         p.wait()
         tables = [r["name"] for r in env.q("SELECT name FROM sqlite_master WHERE type='table'")]
         before = {t: env.q(f"SELECT COUNT(*) n FROM {t}")[0]["n"] for t in tables}
-        self.assertEqual("running", env.q("SELECT status FROM attempts ORDER BY rowid LIMIT 1")[0]["status"] if False else "running")
+        self.assertGreaterEqual(env.q("SELECT COUNT(*) n FROM attempts WHERE status='running'")[0]["n"], 1)  # killed mid-run
         code, out = run_cli(argv)
         self.assertEqual(0, code, out[-2000:])
         after = {t: env.q(f"SELECT COUNT(*) n FROM {t}")[0]["n"] for t in tables}
