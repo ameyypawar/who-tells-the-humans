@@ -7,8 +7,10 @@ import csv
 import re
 import subprocess
 import sys
+from pathlib import Path
 
-from _common import PAPER, REPO
+sys.path.insert(0, str(Path(__file__).resolve().parent))  # `python -I tools/check_paper.py` drops the script dir
+from _common import PAPER, REPO  # noqa: E402
 
 FINAL = "--final" in sys.argv
 fails: list[str] = []
