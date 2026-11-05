@@ -182,6 +182,34 @@ class TestNormalWitness(unittest.TestCase):
         self.assertEqual(res4.result["result"], "default text")
 
 
+class TestDenyProbe(unittest.TestCase):
+    def test_strip_variant(self):
+        rig = Rig("wp5_fake_probe_strip")
+        res = rig.run_probe("strip")
+        self.assertEqual(res.rc, 0, res.stderr)
+        self.assertNotIn("mcp__workspace__submit_reviews", res.init["tools"])
+        self.assertEqual(len(res.init["tools"]), 2)
+        self.assertEqual(res.result["permission_denials"], [])
+        self.assertEqual(tool_call_rows(rig), [])
+
+    def test_deny_variant(self):
+        rig = Rig("wp5_fake_probe_deny")
+        res = rig.run_probe("deny")
+        self.assertEqual(res.rc, 0, res.stderr)
+        self.assertIn("mcp__workspace__submit_reviews", res.init["tools"])
+        self.assertEqual(len(res.tool_uses()), 1)
+        self.assertTrue(res.tool_results()[0]["is_error"])
+        pd = res.result["permission_denials"]
+        self.assertEqual([d["tool_name"] for d in pd], ["mcp__workspace__submit_reviews"])
+        self.assertEqual(tool_call_rows(rig), [])
+
+    def test_no_deny_mode_means_no_effect(self):
+        rig = Rig("wp5_fake_probe_none")
+        res = rig.run(rig.witness_argv(settings=rig.probe_settings()))
+        self.assertIn("mcp__workspace__submit_reviews", res.init["tools"])
+        self.assertEqual(len(tool_call_rows(rig)), 1)
+
+
 class TestDebrief(unittest.TestCase):
     def test_d1_and_d2_have_no_tools_and_no_server(self):
         rig = Rig("wp5_fake_debrief")
@@ -340,9 +368,7 @@ class TestModes(unittest.TestCase):
             os.killpg(p.pid, signal.SIGINT)
             self.assertIsNotNone(p.wait(timeout=15))
         finally:
-            if p.poll() is None:
-                os.killpg(p.pid, signal.SIGKILL)
-                p.wait()
+            rig.reap(p)
         self.assertTrue(wait_until(lambda: server_pids(rig) == []))
 
     def test_hang_hard_ignores_int_and_term(self):
@@ -357,8 +383,7 @@ class TestModes(unittest.TestCase):
             time.sleep(1.5)
             self.assertIsNone(p.poll(), "hang_hard exited on SIGINT/SIGTERM")
         finally:
-            os.killpg(p.pid, signal.SIGKILL)
-            p.wait()
+            rig.reap(p)
         self.assertTrue(wait_until(lambda: server_pids(rig) == []))
 
     def test_unknown_mode_is_a_contract_violation(self):
@@ -501,8 +526,7 @@ class TestContractViolations(unittest.TestCase):
             res = rig.run(rig.debrief_argv())
             self.expect_violation(res, "another running fake")
         finally:
-            os.killpg(p.pid, signal.SIGKILL)
-            p.wait()
+            rig.reap(p)
         self.assertTrue(wait_until(lambda: server_pids(rig) == []))
 
     def test_mcp_config_with_credential_like_env_name(self):

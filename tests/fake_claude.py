@@ -91,6 +91,30 @@ def write_behavior(path: Path, behavior: dict | None = None, *, contract: dict |
     return path
 
 
+def probe_behavior(deny_mode: str, **extra) -> dict:
+    """Behaviour for a deny-probe turn whose --settings file denies mcp__workspace__submit_reviews.
+
+    deny_mode "strip": the tool is absent from init.tools, no permission_denials entry.
+    deny_mode "deny": the tool is listed, the model attempts it, permission_denials holds the entry.
+    """
+    if deny_mode not in ("strip", "deny"):
+        raise ValueError(deny_mode)
+    return {"default": {"deny_mode": deny_mode, **extra}}
+
+
+def denied_tools(settings_path: str, beh: dict) -> set[str]:
+    """Bare tool names denied by the --settings file (permissions.deny) plus behaviour `deny_tools`."""
+    out = set(beh.get("deny_tools", []))
+    try:
+        doc = json.loads(Path(settings_path).read_text(encoding="utf-8"))
+        for ent in doc.get("permissions", {}).get("deny", []):
+            if isinstance(ent, str) and ent.startswith(MCP_PREFIX):
+                out.add(ent[len(MCP_PREFIX):])
+    except (OSError, ValueError, AttributeError):
+        pass
+    return out
+
+
 # ---------------------------------------------------------------------------------------------------------
 # behaviour resolution
 # ---------------------------------------------------------------------------------------------------------
@@ -352,6 +376,8 @@ class Turn:
         self.mcp_log: Path | None = None
         self.bodies_dir: Path | None = None
         self.audit = "CLAUDE_CODE_ENABLE_TELEMETRY" in env
+        self.denials: list[dict] = []
+        self.denied: set[str] = set()
         self.messages: list[dict] = [{"role": "user", "content": args.prompt}]
         self.system_text = ""
         with contextlib.suppress(OSError):
@@ -467,7 +493,7 @@ class Turn:
                                        "cacheCreationInputTokens": 500, "webSearchRequests": 0, "costUSD": cost,
                                        "contextWindow": 1000000, "maxOutputTokens": 128000, "thinkingTokens": 0,
                                        "canonicalModel": model_key, "provider": "firstParty", "costBasis": "list"}},
-            "permission_denials": permission_denials or [], "terminal_reason": "completed",
+            "permission_denials": (permission_denials or []) + self.denials, "terminal_reason": "completed",
             "fast_mode_state": "off", "safety_stops": 0, "api_error_status": api_error_status,
             "uuid": str(uuid.uuid4()),
         }
@@ -579,6 +605,12 @@ async def _run_witness(turn: Turn, mcp_cfg: dict, beh: dict) -> int:
         if turn.status == "connected" and sorted(allowed) != sorted(MCP_PREFIX + t["name"] for t in turn.tools):
             violation_exit(["--allowedTools does not equal the tools the server lists"])
 
+        deny_mode = beh.get("deny_mode")
+        if deny_mode:
+            turn.denied = denied_tools(turn.args.settings, beh)
+            if deny_mode == "strip":
+                turn.tools = [t for t in turn.tools if t["name"] not in turn.denied]
+
         turn.emit_init()
 
         if mode in ("hang", "hang_hard"):
@@ -613,6 +645,13 @@ async def _run_witness(turn: Turn, mcp_cfg: dict, beh: dict) -> int:
                 args_in = auto_args(name, turn.args.prompt, turn.tools)
             if name not in [t["name"] for t in turn.tools]:
                 text = f"Error: No such tool available: {MCP_PREFIX}{name}"
+                turn.tool_call_events(name, args_in, text, True)
+                turn.write_body(text)
+                continue
+            if name in turn.denied and beh.get("deny_mode") == "deny":
+                text = f"Permission to use {MCP_PREFIX}{name} has been denied."
+                turn.denials.append({"tool_name": MCP_PREFIX + name, "tool_use_id": f"toolu_fake_{turn.n_calls + 1}",
+                                     "tool_input": args_in})
                 turn.tool_call_events(name, args_in, text, True)
                 turn.write_body(text)
                 continue

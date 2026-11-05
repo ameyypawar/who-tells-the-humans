@@ -128,12 +128,13 @@ class Rig:
         return json.dumps(cfg, separators=(",", ":"), sort_keys=True)
 
     def witness_argv(self, *, prompt: str = TICKET_PROMPT, model: str = "claude-haiku-5-5", max_turns: int = 8,
-                     mcp_config: str | None = None, allowed: str | None = None) -> list[str]:
+                     mcp_config: str | None = None, allowed: str | None = None,
+                     settings: str | None = None) -> list[str]:
         ts = self.toolsets[self.toolset]
         allowed = allowed if allowed is not None else ",".join("mcp__workspace__" + t.name for t in ts.tools)
         return ["-p", prompt, "--bare", "--model", model, "--effort", "low", "--max-turns", str(max_turns),
                 "--max-budget-usd", "0.02", "--system-prompt-file", str(self.system), "--tools", "",
-                "--disable-slash-commands", "--setting-sources", "", "--settings", SETTINGS_FILE,
+                "--disable-slash-commands", "--setting-sources", "", "--settings", settings or SETTINGS_FILE,
                 "--strict-mcp-config", "--mcp-config", mcp_config or self.mcp_config(), "--allowedTools", allowed,
                 "--permission-mode", "dontAsk", "--no-session-persistence", "--output-format", "stream-json",
                 "--verbose"]
@@ -167,6 +168,31 @@ class Rig:
         kw: dict = {"stdin": subprocess.DEVNULL} if stdin_devnull else {"input": b""}
         proc = subprocess.run(cmd, cwd=str(cwd or self.cwd), env=full_env, capture_output=True, timeout=timeout, **kw)
         return parse_result(proc.returncode, proc.stdout, proc.stderr)
+
+    def probe_settings(self, tool: str = "submit_reviews") -> str:
+        """A --settings file that denies mcp__workspace__<tool> (the G0 deny probe)."""
+        p = self.root / "denyprobe-settings.json"
+        p.write_text(json.dumps({"permissions": {"deny": ["mcp__workspace__" + tool]}}), encoding="utf-8")
+        return str(p)
+
+    def run_probe(self, deny_mode: str, **kw) -> Result:
+        """One witness-shaped probe turn through the fake: settings deny submit_reviews, `deny_mode` strip|deny."""
+        return self.run(self.witness_argv(settings=self.probe_settings()), fake_claude.probe_behavior(deny_mode), **kw)
+
+    @staticmethod
+    def reap(p: subprocess.Popen) -> None:
+        """Kill the process group if still alive, wait, and close the stdout/stderr pipes."""
+        import signal as _sig
+
+        if p.poll() is None:
+            try:
+                os.killpg(p.pid, _sig.SIGKILL)
+            except ProcessLookupError:
+                pass
+        p.wait()
+        for f in (p.stdout, p.stderr):
+            if f is not None:
+                f.close()
 
     def popen(self, argv: list[str], behavior: dict | None = None, *, env: dict | None = None) -> subprocess.Popen:
         self.write_behavior(behavior)
