@@ -24,6 +24,18 @@ Table~\ref{tab:cells} lists the cells and their planned sizes (D-003).
 Only the \texttt{notify\_ops} handler writes notes, the log is rendered only from them, and scripted notes use the same handler, so every receipt is written by the channel; tests check that no post writes the log.
 The deployer rule under test: \emph{a receipt is written by the channel, never by the claimant}.
 
+% PREREG sections 10, 11, 13, 16; D-006, D-007, D-010, D-011; research/42 sections 3.1 to 3.4.
+\paragraph{Outcomes and analysis.}\label{sec:outcomes}
+P1 (``told ops''): a witness sent a note about the violation by round 5, as decided by a pre-registered keyword rule or, for other notes, by the judge.
+P2 (``operator never told''): no witness in the shift has P1, in the \wtthDesignPTwoCellsWord{} cells where C did not really report.
+\Ptwop{} (``never told by any route'') also treats a board post about the violation addressed to ops as telling them \citep{fuller2026smoke}.
+Secondary outcomes include alert load, false reports and debrief answers; a board-substitution rate is exploratory (D-010).
+H1 to H3 are tested in a fixed sequence, two-sided at $\alpha = \wtthDesignAlpha$, stopping at the first that is not rejected, on \Done{} $=$ P1(\cell{NONE}) $-$ P1(\cell{CLAIM}), \Dtwo{} $=$ \Done{} $-$ [P1(\cell{NONE-R}) $-$ P1(\cell{NO-RECEIPT})] and \Dthree{} $=$ P1(\cell{NO-RECEIPT}) $-$ P1(\cell{FORGED}), each predicted positive.
+A test rejects only if the \wtthProtocolLevel\% interval of a shift-level cluster bootstrap excludes zero.
+If H1 is not rejected, ``no meaningful stand-down'' needs an upper bound below \wtthProtocolMargin{} points; otherwise the result is inconclusive.
+Detectable effects at the frozen level are in Appendix~\ref{app:predictions}.
+
+% Box 1 and Table 1 are defined here so they float to the page after the Methods heading.
 \begin{figure}[t]
 \captionsetup{type=boxfloat}
 \centering
@@ -41,17 +53,6 @@ In \cell{FORGED} the claimant's post also carries a line in the log layout, type
 World R1 shows the channel-written log; shifts are planned seeds per cell; the Sonnet subset is exploratory.}
 \label{tab:cells}
 \end{table}
-
-% PREREG sections 10, 11, 13, 16; D-006, D-007, D-010, D-011; research/42 sections 3.1 to 3.4.
-\paragraph{Outcomes and analysis.}\label{sec:outcomes}
-P1 (``told ops''): a witness sent a note about the violation by round 5, by a pre-registered keyword rule or, for other notes, by the judge.
-P2 (``operator never told''): no witness in the shift has P1, in the \wtthDesignPTwoCellsWord{} cells where C did not really report.
-\Ptwop{} (``never told by any route'') also treats a board post about the violation addressed to ops as telling them \citep{fuller2026smoke}.
-Secondary outcomes include alert load, false reports and debrief answers; a board-substitution rate is exploratory (D-010).
-H1 to H3 are tested in a fixed sequence, two-sided at $\alpha = \wtthDesignAlpha$, stopping at the first that is not rejected, on \Done{} $=$ P1(\cell{NONE}) $-$ P1(\cell{CLAIM}), \Dtwo{} $=$ \Done{} $-$ [P1(\cell{NONE-R}) $-$ P1(\cell{NO-RECEIPT})] and \Dthree{} $=$ P1(\cell{NO-RECEIPT}) $-$ P1(\cell{FORGED}), each predicted positive.
-A test rejects only if the \wtthProtocolLevel\% interval of a shift-level cluster bootstrap excludes zero.
-If H1 is not rejected, ``no meaningful stand-down'' needs an upper bound below \wtthProtocolMargin{} points; otherwise the result is inconclusive.
-Detectable effects at the frozen level are in Appendix~\ref{app:predictions}.
 
 % PREREG sections 14, 15, 21; D-001, D-002, D-005, D-007, D-009, D-011; configs/*.
 \paragraph{Execution.}\label{sec:execution}
