@@ -18,7 +18,10 @@ def _settings_and_db(args: argparse.Namespace) -> tuple[Any, Any]:
     from wtth.config import load_settings
     from wtth.judge.db import judge_db_path, open_judge_db
 
-    settings = load_settings()
+    ov: dict[str, Any] = {}
+    if args.runs_dir:
+        ov["paths.runs_dir"] = str(Path(args.runs_dir).resolve())
+    settings = load_settings(Path(args.config) if args.config else None, ov)
     if not judge_db_path(settings).exists():
         raise SystemExit("judge database not found: run `python -I -m wtth.judge extract` first")
     return settings, open_judge_db(settings)
@@ -36,29 +39,32 @@ def _dump(obj: Any) -> None:
 
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(prog="python -I -m wtth.annotate")
+    common = argparse.ArgumentParser(add_help=False)
+    common.add_argument("--config", help="path to experiment.yaml")
+    common.add_argument("--runs-dir", help="runs directory (default: <repo>/runs)")
     sub = ap.add_subparsers(dest="cmd", required=True)
-    p = sub.add_parser("queues", help="build annotation queues")
+    p = sub.add_parser("queues", parents=[common], help="build annotation queues")
     p.add_argument("--stage", type=int, choices=(1, 2), required=True)
     p.add_argument("--kappa", type=float, default=None, help="override the model-model kappa on escalation")
-    p = sub.add_parser("export", help="write masked annotator batches")
+    p = sub.add_parser("export", parents=[common], help="write masked annotator batches")
     p.add_argument("--batch-size", type=int, default=50)
     p.add_argument("--out", type=Path, default=None, help="default: runs/annotate/export")
     p.add_argument("--redo-unlabeled", action="store_true", help="include exported items that still have no label")
-    p = sub.add_parser("import-labels", help="import Claude label files")
+    p = sub.add_parser("import-labels", parents=[common], help="import Claude label files")
     p.add_argument("files", nargs="+", type=Path)
     p.add_argument("--annotator", required=True)
-    p = sub.add_parser("blind-export", help="write the author-blind sample")
+    p = sub.add_parser("blind-export", parents=[common], help="write the author-blind sample")
     p.add_argument("--out", type=Path, default=DOWNLOADS)
     p.add_argument("-n", type=int, default=100)
-    p = sub.add_parser("blind-import")
+    p = sub.add_parser("blind-import", parents=[common])
     p.add_argument("file", type=Path)
-    sub.add_parser("blind-decline")
-    p = sub.add_parser("report", help="write the author review report")
+    sub.add_parser("blind-decline", parents=[common])
+    p = sub.add_parser("report", parents=[common], help="write the author review report")
     p.add_argument("--out", type=Path, default=DOWNLOADS)
     p.add_argument("--include-reviewed", action="store_true")
-    p = sub.add_parser("import-review", help="import the DECISION lines of a review report")
+    p = sub.add_parser("import-review", parents=[common], help="import the DECISION lines of a review report")
     p.add_argument("file", type=Path)
-    sub.add_parser("status", help="queue, review and gate progress; model-model agreement")
+    sub.add_parser("status", parents=[common], help="queue, review and gate progress; model-model agreement")
     args = ap.parse_args(argv)
 
     from wtth.annotate.masking import PrivateLeak

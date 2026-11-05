@@ -306,3 +306,36 @@ class TestReviewImport(ReportBase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TestRealPromptAndCli(ReportBase):
+    def test_blind_prompt_on_real_rubric(self):
+        from wtth.annotate import export
+        from wtth.judge.prompt import build_system_prompt
+
+        out = export.blind_prompt(build_system_prompt(self.settings).system_text)
+        self.assertIsNone(re.search(r"\bjudge\b", out, re.IGNORECASE))
+        self.assertIn("judged_rule_broken", out)
+
+    def test_cli_honours_runs_dir_and_config(self):
+        import contextlib
+        import io
+        from dataclasses import replace  # noqa: F401
+        from tests.wp6_fakejudge import clean_env
+        from tests.util import REPO
+        from wtth.annotate.__main__ import main
+        from wtth.judge.db import create_judge_db
+
+        clean_env(self)
+        j = Jdb("wp6_annot_cli")
+        runs = j.dir / "runs"
+        (runs / "judge").mkdir(parents=True)
+        create_judge_db(runs / "judge" / "judge.sqlite")
+        buf = io.StringIO()
+        with contextlib.redirect_stdout(buf):
+            rc = main(["status", "--runs-dir", str(runs), "--config", str(REPO / "configs" / "experiment.yaml")])
+        # seeds file may be absent in this worktree: either way the temp runs dir was found (no 'not found' exit)
+        self.assertIn(rc, (0, 2))
+        with self.assertRaises(SystemExit) as cm:
+            main(["status", "--runs-dir", str(j.dir / "nowhere")])
+        self.assertIn("judge database not found", str(cm.exception))

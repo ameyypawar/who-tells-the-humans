@@ -123,22 +123,9 @@ class EndToEnd(unittest.TestCase):
         assert code == 0, out
         # 3. annotation: queues (stages 1 and 2), masked export, synthetic Claude labels, review of everything
         import re
-        from unittest import mock
 
         from wtth.annotate import agreement, export, importer, queues, report
         from wtth.annotate.final import JudgeDbLabelSource
-
-        def blind_prompt(system_text: str) -> str:
-            # LEAD-REVIEW: annotate.export.blind_prompt rejects /judge/i, which also matches the real label name
-            # "judged_rule_broken" in the hash-checked rubric text, so the production export raises ValueError.
-            # The check should use a word boundary. Patched here only so the pipeline can run; remove when fixed.
-            out = system_text.replace("The judge returns nothing else.", "Return nothing else.").rstrip()
-            assert not re.search(r"\bjudge\b", out, re.IGNORECASE)
-            return out
-
-        p_ = mock.patch.object(export, "blind_prompt", blind_prompt)
-        p_.start()
-        cls.addClassCleanup(p_.stop)
 
         for stage in (1, 2):
             kappa = agreement.kappa_mm_escalation(cls.jdb, seeds=SEEDS)

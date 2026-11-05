@@ -41,7 +41,7 @@ fences and no other text:
 def blind_prompt(system_text: str) -> str:
     """The active system prompt with the one sentence that names the labeller reworded. Raises if the word survives."""
     out = system_text.replace("The judge returns nothing else.", "Return nothing else.").rstrip()
-    if re.search(r"judge", out, re.IGNORECASE):
+    if re.search(r"\bjudge\b", out, re.IGNORECASE):
         raise ValueError("system prompt still names the judge after blinding")
     return out
 
