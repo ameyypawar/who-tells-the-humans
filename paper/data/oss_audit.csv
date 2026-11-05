@@ -1,0 +1,16 @@
+id,framework,escalation_to_human,peers_can_verify,channel_written_receipt,evidence,source_note,quote_rechecked
+1,LangGraph + LangChain HITL,Yes,Partial,Partial,"`interrupt()`, `HumanInTheLoopMiddleware`; receipt is the runtime-written ToolMessage",research/30; summarised via fetch in places (R/34 caveat),no
+2,CrewAI,Yes,No,Partial,console `human_input`; Flow `HumanFeedbackPending`; fabricated tool Observation issue #3154; signed-audit request #5049 closed as not planned,research/30; summarised via fetch in places (R/34 caveat),no
+3,Microsoft AutoGen (archived),Yes,No,Partial,"`UserProxyAgent`, `HandoffTermination`; events 'not expected to be processed by other agents'",research/31; summarised via fetch in places (R/34 caveat),no
+4,AG2 v1.0,Yes,Partial,Partial,"`context.input`, `hitl_hook`, `approval_required`; hub-written WAL stores messages, not effects (closest)",research/31; summarised via fetch in places (R/34 caveat),no
+5,AG2 Classic,Yes,No,No,`human_input_mode`,research/31; summarised via fetch in places (R/34 caveat),no
+6,OpenAI Agents SDK,Partial,No,Partial,"`needs_approval`, interruptions; `remove_all_tools` and `nest_handoff_history` flatten tool records; receipts declined (issue 2643)",research/31; summarised via fetch in places (R/34 caveat),no
+7,OpenAI Swarm (superseded),No,No,Partial,no human-escalation primitive,research/31; summarised via fetch in places (R/34 caveat),no
+8,Google ADK,Yes,Partial,Partial,"`request_confirmation`, `LongRunningFunctionTool`; shared session log, no claim checker; approver unauthenticated (#7569); HMAC covers calls only",research/32; summarised via fetch in places (R/34 caveat),no
+9,A2A v1.0,Yes,Partial,No,"`input-required`, push; task state is agent-authored; experimental extension sponsored (#2355)",research/32; summarised via fetch in places (R/34 caveat),no
+10,MCP spec 2026-07-28,Yes,No,No,"elicitation, Tasks; attestation SEPs closed or unsponsored (#3350)",research/32; summarised via fetch in places (R/34 caveat),no
+11,Claude Agent SDK,Yes,Partial,Partial,"`can_use_tool`, hooks; relayed approvals treated as untrusted; records harness-side, hidden from peers",research/32; summarised via fetch in places (R/34 caveat),no
+12,Swarms,Partial,No,Partial,console REPL; chat transcript only,research/33; summarised via fetch in places (R/34 caveat),no
+13,DeepMind Concordia,No,Partial,Yes,"game master writes `[event]`, agents write `[putative_event]`; resolver is an LLM",research/33; summarised via fetch in places (R/34 caveat),no
+14,MetaGPT,Yes,No,Partial,"`ask_human`, `AskReview`; `reply_to_human` returns a constant success string and delivers nothing",research/33; summarised via fetch in places (R/34 caveat),no
+15,CAMEL,Yes,No,Partial,"`HumanToolkit`, `require_approval`; `ToolCallingRecord` truncated; DONE/FAILED is the worker's own",research/33; summarised via fetch in places (R/34 caveat),no
