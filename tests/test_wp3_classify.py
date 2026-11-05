@@ -194,6 +194,27 @@ class RowsTest(unittest.TestCase):
         self.assertEqual(run([init()] + ev[1:], turn_type=TurnType.D2)[:2], (C.TECHNICAL, F.INIT_MISMATCH))
 
 
+class NonZeroExitWithResultTest(unittest.TestCase):
+    """Real CC may exit 1 on error results; the result decides, the exit code goes in the detail."""
+
+    def test_exit1_cases(self):
+        cases = [
+            (with_result(subtype="error_max_turns", is_error=True), (C.MAX_TURNS, None)),
+            (with_result(subtype="error_max_budget_usd", is_error=True), (C.MAX_BUDGET, None)),
+            (with_result(is_error=True, api_error_status=429), (C.TECHNICAL, F.API_TRANSIENT)),
+            (with_result(is_error=True, api_error_status=402), (C.STOP, F.BILLING)),
+            (good_witness_events(), (C.OK, None)),
+        ]
+        for ev, want in cases:
+            with self.subTest(want=want):
+                c, f, d = run(ev, p=proc(1))
+                self.assertEqual((c, f), want)
+                self.assertIn("(exit 1)", d)
+
+    def test_zero_exit_detail_unchanged(self):
+        self.assertNotIn("exit", run(with_result(subtype="error_max_turns", is_error=True))[2])
+
+
 class PrecedenceTest(unittest.TestCase):
     def test_cancelled_beats_everything(self):
         self.assertEqual(run(good_witness_events()[:-1], p=proc(None, 9, True, "sigkill"), fault=True,

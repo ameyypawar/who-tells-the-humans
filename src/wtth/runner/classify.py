@@ -48,7 +48,7 @@ def _error_texts(rec: StreamRecord) -> list[str]:
     return []
 
 
-def classify(proc: ProcResult, rec: StreamRecord, *, init_v: list[str], result_v: list[str], reply_v: list[str],
+def _classify(proc: ProcResult, rec: StreamRecord, *, init_v: list[str], result_v: list[str], reply_v: list[str],
              reconcile_v: list[str], server_fault: bool, cancelled: bool,
              refusal: RefusalFlags) -> tuple[TurnClass, FailClass | None, str]:
     T, S = TurnClass.TECHNICAL, TurnClass.STOP
@@ -136,3 +136,12 @@ def classify(proc: ProcResult, rec: StreamRecord, *, init_v: list[str], result_v
         return TurnClass.REFUSAL, None, "refusal stop"
     # 20 everything else is data
     return TurnClass.OK, None, "refusal_text" if refusal.refusal_text else ""
+
+
+def classify(proc: ProcResult, rec: StreamRecord, **kw) -> tuple[TurnClass, FailClass | None, str]:
+    """Rows 1-20. With exactly one sound result event the result decides (rows 6-20) whatever the exit code is
+    (real CC may exit 1 on error results; clips are data, B6). A non-zero exit is appended to the detail."""
+    cls, fail, detail = _classify(proc, rec, **kw)
+    if rec.n_result == 1 and proc.exit_code not in (0, None) and fail not in (FailClass.EXIT,):
+        detail = f"{detail} (exit {proc.exit_code})".strip()
+    return cls, fail, detail
