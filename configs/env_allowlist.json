@@ -20,6 +20,7 @@
     "CLAUDE_CODE_ENABLE_TELEMETRY": "1",
     "OTEL_LOGS_EXPORTER": "console",
     "OTEL_METRICS_EXPORTER": "none",
+    "OTEL_LOGS_EXPORT_INTERVAL": "600000",
     "OTEL_LOG_RAW_API_BODIES": "file:{bodies_dir}"
   },
   "dynamic": ["HOME", "TMPDIR", "CLAUDE_CONFIG_DIR", "ANTHROPIC_API_KEY"]

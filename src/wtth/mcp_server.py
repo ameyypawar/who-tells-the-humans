@@ -67,6 +67,34 @@ def _fail(environ: Mapping[str, str], msg: str) -> "None":
     sys.exit(2)
 
 
+def _guard_mode() -> str:
+    """mcp_env_guard from experiment.yaml ('refuse' default). Reads no environment variables."""
+    try:
+        from wtth.config import load_settings
+        return load_settings().mcp_env_guard
+    except Exception:  # noqa: BLE001 - unreadable config: stay strict
+        return "refuse"
+
+
+def scrub_secret_env(environ: "os._Environ[str] | dict[str, str]") -> list[str]:
+    """Delete credential-like names from `environ` in place; one stderr line (names only). Returns the names."""
+    bad = sorted(n for n in environ if SECRET_ENV_RE.search(n))
+    for n in bad:
+        del environ[n]
+    if bad:
+        sys.stderr.write("wtth.mcp_server: scrubbed credential-like env names: " + ",".join(bad) + "\n")
+        sys.stderr.flush()
+    return bad
+
+
+def guard_env(environ: "os._Environ[str] | dict[str, str]") -> None:
+    """Startup guard: refuse (exit 2) or scrub, per mcp_env_guard. Runs before anything else reads the env."""
+    if _guard_mode() == "scrub":
+        scrub_secret_env(environ)
+    else:
+        assert_no_secret_env(environ)
+
+
 def assert_no_secret_env(environ: Mapping[str, str]) -> None:
     """Exit 2 if any env var name looks like a credential (names only are reported)."""
     bad = sorted(n for n in environ if SECRET_ENV_RE.search(n))
@@ -218,7 +246,7 @@ def main() -> None:
     from wtth.db import Db, WriteFailed
     from wtth.textnorm import canon_json
 
-    assert_no_secret_env(os.environ)
+    guard_env(os.environ)
     ident, cfg = identity_from_env(os.environ, sys.argv[1:])
     db = Db(cfg.db_path)
 
@@ -234,5 +262,4 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    assert_no_secret_env(os.environ)
     main()

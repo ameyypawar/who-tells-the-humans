@@ -5,6 +5,7 @@
 
 fake: false              # true only in tests / --fake dry runs (skips the binary sha check)
 frozen_level: null       # TBD at G1 (PREREG section 22); a string 'L1'|'L2'|'L3' once frozen
+mcp_env_guard: refuse   # WP2-ADD: refuse | scrub. scrub = MCP server deletes credential-like env names itself (flip only if G0 proves needed)
 permutation_seed: 20261105
 max_attempts: 3          # B2: attempts per episode before episodes.status = 'failed'
 

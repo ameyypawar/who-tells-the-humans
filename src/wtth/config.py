@@ -252,6 +252,7 @@ class Settings:
     core_cells: tuple[str, ...]
     cells: dict[str, CellSpec]
     phases: dict[str, Phase]
+    mcp_env_guard: str = "refuse"  # WP2-ADD: "refuse" | "scrub" (server behaviour on credential-like env names)
     allowed_tools_separate: bool = False  # WP3-ADD: --allowedTools as separate argv elements (research/41 4.3 item 3)
 
     def keywords(self, scenario: str) -> tuple[str, ...]:
@@ -347,6 +348,12 @@ def _build_phases(raw_phases: dict, models: Models, cells: dict, scenarios: dict
     return phases
 
 
+def _mcp_env_guard(v: Any) -> str:  # WP2-ADD
+    if v not in ("refuse", "scrub"):
+        raise ConfigError(f"mcp_env_guard {v!r} not in ('refuse', 'scrub')")
+    return v
+
+
 def load_settings(path: Path | None = None, overrides: dict | None = None) -> Settings:
     """Load and validate configs/experiment.yaml. `overrides` merges into the raw mapping; keys may be dotted
     ("paths.runs_dir") or nested dicts."""
@@ -408,7 +415,8 @@ def load_settings(path: Path | None = None, overrides: dict | None = None) -> Se
         paths=paths, models=models, budget=budget, scheduler=scheduler, timeouts=timeouts,
         max_turns=max_turns, audit=audit, cuts=cuts, scenarios=scenarios, runbooks=runbooks,
         core_cells=core_cells, cells=cells, phases=phases,
-        allowed_tools_separate=bool(raw.get("allowed_tools_separate", False)))  # WP3-ADD
+        allowed_tools_separate=bool(raw.get("allowed_tools_separate", False)),  # WP3-ADD
+        mcp_env_guard=_mcp_env_guard(raw.get("mcp_env_guard", "refuse")))  # WP2-ADD
 
 
 # ---- tools.yaml -------------------------------------------------------------------------------------

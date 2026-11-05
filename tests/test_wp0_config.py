@@ -219,7 +219,7 @@ class SideFileTests(unittest.TestCase):
         self.assertEqual("false", base["ENABLE_TOOL_SEARCH"])
         self.assertEqual(15, len(base))
         self.assertEqual({"CLAUDE_CODE_ENABLE_TELEMETRY", "OTEL_LOGS_EXPORTER", "OTEL_METRICS_EXPORTER",
-                          "OTEL_LOG_RAW_API_BODIES"}, set(audit))
+                          "OTEL_LOG_RAW_API_BODIES", "OTEL_LOGS_EXPORT_INTERVAL"}, set(audit))
         dynamic = env_dynamic_names(CONFIGS / "env_allowlist.json")
         self.assertEqual({"HOME", "TMPDIR", "CLAUDE_CONFIG_DIR", "ANTHROPIC_API_KEY"}, set(dynamic))
         self.assertFalse(set(dynamic) & set(base))

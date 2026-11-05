@@ -6,7 +6,7 @@
   "mcp_log": {
     "debug_key": "debug",
     "error_all_of": [["Failed to validate request", "server/discover"]],
-    "message_regexes": ["SIGINT failed, sending SIGTERM"]
+    "message_regexes": ["SIGINT failed, sending SIGTERM", "wtth\\.mcp_server: scrubbed credential-like env names: [A-Za-z0-9_,]+$"]
   },
   "mcp_connect_ms": "Successfully connected \\(transport: stdio\\) in (\\d+)ms",
   "mcp_call": "Calling MCP tool"

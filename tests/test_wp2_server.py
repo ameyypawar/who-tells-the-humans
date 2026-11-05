@@ -13,7 +13,7 @@ from mcp import ClientSession, StdioServerParameters
 from mcp.client.stdio import stdio_client
 
 from tests.test_wp2_common import TOOLS_YAML, make_world, server_env
-from tests.util import DUMMY_KEY, PYTHON, tmp_dir
+from tests.util import DUMMY_KEY, PYTHON, REPO, tmp_dir
 
 REPLIES = {"submit_reviews": "Reviews recorded.", "post_to_board": "Posted to #ops-board.",
            "notify_ops": "Sent to ops."}
@@ -214,6 +214,45 @@ class StartupRefusal(unittest.TestCase):
             p = self.expect_exit2(self.env, {name: DUMMY_KEY})
             self.assertIn(name.encode(), p.stderr)
             self.assertEqual(len(list(self.faults.glob("*.jsonl"))), 1)
+
+    def run_scrub(self, extra):
+        code = "import wtth.mcp_server as m; m._guard_mode = lambda: 'scrub'; m.main()"
+        full = {"PATH": "/usr/bin:/bin", "HOME": str(self.runs), **self.env, **extra}
+        return subprocess.run([PYTHON, "-I", "-c", code, "--runs-root", str(self.runs)], env=full,
+                              stdin=subprocess.DEVNULL, capture_output=True, timeout=60)
+
+    def test_scrub_mode_deletes_names_and_continues(self):
+        extra = {"ANTHROPIC_API_KEY": DUMMY_KEY, "FOO_TOKEN": "tokvalue123"}
+        p = self.run_scrub(extra)
+        self.assertEqual(p.returncode, 0, p.stderr.decode()[-400:])
+        err = p.stderr.decode()
+        self.assertIn("wtth.mcp_server: scrubbed credential-like env names: ANTHROPIC_API_KEY,FOO_TOKEN\n", err)
+        self.assertNotIn(DUMMY_KEY, err)
+        self.assertNotIn("tokvalue123", err)
+        rows = self.db.read(lambda c: [dict(r) for r in c.execute("SELECT env_names_json FROM server_starts")])
+        self.assertEqual(len(rows), 1)
+        names = json.loads(rows[0]["env_names_json"])
+        self.assertNotIn("ANTHROPIC_API_KEY", names)
+        self.assertNotIn(DUMMY_KEY, rows[0]["env_names_json"])
+        self.assertNotIn("tokvalue123", rows[0]["env_names_json"])
+
+    def test_refuse_mode_is_default(self):
+        from wtth.config import load_settings
+        self.assertEqual(load_settings().mcp_env_guard, "refuse")
+
+    def test_scrub_line_matches_log_allowlist(self):
+        import re
+        allow = json.loads((REPO / "configs" / "log_allowlists.json").read_text())
+        pats = [re.compile(x) for x in allow["mcp_log"]["message_regexes"]]
+        line = "wtth.mcp_server: scrubbed credential-like env names: ANTHROPIC_API_KEY,FOO_TOKEN"
+        self.assertTrue(any(p.search(line) for p in pats))
+        self.assertFalse(any(p.search("wtth.mcp_server: scrubbed credential-like env names: a b=c") for p in pats))
+
+    def test_scrub_function_in_process(self):
+        from wtth.mcp_server import scrub_secret_env
+        env = {"A_KEY": "1", "B_SECRET": "2", "OK": "3", "ANTHROPIC_X": "4", "PASSWORD": "5"}
+        self.assertEqual(scrub_secret_env(env), ["ANTHROPIC_X", "A_KEY", "B_SECRET", "PASSWORD"])
+        self.assertEqual(env, {"OK": "3"})
 
     def test_schema_version_mismatch_in_db_exits_2(self):
         import sqlite3
