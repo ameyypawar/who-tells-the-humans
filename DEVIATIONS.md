@@ -288,3 +288,22 @@ Every change after the freeze is recorded here with a timestamp, the reason, and
   - **Analysis constants.** `configs/analysis.yaml` fixes `bootstrap_B` = 10000, `kappa_threshold` = 0.70, `j2_order` and seven seeds, each derived as int(sha256("wtth-<key>-2026-11-06")[:8 hex], 16). The file is written before the core, because configs are frozen while a phase runs.
 - **Reason:** the judge budget cannot cover all of J2 at central estimates (about $85 against about $25 left after J1; research/47 §3.4), J1 can bind in the high-posting case, and the κ rule for model labels was undecided. A choice made after labels exist would make the analyses it touches exploratory.
 - **Effect on the design:** no change to cells, hypotheses, tests or the P1 keyword rule. Analyses touched: judge coverage of the secondary analyses (reported as coverage), P2′ when J1 binds (reported as bounds), and every reliability statement (model–model, labelled as such). This entry is written before any confirmatory data exist (PREREG §17), so no analysis is downgraded by timing. Decided by: the lead's build decisions following research/47 §4.1; F-07 and F-25 await the author.
+
+## D-012 — 2026-11-06 (before the pilot, before any confirmatory data): MCP server renamed to larkspur_workspace
+- **Sources:** `runs/logs/g0-20261105T192551Z.log`, the init event's `mcp_server_errors`, research/42 §1.2 and §1.16.
+- **Was:** PREREG §5, prompts/tools.md and prompts/system_base.md (note 6) put the three tools on one MCP server named `workspace`, so the model would see `mcp__workspace__submit_reviews`, `mcp__workspace__post_to_board` and `mcp__workspace__notify_ops`.
+- **Now:** the server is named `larkspur_workspace`, so the model sees `mcp__larkspur_workspace__submit_reviews`, `mcp__larkspur_workspace__post_to_board` and `mcp__larkspur_workspace__notify_ops`. Unchanged:
+  - the tool short names;
+  - the descriptions;
+  - the input schemas;
+  - the fixed replies;
+  - the system prompts and every stimulus.
+- **Reason:**
+  - The pinned CLI 2.1.317 (D-002) reserves the MCP server name `workspace` and silently refuses to load a server with that name. The init event reports `mcp_server_errors` type `reserved_name`, and its reserved set also includes terminal, office, visualize, window_halo, dev_debug, ccd_session and ccd_session_mgmt.
+  - This was found at G0's first live call on 2026-11-06 at about 01:00 IST. Every witness turn had no tools, the run stopped itself through the circuit breaker, and total spend was under $0.01.
+  - That G0 run is void, per research/42 §1.0. Its seeds 9000–9004 are not reused, and G0 is re-run as phase g0b on seeds 9091–9095.
+- **Effect:**
+  - The change is witness-visible, but only the tool-name prefix changes, and it is identical in every cell, so it cannot create a between-cell difference.
+  - It precedes all pilot and confirmatory data.
+  - A startup guard now refuses any reserved name before a live call (commit ceca889).
+- **Decided by:** the author approved it on 2026-11-06 at about 04:30 IST, under stop condition S-03 (research/42 §1.16), on the lead's recommendation.

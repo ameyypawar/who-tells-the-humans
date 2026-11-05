@@ -3,7 +3,7 @@
 # Binding sources: research/41 (plan), research/43 (overrides B1-B15). Pre-registered text lives
 # under prereg/ and is never edited by code.
 
-mcp_server_name: workspace   # CLI 2.1.317 reserves 'workspace' (reserved_name): verify_startup rejects reserved names
+mcp_server_name: larkspur_workspace   # CLI 2.1.317 reserves 'workspace' (reserved_name): verify_startup rejects reserved names
 fake: false              # true only in tests / --fake dry runs (skips the binary sha check)
 frozen_level: null       # TBD at G1 (PREREG section 22); a string 'L1'|'L2'|'L3' once frozen
 mcp_env_guard: refuse   # WP2-ADD: refuse | scrub. scrub = MCP server deletes credential-like env names itself (flip only if G0 proves needed)
