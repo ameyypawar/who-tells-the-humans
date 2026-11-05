@@ -12,10 +12,9 @@ for a in "$@"; do
     --final) CHECK=--final ;;
   esac
 done
-for t in make_placeholders design_macros extract_stimuli render_boxes deviations_table audit_table build_bib table2_narrow; do
+for t in make_placeholders design_macros extract_stimuli render_boxes deviations_table audit_table cells_table build_bib table2_narrow; do
   [ -f tools/$t.py ] && $PY tools/$t.py
 done
 mkdir -p build
 tectonic -X compile main.tex --keep-logs --outdir build $OFFLINE
-[ "$RUN_CHECK" = 1 ] && [ -f tools/check_paper.py ] && $PY tools/check_paper.py $CHECK
-exit 0
+if [ "$RUN_CHECK" = 1 ] && [ -f tools/check_paper.py ]; then $PY tools/check_paper.py $CHECK; fi

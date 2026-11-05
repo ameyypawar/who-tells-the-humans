@@ -6,7 +6,7 @@ from _common import PAPER, write_generated
 
 OWN = ("wtthDesign", "wtthStim", "wtthAudit")
 SRC = [PAPER / "main.tex", PAPER / "cited.tex"] + sorted((PAPER / "sections").rglob("*.tex"))
-DEFINING = [PAPER / n for n in ("preamble.tex", "loaders.tex", "main.tex", "cited.tex")]
+DEFINING = [PAPER / n for n in ("preamble.tex", "loaders.tex", "branch.tex", "main.tex", "cited.tex")]
 COMMENT = re.compile(r"(?<!\\)%.*")
 USE = re.compile(r"\\(wtth[A-Za-z]+)")
 DEF = re.compile(r"\\(?:newcommand|renewcommand|providecommand|def|csdef)\*?\s*\{?\\(wtth[A-Za-z]+)")

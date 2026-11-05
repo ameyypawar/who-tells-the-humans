@@ -58,3 +58,6 @@
     \put(0.5\paperwidth,-0.5\paperheight){\makebox(0,0){\rotatebox{52}{\scalebox{1}{%
       \color{red!35}\fontsize{26}{28}\selectfont\bfseries PROVISIONAL / PLACEHOLDER --- NOT FOR SUBMISSION}}}}%
   \fi}
+
+% ---- conditional on a yes/no flag macro: \wtthIfYes{\wtthHaiku...Excl}{text printed only if the flag reads yes} ----
+\newcommand{\wtthIfYes}[2]{\ifdef{#1}{\ifdefstring{#1}{yes}{#2}{}}{}}

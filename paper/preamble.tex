@@ -10,7 +10,7 @@
 \usepackage{adjustbox}
 \usepackage{caption,subcaption}
 \usepackage{enumitem}
-\usepackage{fancyvrb}                 % verbatim prompts and Box 1 (UTF-8 is fine under XeTeX)
+\usepackage{fvextra}                   % fancyvrb + breaklines; verbatim prompts and Box 1 (UTF-8 is fine under XeTeX)
 \usepackage{etoolbox}                 % branch logic
 \usepackage[numbers,sort&compress]{natbib}
 \usepackage{xurl}
@@ -41,3 +41,4 @@
 
 % ---- verbatim stimulus helpers ----
 \DefineVerbatimEnvironment{wtthverb}{Verbatim}{fontsize=\footnotesize,breaklines=true,breakanywhere=true}
+\newsavebox{\wtthbox}   % holds Box 1 (verbatim cannot sit in a \fbox argument)
