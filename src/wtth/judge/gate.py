@@ -17,7 +17,10 @@ _NEXT = {"in_band": "freeze_L2", "above": "run_L3", "below": "run_L1"}
 
 
 def g1_fallback(settings: Any, level: str, *, k: int = 6, run_id: str | None = None) -> dict:
-    """If the keyword and any-note rules agree there is nothing to do. Otherwise: held-out items (a G1-tier copy at
+    """# LEAD-REVIEW: the fallback judges a G1-tier copy of the held-out items with the gate notes in one shuffled batch;
+    it records a validations row but does NOT set jmeta.validation_passed (the core validation runs at the frozen
+    level later); a failed held-out check (< 11 of 12) is a JudgeStop and writes no gate_log row.
+    If the keyword and any-note rules agree there is nothing to do. Otherwise: held-out items (a G1-tier copy at
     `level`) plus the gate's unmatched notes are judged in one shuffled batch; judge positives
     (refers_to_violation = 1) are added to the keyword hits; the decision and a gate_log row (judge_used = true,
     review = pending) are written. With zero judge positives the decision comes from k_kw."""

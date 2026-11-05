@@ -301,6 +301,8 @@ def _fractions(jdb: Any, subtiers: Sequence[str], version: str) -> dict[str, dic
 
 def run_tier(settings: Any, tier: str, *, subtiers: Sequence[str] | None = None, partial: bool = False,
              k: int = 8, run_id: str | None = None) -> list[BatchResult]:
+    # LEAD-REVIEW: with --partial a launch-guard stop returns normally (exit 0, fractions logged as a budget_binds
+    # event); without --partial it is BudgetBinds (exit 4).
     if tier not in ("J1", "J2"):
         raise ValueError("tier must be J1 or J2")
     jdb = open_judge_db(settings, create=True)

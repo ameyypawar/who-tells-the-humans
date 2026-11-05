@@ -9,12 +9,13 @@ import sqlite3
 import time
 import uuid
 from collections import defaultdict
+from pathlib import Path
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass, field
 from typing import Any
 
 from wtth.judge import prompt as prompt_mod
-from wtth.judge.db import active_version, ensure_meta, get_meta, log_event
+from wtth.judge.db import active_version, ensure_meta, get_meta, log_event, set_meta
 from wtth.judge.types import ExtractionError, Item, ItemType
 from wtth.textnorm import sha256_text
 from wtth.types import PostRow
@@ -299,6 +300,9 @@ def extract(settings: Any, main_db: Any, jdb: Any, aset: Any, *, seeds: Any, sna
     """Extract every item of the analysis set and of the exploratory episodes. Idempotent: existing items keep
     their ids and order keys."""
     ensure_meta(jdb)
+    yaml_path = Path(settings.repo_root) / "configs" / "analysis.yaml"
+    if yaml_path.is_file():
+        set_meta(jdb, "analysis_yaml_sha256", hashlib.sha256(yaml_path.read_bytes()).hexdigest())
     cands: list[_Cand] = []
     n_empty = 0
     for in_set, refs in ((True, aset.episodes), (False, aset.above)):
@@ -354,7 +358,9 @@ def extract_g1(settings: Any, main_db: Any, jdb: Any, level: str, *, seeds: Any)
 
 
 def ensure_held_out(settings: Any, jdb: Any, level: str, *, gate: bool = False) -> list[Item]:
-    """The 12 held-out items (tier HO). With gate=True: separate G1-tier copies at `level` (pilot fallback)."""
+    """The 12 held-out items (tier HO). With gate=True: separate G1-tier copies at `level` (pilot fallback).
+    # LEAD-REVIEW: gate copies use source_id 'G1:H<n>@<level>' so a pilot-level board never fixes the context of the
+    # core's HO items (plan 2.1 lists plain 'H1'..'H12' for the core items; those are unchanged)."""
     ensure_meta(jdb)
     board = prompt_mod.held_out_board(settings, level)
     specs = prompt_mod.held_out_specs(settings)

@@ -19,7 +19,7 @@ from wtth.orchestrator.context import Breaker, KGate, LaunchGate, SlotPool
 from wtth.runner import classify as classify_mod
 from wtth.runner import invocation, proc, validate
 from wtth.runner.stream import parse_stream
-from wtth.runner.turn import _launch_gate, answer_text
+from wtth.runner.turn import _launch_gate, answer_text  # LEAD-REVIEW: _launch_gate is private to runner.turn; reused so the launch gap honours cancel exactly as witness turns do
 from wtth.textnorm import sha256_text
 from wtth.types import (FailClass, ProcResult, RenderedPrompt, TurnClass, TurnRequest, TurnType)
 
@@ -69,7 +69,7 @@ def make_context(settings: Any, *, run_id: str, prompt_version: str, k: int, com
     budget = JudgeBudget(settings, main_db, jdb)
     model = settings.models.judge
     k = max(1, min(int(k), settings.scheduler.slots, MAX_K))
-    launch = LaunchGate(float(settings.scheduler.launch_gap_ms))  # 150 ms in configs/experiment.yaml
+    launch = LaunchGate(float(settings.scheduler.launch_gap_ms))  # LEAD-REVIEW: plan says 150 ms; the config value is 150 and tests set 0
     breaker = Breaker(settings)
     breaker.hold = launch.hold_for
     slots = SlotPool(settings.paths.slots_root, settings.scheduler.slots)
