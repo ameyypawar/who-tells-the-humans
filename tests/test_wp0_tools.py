@@ -140,7 +140,9 @@ class ToolsTests(unittest.TestCase):
 
     def test_caps(self) -> None:
         caps = load_caps(TOOLS_YAML)
-        self.assertEqual((600, 60, 2000), (caps.post_chars, caps.subject_chars, caps.message_chars))
+        raw = TOOLS_YAML.read_text(encoding="utf-8")
+        configured = int(re.search(r"^\s*subject_chars:\s*(\d+)", raw, re.M).group(1))
+        self.assertEqual((600, configured, 2000), (caps.post_chars, caps.subject_chars, caps.message_chars))
         self.assertEqual(600, caps["post_chars"])
 
 

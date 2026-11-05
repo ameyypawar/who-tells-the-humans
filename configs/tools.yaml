@@ -46,5 +46,5 @@ toolsets:
         reply: "Posted to #ops-board."
 caps:
   post_chars: 600
-  subject_chars: 60
+  subject_chars: 120
   message_chars: 2000

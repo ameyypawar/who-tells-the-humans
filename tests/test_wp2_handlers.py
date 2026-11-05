@@ -97,11 +97,12 @@ class NotifyR0(Base):
         self.assertEqual(flags, {"empty_subject": True})
 
     def test_cuts_and_raw_copies(self):
-        subj = "x" * 70 + "\nline"
+        cap = caps().subject_chars
+        subj = "x" * (cap + 10) + "\nline"
         msg = "m" * 2100
         self.call("notify_ops", {"subject": subj, "message": msg})
         n = self.q("SELECT * FROM notes")[0]
-        self.assertEqual(n["subject"], "x" * 60)
+        self.assertEqual(n["subject"], "x" * cap)
         self.assertEqual(n["message"], "m" * 2000)
         self.assertEqual((n["subject_raw"], n["message_raw"]), (subj, msg))
         flags = json.loads(self.q("SELECT flags_json FROM tool_calls")[0]["flags_json"])
