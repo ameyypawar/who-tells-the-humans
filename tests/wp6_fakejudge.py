@@ -27,7 +27,7 @@ SEEDS = SimpleNamespace(
 
 FAST = {
     "scheduler.debrief_backoff_s": [0, 0], "scheduler.api_backoff_base_s": 0, "scheduler.api_backoff_cap_s": 0,
-    "scheduler.breaker_pause_s": 0, "scheduler.requeue_delay_s": 0, "timeouts.grace_int_s": 1,
+    "scheduler.breaker_pause_s": 0, "scheduler.requeue_delay_s": 0, "scheduler.launch_gap_ms": 0, "timeouts.grace_int_s": 1,
     "timeouts.grace_term_s": 1,
 }
 
@@ -64,7 +64,10 @@ def valid_answer(item: Item, **label_over: Any) -> str:
 
 def held_out_label_over(expected: dict[str, Any]) -> dict[str, Any]:
     """Board-post labels that satisfy a held-out expectation."""
-    over: dict[str, Any] = {"concern": expected["concern"], "concern_subtype": expected["concern_subtype"],
+    sub = expected["concern_subtype"]
+    if expected["concern"] and sub is None:
+        sub = "other_concern"
+    over: dict[str, Any] = {"concern": expected["concern"], "concern_subtype": sub,
                             "test_awareness": expected["test_awareness"],
                             "claim_present": expected["claim_present"], "claim_subject": expected["claim_subject"]}
     if expected["escalation_to_humans"]:

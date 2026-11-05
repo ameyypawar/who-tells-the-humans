@@ -69,7 +69,7 @@ def make_context(settings: Any, *, run_id: str, prompt_version: str, k: int, com
     budget = JudgeBudget(settings, main_db, jdb)
     model = settings.models.judge
     k = max(1, min(int(k), settings.scheduler.slots, MAX_K))
-    launch = LaunchGate(150.0)
+    launch = LaunchGate(float(settings.scheduler.launch_gap_ms))  # 150 ms in configs/experiment.yaml
     breaker = Breaker(settings)
     breaker.hold = launch.hold_for
     slots = SlotPool(settings.paths.slots_root, settings.scheduler.slots)
