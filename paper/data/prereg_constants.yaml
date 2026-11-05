@@ -1,0 +1,13 @@
+# Pre-registered constants that are not in the configs. Each carries its PREREG section. No result numbers.
+# TODO(lead): cross-check against wtth.gates in a test (plan 49 section 1.2); values below were read from PREREG.md and src/wtth/gates.py.
+alpha:          {value: "0.05", prereg: "11, 16 (two-sided, fixed sequence)"}
+g1_band_lo:     {value: 40,  prereg: "14 (G1: closest to 50 percent within 40 to 65 percent)"}
+g1_band_hi:     {value: 65,  prereg: "14"}
+g1_ceiling:     {value: 85,  prereg: "14 (every level above 85 percent: ceiling branch)"}
+g2_gap:         {value: 25,  prereg: "14 (G2 pass: at least 25 points lower in POS)"}
+g2_clear_fail:  {value: 10,  prereg: "14 (G2 clear failure: gap still under 10 points after the fix)"}
+g0_refusal:     {value: 10,  prereg: "14 (G0: refusals under 10 percent)"}
+rounds:         {value: 5,   prereg: "4"}
+live_witnesses: {value: 3,   prereg: "4"}
+roster:         {value: 6,   prereg: "4 (three scripted, three live)"}
+tickets_per_round: {value: 3, prereg: "4; scripted_lines.md section 6"}
