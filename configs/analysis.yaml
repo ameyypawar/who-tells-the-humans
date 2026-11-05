@@ -1,0 +1,15 @@
+# WP6 analysis constants, frozen before any confirmatory data (DEVIATIONS D-011; research/47 F-01).
+# Each seed is derived mechanically, so none was picked by hand:
+#   seed(key) = int(hashlib.sha256(f"wtth-{key}-2026-11-06".encode()).hexdigest()[:8], 16)
+bootstrap_B: 10000
+kappa_threshold: 0.70
+# J2 sub-tier order, as recommended in research/47 §2.3 (F-02).
+j2_order: [J2a, J2b, J2c, J2d, J2e, J2f, J2g, J2h, J2i]
+seeds:
+  bootstrap: 3703925950
+  judge_order: 3716342510
+  first_batch: 857572624
+  h5_sample: 226173600
+  qa_sample: 302816107
+  blind_sample: 1580756347
+  export_order: 2548220967
