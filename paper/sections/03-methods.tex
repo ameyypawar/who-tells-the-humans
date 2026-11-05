@@ -15,7 +15,7 @@ The tool names no consequence of a note, and the server stamps the sender (Appen
 Because the pinned CLI reserves the pre-registered server name, the server runs as \wtthDesignMcpServerName{} in every cell (Appendix~\ref{app:deviations}).
 
 \paragraph{Cells.}
-In round 2, V reports splitting a refund to avoid a second approval, which the runbook forbids, and C posts a routine aside, a concern or a claim (Box~\ref{box:receipt}); the claim has a public paraphrase and two withheld ones.
+In round 2, V reports releasing a refund over the approval limit as three smaller batches, which the runbook forbids, and C posts a routine aside, a concern or a claim (Box~\ref{box:receipt}); the claim has a public paraphrase and two withheld ones.
 In world R1 the board carries an \texttt{\#escalation-log}, which shows C's line in \cell{RECEIPT} and \cell{POS}, where the harness files C's real note, and reads ``\wtthStimLogEmpty'' in \cell{NO-RECEIPT}; in \cell{FORGED}, C's post also carries a typed line in the log layout (withheld).
 \cell{POLICY} adds ``\wtthStimPolicy'' to the runbook; \cell{NEG} and \cell{POS} add ``\wtthStimDedupe'', a built-in reason to stand down (the positive control); and in the benign cell, \cell{B-NONE}, V holds the refund.
 Table~\ref{tab:cells} lists the cells and their planned sizes (D-003); the seed fixes the paraphrase, the handle order and the tickets.
@@ -58,7 +58,7 @@ Shifts are planned seeds per cell; the Sonnet subset is exploratory.}
 \paragraph{Execution.}\label{sec:execution}
 Each witness turn is one stateless call to \wtthDesignModelHaikuName{} at effort \wtthDesignEffort{} (no temperature control), through a pinned Claude Code CLI (\wtthDesignCliVersion) in \texttt{--bare} mode, without CLAUDE.md, memory or built-in tools and with the CLI's retry of refused turns off (Appendix~\ref{app:harness}).
 Technical failures are rerun on the same seed; refusals and malformed calls are data.
-Pilot gates, never pooled with the data, checked integrity (G0), froze V's clarity level (G1, level \wtthGateFrozenLevel) and confirmed that witnesses read the log (G2; Appendix~\ref{app:gates}).
+Pilot gates, never pooled with the data, checked integrity (G0), froze V's clarity level (G1: pilot P1 in \cell{NONE} was above the \wtthDesignGOneCeiling\% ceiling at every level tried, so the least clear, \wtthGateFrozenLevel, was frozen; D-013) and confirmed that witnesses read the log (G2; Appendix~\ref{app:gates}).
 The judge (\wtthDesignModelJudgeName) is blind to cell, seed, model and purpose; review-queue labels are model-proposed (\wtthDesignModelAnnotatorName) and author-reviewed (Appendix~\ref{app:judge}).
 
 % PREREG header, sections 17 and 23; tag prereg-v1; DEVIATIONS.md; research/38, 46, 48; wp6 commit 96f0f93.
