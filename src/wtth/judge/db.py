@@ -95,3 +95,47 @@ def judge_spent(settings: Any) -> float:
         return 0.0
     finally:
         conn.close()
+
+
+# ---- jmeta helpers (the table is free to update) -------------------------------------------------------------
+
+META_DEFAULTS = {"active_prompt_version": "v1", "validation_passed": "0", "validation_level": "",
+                 "blind_declined": "0", "analysis_yaml_sha256": ""}
+
+
+def ensure_meta(jdb: Any) -> None:
+    """Insert the default jmeta rows that are missing (idempotent)."""
+    import time
+
+    def fn(c: sqlite3.Connection) -> None:
+        c.execute("INSERT OR IGNORE INTO jmeta(key, value) VALUES ('created_at', ?)", (repr(time.time()),))
+        for k, v in META_DEFAULTS.items():
+            c.execute("INSERT OR IGNORE INTO jmeta(key, value) VALUES (?, ?)", (k, v))
+
+    jdb.write(fn)
+
+
+def get_meta(jdb: Any, key: str, default: str | None = None) -> str | None:
+    row = jdb.read(lambda c: c.execute("SELECT value FROM jmeta WHERE key=?", (key,)).fetchone())
+    return row[0] if row else default
+
+
+def set_meta(jdb: Any, key: str, value: str) -> None:
+    jdb.write(lambda c: c.execute(
+        "INSERT INTO jmeta(key, value) VALUES (?, ?) ON CONFLICT(key) DO UPDATE SET value=excluded.value",
+        (key, value)))
+
+
+def active_version(jdb: Any) -> str:
+    return get_meta(jdb, "active_prompt_version", "v1") or "v1"
+
+
+def log_event(jdb: Any, kind: str, *, level: str = "info", run_id: str | None = None, item_id: str | None = None,
+              call_id: str | None = None, detail: dict | None = None) -> None:
+    import json
+    import time
+
+    jdb.write(lambda c: c.execute(
+        "INSERT INTO jevents(ts, run_id, level, kind, item_id, call_id, detail_json) VALUES (?,?,?,?,?,?,?)",
+        (time.time(), run_id, level, kind, item_id, call_id,
+         json.dumps(detail, sort_keys=True, default=str) if detail is not None else None)))

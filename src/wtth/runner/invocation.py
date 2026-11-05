@@ -14,6 +14,7 @@ from wtth.types import Identity, SlotDirs, Toolset, TurnRequest, TurnType
 
 # WP4-ADD: the server name comes from settings.mcp_server_name (CLI 2.1.317 reserves "workspace")
 _DEBRIEF = (TurnType.D1, TurnType.D2)
+_NO_TOOLS = (TurnType.D1, TurnType.D2, TurnType.JUDGE)  # WP6: a judge turn gets the debrief argv form
 
 
 def _budget_str(v: float) -> str:
@@ -23,7 +24,7 @@ def _budget_str(v: float) -> str:
 
 def build_argv(settings: Any, req: TurnRequest, mcp_config_json: str | None) -> list[str]:
     """The measured rehearsal order, research/41 section 2.5. Every value is its own element; "" is an element."""
-    debrief = req.turn_type in _DEBRIEF
+    debrief = req.turn_type in _NO_TOOLS
     argv: list[str] = [
         str(settings.paths.binary),
         "-p", req.prompt.text,
