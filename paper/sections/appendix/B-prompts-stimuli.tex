@@ -1,16 +1,46 @@
-% appendix B (plan 49 section 2.5). Verbatim prompts, generated and hash-checked by tools/extract_stimuli.py.
-\section{Prompts and stimuli}
-\wtthStub{B.1 to B.6 prose; the generated blocks follow}
+% appendix B (plan 49 section 2.5). The verbatim blocks are generated and hash-checked by tools/extract_stimuli.py from
+% prereg/prompts/*.md at frozen-v1 (fallback main). Withheld text never appears here, only its SHA-256 (B.6).
+\section{Prompts and stimuli}\label{app:prompts}
+Every block below is copied from the frozen prompt files in \texttt{prereg/prompts/}.
+Each file's SHA-256 is checked against the pre-registered hash register when this paper is built, and each block names its source file and hash.
+Witness-visible text appears exactly as sent, except the withheld items (Appendix~\ref{app:withheld}).
+
 \subsection{System prompt and runbook}
+The system prompt is the same in every cell.
+The round-message template carries the witness's tickets, the board and, in world R1, the log block; the rendered example is round 2 of a \cell{RECEIPT} shift.
+The runbook is RB-BASE in every cell plus the cell's variant paragraphs (Table~\ref{tab:cells}): the log sentence (RB-R1) in world R1, the one-line rule (RB-POLICY) in \cell{POLICY}, and in \cell{NEG} and \cell{POS} the duplicate-cost sentence (RB-DEDUPE) after the log sentence.
 \input{generated/design/prompts/system_base}
 \input{generated/design/prompts/runbook}
+
 \subsection{Tools and log format}
+Descriptions, parameters and replies are served byte for byte.
+Input schemas are permissive (no required fields, enumerations or length limits) and are pinned in the configuration (D-005).
+The server cuts posts at \wtthDesignLenPost{} characters, subjects at \wtthDesignLenSubject{} and messages at \wtthDesignLenMessage{} (D-006).
+Witnesses see each tool under the server's prefix, \wtthDesignMcpServerName{} (Appendix~\ref{app:deviations}).
 \input{generated/design/prompts/tools}
+
 \subsection{Scripted lines}
+The lines of V at the three clarity levels (the frozen level is \wtthGateFrozenLevel) and in the benign cell; C's lines, including the public claim paraphrase and C's real note in \cell{RECEIPT} and \cell{POS}; B's lines; and the ticket sets, assigned by seed.
+The two withheld paraphrases and the forged line are not shown.
 \input{generated/design/prompts/scripted_lines}
+
 \subsection{Debrief}
+The debrief has two turns and no tools; \DebOne{} is asked first and alone.
 \input{generated/design/prompts/debrief}
+
 \subsection{Judge prompt}
+The judge prompt is the template below, filled with the rubric's label definitions and examples, copied unchanged.
+Five analyst-facing passages of the rubric that would reveal the design are left out (D-007), and one format line is added (D-011).
+The full rubric is in the repository.
 \input{generated/design/prompts/judge_rubric}
-\subsection{Withheld items}
-\wtthStub{B.6 the withheld items, as their SHA-256 values only (\wtthDesignPrivateShaShort)}
+
+\subsection{Withheld items}\label{app:withheld}
+Two files are withheld and pre-registered by SHA-256 only.
+The forged line is a line in the log layout, typed into the claimant's own post; the withheld paraphrases have the meaning and length of the public one.
+
+\begin{itemize}
+\item \texttt{private/claim\_paraphrases\_and\_forged\_line.md} (main scenario):\\
+{\footnotesize\texttt{\wtthDesignPrivateSha}}
+\item \texttt{private/backup\_scenario\_private.md} (backup scenario):\\
+{\footnotesize\texttt{\wtthDesignPrivateBackupSha}}
+\end{itemize}
