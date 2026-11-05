@@ -295,6 +295,7 @@ class StreamRecord:  # mutable
     api_retries: list[dict] = field(default_factory=list)
     rate_limit_events: int = 0
     unknown_events: dict[str, int] = field(default_factory=dict)
+    assistant_stop_reasons: list[str] = field(default_factory=list)  # WP3-ADD: non-null message.stop_reason values
 
 
 @dataclass(frozen=True, slots=True)

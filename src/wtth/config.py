@@ -252,6 +252,7 @@ class Settings:
     core_cells: tuple[str, ...]
     cells: dict[str, CellSpec]
     phases: dict[str, Phase]
+    allowed_tools_separate: bool = False  # WP3-ADD: --allowedTools as separate argv elements (research/41 4.3 item 3)
 
     def keywords(self, scenario: str) -> tuple[str, ...]:
         return self.scenarios[scenario].keywords
@@ -406,7 +407,8 @@ def load_settings(path: Path | None = None, overrides: dict | None = None) -> Se
         permutation_seed=int(raw["permutation_seed"]), max_attempts=int(raw["max_attempts"]),
         paths=paths, models=models, budget=budget, scheduler=scheduler, timeouts=timeouts,
         max_turns=max_turns, audit=audit, cuts=cuts, scenarios=scenarios, runbooks=runbooks,
-        core_cells=core_cells, cells=cells, phases=phases)
+        core_cells=core_cells, cells=cells, phases=phases,
+        allowed_tools_separate=bool(raw.get("allowed_tools_separate", False)))  # WP3-ADD
 
 
 # ---- tools.yaml -------------------------------------------------------------------------------------
