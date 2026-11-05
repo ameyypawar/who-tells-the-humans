@@ -227,6 +227,14 @@ class ValidateInitTest(unittest.TestCase):
         self.assertTrue(self.check(init(servers=[{"name": "other", "status": "connected"}])))
         self.assertTrue(self.check(init(servers=[])))
 
+    def test_probe_accepts_denied_tool_stripped_or_present(self):
+        req = make_req(self.d, turn_type=TurnType.PROBE)
+        self.assertEqual(self.check(init(), req), [])
+        self.assertEqual(self.check(init(tools=[t for t in WS_TOOLS if not t.endswith("submit_reviews")]), req), [])
+        self.assertTrue(self.check(init(tools=WS_TOOLS[1:2]), req))
+        # a witness turn does not get that latitude
+        self.assertTrue(self.check(init(tools=[t for t in WS_TOOLS if not t.endswith("submit_reviews")])))
+
     def test_tool_order_irrelevant(self):
         self.assertEqual(self.check(init(tools=list(reversed(WS_TOOLS)))), [])
 
@@ -405,6 +413,16 @@ class ReconcileTest(unittest.TestCase):
     def test_unseen_in_stream(self):
         out = V.reconcile(self.rec(), [row("notify_ops", {"subject": "a"})], 1)
         self.assertTrue(out[0].startswith("reconcile.unseen_in_stream"))
+
+    def test_match_rows_returns_tool_call_ids(self):
+        c = sqlite3.connect(":memory:")
+        c.row_factory = sqlite3.Row
+        c.execute("CREATE TABLE t(id INTEGER, tool TEXT, args_json TEXT)")
+        c.execute("INSERT INTO t VALUES (7,'notify_ops','{\"subject\":\"a\"}'), (9,'notify_ops','{\"subject\":\"a\"}')")
+        rows = c.execute("SELECT * FROM t ORDER BY id").fetchall()
+        r = self.rec(("notify_ops", {"subject": "a"}, "ok"), ("notify_ops", {"subject": "a"}, "ok"),
+                     ("notify_ops", {"subject": "z"}, "ok"), ("notify_ops", {}, "error"))
+        self.assertEqual(V.match_rows(r, rows), [(True, 7), (True, 9), (False, None), (None, None)])
 
     def test_args_differ(self):
         r = self.rec(("notify_ops", {"subject": "a"}, "ok"))

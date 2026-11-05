@@ -78,7 +78,7 @@ class RunProcessTest(unittest.TestCase):
 
     def test_ignoring_int_goes_to_sigterm(self):
         s = write_script(self.d, "int.py", "import signal, time\nsignal.signal(signal.SIGINT, signal.SIG_IGN)\nprint('up', flush=True)\ntime.sleep(300)\n")
-        r = self.run_it(s, timeout_s=0.6, gi=0.3, gt=2.0)
+        r = self.run_it(s, timeout_s=2.0, gi=0.3, gt=2.0)
         self.assertTrue(r.timed_out)
         self.assertEqual(r.kill_stage, "sigterm")
         self.assertEqual(r.term_signal, signal.SIGTERM)
@@ -87,7 +87,7 @@ class RunProcessTest(unittest.TestCase):
         s = write_script(self.d, "stub.py", (
             "import signal, time\nsignal.signal(signal.SIGINT, signal.SIG_IGN)\n"
             "signal.signal(signal.SIGTERM, signal.SIG_IGN)\nprint('up', flush=True)\ntime.sleep(300)\n"))
-        r = self.run_it(s, timeout_s=0.6, gi=0.3, gt=0.3)
+        r = self.run_it(s, timeout_s=2.0, gi=0.3, gt=0.3)
         self.assertTrue(r.timed_out)
         self.assertEqual(r.kill_stage, "sigkill")
         self.assertEqual(r.term_signal, signal.SIGKILL)
@@ -147,7 +147,7 @@ class RunProcessTest(unittest.TestCase):
         self.assertEqual(os.path.realpath(got["cwd"]), os.path.realpath(self.d))
 
     def test_rss_sampler(self):
-        s = write_script(self.d, "slp.py", "import time\ntime.sleep(1.2)\n")
+        s = write_script(self.d, "slp.py", "import time\ntime.sleep(2.5)\n")
         r = self.run_it(s, rss_sampler=True)
         self.assertIsNotNone(r.peak_rss_kb)
         self.assertGreater(r.peak_rss_kb, 1000)

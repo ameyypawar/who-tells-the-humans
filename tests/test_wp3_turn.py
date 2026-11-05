@@ -264,6 +264,10 @@ class TurnEndToEnd(unittest.TestCase):
         out = self.run_turn(ctx, slot, req, cancel)
         self.assertEqual((out.cls, out.fail, out.cost_usd, out.cost_estimated), (C.TECHNICAL, F.CANCELLED, 0.0, False))
         self.assertEqual(self.rows(ctx, "SELECT COUNT(*) AS n FROM tool_calls")[0]["n"], 0)
+        self.assertEqual(ctx.launch.waits, 0)   # a cancelled turn never waits on the launch gate
+        t = self.rows(ctx, "SELECT class, fail_class FROM turns WHERE turn_id=?", req.turn_id)[0]
+        self.assertEqual((t[0], t[1]), ("technical", "cancelled"))
+        self.assertEqual(self.rows(ctx, "SELECT COUNT(*) AS n FROM cost_ledger")[0]["n"], 1)
 
     def test_cancel_mid_turn(self):
         from wtth.runner.turn import run_turn
@@ -277,6 +281,74 @@ class TurnEndToEnd(unittest.TestCase):
         out = asyncio.run(go())
         self.assertEqual((out.cls, out.fail), (C.TECHNICAL, F.CANCELLED))
         self.assertFalse(out.proc.timed_out)
+
+    def test_task_cancellation_finalizes_the_turn(self):
+        from wtth.runner.turn import run_turn
+        ctx, slot, root, turn_dir, ep, attempt, system = self.build("wp3_turn_taskcancel", {"default": {"mode": "hang"}})
+        req = self.request(ctx, system, turn_dir, ep, attempt)
+
+        async def go():
+            task = asyncio.ensure_future(run_turn(ctx, req, slot, cancel=asyncio.Event()))
+            await asyncio.sleep(3.0)
+            task.cancel()
+            with self.assertRaises(asyncio.CancelledError):
+                await task
+        asyncio.run(go())
+        t = self.rows(ctx, "SELECT * FROM turns WHERE turn_id=?", req.turn_id)[0]
+        self.assertEqual((t["class"], t["fail_class"]), ("technical", "cancelled"))
+        self.assertIsNotNone(t["ended_at"])
+        cl = self.rows(ctx, "SELECT * FROM cost_ledger WHERE turn_id=?", req.turn_id)
+        self.assertEqual(len(cl), 1)
+        self.assertEqual((cl[0]["estimated"], cl[0]["cost_usd"]), (1, 0.02))
+
+    def test_unexpected_exception_finalizes_as_stopped(self):
+        from wtth.runner import turn as turn_mod
+        ctx, slot, root, turn_dir, ep, attempt, system = self.build("wp3_turn_boom", {})
+        req = self.request(ctx, system, turn_dir, ep, attempt)
+        orig = turn_mod.proc.run_process
+
+        async def boom(*a, **k):
+            raise RuntimeError("boom")
+        turn_mod.proc.run_process = boom
+        try:
+            with self.assertRaises(RuntimeError):
+                self.run_turn(ctx, slot, req)
+        finally:
+            turn_mod.proc.run_process = orig
+        t = self.rows(ctx, "SELECT class, fail_class FROM turns WHERE turn_id=?", req.turn_id)[0]
+        self.assertEqual((t[0], t[1]), ("technical", "stopped"))
+        self.assertEqual(self.rows(ctx, "SELECT COUNT(*) AS n FROM cost_ledger")[0]["n"], 1)
+
+    def test_spawn_oserror_is_exit(self):
+        import dataclasses
+        ctx, slot, root, turn_dir, ep, attempt, system = self.build("wp3_turn_spawn", {})
+        s = ctx.settings
+        ctx.settings = dataclasses.replace(s, paths=dataclasses.replace(s.paths, binary=root / "no-such-binary"))
+        req = self.request(ctx, system, turn_dir, ep, attempt)
+        out = self.run_turn(ctx, slot, req)
+        self.assertEqual((out.cls, out.fail), (C.TECHNICAL, F.EXIT))
+        self.assertEqual(out.detail, "spawn_oserror:2")
+        t = self.rows(ctx, "SELECT class, fail_class, fail_detail FROM turns WHERE turn_id=?", req.turn_id)[0]
+        self.assertEqual(tuple(t), ("technical", "exit", "spawn_oserror:2"))
+        self.assertEqual(self.rows(ctx, "SELECT cost_usd FROM cost_ledger")[0][0], 0.0)
+
+    def test_db_row_ref_filled_when_column_exists(self):
+        ctx, slot, root, turn_dir, ep, attempt, system = self.build("wp3_turn_ref", {"default": {"witness": {
+            "calls": [{"tool": "post_to_board", "args": {"message": "hi"}}], "final_text": "ok"}}})
+        cols = [r[1] for r in self.rows(ctx, "PRAGMA table_info(stream_tool_uses)")]
+        if "db_row_ref" not in cols:
+            self.skipTest("schema.sql has no stream_tool_uses.db_row_ref yet (WP4)")
+        req = self.request(ctx, system, turn_dir, ep, attempt)
+        self.run_turn(ctx, slot, req)
+        ref = self.rows(ctx, "SELECT db_row_ref FROM stream_tool_uses WHERE turn_id=?", req.turn_id)[0][0]
+        tc = self.rows(ctx, "SELECT id FROM tool_calls WHERE turn_id=?", req.turn_id)[0][0]
+        self.assertEqual(ref, tc)
+
+    def test_answer_text_helper(self):
+        from wtth.runner.turn import answer_text
+        self.assertEqual(answer_text("final", ["a", "b"]), "final")
+        self.assertEqual(answer_text("", ["a", "b"]), "b")
+        self.assertEqual(answer_text("", []), "")
 
     def test_debrief_retry_in_place_and_answer(self):
         # B1: two tries of one debrief call -> two turns rows (try_no 1, 2); only the successful one has an answer.

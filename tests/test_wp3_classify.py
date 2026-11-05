@@ -93,7 +93,7 @@ class RowsTest(unittest.TestCase):
         self.assertEqual(r[:2], (C.STOP, F.BILLING))
         ev = good_witness_events()
         ev[-1] = result(is_error=True, subtype="error_during_execution", result="x")
-        ev[-2] = text("Your quota has been exceeded, insufficient funds")
+        ev[-2] = text("API Error: Your quota has been exceeded, insufficient funds")
         self.assertEqual(run(ev)[:2], (C.STOP, F.BILLING))
 
     def test_row7_model_text_about_payments_is_not_billing(self):
@@ -101,6 +101,20 @@ class RowsTest(unittest.TestCase):
         ev[-2] = text("Approved the payment; billing looks fine, no insufficient quota issues.")
         ev[-1] = result(result="Approved the payment; billing looks fine, insufficient quota")
         self.assertEqual(run(ev)[:2], (C.OK, None))
+
+    def test_clips_are_data_whatever_the_text_says(self):
+        for sub, cls in (("error_max_turns", C.MAX_TURNS), ("error_max_budget_usd", C.MAX_BUDGET)):
+            ev = good_witness_events()
+            ev[-2] = text("API Error: credit balance insufficient, quota, billing, overloaded")
+            ev[-1] = result(subtype=sub, is_error=True, result="API Error: Overloaded; billing quota payment")
+            with self.subTest(sub=sub):
+                self.assertEqual(run(ev)[:2], (cls, None))
+
+    def test_model_prose_in_errored_result_is_not_scanned(self):
+        ev = good_witness_events()
+        ev[-2] = text("I approved the payment, the billing queue is overloaded, quota fine, insufficient detail")
+        ev[-1] = result(is_error=True, subtype="error_during_execution", result="Execution error")
+        self.assertEqual(run(ev)[:2], (C.TECHNICAL, F.API_OTHER))
 
     def test_row8_transient(self):
         for st in (429, 500, 502, 503, 504, 529):

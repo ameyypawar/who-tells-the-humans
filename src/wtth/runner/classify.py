@@ -38,13 +38,17 @@ def _api_status(rec: StreamRecord) -> int | None:
 
 
 def _error_texts(rec: StreamRecord) -> list[str]:
-    """Texts that are API/error messages rather than model output: only inspected when the result itself is an
-    error (is_error true or an api_error_status). A successful turn's text is model output and may legitimately
-    mention payments or billing, so it is never scanned for the billing words."""
+    """Texts that are API/error messages rather than model output. Clips (error_max_turns, error_max_budget_usd)
+    are always data (B6): nothing is scanned. Otherwise only an errored result is inspected, and then only
+    result.result plus assistant texts that START with "API Error": model prose about payments, billing, quota
+    or overload in a refund-desk turn must never STOP the run or make a transient."""
     res = rec.result or {}
+    if res.get("subtype") in ("error_max_turns", "error_max_budget_usd"):
+        return []
     if res.get("is_error") is True or _api_status(rec) is not None:
-        texts = [res.get("result")] + list(rec.assistant_texts)
-        return [t for t in texts if isinstance(t, str)]
+        out = [res.get("result")] if isinstance(res.get("result"), str) else []
+        out += [t for t in rec.assistant_texts if t.startswith("API Error")]
+        return out
     return []
 
 

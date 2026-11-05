@@ -18,6 +18,7 @@ import json
 import sqlite3
 import time
 from pathlib import Path
+from collections.abc import Sequence
 from typing import TYPE_CHECKING, Any
 
 from wtth.runner import classify as classify_mod
@@ -41,7 +42,7 @@ def _int(v: Any) -> int | None:
     return int(v) if isinstance(v, (int, float)) and not isinstance(v, bool) else None
 
 
-def _cancelled_proc(req: TurnRequest) -> ProcResult:
+def _placeholder_proc(req: TurnRequest) -> ProcResult:
     d = Path(req.turn_dir)
     return ProcResult(exit_code=None, term_signal=None, timed_out=False, kill_stage=None, wall_ms=0,
                       stdout_path=d / "stream.jsonl", stderr_path=d / "stderr.txt", pgid=0, peak_rss_kb=None)
@@ -76,6 +77,27 @@ def _insert_launch(ctx: "RunContext", req: TurnRequest, slot: SlotDirs, argv_red
     return ctx.db.write(fn)
 
 
+def answer_text(final_text: str, assistant_texts: Sequence[str]) -> str:
+    """The one definition of a debrief answer: the result text, else the last assistant text, else ''.
+    debrief_answers stores this; the D2 prompt must be rendered from the stored row."""
+    return final_text or (assistant_texts[-1] if assistant_texts else "")
+
+
+async def _launch_gate(ctx: "RunContext", cancel: asyncio.Event) -> bool:
+    """Wait for the launch gap, but give up at once if `cancel` is set. True = go."""
+    if cancel.is_set():
+        return False
+    lw = asyncio.ensure_future(ctx.launch.wait())
+    cw = asyncio.ensure_future(cancel.wait())
+    try:
+        await asyncio.wait({lw, cw}, return_when=asyncio.FIRST_COMPLETED)
+    finally:
+        for t in (lw, cw):
+            if not t.done():
+                t.cancel()
+    return lw.done() and not lw.cancelled() and not cancel.is_set()
+
+
 async def run_turn(ctx: "RunContext", req: TurnRequest, slot: SlotDirs, *, cancel: asyncio.Event) -> TurnOutcome:
     settings = ctx.settings
     turn_dir = Path(req.turn_dir)
@@ -97,28 +119,52 @@ async def run_turn(ctx: "RunContext", req: TurnRequest, slot: SlotDirs, *, cance
     argv_redacted = invocation.redact_argv(argv)
     env_names = sorted(env)
 
-    pres: ProcResult
-    launch_wall: float
-    async with ctx.kgate:
-        await ctx.launch.wait()
-        launch_wall = time.time()
-        try_no = _insert_launch(ctx, req, slot, argv_redacted, env_names, launch_wall)
-        if cancel.is_set():
-            pres = _cancelled_proc(req)
+    launch_wall = time.time()
+    inserted = False
+    finalized = False
+    try:
+        async with ctx.kgate:
+            go = await _launch_gate(ctx, cancel)
+            launch_wall = time.time()
+            try_no = _insert_launch(ctx, req, slot, argv_redacted, env_names, launch_wall)
+            inserted = True
             stdout_path.write_bytes(b"")
             stderr_path.write_bytes(b"")
-            was_cancelled = True
-        else:
-            pres = await proc.run_process(
-                argv, env, settings.paths.cwd, stdout_path, stderr_path, req.timeout_s,
-                settings.timeouts.grace_int_s, settings.timeouts.grace_term_s, rss_sampler=True, cancel=cancel)
-            was_cancelled = (cancel.is_set() and pres.kill_stage is not None and not pres.timed_out
-                             and not str(pres.kill_stage).startswith("straggler_"))
-    return _finish(ctx, req, slot, pres, launch_wall, try_no, was_cancelled)
+            force: tuple[TurnClass, FailClass, str] | None = None
+            never_launched = False
+            if not go:
+                pres, never_launched = _placeholder_proc(req), True
+                was_cancelled = True
+            else:
+                try:
+                    pres = await proc.run_process(
+                        argv, env, settings.paths.cwd, stdout_path, stderr_path, req.timeout_s,
+                        settings.timeouts.grace_int_s, settings.timeouts.grace_term_s, rss_sampler=True,
+                        cancel=cancel)
+                    was_cancelled = (cancel.is_set() and pres.kill_stage is not None and not pres.timed_out
+                                     and not str(pres.kill_stage).startswith("straggler_"))
+                except OSError as exc:
+                    pres, never_launched, was_cancelled = _placeholder_proc(req), True, False
+                    force = (TurnClass.TECHNICAL, FailClass.EXIT, f"spawn_oserror:{exc.errno}")
+        out = _finish(ctx, req, slot, pres, launch_wall, try_no, was_cancelled, force=force,
+                      never_launched=never_launched)
+        finalized = True
+        return out
+    except BaseException as exc:
+        if inserted and not finalized:
+            # a launched turn is always finalized: class technical, cost from the stream or the per-call cap
+            fail = FailClass.CANCELLED if isinstance(exc, asyncio.CancelledError) else FailClass.STOPPED
+            try:
+                _finish(ctx, req, slot, _placeholder_proc(req), launch_wall, 0, False,
+                        force=(TurnClass.TECHNICAL, fail, f"{type(exc).__name__} during turn"), never_launched=False)
+            except Exception:  # noqa: BLE001 - the original exception matters more
+                pass
+        raise
 
 
 def _finish(ctx: "RunContext", req: TurnRequest, slot: SlotDirs, pres: ProcResult, launch_wall: float,
-            try_no: int, was_cancelled: bool) -> TurnOutcome:
+            try_no: int, was_cancelled: bool, *, force: tuple[TurnClass, FailClass, str] | None = None,
+            never_launched: bool = False) -> TurnOutcome:
     settings = ctx.settings
     turn_dir = Path(req.turn_dir)
 
@@ -137,9 +183,9 @@ def _finish(ctx: "RunContext", req: TurnRequest, slot: SlotDirs, pres: ProcResul
     mcp_calls = validate.count_mcp_calls(mcp_logs, ctx.allow)
 
     server_rows = ctx.db.read(lambda c: c.execute(
-        "SELECT tool, args_json FROM tool_calls WHERE turn_id=? ORDER BY id", (req.turn_id,)).fetchall())
+        "SELECT id, tool, args_json FROM tool_calls WHERE turn_id=? ORDER BY id", (req.turn_id,)).fetchall())
     reconcile_v = validate.reconcile(rec, server_rows, mcp_calls) if rec.n_result == 1 else []
-    flags = validate.match_flags(rec, server_rows)
+    flags = validate.match_rows(rec, server_rows)
 
     fault_path = Path(settings.paths.faults_dir) / f"{req.turn_id}.jsonl"
     server_fault = fault_path.exists()
@@ -148,17 +194,20 @@ def _finish(ctx: "RunContext", req: TurnRequest, slot: SlotDirs, pres: ProcResul
         fault_lines = [ln for ln in fault_path.read_text(encoding="utf-8", errors="replace").splitlines()
                        if ln.strip()]
 
-    cls, fail, detail = classify_mod.classify(
-        pres, rec, init_v=init_v, result_v=result_v, reply_v=reply_v, reconcile_v=reconcile_v,
-        server_fault=server_fault, cancelled=was_cancelled, refusal=refusal)
-    if req.turn_type == TurnType.PROBE and cls in (TurnClass.OK, TurnClass.REFUSAL, TurnClass.MAX_TURNS,
+    if force is not None:
+        cls, fail, detail = force
+    else:
+        cls, fail, detail = classify_mod.classify(
+            pres, rec, init_v=init_v, result_v=result_v, reply_v=reply_v, reconcile_v=reconcile_v,
+            server_fault=server_fault, cancelled=was_cancelled, refusal=refusal)
+    if force is None and req.turn_type == TurnType.PROBE and cls in (TurnClass.OK, TurnClass.REFUSAL, TurnClass.MAX_TURNS,
                                                    TurnClass.MAX_BUDGET):
         cls = TurnClass.PROBE
 
     cost = _num(res.get("total_cost_usd"))
     if cost is not None:
         cost_usd, estimated = cost, False
-    elif was_cancelled and pres.pgid == 0:
+    elif never_launched:
         cost_usd, estimated = 0.0, False          # never launched
     else:
         cost_usd, estimated = float(req.max_budget_usd), True   # no result: charge the cap (conservative)
@@ -176,7 +225,7 @@ def _finish(ctx: "RunContext", req: TurnRequest, slot: SlotDirs, pres: ProcResul
 
 def _persist(ctx: "RunContext", req: TurnRequest, out: TurnOutcome, *, mcp_unexp: list[str],
              stderr_unexp: list[str], connect_ms: int | None, server_fault: bool, fault_lines: list[str],
-             flags: list[bool | None], init: dict | None) -> None:
+             flags: list[tuple[bool | None, int | None]], init: dict | None) -> None:
     rec, pres = out.record, out.proc
     res = rec.result or {}
     usage = res.get("usage") if isinstance(res.get("usage"), dict) else {}
@@ -222,7 +271,7 @@ def _persist(ctx: "RunContext", req: TurnRequest, out: TurnOutcome, *, mcp_unexp
     answer = None
     if (req.turn_type in _DEBRIEF_Q and out.cls not in (TurnClass.TECHNICAL, TurnClass.STOP)
             and req.slot is not None and req.handle is not None):
-        answer = out.final_text or (rec.assistant_texts[-1] if rec.assistant_texts else "")
+        answer = answer_text(out.final_text, rec.assistant_texts)
 
     def fn(conn: sqlite3.Connection) -> None:
         names = list(cols)
@@ -231,16 +280,20 @@ def _persist(ctx: "RunContext", req: TurnRequest, out: TurnOutcome, *, mcp_unexp
         init_uuid = init.get("uuid") if isinstance(init, dict) and isinstance(init.get("uuid"), str) else None
         conn.execute("UPDATE exposures SET request_ids_json=?, session_id=?, init_uuid=? WHERE turn_id=?",
                      (json.dumps(rec.request_ids), rec.session_id, init_uuid, req.turn_id))
-        for tu, fl in zip(rec.tool_uses, flags):
+        has_ref = any(r[1] == "db_row_ref" for r in conn.execute("PRAGMA table_info(stream_tool_uses)"))
+        for tu, (fl, row_id) in zip(rec.tool_uses, flags):
             kind = None
             if tu.result_is_error:
                 kind = "server" if classify_mod.TRANSPORT_TEXT.search(tu.result_text or "") else "validation"
-            conn.execute(
-                "INSERT INTO stream_tool_uses(turn_id, seq, tool_use_id, name, input_json, has_result, result_text, "
-                "result_is_error, error_kind, reconciled) VALUES (?,?,?,?,?,?,?,?,?,?)",
-                (req.turn_id, tu.seq, tu.tool_use_id, tu.name, canon_json(tu.input), 1 if tu.has_result else 0,
-                 tu.result_text, None if tu.result_is_error is None else int(tu.result_is_error), kind,
-                 None if fl is None else int(fl)))
+            vals = [req.turn_id, tu.seq, tu.tool_use_id, tu.name, canon_json(tu.input), 1 if tu.has_result else 0,
+                    tu.result_text, None if tu.result_is_error is None else int(tu.result_is_error), kind,
+                    None if fl is None else int(fl)]
+            cols_sql = ("turn_id, seq, tool_use_id, name, input_json, has_result, result_text, result_is_error, "
+                        "error_kind, reconciled")
+            if has_ref:
+                cols_sql += ", db_row_ref"
+                vals.append(row_id)
+            conn.execute(f"INSERT INTO stream_tool_uses({cols_sql}) VALUES ({','.join('?' * len(vals))})", vals)
         phase = conn.execute(phase_q, (req.episode_id,)).fetchone()
         conn.execute("INSERT INTO cost_ledger(turn_id, run_id, phase, model, cost_usd, estimated, ts) "
                      "VALUES (?,?,?,?,?,?,?)",

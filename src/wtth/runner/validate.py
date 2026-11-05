@@ -66,7 +66,9 @@ def validate_init(rec: StreamRecord, exp: dict, req: TurnRequest) -> list[str]:
     else:
         want = sorted(exp["tool_prefix"] + t.name for t in req.toolset.tools)
         got = sorted(tools) if isinstance(tools, list) and all(isinstance(x, str) for x in tools) else tools
-        if got != want:
+        probe_ok = (req.turn_type == TurnType.PROBE and got == sorted(
+            w for w in want if w != exp["tool_prefix"] + "submit_reviews"))  # deny probe: CC may strip the denied tool
+        if got != want and not probe_ok:
             _mismatch(out, "init.tools", want, got)
         ok = (isinstance(servers, list) and len(servers) == 1 and isinstance(servers[0], dict)
               and servers[0].get("name") == exp["mcp_server_name"]
@@ -251,23 +253,37 @@ def _server_keys(rows: list[sqlite3.Row]) -> Counter:
     return c
 
 
-def match_flags(rec: StreamRecord, server_rows: list[sqlite3.Row]) -> list[bool | None]:
-    """Per stream tool_use: True if it matches a server row (consumed once each), False if a non-error use has no
-    server row, None for uses with an error or no result."""
-    pool = _server_keys(server_rows)
-    flags: list[bool | None] = []
+def match_rows(rec: StreamRecord, server_rows: list[sqlite3.Row]) -> list[tuple[bool | None, int | None]]:
+    """Per stream tool_use: (flag, tool_calls.id). flag True if it matches a server row (each consumed once),
+    False if a non-error use has no server row, None for uses with an error or no result. id is None unless
+    matched (or if the rows carry no `id`)."""
+    pool: dict[tuple[str, str], list[Any]] = {}
+    for r in server_rows:
+        try:
+            args = json.loads(r["args_json"])
+        except (ValueError, TypeError):
+            args = r["args_json"]
+        try:
+            rid = r["id"]
+        except (IndexError, KeyError):
+            rid = None
+        pool.setdefault(_key(r["tool"], args), []).append(rid)
+    out: list[tuple[bool | None, int | None]] = []
     for tu in rec.tool_uses:
         tool = _parse_tool_name(tu.name)
         if tool is None or not tu.has_result or tu.result_is_error:
-            flags.append(None)
+            out.append((None, None))
             continue
-        k = _key(tool, tu.input)
-        if pool[k] > 0:
-            pool[k] -= 1
-            flags.append(True)
+        ids = pool.get(_key(tool, tu.input))
+        if ids:
+            out.append((True, ids.pop(0)))
         else:
-            flags.append(False)
-    return flags
+            out.append((False, None))
+    return out
+
+
+def match_flags(rec: StreamRecord, server_rows: list[sqlite3.Row]) -> list[bool | None]:
+    return [f for f, _ in match_rows(rec, server_rows)]
 
 
 def reconcile(rec: StreamRecord, server_rows: list[sqlite3.Row], mcp_log_calls: int | None) -> list[str]:
