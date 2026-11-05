@@ -8,6 +8,7 @@ set -u
 P="sk-""ant"
 R="$(cd "$(dirname "$0")/.." && pwd)"
 use_git=1
+defaulted=0
 paths=()
 for a in "$@"; do
   case "$a" in
@@ -16,6 +17,7 @@ for a in "$@"; do
   esac
 done
 if [ "${#paths[@]}" -eq 0 ]; then
+  defaulted=1
   paths=("$R")
   [ -d "$R/runs" ] && paths+=("$R/runs")
   [ -d "$HOME/.local/wtth/slots" ] && paths+=("$HOME/.local/wtth/slots")
@@ -28,6 +30,10 @@ for p in "${paths[@]}"; do
   fi
   # .pyc files fold "sk-" + "ant-" into one constant, so compiled caches are not scanned; .git is covered below.
   out="$(/usr/bin/grep -r -a -l -F "$P" --exclude-dir=.git --exclude-dir=__pycache__ --exclude='*.pyc' "$p" 2>/dev/null)"
+  # default scan only: fake-run shims/slots and test scratch dirs are not release material
+  if [ "$defaulted" -eq 1 ] && [ -n "$out" ]; then
+    out="$(printf '%s\n' "$out" | /usr/bin/grep -v -e '/runs/fake/' -e '/tests/tmp/')"
+  fi
   if [ -n "$out" ]; then
     echo "KEY PATTERN HIT in files:"
     echo "$out"

@@ -5,6 +5,7 @@ The dummy key comes from tests.util.DUMMY_KEY (composed at runtime). No network,
 """
 from __future__ import annotations
 
+import hashlib
 import json
 import os
 import subprocess
@@ -147,7 +148,7 @@ class Rig:
                 "--output-format", "stream-json", "--verbose"]
 
     def contract(self) -> dict:
-        return {"cwd": str(self.cwd), "slots_root": str(self.slots), "api_key": DUMMY_KEY,
+        return {"cwd": str(self.cwd), "slots_root": str(self.slots), "api_key_sha256": hashlib.sha256(DUMMY_KEY.encode()).hexdigest(),
                 "models": ["claude-haiku-5-5", "claude-sonnet-5-5"]}
 
     def write_behavior(self, behavior: dict | None = None, *, contract: dict | None = ...) -> Path:  # type: ignore[assignment]
@@ -318,7 +319,9 @@ class G0Builder:
         (tdir / "stderr.txt").write_text(res.stderr, encoding="utf-8")
         logs = sorted((rig.slot / "home").rglob("mcp-logs-workspace/*.jsonl"))
         if logs:
-            logs[-1].replace(tdir / "mcp.jsonl")
+            (tdir / "mcp").mkdir(exist_ok=True)  # production layout: <turn_dir>/mcp/<ts>.jsonl (proc.harvest_mcp_log)
+            for lg in logs:
+                lg.replace(tdir / "mcp" / lg.name)
         self._ingest(res, turn_id, tdir, kind=kind, ttype=ttype or ("witness" if kind == "witness" else "d1"),
                      round=round if kind == "witness" else None, slot=slot, sender=sender, model=model,
                      prompt=prompt or (R1_PROMPT if kind == "witness" else DEBRIEF_D1), tamper=tamper,

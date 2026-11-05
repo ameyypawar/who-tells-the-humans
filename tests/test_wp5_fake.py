@@ -301,8 +301,10 @@ class TestModes(unittest.TestCase):
         res = rig.run(rig.witness_argv(), {"default": {"mode": "refusal"}})
         self.assertEqual(res.rc, 0, res.stderr)
         self.assertEqual(res.tool_uses(), [])
-        self.assertEqual(res.result["stop_reason"], "refusal")
-        self.assertEqual(res.result["subtype"], "success")
+        r = res.result
+        self.assertEqual((r["stop_reason"], r["subtype"], r["is_error"], r["api_error_status"]),
+                         ("refusal", "success", True, None))
+        self.assertEqual(res.of_type("assistant")[-1]["message"]["stop_reason"], "refusal")
 
     def test_max_turns(self):
         rig = Rig("wp5_fake_maxturns")
@@ -576,12 +578,13 @@ class TestNoKeyLeak(unittest.TestCase):
         self.assertEqual(res.rc, 0)
         blob = (res.stderr + "\n".join(res.raw_lines)).encode()
         for f in rig.root.rglob("*"):
-            if f.is_file() and f.name != "behavior.json":
+            if f.is_file():
                 blob += f.read_bytes()
         self.assertNotIn(DUMMY_KEY.encode(), blob)
         self.assertNotIn(("sk-" + "ant").encode(), blob)
         beh = rig.behavior_path.read_text()
-        self.assertIn(DUMMY_KEY, beh)  # the contract section holds the dummy only, never a real key
+        self.assertNotIn(DUMMY_KEY, beh)  # contracts hold sha256(key) only: no key-shaped string on disk
+        self.assertIn("api_key_sha256", beh)
 
 
 if __name__ == "__main__":

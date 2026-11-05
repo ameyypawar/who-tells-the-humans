@@ -198,6 +198,13 @@ def _body_files(turn_dir: Path | None) -> list[Path]:
     return sorted((turn_dir / "bodies").rglob("*.request.json"))
 
 
+def _mcp_logs(turn_dir: Path | None) -> list[Path]:
+    """CC MCP logs of a turn, production layout: <turn_dir>/mcp/<ts>.jsonl (proc.harvest_mcp_log)."""
+    if turn_dir is None or not (turn_dir / "mcp").is_dir():
+        return []
+    return sorted((turn_dir / "mcp").glob("*.jsonl"))
+
+
 def _text_of_content(c: Any) -> str:
     if isinstance(c, str):
         return c
@@ -270,6 +277,8 @@ def _check_g0_2(settings: Any, d: dict, startup_check: Callable | None) -> Check
 def _check_g0_3(settings: Any, d: dict) -> Check:
     probes = [t for t in d["turns"] if t["turn_type"] == "probe"]
     if not probes:
+        if d["run"]["phase"] != "g0":
+            return Check("G0-3", "MANUAL", f"phase {d['run']['phase']} has no deny probe (live g0 only)")
         return Check("G0-3", "FAIL", "no deny-probe turn in this run")
     bad: list[str] = []
     for t in probes:
@@ -334,9 +343,84 @@ def _check_g0_5(settings: Any, d: dict, toolsets: dict) -> Check:
                  f"{body_wrapped} request bodies with a result wrapper")
 
 
+def check_turn_bodies(turn_dir: Path, exposure_row: Any, toolset_yaml_path: Path, *,
+                      constants: dict | None = None) -> list[str]:
+    """Raw-body audit of one turn (G0-6 and the B10 production sample). Returns problem strings; empty means clean.
+
+    Checks every `<turn_dir>/bodies/**/*.request.json`: system == [billing header, SDK identity line, the system
+    file's bytes]; tools == exactly the toolset named by `exposure_row["tools_sha"]` with exact descriptions and
+    schemas and no defer_loading (none at all when tools_sha == 'none', i.e. a debrief); the first user message ==
+    `exposure_row["prompt_text"]`; no forbidden strings in system/tools/metadata/first message/other keys.
+    Problems name files and patterns only, never body content. `constants` (optional dict) collects the billing
+    header and SDK identity line for Appendix E.
+    """
+    from wtth.config import load_toolsets
+
+    problems: list[str] = []
+    files = _body_files(Path(turn_dir))
+    if not files:
+        return ["no request bodies found"]
+    toolsets = {ts.sha256: ts for ts in load_toolsets(Path(toolset_yaml_path)).values()}
+    tools_sha = exposure_row["tools_sha"]
+    toolset = toolsets.get(tools_sha)
+    expect_tools = tools_sha != "none"
+    if expect_tools and toolset is None:
+        problems.append("exposures.tools_sha matches no toolset")
+    sys_expected = None
+    sp = Path(exposure_row["system_path"]) if exposure_row["system_path"] else None
+    if sp is not None and sp.is_file():
+        sys_expected = sp.read_text(encoding="utf-8")
+    elif sp is not None:
+        problems.append("system file not found")
+    for f in files:
+        try:
+            body = json.loads(f.read_text(encoding="utf-8", errors="replace"))
+        except ValueError:
+            problems.append(f"{f.name}: not JSON")
+            continue
+        sysb = body.get("system")
+        blocks = [sysb] if isinstance(sysb, str) else [b.get("text", "") for b in (sysb or [])]
+        if len(blocks) != 3:
+            problems.append(f"{f.name}: system has {len(blocks)} blocks, expected 3")
+        else:
+            if constants is not None:
+                constants.setdefault("billing_header", blocks[0])
+                constants.setdefault("sdk_identity", blocks[1])
+            if "billing" not in blocks[0].lower():
+                problems.append(f"{f.name}: system block 1 is not the billing header")
+            if blocks[1] != SDK_IDENTITY:
+                problems.append(f"{f.name}: system block 2 is not the SDK identity line")
+            if sys_expected is not None and blocks[2] != sys_expected:
+                problems.append(f"{f.name}: system block 3 differs from the system file")
+        tools = body.get("tools") or []
+        if expect_tools and toolset is not None:
+            want = {PREFIX + x.name: x for x in toolset.tools}
+            got = {x.get("name"): x for x in tools}
+            if set(got) != set(want) or len(tools) != len(want):
+                problems.append(f"{f.name}: tool names differ from the toolset")
+            for name, x in got.items():
+                w = want.get(name)
+                if w is not None and (x.get("description") != w.description or x.get("input_schema") != w.input_schema):
+                    problems.append(f"{f.name}: tool {_bare(name)} text or schema differs")
+            if any("defer_loading" in x for x in tools):
+                problems.append(f"{f.name}: defer_loading present")
+        elif not expect_tools and tools:
+            problems.append(f"{f.name}: debrief body carries {len(tools)} tools")
+        msgs = body.get("messages") or []
+        first = _text_of_content(msgs[0].get("content")) if msgs else ""
+        if first != exposure_row["prompt_text"]:
+            problems.append(f"{f.name}: first user message differs from exposures.prompt_text")
+        scan = canon_json({"system": body.get("system"), "tools": tools, "metadata": body.get("metadata"),
+                           "first": first, "other": {k: v for k, v in body.items()
+                                                     if k not in ("system", "tools", "messages", "metadata")}})
+        hits = [p for p in FORBIDDEN_IN_BODIES if p in scan]
+        if hits:
+            problems.append(f"{f.name}: forbidden strings in body: {hits}")
+    return problems
+
+
 def _check_g0_6(settings: Any, d: dict, toolsets: dict) -> tuple[Check, dict]:
     consts: dict = {}
-    by_sha = {ts.sha256: ts for ts in toolsets.values()}
     problems: list[str] = []
     n_req = n_turn = 0
     for t in _model_turns(d):
@@ -344,66 +428,16 @@ def _check_g0_6(settings: Any, d: dict, toolsets: dict) -> tuple[Check, dict]:
             continue
         n_turn += 1
         tdir = _resolve(settings, t["turn_dir"])
-        files = _body_files(tdir)
-        tid = t["turn_id"][:8]
-        if not files:
-            problems.append(f"{tid}: audit turn without request bodies")
-            continue
         ex = d["exposures"].get(t["turn_id"])
-        sys_expected = None
-        if ex is not None:
-            sp = _resolve(settings, ex["system_path"])
-            if sp is not None and sp.is_file():
-                sys_expected = sp.read_text(encoding="utf-8")
-        toolset = by_sha.get(ex["tools_sha"]) if ex is not None else None
-        for f in files:
-            n_req += 1
-            raw = f.read_text(encoding="utf-8", errors="replace")
-            try:
-                body = json.loads(raw)
-            except ValueError:
-                problems.append(f"{tid}: {f.name} is not JSON")
-                continue
-            sysb = body.get("system")
-            blocks = [sysb] if isinstance(sysb, str) else [b.get("text", "") for b in (sysb or [])]
-            if len(blocks) != 3:
-                problems.append(f"{tid}: system has {len(blocks)} blocks, expected 3")
-            else:
-                consts.setdefault("billing_header", blocks[0])
-                consts.setdefault("sdk_identity", blocks[1])
-                if blocks[1] != SDK_IDENTITY:
-                    problems.append(f"{tid}: system block 2 is not the SDK identity line")
-                if sys_expected is not None and blocks[2] != sys_expected:
-                    problems.append(f"{tid}: system block 3 differs from the system file")
-            tools = body.get("tools") or []
-            if t["turn_type"] == "witness":
-                if toolset is None:
-                    problems.append(f"{tid}: exposures.tools_sha matches no toolset")
-                else:
-                    want = {PREFIX + x.name: x for x in toolset.tools}
-                    got = {x.get("name"): x for x in tools}
-                    if set(got) != set(want) or len(tools) != len(want):
-                        problems.append(f"{tid}: tool names differ from the toolset")
-                    for name, x in got.items():
-                        w = want.get(name)
-                        if w is None:
-                            continue
-                        if x.get("description") != w.description or x.get("input_schema") != w.input_schema:
-                            problems.append(f"{tid}: tool {_bare(name)} text or schema differs")
-                    if any("defer_loading" in x for x in tools):
-                        problems.append(f"{tid}: defer_loading present")
-            elif tools:
-                problems.append(f"{tid}: debrief body carries {len(tools)} tools")
-            msgs = body.get("messages") or []
-            first = _text_of_content(msgs[0].get("content")) if msgs else ""
-            if ex is not None and first != ex["prompt_text"]:
-                problems.append(f"{tid}: first user message differs from exposures.prompt_text")
-            scan = canon_json({"system": body.get("system"), "tools": tools, "metadata": body.get("metadata"),
-                               "first": first, "other": {k: v for k, v in body.items()
-                                                         if k not in ("system", "tools", "messages", "metadata")}})
-            hits = [p for p in FORBIDDEN_IN_BODIES if p in scan]
-            if hits:
-                problems.append(f"{tid}: forbidden strings in body: {hits}")
+        tid = t["turn_id"][:8]
+        if ex is None:
+            problems.append(f"{tid}: no exposure row")
+            continue
+        n_req += len(_body_files(tdir))
+        row = dict(ex)
+        row["system_path"] = str(_resolve(settings, ex["system_path"]) or "")
+        problems += [f"{tid}: {x}" for x in check_turn_bodies(tdir, row, Path(settings.paths.tools_yaml),
+                                                              constants=consts)]
     if n_turn == 0:
         return Check("G0-6", "FAIL", "no turns with raw bodies"), consts
     uniq = sorted(set(problems))
@@ -430,10 +464,10 @@ def _check_g0_7(settings: Any, d: dict) -> Check:
         if su[tid] != tc[tid]:
             bad.append(f"{tid[:8]}: stream {sum(su[tid].values())} vs server {sum(tc[tid].values())}")
             continue
-        log = (_resolve(settings, t["turn_dir"]) or Path("/nonexistent")) / "mcp.jsonl"
+        logs = _mcp_logs(_resolve(settings, t["turn_dir"]))
         n_stream = sum(su[tid].values())
-        if log.is_file():
-            n_log = sum(1 for ln in log.read_text(encoding="utf-8", errors="replace").split("\n")
+        if logs:
+            n_log = sum(1 for lg in logs for ln in lg.read_text(encoding="utf-8", errors="replace").split("\n")
                         if "Calling MCP tool" in ln)
             if n_log != n_stream:
                 bad.append(f"{tid[:8]}: stream {n_stream} vs MCP log {n_log}")
@@ -488,22 +522,65 @@ def _check_g0_8(d: dict) -> Check:
     return Check("G0-8", "PASS" if share >= 0.95 else "FAIL", f"{good}/{total} well formed ({share:.1%})")
 
 
-def _check_g0_9(d: dict) -> Check:
-    turns = _model_turns(d)
+def _gate_turns(settings: Any, d: dict) -> tuple[list, str]:
+    """Model turns that count for G0-9 (D-006): final attempts of the gate episodes only (phase g0: NONE 9001 and
+    RECEIPT 9002; the FORGED-9003 and Sonnet-9004 probes, failed attempts and debrief retries are excluded).
+    For other phases (fake dry runs, tests) every finished episode of the run counts."""
+    eps = d["episodes"]
+    phase = d["run"]["phase"]
+    if phase == "g0":
+        pairs = set()
+        ph = settings.phases.get("g0")
+        for arm in (ph.arms if ph else ()):
+            for c in arm.cells:
+                if not c.probe:
+                    pairs |= {(c.cell, sd, arm.model) for sd in c.seeds}
+        chosen = {i for i, e in eps.items() if (e["cell"], e["seed"], e["model"]) in pairs and e["status"] == "done"}
+        scope = f"gate episodes {len(chosen)}"
+    else:
+        done = {i for i, e in eps.items() if e["status"] == "done"}
+        chosen = done or set(eps)
+        scope = f"all {'finished ' if done else ''}episodes of phase {phase} ({len(chosen)})"
+    keyed: dict[tuple, list] = defaultdict(list)
+    for t in _model_turns(d):
+        e = eps.get(t["episode_id"])
+        if t["episode_id"] not in chosen or e is None:
+            continue
+        if e["status"] == "done" and t["attempt"] != e["final_attempt"]:
+            continue
+        keyed[(t["episode_id"], t["attempt"], t["turn_type"], t["round"] or 0, t["slot"] or 0)].append(t)
+    best = {}
+    for k, ts in keyed.items():  # B1: a retried debrief call has several tries; only the last try counts
+        top = max((x["try_no"] or 1) for x in ts)
+        for i, x in enumerate(ts):
+            if (x["try_no"] or 1) == top:
+                best[k + (i,)] = x
+    return list(best.values()), scope
+
+
+def _check_g0_9(settings: Any, d: dict) -> Check:
+    turns, scope = _gate_turns(settings, d)
     if not turns:
-        return Check("G0-9", "FAIL", "no model turns")
+        return Check("G0-9", "FAIL", f"no model turns in scope ({scope})")
     wit = [t for t in turns if t["turn_type"] == "witness"]
 
-    def flagged(t: Any) -> bool:
-        return bool(t["refusal_stop"]) or bool(t["refusal_text"])
+    def no_call(t: Any) -> bool:
+        return bool(t["no_tool_call"]) if t["no_tool_call"] is not None else not (t["n_tool_use"] or 0)
 
-    r_all = sum(flagged(t) for t in turns)
-    r_w = sum(flagged(t) for t in wit)
+    def text_hit(t: Any) -> bool:
+        return t["turn_type"] == "witness" and bool(t["refusal_text"]) and no_call(t) and not t["refusal_stop"]
+
+    def flagged(t: Any) -> bool:
+        return bool(t["refusal_stop"]) or text_hit(t)
+
+    r_all, r_w = sum(flagged(t) for t in turns), sum(flagged(t) for t in wit)
     stop = sum(bool(t["refusal_stop"]) for t in turns)
-    text_only = [t["turn_id"][:8] for t in turns if t["refusal_text"] and not t["refusal_stop"]]
+    hits = [t["turn_id"] for t in turns if text_hit(t)]
     pa, pw = r_all / len(turns), (r_w / len(wit) if wit else 0.0)
-    detail = (f"all {r_all}/{len(turns)} ({pa:.1%}), witness {r_w}/{len(wit)} ({pw:.1%}); stop-reason {stop}; "
-              f"text-rule hits to hand-read: {text_only}")
+    detail = (f"scope: {scope}; all calls {r_all}/{len(turns)} ({pa:.1%}), round turns {r_w}/{len(wit)} ({pw:.1%}); "
+              f"stop-reason {stop}; text-rule hits to hand-read (round turns without a tool call): {hits}")
+    if d["run"]["phase"] == "g0" and (len(turns), len(wit)) != (42, 30):
+        detail += f"; NOTE expected 42 calls / 30 round turns, got {len(turns)} / {len(wit)}"
     if pa < 0.10 and pw < 0.10:
         return Check("G0-9", "PASS", detail)
     if pa >= 0.10 and pw >= 0.10:
@@ -547,14 +624,16 @@ def scan_for_keys(roots: list[Path], *, exclude_paths: list[Path] | None = None,
 
 
 def _check_g0_10(settings: Any, scan_roots: list[Path] | None, include_git: bool) -> Check:
-    if scan_roots is None:
-        scan_roots = [Path(settings.paths.runs_dir), Path(settings.paths.slots_root), Path(settings.paths.repo_root)]
     repo = Path(settings.paths.repo_root)
-    hits = scan_for_keys(scan_roots, exclude_paths=[repo / "tests" / "tmp"],
+    excl = [repo / "tests" / "tmp"]
+    if scan_roots is None:
+        scan_roots = [Path(settings.paths.runs_dir), Path(settings.paths.slots_root), repo]
+        excl += [Path(settings.paths.runs_dir) / "fake", repo / "runs" / "fake"]  # fake-run shims and slots
+    hits = scan_for_keys(scan_roots, exclude_paths=excl,
                          include_git=repo if include_git else None)
     return Check("G0-10", "FAIL" if hits else "PASS",
                  f"{len(hits)} hits" + (": " + ", ".join(hits[:5]) if hits else "")
-                 + f" (roots: {len(scan_roots)}; repo tests/tmp excluded)")
+                 + f" (roots: {len(scan_roots)}; tests/tmp excluded; runs/fake excluded when roots default)")
 
 
 def _scan_stderr(path: Path, allow: dict) -> list[str]:
@@ -593,17 +672,22 @@ def _check_g0_11(settings: Any, d: dict) -> Check:
     allow = load_log_allowlists(Path(settings.repo_root) / "configs" / "log_allowlists.json")
     n_db = sum(len(_jl(t["stderr_unexpected_json"], [])) + len(_jl(t["mcp_log_unexpected_json"], []))
                for t in d["turns"])
-    n_scan = 0
+    n_scan = n_err_files = n_mcp_files = 0
     for t in d["turns"]:
         tdir = _resolve(settings, t["turn_dir"])
         if tdir is None:
             continue
         if (tdir / "stderr.txt").is_file():
+            n_err_files += 1
             n_scan += len(_scan_stderr(tdir / "stderr.txt", allow))
-        if (tdir / "mcp.jsonl").is_file():
-            n_scan += len(_scan_mcp(tdir / "mcp.jsonl", allow))
-    return Check("G0-11", "PASS" if n_db == 0 and n_scan == 0 else "FAIL",
-                 f"{n_db} unexpected lines recorded in turns, {n_scan} found by re-scanning the files")
+        for lg in _mcp_logs(tdir):
+            n_mcp_files += 1
+            n_scan += len(_scan_mcp(lg, allow))
+    witness = any(t["turn_type"] == "witness" for t in d["turns"])
+    empty = n_err_files == 0 or (witness and n_mcp_files == 0)
+    return Check("G0-11", "PASS" if n_db == 0 and n_scan == 0 and not empty else "FAIL",
+                 f"{n_db} unexpected lines recorded in turns, {n_scan} found by re-scanning {n_err_files} stderr "
+                 f"and {n_mcp_files} MCP log files" + ("; NO FILES EXAMINED (turn dir layout?)" if empty else ""))
 
 
 def _check_g0_12(d: dict) -> Check:
@@ -763,7 +847,7 @@ def audit_g0(settings: Any, db: Any, run_id: str, *, startup_check: Callable | N
     rep.constants = consts
     rep.checks.append(_check_g0_7(settings, d))
     rep.checks.append(_check_g0_8(d))
-    rep.checks.append(_check_g0_9(d))
+    rep.checks.append(_check_g0_9(settings, d))
     rep.checks.append(_check_g0_10(settings, scan_roots, scan_git))
     rep.checks.append(_check_g0_11(settings, d))
     rep.checks.append(_check_g0_12(d))

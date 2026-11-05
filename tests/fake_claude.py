@@ -26,6 +26,7 @@ import contextlib
 import copy
 import datetime as _dt
 import fcntl
+import hashlib
 import json
 import os
 import re
@@ -77,7 +78,7 @@ def contract_for(settings, api_key: str, *, slots_root: Path | None = None, cwd:
     return {
         "cwd": str(cwd or settings.paths.cwd),
         "slots_root": str(slots_root or settings.paths.slots_root),
-        "api_key": api_key,
+        "api_key_sha256": hashlib.sha256(api_key.encode()).hexdigest(),  # never the key itself
         "models": [settings.models.haiku, settings.models.sonnet],
     }
 
@@ -286,7 +287,10 @@ def check_environment(env: dict[str, str], contract: dict) -> list[str]:
                     v.append(f"env: {k} must be file:<dir>")
             elif env[k] != want:
                 v.append(f"env: {k} has a non-allowlisted value")
-    key = contract.get("api_key")
+    want = contract.get("api_key_sha256")
+    if want is not None and hashlib.sha256(env.get("ANTHROPIC_API_KEY", "").encode()).hexdigest() != want:
+        v.append("env: ANTHROPIC_API_KEY is not the test dummy key")
+    key = contract.get("api_key")  # legacy form (writes the key to disk): still honoured
     if key is not None and env.get("ANTHROPIC_API_KEY") != key:
         v.append("env: ANTHROPIC_API_KEY is not the test dummy key")
     return v
@@ -687,7 +691,7 @@ async def _run_witness(turn: Turn, mcp_cfg: dict, beh: dict) -> int:
             final_text = beh.get("refusal_text", "I can't help with that.")
         if mode == "api_error":
             return _emit_api_error(turn, beh)
-        turn.assistant([{"type": "text", "text": final_text}])
+        turn.assistant([{"type": "text", "text": final_text}], stop_reason="refusal" if mode == "refusal" else None)
         turn.write_body(final_text)
 
         if mode == "truncate":
@@ -729,7 +733,8 @@ def _emit_result(turn: Turn, beh: dict, final_text: str) -> None:
     elif mode == "max_budget":
         turn.result(subtype="error_max_budget_usd", is_error=True, stop_reason=None, no_result_field=True)
     elif mode == "refusal":
-        turn.result(text=final_text, stop_reason="refusal")
+        # real 2.1.317: success + is_error true, no API status, stop_reason refusal
+        turn.result(text=final_text, stop_reason="refusal", is_error=True)
     elif mode == "wrong_model":
         turn.result(text=final_text, usage_model="claude-x")
     elif mode == "permission_denial":
