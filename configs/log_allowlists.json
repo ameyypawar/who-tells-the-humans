@@ -1,0 +1,13 @@
+{
+  "stderr": [
+    "^\\s*$",
+    "^⚠ Permission mode forced to default — CLAUDE_CODE_SUBPROCESS_ENV_SCRUB is set"
+  ],
+  "mcp_log": {
+    "debug_key": "debug",
+    "error_all_of": [["Failed to validate request", "server/discover"]],
+    "message_regexes": ["SIGINT failed, sending SIGTERM"]
+  },
+  "mcp_connect_ms": "Successfully connected \\(transport: stdio\\) in (\\d+)ms",
+  "mcp_call": "Calling MCP tool"
+}

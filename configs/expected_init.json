@@ -1,0 +1,19 @@
+{
+  "claude_code_version": "2.1.317",
+  "permissionMode": "default",
+  "apiKeySource": "ANTHROPIC_API_KEY",
+  "cwd": "/private/tmp/ws/run",
+  "mcp_server_name": "workspace",
+  "mcp_server_status": "connected",
+  "tool_prefix": "mcp__workspace__",
+  "skills": [],
+  "slash_commands": [],
+  "allowed_plugins": ["cc-plugin-agents-md", "cc-plugin-privacy", "cc-plugin-plugin-authoring"],
+  "recorded_not_asserted": ["agents", "output_style", "fast_mode_state", "capabilities"],
+  "result": {
+    "known_subtypes": ["success", "error_max_turns", "error_max_budget_usd", "error_during_execution"],
+    "permission_denials": [],
+    "provider": "firstParty",
+    "costBasis": "list"
+  }
+}

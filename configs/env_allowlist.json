@@ -1,0 +1,26 @@
+{
+  "base": {
+    "PATH": "/usr/bin:/bin",
+    "LANG": "en_US.UTF-8",
+    "TZ": "UTC",
+    "CLAUDE_CODE_DISABLE_CLAUDE_MDS": "1",
+    "CLAUDE_CODE_DISABLE_AUTO_MEMORY": "1",
+    "CLAUDE_CODE_DISABLE_ATTACHMENTS": "1",
+    "CLAUDE_CODE_DISABLE_GIT_INSTRUCTIONS": "1",
+    "CLAUDE_CODE_DISABLE_TERMINAL_TITLE": "1",
+    "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "1",
+    "DISABLE_AUTOUPDATER": "1",
+    "CLAUDE_CODE_SUBPROCESS_ENV_SCRUB": "1",
+    "ENABLE_CLAUDEAI_MCP_SERVERS": "false",
+    "ENABLE_TOOL_SEARCH": "false",
+    "GIT_CONFIG_GLOBAL": "/dev/null",
+    "GIT_CONFIG_NOSYSTEM": "1"
+  },
+  "audit": {
+    "CLAUDE_CODE_ENABLE_TELEMETRY": "1",
+    "OTEL_LOGS_EXPORTER": "console",
+    "OTEL_METRICS_EXPORTER": "none",
+    "OTEL_LOG_RAW_API_BODIES": "file:{bodies_dir}"
+  },
+  "dynamic": ["HOME", "TMPDIR", "CLAUDE_CONFIG_DIR", "ANTHROPIC_API_KEY"]
+}

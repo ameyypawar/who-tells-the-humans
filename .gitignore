@@ -10,3 +10,4 @@ runs/
 __pycache__/
 .venv/
 /20??-??-??-*.txt
+tests/tmp/
