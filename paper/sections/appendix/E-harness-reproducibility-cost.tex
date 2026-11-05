@@ -1,5 +1,87 @@
-% appendix E (plan 49 section 2.5)
-\section{Harness card, reproducibility and cost}
-\wtthStub{E.1 to E.9; CLI \wtthDesignCliVersion{}, binary SHA-256 \wtthDesignBinaryShaShort}
+% appendix E (plan 49 section 2.5; PREREG section 21 names it for the execution settings). Sources: research/41
+% sections 2.3.5 and 2.5, research/35 and 37, configs/env_allowlist.json, expected_init.json, experiment.yaml, README.
+% Text tonight; counts and cost come from generated tables after the data.
+\section{Harness card, reproducibility and cost}\label{app:harness}
+
+\subsection{CLI and flags}
+The pinned Claude Code CLI is version \wtthDesignCliVersion, a copy kept outside the auto-updater's folder (D-002), with SHA-256 {\footnotesize\texttt{\wtthDesignBinarySha}}.
+Its version is asserted on every call.
+Each witness turn is one call with the flags below; debrief turns use the same call without the MCP flags and with a step cap of two.
+\begin{center}\footnotesize
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{2.6in}>{\raggedright\arraybackslash}p{2.3in}>{\raggedright\arraybackslash}p{1.3in}@{}}
+\toprule
+Flag & Value & Purpose \\
+\midrule
+\texttt{-p} & the rendered round message & one stateless turn \\
+\texttt{--bare} & & API-key mode, minimal system context \\
+\texttt{--model} & \wtthDesignModelHaiku{} (subset: \wtthDesignModelSonnet) & subject model \\
+\texttt{--effort} & \wtthDesignEffort & \\
+\texttt{--max-turns} & \wtthOpsStepCap & step cap \\
+\texttt{--max-budget-usd} & \wtthDesignMaxBudgetHaiku{} (subset: \wtthDesignMaxBudgetSonnet) & per-turn budget \\
+\texttt{--system-prompt-file} & system prompt plus the cell's runbook & \\
+\texttt{--tools ""} & & no built-in tools \\
+\texttt{--disable-slash-commands}, \texttt{--setting-sources ""} & & isolation \\
+\texttt{--strict-mcp-config}, \texttt{--mcp-config} & one server, with the turn's identity & the three tools \\
+\texttt{--allowedTools} & the three tools under the server prefix & \\
+\texttt{--permission-mode} & \texttt{dontAsk} & \\
+\texttt{--no-session-persistence} & & stateless \\
+\texttt{--output-format stream-json --verbose} & & raw stream kept \\
+\bottomrule
+\end{tabular}
+\end{center}
+The orchestrator passes the MCP server its identity (shift, attempt, round, slot, sender handle, shift clock, world) through the server's environment for that turn only; no tool argument can set it.
+The server refuses to start if an environment variable name looks like a credential (D-009).
+
+\subsection{Environment}
+The turn environment is built from scratch and never inherits the parent process's.
+The API key goes only into the experiment's own subprocesses (D-001).
+\begin{center}\scriptsize
+\input{generated/design/env_allowlist}
+\end{center}
+
+\subsection{Init and result assertions}
+Each turn's stream must report the pinned CLI version, the requested model, API-key authentication, the fixed working directory, exactly our three tools under one connected MCP server, and no skills or slash commands; debrief turns must report no tools and no MCP server.
+The result must name only the requested model, with a first-party provider and list-price cost basis, and no permission denials.
+Every tool reply must equal its pre-registered bytes.
+Any mismatch makes the turn a technical failure.
+
+\subsection{What the model sees}
+Under \texttt{--bare} with an API key, the system context is a billing header, the SDK's identity line, our system prompt and our tools; it is the same in every cell.
+The raw-body audit checks this on every G0 turn and on a deterministic sample of production turns (one in \wtthDesignAuditSampleMod{} by turn id); it also checks that request bodies contain no user name, e-mail address, CLAUDE.md or memory text, and a failed audit stops the run (D-005, D-009).
+
+\subsection{Failure taxonomy and counts}
+\textbf{Technical}, rerun as a new attempt on the same seed, at most \wtthDesignMaxAttemptsWord{} attempts per shift: rate-limit, server and transport errors, MCP crashes, failed init assertions, server or database faults, process kills and the \wtthDesignTurnTimeout-second turn timeout.
+A debrief call that fails technically is retried in place with identical inputs.
+\textbf{Data}, kept and counted by cell: refusals, empty turns, turns with no tool call, off-task text, test suspicion, tool-argument validation errors, step-cap clips and budget clips.
+\textbf{Stop for a human decision}: integrity failures (exposure, receipt invariant, reply bytes), billing errors, repeated breaker trips and unexplained error results.
+Counts by cell follow.
+\begin{center}
 \wtthTab{generated/analysis/tables/table_counts.tex}
+\end{center}
+
+\subsection{Analysis set}
+The confirmatory set is every seed up to $s_c$, the largest seed such that every planned (cell, seed) at or below it is done or permanently failed (D-008); here $s_c$ is \wtthHaikuSC.
+Shifts above $s_c$ (\wtthHaikuEpisodesAbove) and shifts completed but not planned are reported separately and are exploratory (D-011).
+
+\subsection{Reproduction}
+The repository README gives the commands; the main ones are:
+\begin{itemize}
+\item \texttt{wtth manifest --phase core --verify}: start-up checks;
+\item \texttt{wtth run --phase <phase> --live}: one phase (the gates, then \texttt{core} and \texttt{sonnet});
+\item \texttt{wtth render --cell <cell> --seed <seed> --round <round> --slot <slot>}: print a prompt (withheld seeds need an explicit flag);
+\item \texttt{wtth audit}, \texttt{wtth gate} and \texttt{wtth status}: gate checks and progress.
+\end{itemize}
+Runs resume from the database after any interruption, and finished shifts are never touched.
+[A: add the judge, annotation and analysis-export commands once the analysis branch is merged.]
+
+\subsection{Software}
+Python \texttt{3.12.13}, the MCP Python SDK \texttt{1.30.0} (pinned below the major version that renamed its server class), and numpy, scipy, pandas, statsmodels and matplotlib at the versions in the lock file; this paper builds with tectonic.
+
+\subsection{Cost}
+All experiment agent calls, judge calls included, go to one API credit (D-001) under one ledger with a hard cap of \wtthDesignCapUsd, of which \wtthDesignJudgeReserveUsd{} is reserved for judging (D-005, D-009).
+A shift launches only if spend plus the worst case of calls in flight fits under the cap.
+The annotation subagents ran on the author's subscription, outside the cap (D-011).
+Total spend: \wtthCostTotalUsd.
+\begin{center}
 \wtthTab{generated/analysis/tables/table_cost.tex}
+\end{center}
