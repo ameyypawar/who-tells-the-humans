@@ -1,0 +1,24 @@
+% tools/layout_test.tex: NOT part of main.tex. Inputs the synthetic wp6 e2e tables and figures IN PLACE (never copied) to check
+% widths only. Build: tectonic -X compile tools/layout_test.tex --outdir build/layout  (run from paper/)
+\documentclass[11pt,letterpaper]{article}
+\input{../preamble}
+\newcommand{\absdir}{/Users/amey/Projects/wtth-wp6/tests/tmp/wp6_e2e_11788/analysis/20261105T214939-final}
+\newsavebox{\tb}\newdimen\tw
+\newcommand{\measuretable}[1]{\sbox{\tb}{\input{\absdir/tables/#1.tex}}\tw=\wd\tb
+  \texttt{\detokenize{#1}}: natural \the\tw{} vs linewidth \the\linewidth\par}
+\begin{document}
+\section*{Layout test (synthetic files, widths only)}
+\measuretable{table_hypotheses}
+\measuretable{table_p2}
+\measuretable{table_counts}
+\measuretable{table_secondary_rates}
+\sbox{\tb}{\input{../build/layout/table_hypotheses_main.tex}}\tw=\wd\tb
+\texttt{table\_hypotheses\_main (narrow)}: natural \the\tw{} vs linewidth \the\linewidth\par
+\newsavebox{\fb}
+\sbox{\fb}{\includegraphics{\absdir/figures/fig1a.pdf}}\texttt{fig1a} natural \the\wd\fb\par
+\sbox{\fb}{\includegraphics{\absdir/figures/fig1b.pdf}}\texttt{fig1b} natural \the\wd\fb\par
+\begin{table}[t]\centering\caption{Table 2 as the paper will include it.}
+\adjustbox{max width=\linewidth}{\input{../build/layout/table_hypotheses_main.tex}}\end{table}
+\begin{figure}[t]\centering\includegraphics[width=\linewidth]{\absdir/figures/fig1a.pdf}\caption{Fig.\ 1a at \texttt{\textbackslash linewidth}.}\end{figure}
+\begin{figure}[t]\centering\includegraphics{\absdir/figures/fig1b.pdf}\caption{Fig.\ 1b at natural width.}\end{figure}
+\end{document}
