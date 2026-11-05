@@ -1,3 +1,16 @@
-% sections/07-code-data.tex (writer fills; plan 49 section 2.3)
-\section{and Data}
-\wtthStub{Code and Data}
+% sections/07-code-data.tex (plan 49 section 2.6 item 2). [A: ...] marks an author decision; check_paper --final fails
+% while any remains. The repository goes public at submission (plan 49 section 4.1 item 8).
+\section*{Code and Data}\label{sec:code}
+\addcontentsline{toc}{section}{Code and Data}
+Repository: \url{https://github.com/ameyypawar/who-tells-the-humans} [A: public at submission; licences for code and data].
+It holds the pre-registration (git tag \texttt{prereg-v1}; SHA-256 of PREREG.md \texttt{\wtthDesignPreregShaShort}\ldots) with the witness-visible prompts frozen by the same tag; the deviations log (D-001 to \wtthDesignDeviationsLast); the harness (\texttt{src/wtth}); the configuration frozen at tag \texttt{frozen-v1}; the judge and analysis code; and the sources of this paper.
+Every result number and figure is regenerated from the run database by \texttt{wtth.analysis} (snapshot \texttt{\wtthSnapshotShaShort}).
+Released data [A: confirm]: per-shift and per-witness outcome tables, judge labels and reviewed labels, and transcripts with the withheld strings masked.
+Withheld: the two claim paraphrases and the forged receipt-style line, pre-registered by SHA-256 (Appendix~\ref{app:withheld}), and the raw API request bodies, which contain them.
+% The harness reads the withheld file at start-up (prereg.load_private); no public-paraphrase-only mode exists in the
+% code read on 2026-11-06, so none is claimed here.
+A full rerun needs an Anthropic API key, the pinned CLI (Appendix~\ref{app:harness}) and the withheld file [A: release policy for the withheld file].
+
+\paragraph{Preexisting work.}
+Everything below was written before the sprint started (\wtthDesignTZero) and is listed in Appendix~\ref{app:preexisting}: research notes; the pre-registration and prompt drafts; the reference list; a toolchain rehearsal on an unrelated toy task, whose code was discarded; and toolchain probes.
+All harness and analysis code was written after the sprint started.
