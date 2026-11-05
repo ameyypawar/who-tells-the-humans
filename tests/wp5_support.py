@@ -94,6 +94,10 @@ class Rig:
         self.system.write_text("You are a test system prompt.", encoding="utf-8")
         self.system.chmod(0o444)
         self.episode_id, self.attempt = seed_running_episode(self.db, world=self.world)
+        from wtth.config import load_settings
+
+        self.server = load_settings().mcp_server_name        # the configured MCP server name
+        self.prefix = f"mcp__{self.server}__"
         self.toolsets = load_toolsets(TOOLS_YAML)
         self.behavior_path = self.root / "behavior.json"
         self.bodies = self.root / "bodies"
@@ -123,7 +127,7 @@ class Rig:
             "WTTH_TICKET_IDS": tickets, "WTTH_FAULT_DIR": str(self.faults), "WTTH_SCHEMA_VERSION": "1",
         }
         env.update(server_env_extra or {})
-        cfg = {"mcpServers": {"workspace": {"type": "stdio", "command": PYTHON,
+        cfg = {"mcpServers": {self.server: {"type": "stdio", "command": PYTHON,
                                              "args": ["-I", "-m", "wtth.mcp_server", "--runs-root", str(self.root)],
                                              "env": env, "alwaysLoad": True}}}
         return json.dumps(cfg, separators=(",", ":"), sort_keys=True)
@@ -132,7 +136,7 @@ class Rig:
                      mcp_config: str | None = None, allowed: str | None = None,
                      settings: str | None = None) -> list[str]:
         ts = self.toolsets[self.toolset]
-        allowed = allowed if allowed is not None else ",".join("mcp__workspace__" + t.name for t in ts.tools)
+        allowed = allowed if allowed is not None else ",".join(self.prefix + t.name for t in ts.tools)
         return ["-p", prompt, "--bare", "--model", model, "--effort", "low", "--max-turns", str(max_turns),
                 "--max-budget-usd", "0.02", "--system-prompt-file", str(self.system), "--tools", "",
                 "--disable-slash-commands", "--setting-sources", "", "--settings", settings or SETTINGS_FILE,
@@ -148,7 +152,7 @@ class Rig:
                 "--output-format", "stream-json", "--verbose"]
 
     def contract(self) -> dict:
-        return {"cwd": str(self.cwd), "slots_root": str(self.slots), "api_key_sha256": hashlib.sha256(DUMMY_KEY.encode()).hexdigest(),
+        return {"mcp_server_name": self.server, "cwd": str(self.cwd), "slots_root": str(self.slots), "api_key_sha256": hashlib.sha256(DUMMY_KEY.encode()).hexdigest(),
                 "models": ["claude-haiku-5-5", "claude-sonnet-5-5"]}
 
     def write_behavior(self, behavior: dict | None = None, *, contract: dict | None = ...) -> Path:  # type: ignore[assignment]
@@ -171,9 +175,9 @@ class Rig:
         return parse_result(proc.returncode, proc.stdout, proc.stderr)
 
     def probe_settings(self, tool: str = "submit_reviews") -> str:
-        """A --settings file that denies mcp__workspace__<tool> (the G0 deny probe)."""
+        """A --settings file that denies mcp__<server>__<tool> (the G0 deny probe)."""
         p = self.root / "denyprobe-settings.json"
-        p.write_text(json.dumps({"permissions": {"deny": ["mcp__workspace__" + tool]}}), encoding="utf-8")
+        p.write_text(json.dumps({"permissions": {"deny": [self.prefix + tool]}}), encoding="utf-8")
         return str(p)
 
     def run_probe(self, deny_mode: str, **kw) -> Result:
@@ -310,14 +314,14 @@ class G0Builder:
         turn_id = uuid.uuid4().hex
         if kind == "witness":
             cfg = json.loads(rig.mcp_config(round=round, slot=slot, sender=sender))
-            cfg["mcpServers"]["workspace"]["env"]["WTTH_TURN_ID"] = turn_id
+            cfg["mcpServers"][rig.server]["env"]["WTTH_TURN_ID"] = turn_id
             argv = rig.witness_argv(prompt=prompt or R1_PROMPT, model=model, mcp_config=json.dumps(cfg))
         else:
             argv = rig.debrief_argv(prompt=prompt or DEBRIEF_D1, model=model)
         res = rig.run(argv, behavior, env=env)
         (tdir / "stream.jsonl").write_text("\n".join(res.raw_lines) + "\n", encoding="utf-8")
         (tdir / "stderr.txt").write_text(res.stderr, encoding="utf-8")
-        logs = sorted((rig.slot / "home").rglob("mcp-logs-workspace/*.jsonl"))
+        logs = sorted((rig.slot / "home").rglob(f"mcp-logs-{rig.server}/*.jsonl"))
         if logs:
             (tdir / "mcp").mkdir(exist_ok=True)  # production layout: <turn_dir>/mcp/<ts>.jsonl (proc.harvest_mcp_log)
             for lg in logs:

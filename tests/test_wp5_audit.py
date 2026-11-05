@@ -295,6 +295,7 @@ class TestCheckTurnBodies(unittest.TestCase):
 
     def check(self, tdir, row):
         from tests.wp5_support import TOOLS_YAML
+        audit.set_server_name(self.rig.server)  # audit_g0 does this from settings; direct callers must too
         return audit.check_turn_bodies(tdir, row, TOOLS_YAML)
 
     def bodies(self, tdir):
@@ -313,6 +314,7 @@ class TestCheckTurnBodies(unittest.TestCase):
     def test_constants_collected(self):
         tdir, row = self.fresh()
         consts = {}
+        audit.set_server_name(self.rig.server)
         audit.check_turn_bodies(tdir, row, __import__("tests.wp5_support", fromlist=["x"]).TOOLS_YAML, constants=consts)
         self.assertEqual(set(consts), {"billing_header", "sdk_identity"})
 
@@ -338,7 +340,7 @@ class TestCheckTurnBodies(unittest.TestCase):
 
     def test_debrief_with_tools_and_missing_bodies(self):
         tdir, row = self.fresh("debrief", ttype="d1")
-        self.edit(tdir, lambda d: d.update(tools=[{"name": "mcp__workspace__notify_ops"}]))
+        self.edit(tdir, lambda d: d.update(tools=[{"name": self.rig.prefix + "notify_ops"}]))
         self.assertTrue(any("debrief body carries" in p for p in self.check(tdir, row)))
         import shutil
         tdir, row = self.fresh()

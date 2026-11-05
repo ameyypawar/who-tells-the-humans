@@ -53,9 +53,9 @@ class TestNormalWitness(unittest.TestCase):
         res = rig.run(rig.witness_argv())
         self.assertEqual(res.rc, 0, res.stderr)
         init = res.init
-        self.assertEqual(init["tools"], ["mcp__workspace__submit_reviews", "mcp__workspace__post_to_board",
-                                         "mcp__workspace__notify_ops"])
-        self.assertEqual(init["mcp_servers"], [{"name": "workspace", "status": "connected", "source": "dynamic"}])
+        self.assertEqual(init["tools"], [rig.prefix + "submit_reviews", rig.prefix + "post_to_board",
+                                         rig.prefix + "notify_ops"])
+        self.assertEqual(init["mcp_servers"], [{"name": rig.server, "status": "connected", "source": "dynamic"}])
         self.assertEqual(init["claude_code_version"], "2.1.317")
         self.assertEqual(init["permissionMode"], "default")
         self.assertEqual(init["apiKeySource"], "ANTHROPIC_API_KEY")
@@ -71,7 +71,7 @@ class TestNormalWitness(unittest.TestCase):
         self.assertEqual([b["type"] for b in a], ["thinking", "tool_use"])
         self.assertEqual(a[0]["thinking"], "")
         self.assertEqual(a[1]["id"], "toolu_fake_1")
-        self.assertEqual(a[1]["name"], "mcp__workspace__submit_reviews")
+        self.assertEqual(a[1]["name"], rig.prefix + "submit_reviews")
         self.assertTrue(res.of_type("assistant")[0]["request_id"].startswith("req_"))
         # the reply is the server's actual reply
         self.assertEqual([b["content"] for b in res.tool_results()], ["Reviews recorded."])
@@ -100,7 +100,7 @@ class TestNormalWitness(unittest.TestCase):
         # CC-style MCP log
         logs = list((rig.slot / "home" / "Library" / "Caches" / "claude-cli-nodejs").rglob("*.jsonl"))
         self.assertEqual(len(logs), 1)
-        self.assertIn("mcp-logs-workspace", str(logs[0]))
+        self.assertIn(f"mcp-logs-{rig.server}", str(logs[0]))
         text = logs[0].read_text(encoding="utf-8")
         self.assertRegex(text, r"Successfully connected \(transport: stdio\) in \d+ms")
         self.assertEqual(text.count("Calling MCP tool: submit_reviews"), 1)
@@ -187,7 +187,7 @@ class TestDenyProbe(unittest.TestCase):
         rig = Rig("wp5_fake_probe_strip")
         res = rig.run_probe("strip")
         self.assertEqual(res.rc, 0, res.stderr)
-        self.assertNotIn("mcp__workspace__submit_reviews", res.init["tools"])
+        self.assertNotIn(rig.prefix + "submit_reviews", res.init["tools"])
         self.assertEqual(len(res.init["tools"]), 2)
         self.assertEqual(res.result["permission_denials"], [])
         self.assertEqual(tool_call_rows(rig), [])
@@ -196,17 +196,17 @@ class TestDenyProbe(unittest.TestCase):
         rig = Rig("wp5_fake_probe_deny")
         res = rig.run_probe("deny")
         self.assertEqual(res.rc, 0, res.stderr)
-        self.assertIn("mcp__workspace__submit_reviews", res.init["tools"])
+        self.assertIn(rig.prefix + "submit_reviews", res.init["tools"])
         self.assertEqual(len(res.tool_uses()), 1)
         self.assertTrue(res.tool_results()[0]["is_error"])
         pd = res.result["permission_denials"]
-        self.assertEqual([d["tool_name"] for d in pd], ["mcp__workspace__submit_reviews"])
+        self.assertEqual([d["tool_name"] for d in pd], [rig.prefix + "submit_reviews"])
         self.assertEqual(tool_call_rows(rig), [])
 
     def test_no_deny_mode_means_no_effect(self):
         rig = Rig("wp5_fake_probe_none")
         res = rig.run(rig.witness_argv(settings=rig.probe_settings()))
-        self.assertIn("mcp__workspace__submit_reviews", res.init["tools"])
+        self.assertIn(rig.prefix + "submit_reviews", res.init["tools"])
         self.assertEqual(len(tool_call_rows(rig)), 1)
 
 
@@ -341,7 +341,7 @@ class TestModes(unittest.TestCase):
         res = rig.run(rig.witness_argv(), {"default": {"mode": "bad_version"}})
         self.assertEqual(res.init["claude_code_version"], "2.1.318")
         res = rig.run(rig.witness_argv(), {"default": {"mode": "permission_denial"}})
-        self.assertEqual(res.result["permission_denials"][0]["tool_name"], "mcp__workspace__notify_ops")
+        self.assertEqual(res.result["permission_denials"][0]["tool_name"], rig.prefix + "notify_ops")
 
     def test_stderr_noise(self):
         rig = Rig("wp5_fake_noise")
@@ -407,7 +407,7 @@ class TestAuditModeBodies(unittest.TestCase):
         self.assertEqual(body["system"][1]["text"], "You are a Claude agent, built on Anthropic's Claude Agent SDK.")
         self.assertEqual(body["system"][2]["text"], "You are a test system prompt.")
         self.assertEqual([t["name"] for t in body["tools"]],
-                         ["mcp__workspace__submit_reviews", "mcp__workspace__post_to_board", "mcp__workspace__notify_ops"])
+                         [rig.prefix + "submit_reviews", rig.prefix + "post_to_board", rig.prefix + "notify_ops"])
         self.assertEqual(body["messages"][0]["content"].splitlines()[0], "Round 2 of 5 · shift clock 21:30")
         self.assertTrue(any(not ln.startswith("{") for ln in res.raw_lines))  # OTEL console noise on stdout
         self.assertNotIn(DUMMY_KEY.encode(), b"".join(f.read_bytes() for f in rig.bodies.rglob("*") if f.is_file()))
@@ -538,7 +538,7 @@ class TestContractViolations(unittest.TestCase):
 
     def test_allowed_tools_must_match_server_listing(self):
         rig = Rig("wp5_fake_cv_allowed")
-        res = rig.run(rig.witness_argv(allowed="mcp__workspace__submit_reviews"))
+        res = rig.run(rig.witness_argv(allowed=rig.prefix + "submit_reviews"))
         self.expect_violation(res, "--allowedTools")
 
     def test_empty_prompt_and_bad_behavior_file(self):
