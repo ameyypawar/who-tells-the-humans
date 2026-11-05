@@ -175,11 +175,14 @@ def _loads(s: str | None) -> dict[str, Any] | None:
 
 
 def model_model_pairs(jdb: Any, *, queue: str | None = None) -> dict[str, list[tuple[dict, dict]]]:
-    """(judge labels, latest Claude labels) per item type, for items with both. Optionally one queue only."""
+    """(judge labels, latest Claude labels) per item type, for items with both. Optionally one queue only.
+    The synthetic held-out items (H-HO) are never part of any pair set."""
+    if queue == "H-HO":
+        return {}
     sql = ("SELECT i.item_type, j.labels_json, a.labels_json FROM v_ann_latest a "
            "JOIN ann_queue q ON q.ann_id = a.ann_id JOIN items i ON i.item_id = q.item_id "
            "JOIN v_judge_current j ON j.item_id = i.item_id AND j.status = 'valid' "
-           + ("WHERE q.queue = ? " if queue else "") + "ORDER BY q.ann_id")
+           + ("WHERE q.queue = ? " if queue else "WHERE q.queue != 'H-HO' ") + "ORDER BY q.ann_id")
     rows = jdb.read(lambda c: c.execute(sql, (queue,) if queue else ()).fetchall())
     out: dict[str, list[tuple[dict, dict]]] = {}
     for t, jl, al in rows:
@@ -187,14 +190,21 @@ def model_model_pairs(jdb: Any, *, queue: str | None = None) -> dict[str, list[t
     return out
 
 
-def kappa_mm_escalation(jdb: Any, *, seeds: Any = None, B: int | None = None) -> float | None:
-    """Model-model kappa on (recomputed) escalation over all board posts that have both labels (B17 trigger)."""
-    pairs = model_model_pairs(jdb).get("board_post", [])
+def kappa_h5_escalation(jdb: Any) -> tuple[float | None, int]:
+    """(kappa, n pairs) on recomputed escalation over the H-5 random sample of board posts: the population the
+    B17 rule names (D-011 F-04, rubric section 7). (None, n) when undefined."""
+    pairs = model_model_pairs(jdb, queue="H-5").get("board_post", [])
     if not pairs:
-        return None
+        return None, 0
     pairs = [(with_escalation(j), with_escalation(a)) for j, a in pairs]
-    return cohen_kappa([int(j["escalation_to_humans"]) for j, _ in pairs],
-                       [int(a["escalation_to_humans"]) for _, a in pairs], categories=_BINARY)
+    k = cohen_kappa([int(j["escalation_to_humans"]) for j, _ in pairs],
+                    [int(a["escalation_to_humans"]) for _, a in pairs], categories=_BINARY)
+    return k, len(pairs)
+
+
+def kappa_mm_escalation(jdb: Any, *, seeds: Any = None, B: int | None = None) -> float | None:
+    """Model-model kappa on escalation from the H-5 pairs only (B17 trigger); None before H-5 is labelled."""
+    return kappa_h5_escalation(jdb)[0]
 
 
 def agreement_summary(jdb: Any, *, seeds: Any) -> Mapping[str, Any]:
@@ -222,9 +232,15 @@ def correction_rate(jdb: Any) -> dict[str, Any]:
         s = by_queue.setdefault(q, {"reviewed": 0, "corrected": 0})
         s["reviewed"] += 1
         s["corrected"] += d in ("correct", "use_judge")
-    n_q = jdb.read(lambda c: c.execute("SELECT COUNT(*) FROM ann_queue WHERE queue != 'H-HO'").fetchone()[0])
+    n_j = jdb.read(lambda c: c.execute(
+        "SELECT COUNT(*) FROM items i JOIN v_judge_current j ON j.item_id = i.item_id WHERE i.tier IN ('J1','J2')"
+    ).fetchone()[0])
+    n_rj = jdb.read(lambda c: c.execute(
+        "SELECT COUNT(*) FROM v_review_latest r JOIN ann_queue q ON q.ann_id = r.ann_id "
+        "JOIN v_judge_current j ON j.item_id = q.item_id").fetchone()[0])
     return {"reviewed": total, "corrected": corrected, "rate": (corrected / total) if total else None,
-            "queued": n_q, "share_reviewed": (total / n_q) if n_q else None, "by_queue": by_queue}
+            "judged": n_j, "reviewed_judged": n_rj, "share_reviewed": (n_rj / n_j) if n_j else None,
+            "by_queue": by_queue}
 
 
 def escalation_precision(jdb: Any) -> dict[str, Any]:

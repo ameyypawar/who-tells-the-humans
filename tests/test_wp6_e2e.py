@@ -127,11 +127,14 @@ class EndToEnd(unittest.TestCase):
         from wtth.annotate import agreement, export, importer, queues, report
         from wtth.annotate.final import JudgeDbLabelSource
 
-        for stage in (1, 2):
-            kappa = agreement.kappa_mm_escalation(cls.jdb, seeds=SEEDS)
-            queues.build_queues(s, cls.jdb, stage=stage, seeds=SEEDS, kappa_mm_escalation=kappa)
-            exp_dir = export.export_annotator_batches(s, cls.jdb, cls.rig.root / f"export{stage}", seed=SEEDS.export_order,
-                                                      include_exported_unlabeled=True)
+        for stage in (1, 2, 2):   # the last pass re-derives the B17 trigger from the labelled H-5 sample
+            kappa, kn = agreement.kappa_h5_escalation(cls.jdb)
+            queues.build_queues(s, cls.jdb, stage=stage, seeds=SEEDS, kappa_mm_escalation=kappa, kappa_n=kn)
+            try:
+                exp_dir = export.export_annotator_batches(s, cls.jdb, cls.rig.root / f"export{stage}_{len(list(cls.rig.root.glob('export*')))}",
+                                                          seed=SEEDS.export_order, include_exported_unlabeled=True)
+            except ValueError:
+                continue
             (exp_dir / "labels").mkdir(exist_ok=True)
             lines = []
             for p in sorted(exp_dir.glob("batch_*.jsonl")):
@@ -152,7 +155,8 @@ class EndToEnd(unittest.TestCase):
         cls.review = report.import_review(s, cls.jdb, rep_path)
         cls.labels = JudgeDbLabelSource(cls.jdb, strict=True)
         # 4. strict analysis
-        cls.out = run_analysis(s, strict=True, labels=cls.labels, out_root=cls.rig.root / "analysis", seeds=SEEDS)
+        cls.out = run_analysis(s, strict=True, labels=cls.labels, out_root=cls.rig.root / "analysis", seeds=SEEDS,
+                              private={"C2.P2": "a private paraphrase that never appears in any output"})
         cls.doc = {e["key"]: e["display"] for e in json.loads(cls.out.numbers_json.read_text())}
 
     def test_gates_and_status(self) -> None:
@@ -184,6 +188,19 @@ class EndToEnd(unittest.TestCase):
         self.assertIn("\\newcommand{\\wtthStatus}{FINAL}", t)
         for needle in ("Hendricks batches", "second sign-off", "please check"):
             self.assertNotIn(needle, t)
+
+    def test_cost_table_has_content(self) -> None:
+        tex = (self.out.out_dir / "tables" / "table_cost.tex").read_text(encoding="utf-8")
+        self.assertIn("core / claude-haiku-5-5", tex)
+        self.assertIn("tier J1", tex)
+        self.assertNotIn("total & & & \\$0.00", tex.replace("  ", " "))
+        csv = (self.out.out_dir / "tables" / "table_cost.csv").read_text(encoding="utf-8")
+        self.assertIn("judge", csv)
+
+    def test_judge_counts_are_generated(self) -> None:
+        for k in ("JudgeValid", "JudgeInvalid", "JudgeRefused", "JudgeReasked", "JudgeEscMismatch", "SubtierCovJOneaN"):
+            self.assertIn(k, self.doc, k)
+        self.assertEqual(self.doc["JudgeInvalid"], "0")
 
     def test_labels_are_reviewed(self) -> None:
         n = self.jdb.read(lambda c: c.execute("SELECT COUNT(*) FROM reviews").fetchone()[0])

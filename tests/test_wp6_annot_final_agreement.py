@@ -120,27 +120,112 @@ class TestFinal(ReportBase):
         self.assertEqual(prog["H-2"]["pending_review"], 1)
         self.assertEqual(prog["gate_p2prime"]["reviewed"], 1)
 
-    def test_p2prime_requires_h3b_check_once_kappa_exists(self):
+    def test_p2prime_needs_fresh_h5_kappa_latch(self):
+        from wtth.annotate import queues
         j = Jdb("wp6_annot_gates_b17")
-        posts = []
-        for k, (jl, cl) in enumerate([(post_labels(1, 1), post_labels(1, 1)), (post_labels(0, 0), post_labels(0, 0)),
-                                      (post_labels(1, 1), post_labels(1, 1))]):
-            p = j.item("board_post", cell="CLAIM", ep=20 + k)
-            j.judge(p, jl)
-            posts.append(j.enqueue(p, "H-5") if k else j.enqueue(p, "H-3", ["H-3e", "p2kw"]))
-        label_all(j, self.settings, {})
-        self.assertIsNotNone(agreement.kappa_mm_escalation(j.db))
+        e0 = j.item("board_post", cell="CLAIM", ep=20)
+        j.judge(e0, post_labels(1, 1))
+        a0 = j.enqueue(e0, "H-3", ["H-3e", "p2kw"])
+        h5 = []
+        for k, lab in enumerate([post_labels(0, 0), post_labels(1, 1)]):
+            p = j.item("board_post", cell="CLAIM", ep=21 + k)
+            j.judge(p, lab)
+            h5.append(j.enqueue(p, "H-5"))
+        label_all(j, self.settings, {a0: post_labels(1, 1), h5[1]: post_labels(1, 1)})
         for m in ("ann_stage_1_built", "ann_stage_2_built"):
             set_meta(j, m, "1")
         path = j.dir / "r.md"
         report.write_review_report(self.settings, j.db, path, seed=1)
         t = path.read_text(encoding="utf-8")
-        t = TestReviewImport.decide(t, posts[0], "approve")
+        for a in (a0, h5[1]):                       # both judge-escalation posts are in the gate population
+            t = TestReviewImport.decide(t, a, "approve")
         path.write_text(t, encoding="utf-8")
         report.import_review(self.settings, j.db, path)
-        self.assertFalse(final.JudgeDbLabelSource(j.db, strict=True).gates()["p2prime_final"])
-        set_meta(j, "h3b_kappa_checked", "1")
+        src = final.JudgeDbLabelSource(j.db, strict=True)
+        self.assertEqual((src.kappa, src.kappa_n), (1.0, 2))
+        self.assertFalse(src.gates()["p2prime_final"])                     # no latch yet
+        queues.build_queues(self.settings, j.db, stage=2, seeds=SEEDS, kappa_mm_escalation=1.0, kappa_n=2)
         self.assertTrue(final.JudgeDbLabelSource(j.db, strict=True).gates()["p2prime_final"])
+        set_meta(j, "h3b_n", "1")                                          # stale latch
+        self.assertFalse(final.JudgeDbLabelSource(j.db, strict=True).gates()["p2prime_final"])
+
+    def test_gates_are_population_based(self):
+        j = Jdb("wp6_annot_gates_pop")
+        h1 = j.item("note", cell="NONE", kw=0)
+        j.judge(h1, note_labels(viol=1))
+        a1 = j.enqueue(h1, "H-1")
+        label_all(j, self.settings, {})
+        set_meta(j, "ann_stage_1_built", "1")
+        path = j.dir / "r.md"
+        report.write_review_report(self.settings, j.db, path, seed=1)
+        path.write_text(TestReviewImport.decide(path.read_text(encoding="utf-8"), a1, "approve"), encoding="utf-8")
+        report.import_review(self.settings, j.db, path)
+        self.assertTrue(final.JudgeDbLabelSource(j.db, strict=True).gates()["p1_final"])
+        late = j.item("note", cell="FORGED", kw=0)                         # late J1: no queue row, no review
+        j.judge(late, note_labels(viol=1))
+        src = final.JudgeDbLabelSource(j.db, strict=True)
+        self.assertFalse(src.gates()["p1_final"])
+        self.assertIsNone(src.get(key_of(j, late)))                        # strict never hands out its judge label
+        self.assertEqual(final.JudgeDbLabelSource(j.db, strict=False).get(key_of(j, late)).source, "judge")
+
+    def test_h3b_covers_posts_already_queued(self):
+        j = Jdb("wp6_annot_gates_h3b")
+        u = j.item("board_post", cell="CLAIM", ep=30)
+        j.judge(u, post_labels(0, 0, concern=1, sub="warn_peers"), uncertain=1)
+        j.enqueue(u, "H-3", ["H-3u", "p2kw"])                              # queued at stage 1 as uncertain
+        f = j.item("board_post", cell="CLAIM", ep=31)
+        j.judge(f, post_labels(0, 0))
+        j.enqueue(f, "H-5")
+        h5b = j.item("board_post", cell="CLAIM", ep=32)
+        j.judge(h5b, post_labels(1, 1))
+        j.enqueue(h5b, "H-5")
+        # H-5 labels: Claude disagrees on escalation for two of three -> low kappa -> H-3b on
+        from tests.wp6_annot_support import label_all as la
+        la(j, self.settings, {j.db.read(lambda c: c.execute("SELECT ann_id FROM ann_queue WHERE item_id=?", (h5b,)).fetchone()[0]): post_labels(0, 0)})
+        src = final.JudgeDbLabelSource(j.db, strict=True)
+        self.assertTrue(src.h3b_on)
+        self.assertIn(u, src.pop_p2)                                       # queued under H-3u, now an H-3b member
+        self.assertIsNone(src.get(key_of(j, u)))
+
+    def test_h_ho_excluded_from_every_pair_set(self):
+        j, it, ann = self.plant("wp6_annot_hoex")
+        n_all = sum(len(v) for v in agreement.model_model_pairs(j.db).values())
+        self.assertEqual(agreement.model_model_pairs(j.db, queue="H-HO"), {})
+        self.assertEqual(n_all, 5)    # judge-valid pairs outside H-HO
+        self.assertNotIn("H-HO", {r[0] for r in j.db.read(lambda c: c.execute(
+            "SELECT q.queue FROM ann_queue q JOIN v_ann_latest a ON a.ann_id = q.ann_id "
+            "WHERE q.queue != 'H-HO'").fetchall())})
+
+    def test_review_share_divides_by_judged(self):
+        j, it, ann = self.plant("wp6_annot_share")
+        c = agreement.correction_rate(j.db)
+        self.assertEqual(c["judged"], 6)
+        self.assertEqual(c["share_reviewed"], 0.0)
+
+
+    def test_reviewer_b17_case_trigger_is_h5_kappa(self):
+        j = Jdb("wp6_annot_b17_case")
+        rows = [("H-HO", e, e) for e in [1] * 4 + [0] * 8] + [("H-3", 1, 1)] * 9 + [("H-3", 1, 0)]
+        rows += [("H-5", 0, 0)] * 15 + [("H-5", 0, 1)] * 3 + [("H-5", 1, 1)] + [("H-5", 1, 0)]
+        labels = {}
+        for k, (q, je, ce) in enumerate(rows):
+            if q == "H-HO":
+                i = j.item("board_post", cell=None, model=None, ep=None, attempt=None, tier="HO", subtier="HO",
+                           held_out_key=f"H{k + 1}")
+            else:
+                i = j.item("board_post", cell="NONE", ep=100 + k, subtier="J1d")
+            j.judge(i, post_labels(je, je))
+            labels[j.enqueue(i, q)] = post_labels(ce, ce)
+        label_all(j, self.settings, labels)
+        k5, n5 = agreement.kappa_h5_escalation(j.db)
+        self.assertEqual(n5, 20)
+        self.assertAlmostEqual(k5, 0.231, places=3)
+        self.assertLess(k5, SEEDS.kappa_threshold)                          # H-3b must turn on
+        self.assertEqual(agreement.kappa_mm_escalation(j.db), k5)
+        self.assertNotIn("H-HO", {t for t in agreement.model_model_pairs(j.db)} )
+        self.assertEqual(sum(len(v) for v in agreement.model_model_pairs(j.db).values()), 30)   # no H-HO pairs
+        s_ = agreement.agreement_summary(j.db, seeds=SEEDS)
+        self.assertEqual(s_["model_model"]["board_post"]["escalation_to_humans"]["n"], 30)
 
     def test_dict_label_source_matches_protocol_shape(self):
         src = DictLabelSource({})
@@ -181,7 +266,7 @@ class TestAgreementSummary(ReportBase):
         self.assertEqual(s["model_model_h5"]["note"]["refers_to_violation"]["n"], 12)
         self.assertNotIn("board_post", s["model_model_h5"])
         self.assertEqual(s["model_model"]["board_post"]["escalation_to_humans"]["confusion"], [[0, 0], [1, 2]])
-        self.assertEqual(agreement.kappa_mm_escalation(j.db, seeds=SEEDS) is None, False)
+        self.assertIsNone(agreement.kappa_mm_escalation(j.db, seeds=SEEDS))     # H-5 holds no posts here
         # reproducible
         self.assertEqual(s, agreement.agreement_summary(j.db, seeds=SEEDS))
         # review: approve post0, correct post1 (Claude 0,0 -> 1,1 agrees with judge), approve post2; precision from H-3

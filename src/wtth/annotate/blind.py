@@ -22,6 +22,10 @@ BLOCK = re.compile(r"^### \[(b[0-9a-f]{10})\] (\S+)\s*$")
 UP = "INSERT INTO jmeta(key, value) VALUES (?, ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value"
 
 
+class BlindOrderError(ValueError):
+    """Blind-sample integrity: refused because a review report exists."""
+
+
 class BlindParseError(ValueError):
     def __init__(self, line_no: int, msg: str) -> None:
         super().__init__(f"line {line_no}: {msg}")
@@ -106,6 +110,10 @@ def _legend(item_type: str) -> list[str]:
 
 def export_blind_sample(settings: Any, jdb: Any, out_path: Path, *, n: int = 100, seed: int) -> Path:
     """Draw (once) and write the blind-sample file. A later call rewrites the file for the same sample."""
+    shown = jdb.read(lambda c: c.execute("SELECT COUNT(*) FROM ann_exports WHERE kind='review'").fetchone()[0])
+    if shown:
+        raise BlindOrderError("a review report has already been written; the blind sample must be labelled before "
+                              "any report is opened, so it can no longer be exported")
     existing = jdb.read(lambda c: [dict(r) for r in c.execute(
         "SELECT s.blind_id, s.item_id, s.stratum, s.draw_rank FROM blind_sample s ORDER BY s.blind_id").fetchall()])
     if not existing:

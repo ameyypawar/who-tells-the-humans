@@ -12,8 +12,6 @@ from typing import Any, Mapping
 from wtth.judge.labels import LABELS, validate_labels
 from wtth.judge.types import FinalLabel, ItemKey, ItemType
 
-P1_GATE_QUEUE = "H-1"
-P2PRIME_TOKENS = ("H-3e", "H-3b")
 
 
 def parse_label_value(item_type: str, name: str, token: str) -> Any:
@@ -61,7 +59,8 @@ class _State:
         def load(c: Any) -> dict[str, Any]:
             g = lambda sql: [dict(r) for r in c.execute(sql).fetchall()]  # noqa: E731
             return {
-                "items": g("SELECT item_id, item_type, source_table, source_id FROM items"),
+                "items": g("SELECT item_id, item_type, source_table, source_id, tier, in_analysis_set, model, cell, kw_match, "
+                          "episode_id, attempt FROM items"),
                 "queue": g("SELECT ann_id, item_id, queue, reasons_json FROM ann_queue"),
                 "judge": g("SELECT item_id, status, labels_json, uncertain FROM v_judge_current"),
                 "ann": g("SELECT ann_id, revision, labels_json, uncertain FROM ann_labels"),
@@ -95,14 +94,36 @@ class _State:
             return base, a["uncertain"], "approve"
         return merge_corrections(item["item_type"], base, json.loads(rv["corrections_json"] or "{}")), a["uncertain"], "correct"
 
-    def is_p1_gate(self, q: dict) -> bool:
-        return q["queue"] == P1_GATE_QUEUE
+    def populations(self, h3b_on: bool) -> tuple[set[str], set[str]]:
+        """(P1 gate item ids, P2' gate item ids), derived from items plus the judge labels, never from queue rows:
+        P1: Haiku in-set notes with no keyword match in the five H-1 cells. P2': Haiku in-set posts of P2kw=1
+        episodes whose judge label has recomputed escalation 1 (H-3e) or is invalid or refused, plus (B17 triggered)
+        those with judge concern=1 or addressed_to_humans=1 (H-3b)."""
+        from wtth.annotate.agreement import with_escalation
+        from wtth.annotate.queues import H1_CELLS, _p2kw
 
-    def is_p2prime_gate(self, q: dict) -> bool:
-        if q["queue"] != "H-3":
-            return False
-        r = q["reasons"]
-        return any(t in r for t in P2PRIME_TOKENS) or ("p2kw" in r and ("H-3i" in r or "H-3r" in r))
+        rows = list(self.by_key.values())
+        kw_eps = {(r["episode_id"], r["attempt"]) for r in rows
+                  if r["item_type"] == "note" and r["kw_match"] == 1 and r["episode_id"] is not None}
+        p1: set[str] = set()
+        p2: set[str] = set()
+        for r in rows:
+            if r["tier"] not in ("J1", "J2") or not r["in_analysis_set"] or "haiku" not in (r["model"] or "").lower():
+                continue
+            if r["item_type"] == "note" and r["kw_match"] == 0 and r["cell"] in H1_CELLS:
+                p1.add(r["item_id"])
+            elif r["item_type"] == "board_post" and _p2kw(r, kw_eps):
+                j = self.judge.get(r["item_id"])
+                if j is None:
+                    continue
+                if j["status"] in ("invalid", "refused"):
+                    p2.add(r["item_id"])
+                elif j["status"] == "valid":
+                    lab = with_escalation(json.loads(j["labels_json"]))
+                    if lab.get("escalation_to_humans") == 1 or (
+                            h3b_on and (lab.get("concern") == 1 or lab.get("addressed_to_humans") == 1)):
+                        p2.add(r["item_id"])
+        return p1, p2
 
 
 def reviewed_labels(jdb: Any) -> dict[str, dict[str, Any]]:
@@ -126,7 +147,14 @@ class JudgeDbLabelSource:
         self.strict = strict
         self._st = _State(jdb)
         self._jdb = jdb
+        from wtth.annotate.agreement import kappa_h5_escalation
+
         self._by_id = {r["item_id"]: r for r in self._st.by_key.values()}
+        self.kappa, self.kappa_n = kappa_h5_escalation(jdb)
+        thr = float(self._st.meta.get("kappa_threshold", "0.70"))
+        self.h3b_on = self.kappa is not None and self.kappa < thr
+        self.pop_p1, self.pop_p2 = self._st.populations(self.h3b_on)
+        self._gate_items = self.pop_p1 | self.pop_p2
         self._gates = self._compute_gates()
 
     def _item(self, key: ItemKey) -> dict | None:
@@ -165,23 +193,32 @@ class JudgeDbLabelSource:
                                   uncertain=unc, judge_labels=jl, queue=q["queue"], reviewed=True)
         if j is None:
             return None
-        if self.strict and q is not None and (st.is_p1_gate(q) or st.is_p2prime_gate(q)):
+        if self.strict and it["item_id"] in self._gate_items:
             return None
         return FinalLabel(key=(key[0], key[1]), item_type=itype, labels=jl, source="judge", uncertain=j["uncertain"],
                           judge_labels=jl, queue=q["queue"] if q else None, reviewed=False)
 
-    def _compute_gates(self) -> dict[str, bool]:
+    def _done(self, pop: set[str]) -> bool:
         st = self._st
-        p1 = [q for q in st.queue.values() if st.is_p1_gate(q)]
-        p2 = [q for q in st.queue.values() if st.is_p2prime_gate(q)]
-        p1_ok = st.meta.get("ann_stage_1_built") == "1" and all(q["ann_id"] in st.review for q in p1)
-        p2_ok = st.meta.get("ann_stage_2_built") == "1" and all(q["ann_id"] in st.review for q in p2)
-        if p2_ok:
-            from wtth.annotate.agreement import kappa_mm_escalation
+        for iid in pop:
+            q = st.queue.get(iid)
+            if q is None or q["ann_id"] not in st.review:
+                return False
+        return True
 
-            # B17: once a model-model kappa on escalation exists, queues must have been rebuilt with it (H-3b check)
-            if kappa_mm_escalation(self._jdb, seeds=None) is not None and st.meta.get("h3b_kappa_checked") != "1":
-                p2_ok = False
+    def _compute_gates(self) -> dict[str, bool]:
+        """Population-based: every member needs a queue row AND a review. P2' also needs a defined H-5 kappa and a
+        latch (kappa, n) that equals the freshly computed one, so a stale B17 decision cannot pass."""
+        st = self._st
+        p1_ok = st.meta.get("ann_stage_1_built") == "1" and self._done(self.pop_p1)
+        p2_ok = st.meta.get("ann_stage_2_built") == "1" and self._done(self.pop_p2)
+        if p2_ok and self.kappa_n:
+            # kappa defined, or undefined because every H-5 pair agreed on one category (then no trigger)
+            lk = "none" if self.kappa is None else repr(float(self.kappa))
+            p2_ok = st.meta.get("h3b_kappa") == lk and st.meta.get("h3b_n") == str(self.kappa_n)
+        elif p2_ok:   # no H-5 board-post pairs: acceptable only if the H-5 sample holds no board posts to measure
+            p2_ok = not any(q["queue"] == "H-5" and self._by_id[q["item_id"]]["item_type"] == "board_post"
+                            for q in st.queue.values())
         return {"p1_final": p1_ok, "p2prime_final": p2_ok}
 
     def gates(self) -> Mapping[str, bool]:
@@ -201,8 +238,9 @@ def review_progress(jdb: Any) -> Mapping[str, Mapping[str, int]]:
             s["reviewed"] += 1
         elif st.judge_valid(q["item_id"]) is not None:
             s["pending_review"] += 1
-    for name, pred in (("gate_p1", st.is_p1_gate), ("gate_p2prime", st.is_p2prime_gate)):
-        pop = [q for q in st.queue.values() if pred(q)]
-        out[name] = {"queued": len(pop), "labelled": sum(q["ann_id"] in labelled for q in pop),
-                     "reviewed": sum(q["ann_id"] in st.review for q in pop), "pending_review": 0}
+    src = JudgeDbLabelSource(jdb, strict=True)
+    for name, pop in (("gate_p1", src.pop_p1), ("gate_p2prime", src.pop_p2)):
+        qs = [st.queue[i] for i in pop if i in st.queue]
+        out[name] = {"queued": len(qs), "labelled": sum(q["ann_id"] in labelled for q in qs),
+                     "reviewed": sum(q["ann_id"] in st.review for q in qs), "pending_review": len(pop) - len(qs)}
     return out

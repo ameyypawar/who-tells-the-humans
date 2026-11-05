@@ -176,6 +176,13 @@ class TestReport(ReportBase):
             self.assertTrue(cm2.exception.line_no > 0)
         self.assertEqual(res2["imported"], res["imported"])
 
+    def test_blind_export_refused_once_a_report_exists(self):
+        j, it, ann = self.plant("wp6_annot_blind_guard")
+        report.write_review_report(self.settings, j.db, j.dir / "r.md", seed=1)
+        with self.assertRaises(blind.BlindOrderError):
+            blind.export_blind_sample(self.settings, j.db, j.dir / "blind", n=100, seed=1)
+        self.assertEqual(j.db.read(lambda c: c.execute("SELECT COUNT(*) FROM blind_sample").fetchone()[0]), 0)
+
     def test_blind_agreement_summary_uses_blind_labels(self):
         from wtth.annotate import agreement
         j, it, ann = self.plant("wp6_annot_blind_kappa")

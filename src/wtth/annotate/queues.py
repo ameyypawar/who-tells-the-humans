@@ -120,12 +120,16 @@ def _reasons(cands: Mapping[str, list[str]]) -> list[str]:
 
 
 def build_queues(settings: Any, jdb: Any, *, stage: int, seeds: Any,
-                 kappa_mm_escalation: float | None = None) -> Mapping[str, int]:
+                 kappa_mm_escalation: float | None = None, kappa_n: int | None = None) -> Mapping[str, int]:
     """Insert ann_queue rows for items not yet queued. Returns {queue: rows inserted by this call}.
 
     stage 1 (after J1): H-1 H-2 H-3 H-4 H-6 H-QA H-HO. stage 2 (after J2): the same for newly judged items, plus the
     stratified H-5 sample. B17 (F-04): when kappa_mm_escalation is given and below seeds.kappa_threshold, remaining
-    posts of P2kw=1 episodes with judge concern=1 or addressed_to_humans=1 are queued as H-3b.
+    posts of P2kw=1 episodes with judge concern=1 or addressed_to_humans=1 are queued as H-3b. The kappa must come
+    from the H-5 pairs (agreement.kappa_h5_escalation) and is stored with its pair count and the threshold; the gates
+    recompute it (final.py). Posts that are already queued need no new row: the gates are predicate-based.
+    H-QA: 50 keyword-matched Haiku notes of the in-set violation cells (B-NONE excluded), drawn once, BEFORE higher
+    queues claim items; a drawn item keeps its higher queue but carries the reason token H-QA.
     Re-running is idempotent for items already queued."""
     if stage not in (1, 2):
         raise ValueError("stage must be 1 or 2")
@@ -140,16 +144,18 @@ def build_queues(settings: Any, jdb: Any, *, stage: int, seeds: Any,
         if q:
             assign[r["item_id"]] = (q, _reasons(cands), None, None, None)
     byid = {r["item_id"]: r for r in rows}
-    # H-QA: 50 random keyword-matched Haiku notes (analysis set) not claimed by a higher queue; stage 1 only, once
-    have_qa = jdb.read(lambda c: c.execute("SELECT COUNT(*) FROM ann_queue WHERE queue='H-QA'").fetchone()[0])
+    have_qa = jdb.read(lambda c: c.execute("SELECT value FROM jmeta WHERE key='hqa_drawn'").fetchone())
+    qa_rank: dict[str, int] = {}
     if not have_qa:
-        pop = [r["item_id"] for r in rows if r["item_id"] not in queued and r["item_id"] not in assign
+        pop = [r["item_id"] for r in rows if r["item_id"] not in queued
                and r["tier"] in ("J1", "J2") and r["item_type"] == "note" and r["kw_match"] == 1
-               and bool(r["in_analysis_set"]) and _is(r["model"], "haiku")]
+               and bool(r["in_analysis_set"]) and _is(r["model"], "haiku") and r["cell"] not in (None, BNONE)]
         order = list(pop)
         random.Random(int(seeds.qa_sample)).shuffle(order)
         for rank, iid in enumerate(order[:QA_SAMPLE_SIZE], 1):
-            assign[iid] = ("H-QA", ["H-QA"], int(seeds.qa_sample), rank, None)
+            qa_rank[iid] = rank
+            q, reasons, *_ = assign.get(iid, ("H-QA", [], None, None, None))
+            assign[iid] = (q, reasons + ["H-QA"] if "H-QA" not in reasons else reasons, int(seeds.qa_sample), rank, None)
     if stage == 2:
         strata: dict[tuple, list[str]] = {}
         for r in rows:
@@ -168,8 +174,12 @@ def build_queues(settings: Any, jdb: Any, *, stage: int, seeds: Any,
     now = time.time()
     counts: dict[str, int] = {q: 0 for q in PRIORITY}
 
+    up = "INSERT INTO jmeta(key, value) VALUES (?, ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value"
+
     def fn(conn: Any) -> None:
         existing = {r[0] for r in conn.execute("SELECT ann_id FROM ann_queue").fetchall()}
+        if not have_qa:
+            conn.execute(up, ("hqa_drawn", "1"))
         for iid in sorted(assign, key=lambda i: (byid[i]["order_key"], i)):
             q, reasons, dseed, drank, _ = assign[iid]
             while True:
@@ -181,13 +191,13 @@ def build_queues(settings: Any, jdb: Any, *, stage: int, seeds: Any,
                          "created_at) VALUES (?,?,?,?,?,?,?,?)",
                          (ann_id, iid, q, json.dumps(reasons), stage, dseed, drank, now))
             counts[q] += 1
-        up = ("INSERT INTO jmeta(key, value) VALUES (?, ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value")
         conn.execute(up, (STAGE_META.format(stage), "1"))
-        if kappa_mm_escalation is not None:
-            conn.execute(up, ("h3b_kappa_checked", "1"))
-            conn.execute(up, ("kappa_mm_escalation", repr(float(kappa_mm_escalation))))
-            if h3b_on:
-                conn.execute(up, ("h3b_triggered", "1"))
+        conn.execute(up, ("kappa_threshold", repr(float(seeds.kappa_threshold))))
+        if kappa_mm_escalation is not None or kappa_n:
+            # "none" with n > 0: every H-5 pair agreed on one category (kappa undefined, no disagreement)
+            conn.execute(up, ("h3b_kappa", "none" if kappa_mm_escalation is None else repr(float(kappa_mm_escalation))))
+            conn.execute(up, ("h3b_n", str(int(kappa_n) if kappa_n is not None else -1)))
+            conn.execute(up, ("h3b_triggered", "1" if h3b_on else "0"))
 
     jdb.write(fn)
     return counts

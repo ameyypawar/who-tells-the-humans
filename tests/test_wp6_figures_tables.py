@@ -289,6 +289,12 @@ class TestTables(unittest.TestCase):
         t, rows = self.check(co, 3, 5)
         self.assertIn(r"5{,}000", t)
         self.assertEqual(rows[-1][3], "$18.35")
+        co2 = tables.table_cost({"phase_model": [{"phase": "g1", "model": "haiku", "n_calls": 3, "usd": 1.0},
+                                                 {"phase": "core", "model": "sonnet", "n_calls": 2, "usd": 2.0}],
+                                 "judge_tier": [{"tier": "J1", "n_calls": 1, "usd": 0.5, "n_estimated": 0},
+                                                {"tier": "J2", "n_calls": 1, "usd": 0.25, "n_estimated": 1}]}, None, d)
+        t, rows = self.check(co2, 5, 5)
+        self.assertEqual(rows[-1][3], "$3.75")
 
 
 if __name__ == "__main__":

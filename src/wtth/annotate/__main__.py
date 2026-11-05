@@ -75,9 +75,12 @@ def main(argv: list[str] | None = None) -> int:
             from wtth.annotate import agreement, queues
 
             seeds = _seeds(settings)
-            kappa = args.kappa if args.kappa is not None else agreement.kappa_mm_escalation(jdb, seeds=seeds)
-            counts = queues.build_queues(settings, jdb, stage=args.stage, seeds=seeds, kappa_mm_escalation=kappa)
-            _dump({"inserted": counts, "kappa_mm_escalation": kappa, "stage": args.stage})
+            kappa, n = agreement.kappa_h5_escalation(jdb)
+            if args.kappa is not None:
+                kappa = args.kappa
+            counts = queues.build_queues(settings, jdb, stage=args.stage, seeds=seeds, kappa_mm_escalation=kappa,
+                                         kappa_n=n)
+            _dump({"inserted": counts, "kappa_h5_escalation": kappa, "n_h5_pairs": n, "stage": args.stage})
         elif args.cmd == "export":
             from wtth.annotate import export
 

@@ -96,18 +96,26 @@ class TestQueues(unittest.TestCase):
         self.assertEqual(sum(again.values()), 0)
         self.assertEqual(j.queue_rows(), before)
 
-    def test_qa_sample_is_50_max_and_reproducible(self):
+    def test_qa_sample_is_50_max_reproducible_and_drawn_before_higher_queues(self):
         j = Jdb("wp6_annot_queues_qa")
         ids = [j.item("note", cell="NONE", kw=1, ep=k, tier="J2", subtier="J2h") for k in range(70)]
+        bnone = [j.item("note", cell="B-NONE", kw=1, ep=900 + k, tier="J1", subtier="J1c") for k in range(5)]
+        for i in ids[:30]:
+            j.judge(i, note_labels(viol=1), uncertain=1)              # a higher queue (H-3) claims many of them
         queues.build_queues(self.settings, j.db, stage=1, seeds=SEEDS)
         q = j.queue_rows()
-        picked = sorted(i for i in ids if i in q)
+        picked = sorted(i for i in ids if "H-QA" in q.get(i, ("", []))[1])
         self.assertEqual(len(picked), 50)
+        self.assertTrue(any(q[i][0] == "H-3" for i in picked))            # drawn independently of higher queues
+        self.assertTrue(all(q[i][0] == "H-4" and "H-QA" not in q[i][1] for i in bnone))   # no violation in B-NONE
         j2 = Jdb("wp6_annot_queues_qa2")
         ids2 = [j2.item("note", cell="NONE", kw=1, ep=k, tier="J2", subtier="J2h") for k in range(70)]
+        for k, i in enumerate(ids2[:30]):
+            j2.judge(i, note_labels(viol=1), uncertain=1)
         queues.build_queues(self.settings, j2.db, stage=1, seeds=SEEDS)
         q2 = j2.queue_rows()
-        self.assertEqual(sorted(ids.index(i) for i in picked), sorted(ids2.index(i) for i in ids2 if i in q2))
+        self.assertEqual(sorted(ids.index(i) for i in picked),
+                         sorted(ids2.index(i) for i in ids2 if "H-QA" in q2.get(i, ("", []))[1]))
 
     def test_h5_stage_two_formula_and_reproducible(self):
         j, it = self.plant()
@@ -140,7 +148,7 @@ class TestQueues(unittest.TestCase):
         j, it = self.plant()
         queues.build_queues(self.settings, j.db, stage=1, seeds=SEEDS, kappa_mm_escalation=0.80)
         self.assertNotIn(it["conc"], j.queue_rows())
-        self.assertIsNone(j.meta("h3b_triggered"))
+        self.assertEqual(j.meta("h3b_triggered"), "0")
         counts = queues.build_queues(self.settings, j.db, stage=1, seeds=SEEDS, kappa_mm_escalation=0.55)
         q = j.queue_rows()
         self.assertEqual(q[it["conc"]], ("H-3", ["H-3b", "p2kw"]))
@@ -148,7 +156,7 @@ class TestQueues(unittest.TestCase):
         self.assertNotIn(it["esc_p2kw0"], q)       # not a P2kw=1 episode
         self.assertEqual(counts["H-3"], 1)
         self.assertEqual(j.meta("h3b_triggered"), "1")
-        self.assertEqual(j.meta("h3b_kappa_checked"), "1")
+        self.assertEqual(j.meta("h3b_kappa"), "0.55")
 
     def test_bad_stage(self):
         j = Jdb("wp6_annot_queues_bad")
