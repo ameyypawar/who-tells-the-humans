@@ -103,7 +103,7 @@ def ensure_system_file(ctx: Any, spec: EpisodeSpec) -> tuple[Path, str]:
 def ensure_denyprobe_settings(settings: Any) -> Path:
     src = json.loads(Path(settings.paths.cc_settings).read_text(encoding="utf-8"))
     deny = list(src.setdefault("permissions", {}).setdefault("deny", []))
-    deny.append("mcp__workspace__submit_reviews")
+    deny.append(f"mcp__{settings.mcp_server_name}__submit_reviews")
     src["permissions"]["deny"] = deny
     path = settings.paths.denyprobe_settings
     path.parent.mkdir(parents=True, exist_ok=True)

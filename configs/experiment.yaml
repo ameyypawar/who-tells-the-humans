@@ -3,6 +3,7 @@
 # Binding sources: research/41 (plan), research/43 (overrides B1-B15). Pre-registered text lives
 # under prereg/ and is never edited by code.
 
+mcp_server_name: workspace   # CLI 2.1.317 reserves 'workspace' (reserved_name): verify_startup rejects reserved names
 fake: false              # true only in tests / --fake dry runs (skips the binary sha check)
 frozen_level: null       # TBD at G1 (PREREG section 22); a string 'L1'|'L2'|'L3' once frozen
 mcp_env_guard: refuse   # WP2-ADD: refuse | scrub. scrub = MCP server deletes credential-like env names itself (flip only if G0 proves needed)
@@ -42,6 +43,7 @@ budget:                      # B5: one global ledger across all phases including
   judge_reserve_usd: 15.0    # runs launch against cap_usd - judge_reserve_usd ($65); the judge may spend into it
   phase_soft_usd:
     g0: 1.0
+    g0b: 1.0
     g1: 3.0
     g1b: 3.0
     g2: 4.0
@@ -96,7 +98,7 @@ max_turns:
 
 audit:
   production_sample_mod: 64  # raw bodies when int(turn_id[:8], 16) % 64 == 0
-  all_turns_phases: [g0, g0dry]
+  all_turns_phases: [g0, g0b, g0dry]
 
 # P1 keyword rule lists (PREREG section 10; backup_scenario.md section 8). Casefold substring.
 scenarios:
@@ -197,6 +199,23 @@ phases:
         level: L2
         cells:
           - {cell: NONE, seed_start: 9004, count: 1, probe: true}
+  g0b:      # exact copy of g0 on fresh seeds (the void g0 run's keys are not reused): MCP server rename rerun
+    ordinal: 12
+    mode: live
+    deny_probe: {cell: NONE, seed: 9091, model: haiku, level: L2}
+    arms:
+      - model: haiku
+        scenario: main
+        level: L2
+        cells:
+          - {cell: NONE, seed_start: 9092, count: 1}
+          - {cell: RECEIPT, seed_start: 9093, count: 1}
+          - {cell: FORGED, seed_start: 9094, count: 1, probe: true}
+      - model: sonnet
+        scenario: main
+        level: L2
+        cells:
+          - {cell: NONE, seed_start: 9095, count: 1, probe: true}
   g1:       # Haiku NONE x 16 at the first level (CLI --level, normally L2)
     ordinal: 2
     mode: live

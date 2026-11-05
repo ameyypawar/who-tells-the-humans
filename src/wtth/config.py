@@ -28,6 +28,21 @@ PHASE_MODES = ("live", "fake")
 TIERS = ("full", "lean", "mvp")
 
 
+# MCP server names Claude Code 2.1.317 refuses to load ('reserved_name'), after normalization (lowercase, every
+# character outside [a-z0-9_-] and '-' mapped to '_').
+RESERVED_MCP_NAMES = frozenset({"workspace", "terminal", "office", "visualize", "window_halo", "dev_debug",
+                                "ccd_session", "ccd_session_mgmt"})
+
+
+def normalize_mcp_name(name: str) -> str:
+    return "".join(ch if ("a" <= ch <= "z" or "0" <= ch <= "9" or ch == "_") else "_" for ch in name.lower())
+
+
+def tool_prefix(settings: "Settings") -> str:
+    """'mcp__<server>__': the prefix Claude Code puts on every tool of the configured MCP server."""
+    return f"mcp__{settings.mcp_server_name}__"
+
+
 class ConfigError(ValueError):
     """Invalid or inconsistent configuration."""
 
@@ -260,6 +275,7 @@ class Settings:
     cells: dict[str, CellSpec]
     phases: dict[str, Phase]
     mcp_env_guard: str = "refuse"  # WP2-ADD: "refuse" | "scrub" (server behaviour on credential-like env names)
+    mcp_server_name: str = "workspace"  # WP4-ADD: the MCP server key; derives tool prefix, init checks, deny probe
     allowed_tools_separate: bool = False  # WP3-ADD: --allowedTools as separate argv elements (research/41 4.3 item 3)
 
     def keywords(self, scenario: str) -> tuple[str, ...]:
@@ -423,6 +439,7 @@ def load_settings(path: Path | None = None, overrides: dict | None = None) -> Se
         paths=paths, models=models, budget=budget, scheduler=scheduler, timeouts=timeouts,
         max_turns=max_turns, audit=audit, cuts=cuts, scenarios=scenarios, runbooks=runbooks,
         core_cells=core_cells, cells=cells, phases=phases,
+        mcp_server_name=str(raw.get("mcp_server_name", "workspace")),  # WP4-ADD
         allowed_tools_separate=bool(raw.get("allowed_tools_separate", False)),  # WP3-ADD
         mcp_env_guard=_mcp_env_guard(raw.get("mcp_env_guard", "refuse")))  # WP2-ADD
 
@@ -461,8 +478,15 @@ def _read_json(path: Path) -> Any:
         return json.load(fh)
 
 
-def load_expected_init(path: Path) -> dict:
-    return _read_json(Path(path))
+def load_expected_init(path: Path, settings: "Settings | None" = None) -> dict:
+    """expected_init.json; with `settings` the server name and tool prefix follow settings.mcp_server_name
+    (and cwd follows paths.cwd, which differs in fake runs)."""
+    exp = _read_json(Path(path))
+    if settings is not None:
+        exp["mcp_server_name"] = settings.mcp_server_name
+        exp["tool_prefix"] = tool_prefix(settings)
+        exp["cwd"] = str(settings.paths.cwd)
+    return exp
 
 
 def load_prereg_hashes(path: Path) -> dict[str, str]:

@@ -179,6 +179,11 @@ def verify_startup(settings: Any, mode: str, phase: str) -> list[str]:
     except OSError as exc:
         p.append(f"slot dirs: {exc}")
     if mode == "live":
+        from wtth.config import RESERVED_MCP_NAMES, normalize_mcp_name
+        name = settings.mcp_server_name
+        if normalize_mcp_name(name) in RESERVED_MCP_NAMES:  # the real CLI refuses to load it (reserved_name)
+            p.append(f"mcp_server_name {name!r} is reserved by Claude Code 2.1.317 (reserved_name): the server would not "
+                     f"load; set mcp_server_name in configs/experiment.yaml to another name")
         for var in ("ANTHROPIC_API_KEY", "CLAUDECODE", "CLAUDE_CODE_ENTRYPOINT"):
             if var in os.environ:
                 p.append(f"{var} is set in the orchestrator environment (run from a plain shell, not Claude Code)")

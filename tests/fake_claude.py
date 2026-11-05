@@ -79,6 +79,7 @@ def contract_for(settings, api_key: str, *, slots_root: Path | None = None, cwd:
         "cwd": str(cwd or settings.paths.cwd),
         "slots_root": str(slots_root or settings.paths.slots_root),
         "api_key_sha256": hashlib.sha256(api_key.encode()).hexdigest(),  # never the key itself
+        "mcp_server_name": getattr(settings, "mcp_server_name", "workspace"),
         "models": [settings.models.haiku, settings.models.sonnet],
     }
 
@@ -446,7 +447,12 @@ class Turn:
         names = [MCP_PREFIX + t["name"] for t in self.tools]
         servers = [] if not self.args.is_witness else [
             {"name": SERVER_NAME, "status": self.status, "source": "dynamic"}]
-        emit({"type": "system", "subtype": "init", "cwd": self.cwd, "session_id": self.session_id, "tools": names,
+        extra = {}
+        if EMULATE_RESERVED and self.args.is_witness and SERVER_NAME.lower() in RESERVED_NAMES:  # as CLI 2.1.317 does
+            names, servers = [], []
+            extra["mcp_server_errors"] = [{"name": SERVER_NAME, "type": "reserved_name", "message":
+                                           f'"{SERVER_NAME}" is a reserved MCP server name and was not loaded'}]
+        emit({**extra, "type": "system", "subtype": "init", "cwd": self.cwd, "session_id": self.session_id, "tools": names,
               "mcp_servers": servers, "model": self.model, "permissionMode": "default", "slash_commands": [],
               "apiKeySource": "ANTHROPIC_API_KEY", "claude_code_version": version, "output_style": "default",
               "agents": ["claude", "Explore", "general-purpose", "Plan", "statusline-setup"], "skills": [],
@@ -777,6 +783,17 @@ def _run_debrief(turn: Turn, beh: dict, which: str) -> int:
 # main
 # ---------------------------------------------------------------------------------------------------------
 
+RESERVED_NAMES = {"workspace", "terminal", "office", "visualize", "window_halo", "dev_debug", "ccd_session",
+                  "ccd_session_mgmt"}
+EMULATE_RESERVED = False
+
+
+def _set_server_name(name: str, emulate_reserved: bool) -> None:
+    """WP4-ADD: the MCP server name (and so the tool prefix) follows the contract; default 'workspace'."""
+    global SERVER_NAME, MCP_PREFIX, EMULATE_RESERVED
+    SERVER_NAME, MCP_PREFIX, EMULATE_RESERVED = name, f"mcp__{name}__", emulate_reserved
+
+
 def main(argv: list[str]) -> int:
     if len(argv) < 2 or argv[0] != "--behavior":
         violation_exit(["fake invocation: expected --behavior <json> before the claude argv"])
@@ -786,6 +803,7 @@ def main(argv: list[str]) -> int:
         violation_exit([f"fake invocation: unreadable behaviour file ({type(exc).__name__})"])
     claude_args = argv[2:]
     contract = doc.get("contract", {})
+    _set_server_name(contract.get("mcp_server_name", SERVER_NAME), bool(contract.get("emulate_reserved", False)))
     skip = set(contract.get("skip", []))
     models = tuple(contract.get("models") or DEFAULT_MODELS)
 

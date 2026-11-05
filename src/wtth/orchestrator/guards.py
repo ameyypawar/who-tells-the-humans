@@ -56,6 +56,7 @@ def body_audit(ctx: Any, req: Any) -> list[str]:
         return []
     try:
         from wtth import audit
+        audit.set_server_name(s.mcp_server_name)
         check = getattr(audit, "check_turn_bodies", None)
         if check is None:
             return []

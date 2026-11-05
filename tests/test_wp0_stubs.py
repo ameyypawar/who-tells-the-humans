@@ -42,7 +42,7 @@ EXPECTED = {
 
 
 PARAMS = {
-    "wtth.config": {"load_settings": ("path", "overrides"), "load_toolsets": ("path",), "load_expected_init": ("path",),
+    "wtth.config": {"load_settings": ("path", "overrides"), "load_toolsets": ("path",), "load_expected_init": ("path", "settings"),
                     "load_prereg_hashes": ("path",), "env_allowlist": ("path",)},
     "wtth.textnorm": {"collapse_breaks": ("s",), "cut": ("s", "n"), "one_line": ("s",), "fill": ("template", "values"),
                       "sha256_text": ("s",), "canon_json": ("obj",)},

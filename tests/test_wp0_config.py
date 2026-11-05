@@ -119,7 +119,7 @@ class SettingsTests(unittest.TestCase):
     def test_phase_ordinals_unique(self) -> None:
         ords = [p.ordinal for p in self.s.phases.values()]
         self.assertEqual(len(ords), len(set(ords)))
-        self.assertEqual({"g0dry", "g0", "g1", "g1b", "g2", "g2fix", "core", "sonnet", "mvp", "pivotA", "pivotB",
+        self.assertEqual({"g0dry", "g0", "g0b", "g1", "g1b", "g2", "g2fix", "core", "sonnet", "mvp", "pivotA", "pivotB",
                           "backup"}, set(self.s.phases))
 
     def test_binding_decisions(self) -> None:
@@ -234,7 +234,7 @@ class SideFileTests(unittest.TestCase):
         self.assertEqual("default", exp["permissionMode"])
         self.assertEqual("ANTHROPIC_API_KEY", exp["apiKeySource"])
         self.assertEqual("/private/tmp/ws/run", exp["cwd"])
-        self.assertEqual("workspace", exp["mcp_server_name"])
+        self.assertEqual("workspace", exp["mcp_server_name"])  # default; settings.mcp_server_name overrides at run time
         self.assertEqual("mcp__workspace__", exp["tool_prefix"])
         self.assertIn("error_max_budget_usd", exp["result"]["known_subtypes"])
 

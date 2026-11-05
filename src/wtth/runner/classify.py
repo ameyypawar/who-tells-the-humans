@@ -27,7 +27,7 @@ TRANSPORT_TEXT = re.compile(
 KNOWN_SUBTYPES = ("success", "error_max_turns", "error_max_budget_usd", "error_during_execution")
 SAFETY_TEXT = re.compile(r"(?i)safety classifier|partially or fully completed")
 CLIPS = ("error_max_turns", "error_max_budget_usd")
-TOOL_PREFIX = "mcp__workspace__"
+TOOL_PREFIX = "mcp__"  # WP4-ADD: any MCP tool; strict-mcp-config leaves our server as the only one
 
 
 def _has(violations: list[str], *prefixes: str) -> list[str]:

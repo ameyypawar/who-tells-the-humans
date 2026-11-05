@@ -97,8 +97,7 @@ def make_context(settings: Any, mode: str, run_id: str, api_key: str) -> Any:
     scenarios = sorted({a.scenario for p in settings.phases.values() for a in p.arms} | {"main"})
     texts = {sc: prereg.load_scenario_texts(sc, settings) for sc in scenarios}
     private = prereg.load_private(settings)
-    exp = load_expected_init(CONFIGS_DIR / "expected_init.json")
-    exp["cwd"] = str(settings.paths.cwd)  # the pinned value in production; the test cwd in fake runs
+    exp = load_expected_init(CONFIGS_DIR / "expected_init.json", settings)  # server name/prefix/cwd follow settings
     allow = load_log_allowlists(CONFIGS_DIR / "log_allowlists.json")
     allow["env"] = env_allowlist(CONFIGS_DIR / "env_allowlist.json")
     return RunContext(settings, db, run_id, mode, load_toolsets(settings.paths.tools_yaml), texts, private,
@@ -318,7 +317,7 @@ def _parser() -> argparse.ArgumentParser:
     r.add_argument("--unmask", action="store_true")
     r.set_defaults(fn=_cmd_render)
     u = sub.add_parser("run", parents=[common])
-    u.add_argument("--phase", required=True, choices=["g0", "g0dry", "g1", "g1b", "g2", "g2fix", "core", "sonnet",
+    u.add_argument("--phase", required=True, choices=["g0", "g0b", "g0dry", "g1", "g1b", "g2", "g2fix", "core", "sonnet",
                                                       "mvp", "pivotA", "pivotB", "backup"])
     u.add_argument("--level")
     u.add_argument("--live", action="store_true")

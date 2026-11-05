@@ -81,6 +81,15 @@ class Env:
             c.close()
 
 
+def _prod_state() -> tuple | None:
+    """(size, mtime) of the production database, or None if it does not exist (a live run may have created it)."""
+    p = REPO / "runs" / "wtth.sqlite"
+    if not p.exists():
+        return None
+    st = p.stat()
+    return (st.st_size, st.st_mtime_ns)
+
+
 def run_cli(argv: list[str]) -> tuple[int, str]:
     buf = io.StringIO()
     with contextlib.redirect_stdout(buf):
@@ -95,6 +104,7 @@ class OneEpisodePerCell(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         cls.env = Env("wp4_t42")
+        cls.prod_before = _prod_state()
         cls.code, cls.out = run_cli(cls.env.args("g0dry"))
 
     def test_all_done(self) -> None:
@@ -160,7 +170,7 @@ class OneEpisodePerCell(unittest.TestCase):
         self.assertIn("cost:", out)
 
     def test_never_touches_production(self) -> None:
-        self.assertFalse((REPO / "runs" / "wtth.sqlite").exists())
+        self.assertEqual(self.prod_before, _prod_state())  # the production database is neither created nor changed
 
 
 @unittest.skipIf(ready(), ready() or "")
@@ -261,16 +271,90 @@ class GuardTests(unittest.TestCase):
 
     def test_fake_refuses_production_paths(self) -> None:
         env = Env("wp4_t44_prod")
+        before = _prod_state()
         argv = ["run", "--phase", "g0dry", "--fake", str(env.beh), "--runs-dir", str(REPO / "runs"),
                 "--set", f"paths.slots_root={env.d / 'slots'}", "--set", f"paths.cwd={env.d / 'cwd'}"]
         code, out = run_cli(argv)
         self.assertEqual(2, code)
         self.assertIn("production database", out)
-        self.assertFalse((REPO / "runs" / "wtth.sqlite").exists())
+        self.assertEqual(before, _prod_state())
 
     def test_live_needs_flag(self) -> None:
         code = cli.main(["run", "--phase", "g0", "--runs-dir", str(tmp_dir("wp4_t44_noflag"))])
         self.assertEqual(2, code)
+
+
+@unittest.skipIf(ready(), ready() or "")
+class RenamedServerE2E(unittest.TestCase):
+    """The whole stack with mcp_server_name=larkspur_workspace: CLI argv/mcp-config, fake, server, runner, audit."""
+
+    NAME = "larkspur_workspace"
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.env = Env("wp4_rename")
+        cls.code, cls.out = run_cli(cls.env.args("g0dry", ["NONE", "RECEIPT"], extra=["--set", f"mcp_server_name={cls.NAME}"]))
+
+    def test_run_done_and_tools_carry_the_new_prefix(self) -> None:
+        self.assertEqual(0, self.code, self.out[-2000:])
+        self.assertEqual({"done": 2}, {r["status"]: r["n"] for r in self.env.q("SELECT status, COUNT(*) n FROM episodes GROUP BY 1")})
+        names = {r["name"] for r in self.env.q("SELECT DISTINCT name FROM stream_tool_uses")}
+        self.assertTrue(names and all(n.startswith(f"mcp__{self.NAME}__") for n in names), names)
+        self.assertEqual(0, self.env.q("SELECT COUNT(*) n FROM turns WHERE class!='ok'")[0]["n"])
+
+    def test_mcp_config_and_deny_settings_use_the_name(self) -> None:
+        cfg = json.loads((self.env.runs / "fake" / "behavior.json").read_text())
+        self.assertEqual(self.NAME, cfg["contract"]["mcp_server_name"])
+        from wtth.config import load_settings
+        from wtth.orchestrator import episode
+        s = load_settings(overrides={"mcp_server_name": self.NAME, "paths.runs_dir": str(self.env.runs)})
+        deny = json.loads(episode.ensure_denyprobe_settings(s).read_text())["permissions"]["deny"]
+        self.assertIn(f"mcp__{self.NAME}__submit_reviews", deny)
+        self.assertNotIn("mcp__workspace__submit_reviews", deny)
+
+    def test_audit_checks_that_depend_on_tool_names_pass(self) -> None:
+        from wtth import audit
+        from wtth import db as dbmod
+        from wtth.config import load_settings
+        s = load_settings(overrides={"fake": True, "mcp_server_name": self.NAME, "paths.runs_dir": str(self.env.runs),
+                                     "paths.slots_root": str(self.env.d / "slots"), "paths.cwd": str(self.env.d / "cwd")})
+        run_id = self.env.q("SELECT run_id FROM runs")[0]["run_id"]
+        rep = audit.audit_g0(s, dbmod.Db(self.env.db), run_id, startup_check=lambda *a: [],
+                             scan_roots=[self.env.runs / "turns"], scan_git=False)
+        status = {c.id: c.status for c in rep.checks}
+        for cid in ("G0-4", "G0-5", "G0-7", "G0-8"):
+            self.assertEqual("PASS", status[cid], (cid, status))
+
+
+class ReservedNameTests(unittest.TestCase):
+    def test_reserved_names_are_problems_in_live_mode(self) -> None:
+        from wtth.config import load_settings
+        d = tmp_dir(f"wp4_reserved_{os.getpid()}")
+        for name in ("workspace", "Workspace", "window-halo", "ccd_session_mgmt", "terminal"):
+            s = load_settings(overrides={"mcp_server_name": name, "paths.runs_dir": str(d / "runs"),
+                                         "paths.slots_root": str(d / "slots"), "paths.cwd": str(d / "cwd")})
+            problems = manifest.verify_startup(s, "live", "g0")
+            self.assertTrue(any("is reserved by Claude Code" in p for p in problems), (name, problems))
+        ok = load_settings(overrides={"mcp_server_name": "larkspur_workspace", "paths.runs_dir": str(d / "runs"),
+                                      "paths.slots_root": str(d / "slots"), "paths.cwd": str(d / "cwd")})
+        self.assertFalse(any("reserved" in p for p in manifest.verify_startup(ok, "live", "g0")))
+
+    def test_validate_init_shows_mcp_server_errors(self) -> None:
+        from wtth.config import load_expected_init, load_settings
+        from wtth.runner import validate
+        from wtth.types import StreamRecord
+        s = load_settings()
+        exp = load_expected_init(REPO / "configs" / "expected_init.json", s)
+        init = {"type": "system", "subtype": "init", "tools": [], "mcp_servers": [], "model": "claude-haiku-5-5",
+                "mcp_server_errors": [{"name": "workspace", "type": "reserved_name",
+                                       "message": '"workspace" is a reserved MCP server name and was not loaded'}]}
+        from wtth.types import TurnRequest, TurnType
+        from wtth.config import load_toolsets
+        ts = load_toolsets(s.paths.tools_yaml)["main"]
+        req = TurnRequest("t", 1, 1, TurnType.WITNESS, 1, 1, "rd-14", "claude-haiku-5-5", Path("/x"), "s", None, ts, None,
+                          8, 0.02, 120, False, Path("/y"), Path("/z"))
+        out = validate.validate_init(StreamRecord(init=init, n_init=1), exp, req)
+        self.assertTrue(any(v.startswith("init.mcp_server_errors") and "reserved_name" in v for v in out), out)
 
 
 KILL_BEHAVIOR = {

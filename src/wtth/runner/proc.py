@@ -236,11 +236,16 @@ def _pid_alive(pid: int) -> bool:
 
 # ---- logs / sampling --------------------------------------------------------------------------------
 
-def harvest_mcp_log(slot: SlotDirs, cwd: str, dest_dir: Path, since_ts: float) -> list[Path]:
+def harvest_mcp_log(slot: SlotDirs, cwd: str, dest_dir: Path, since_ts: float,
+                    server_name: str = "workspace") -> list[Path]:  # WP4-ADD: server_name
     """Move Claude Code's MCP logs written since `since_ts` out of the slot into dest_dir. Returns the new paths."""
-    src = Path(slot.home) / "Library" / "Caches" / "claude-cli-nodejs" / str(cwd).replace("/", "-") / "mcp-logs-workspace"
-    if not src.is_dir():
-        return []
+    base = Path(slot.home) / "Library" / "Caches" / "claude-cli-nodejs" / str(cwd).replace("/", "-")
+    src = base / f"mcp-logs-{server_name}"
+    if not src.is_dir():  # the CLI may sanitize the name; ours is the only server, so any mcp-logs-* dir is it
+        others = sorted(base.glob("mcp-logs-*")) if base.is_dir() else []
+        if not others:
+            return []
+        src = others[0]
     dest_dir = Path(dest_dir)
     moved: list[Path] = []
     for f in sorted(src.iterdir()):

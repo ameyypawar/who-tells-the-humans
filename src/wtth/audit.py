@@ -22,7 +22,14 @@ from typing import Any, Callable
 
 from wtth.textnorm import canon_json
 
-PREFIX = "mcp__workspace__"
+PREFIX = "mcp__workspace__"  # WP4-ADD: rebound by set_server_name(); default matches settings.mcp_server_name
+G0_PHASES = ("g0", "g0b")  # WP4-ADD: g0b is an exact copy of g0 on fresh seeds
+
+
+def set_server_name(name: str) -> None:
+    """Follow settings.mcp_server_name (the CLI prefixes every tool with mcp__<server>__)."""
+    global PREFIX
+    PREFIX = f"mcp__{name}__"
 SDK_IDENTITY = "You are a Claude agent, built on Anthropic's Claude Agent SDK."
 FORBIDDEN_IN_BODIES = ("@", "amey", "/Users/", "CLAUDE.md", "MEMORY", "skill", "Co-Authored")
 MODEL_TURN_TYPES = ("witness", "d1", "d2")
@@ -277,7 +284,7 @@ def _check_g0_2(settings: Any, d: dict, startup_check: Callable | None) -> Check
 def _check_g0_3(settings: Any, d: dict) -> Check:
     probes = [t for t in d["turns"] if t["turn_type"] == "probe"]
     if not probes:
-        if d["run"]["phase"] != "g0":
+        if d["run"]["phase"] not in G0_PHASES:
             return Check("G0-3", "MANUAL", f"phase {d['run']['phase']} has no deny probe (live g0 only)")
         return Check("G0-3", "FAIL", "no deny-probe turn in this run")
     bad: list[str] = []
@@ -524,13 +531,13 @@ def _check_g0_8(d: dict) -> Check:
 
 def _gate_turns(settings: Any, d: dict) -> tuple[list, str]:
     """Model turns that count for G0-9 (D-006): final attempts of the gate episodes only (phase g0: NONE 9001 and
-    RECEIPT 9002; the FORGED-9003 and Sonnet-9004 probes, failed attempts and debrief retries are excluded).
+    RECEIPT 9002, or 9092/9093 in g0b; the FORGED-9003 and Sonnet-9004 probes, failed attempts and debrief retries are excluded).
     For other phases (fake dry runs, tests) every finished episode of the run counts."""
     eps = d["episodes"]
     phase = d["run"]["phase"]
-    if phase == "g0":
+    if phase in G0_PHASES:
         pairs = set()
-        ph = settings.phases.get("g0")
+        ph = settings.phases.get(phase)
         for arm in (ph.arms if ph else ()):
             for c in arm.cells:
                 if not c.probe:
@@ -579,7 +586,7 @@ def _check_g0_9(settings: Any, d: dict) -> Check:
     pa, pw = r_all / len(turns), (r_w / len(wit) if wit else 0.0)
     detail = (f"scope: {scope}; all calls {r_all}/{len(turns)} ({pa:.1%}), round turns {r_w}/{len(wit)} ({pw:.1%}); "
               f"stop-reason {stop}; text-rule hits to hand-read (round turns without a tool call): {hits}")
-    if d["run"]["phase"] == "g0" and (len(turns), len(wit)) != (42, 30):
+    if d["run"]["phase"] in G0_PHASES and (len(turns), len(wit)) != (42, 30):
         detail += f"; NOTE expected 42 calls / 30 round turns, got {len(turns)} / {len(wit)}"
     if pa < 0.10 and pw < 0.10:
         return Check("G0-9", "PASS", detail)
@@ -834,6 +841,7 @@ def audit_g0(settings: Any, db: Any, run_id: str, *, startup_check: Callable | N
     are test hooks (defaults: orchestrator.manifest.verify_startup; runs dir, slots root and repo root)."""
     from wtth.config import load_toolsets
 
+    set_server_name(settings.mcp_server_name)  # WP4-ADD
     d = _load(settings, db, run_id)
     toolsets = load_toolsets(Path(settings.paths.tools_yaml))
     rep = AuditReport(run_id=run_id, settings=settings)

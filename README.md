@@ -21,7 +21,10 @@ not from inside Claude Code: the orchestrator refuses to start if `ANTHROPIC_API
 - `wtth manifest --phase core --verify` prints the startup problems (none = ready) and the run manifest.
 - `wtth render --cell NONE --seed 1 --round 2 --slot 1` prints a prompt (refuses withheld-text seeds without `--unmask`).
 - `wtth run --phase <p> [--level L] --live` runs a phase; `scripts/run_phase.sh <p> [args]` does the same inside
-  tmux + `caffeinate`. Phases: `g0dry g0 g1 g1b g2 g2fix core sonnet mvp pivotA pivotB backup`.
+  tmux + `caffeinate`. Phases: `g0dry g0 g0b g1 g1b g2 g2fix core sonnet mvp pivotA pivotB backup`. `g0b` is `g0` on fresh seeds (9091-9095).
+  The MCP server name is `mcp_server_name` in `configs/experiment.yaml` (or `--set mcp_server_name=NAME`); Claude Code
+  2.1.317 refuses reserved names (`workspace`, `terminal`, `office`, `visualize`, `window_halo`, `dev_debug`,
+  `ccd_session`, `ccd_session_mgmt`) and live startup checks fail on them.
 - `wtth run --phase g0dry --fake behavior.json --k-init 6` is the offline dry run with the fake client (needs
   `tests/fake_claude.py`); it uses `runs/fake/` and never touches the production database, slots or cwd.
 - `wtth status` shows episodes, attempts, cost and recent warnings. `runs/health.log` has a line every 30 s and

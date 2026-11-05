@@ -109,6 +109,35 @@ class QueueTests(unittest.TestCase):
         self.assertEqual(4, len(sch.build_queue(fake, "g0", "L2")))  # no deny probe in fake mode
         self.assertEqual(11, len(sch.build_queue(self.s, "g0dry", None)))
 
+    def test_g0b_is_g0_on_fresh_seeds(self) -> None:
+        g0, g0b = self.s.phases["g0"], self.s.phases["g0b"]
+        shape = lambda ph: [(a.model_key, [(c.cell, c.probe, c.count) for c in a.cells]) for a in ph.arms]  # noqa: E731
+        self.assertEqual(shape(g0), shape(g0b))
+        self.assertEqual((9091, "NONE"), (g0b.deny_probe.seed, g0b.deny_probe.cell))
+        q = sch.build_queue(self.s, "g0b", "L2")
+        self.assertEqual(["g0bprobe"] + ["g0b"] * 4, [x.phase for x in q])
+        self.assertEqual([9091, 9092, 9093, 9094, 9095], [x.seed for x in q])
+        self.assertEqual({"g0bprobe/main/claude-haiku-5-5/NONE/L2/s9091", "g0b/main/claude-haiku-5-5/FORGED/L2/s9094",
+                          "g0b/main/claude-sonnet-5-5/NONE/L2/s9095"}, q.probe_keys)
+        used = {(x.cell.name, x.seed, x.model) for x in sch.build_queue(self.s, "g0", "L2")}
+        self.assertFalse(used & {(x.cell.name, x.seed, x.model) for x in q})
+        self.assertIn("g0b", self.s.audit.all_turns_phases)
+
+    def test_audit_treats_g0b_like_g0(self) -> None:
+        from wtth import audit
+        eps = {1: {"cell": "NONE", "seed": 9092, "model": "claude-haiku-5-5", "status": "done", "final_attempt": 1},
+               2: {"cell": "RECEIPT", "seed": 9093, "model": "claude-haiku-5-5", "status": "done", "final_attempt": 1},
+               3: {"cell": "FORGED", "seed": 9094, "model": "claude-haiku-5-5", "status": "done", "final_attempt": 1}}
+        mk = lambda eid: {"episode_id": eid, "attempt": 1, "turn_type": "witness", "round": 1, "slot": 1, "try_no": 1,  # noqa: E731
+                          "turn_id": f"t{eid}", "class": "ok"}
+        d = {"episodes": eps, "run": {"phase": "g0b"}, "turns": [mk(1), mk(2), mk(3)]}
+        orig = audit._model_turns
+        audit._model_turns = lambda dd: dd["turns"]
+        self.addCleanup(setattr, audit, "_model_turns", orig)
+        turns, scope = audit._gate_turns(self.s, d)
+        self.assertEqual({"t1", "t2"}, {t["turn_id"] for t in turns})  # the FORGED probe is excluded
+        self.assertIn("gate episodes 2", scope)
+
     def test_enqueue_idempotent(self) -> None:
         ctx, _ = make_ctx("enqueue")
         specs = sch.build_queue(ctx.settings, "g2", "L2")

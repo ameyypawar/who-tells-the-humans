@@ -168,7 +168,8 @@ def _finish(ctx: "RunContext", req: TurnRequest, slot: SlotDirs, pres: ProcResul
     settings = ctx.settings
     turn_dir = Path(req.turn_dir)
 
-    mcp_logs = proc.harvest_mcp_log(slot, str(settings.paths.cwd), turn_dir / "mcp", launch_wall)
+    mcp_logs = proc.harvest_mcp_log(slot, str(settings.paths.cwd), turn_dir / "mcp", launch_wall,
+                                    getattr(settings, "mcp_server_name", "workspace"))  # WP4-ADD
     rec = parse_stream(pres.stdout_path)
     res = rec.result or {}
 

@@ -56,6 +56,13 @@ def validate_init(rec: StreamRecord, exp: dict, req: TurnRequest) -> list[str]:
         _mismatch(out, "init.apiKeySource", exp["apiKeySource"], init.get("apiKeySource"))
     if init.get("cwd") != exp["cwd"]:
         _mismatch(out, "init.cwd", exp["cwd"], init.get("cwd"))
+    # WP4-ADD: the reason a server failed to load (e.g. type=reserved_name) goes into the violations
+    for err in init.get("mcp_server_errors") or []:
+        if isinstance(err, dict):
+            out.append(f"init.mcp_server_errors: name={err.get('name')!r} type={err.get('type')!r} "
+                       f"message={str(err.get('message'))[:200]!r}")
+        else:
+            out.append(f"init.mcp_server_errors: {str(err)[:200]!r}")
     tools = init.get("tools")
     servers = init.get("mcp_servers")
     if req.turn_type in _DEBRIEF or req.toolset is None:
@@ -125,7 +132,7 @@ def validate_result(rec: StreamRecord, exp: dict, req: TurnRequest) -> list[str]
 
 
 def _parse_tool_name(name: str) -> str | None:
-    """'mcp__<server>__<tool>' -> '<tool>' (any server; init validation pins the server to 'workspace')."""
+    """'mcp__<server>__<tool>' -> '<tool>' (any server; init validation pins the configured server name)."""
     parts = name.split("__", 2)
     if len(parts) == 3 and parts[0] == "mcp" and parts[2]:
         return parts[2]

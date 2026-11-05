@@ -12,8 +12,7 @@ from wtth.config import env_allowlist
 from wtth.textnorm import sha256_text
 from wtth.types import Identity, SlotDirs, Toolset, TurnRequest, TurnType
 
-TOOL_PREFIX = "mcp__workspace__"
-SERVER_NAME = "workspace"
+# WP4-ADD: the server name comes from settings.mcp_server_name (CLI 2.1.317 reserves "workspace")
 _DEBRIEF = (TurnType.D1, TurnType.D2)
 
 
@@ -43,7 +42,8 @@ def build_argv(settings: Any, req: TurnRequest, mcp_config_json: str | None) -> 
     if not debrief:
         if mcp_config_json is None or req.toolset is None:
             raise ValueError("witness/probe turn needs mcp_config_json and a toolset")
-        names = [TOOL_PREFIX + t.name for t in req.toolset.tools]
+        prefix = f"mcp__{settings.mcp_server_name}__"
+        names = [prefix + t.name for t in req.toolset.tools]
         argv += ["--mcp-config", mcp_config_json]
         if getattr(settings, "allowed_tools_separate", False):
             # LEAD-REVIEW: fallback form if CC rejects the comma-joined single element (research/41 4.3 item 3).
@@ -100,7 +100,7 @@ def build_mcp_config(settings: Any, ident: Identity, toolset: Toolset) -> str:
         "WTTH_FAULT_DIR": str(settings.paths.faults_dir),
         "WTTH_SCHEMA_VERSION": "1",
     }
-    cfg = {"mcpServers": {SERVER_NAME: {
+    cfg = {"mcpServers": {settings.mcp_server_name: {
         "type": "stdio",
         "command": str(settings.paths.python),
         "args": ["-I", "-m", "wtth.mcp_server", "--runs-root", runs_root],
