@@ -9,3 +9,4 @@ runs/
 *.sqlite-shm
 __pycache__/
 .venv/
+/20??-??-??-*.txt

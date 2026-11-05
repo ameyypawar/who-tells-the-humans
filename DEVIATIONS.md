@@ -43,3 +43,16 @@ Every change after the freeze is recorded here with a timestamp, the reason, and
   - The CI-based null rule becomes attainable.
   - The Sonnet arm no longer depends on the subscription reset, because all agent calls use the API credit (D-001).
 - **Effect on the design:** cells, outcomes, hypotheses and tests are unchanged. Only n changes, and the change was fixed before any data was collected.
+
+## D-004 — 2026-11-05 (sprint start, before any data): early start, schedule shifted about 30 hours earlier
+- **Was:**
+  - PREREG §14: "All relative to T0, the kickoff, TBD (assumed Saturday Nov 7 03:30 IST, which is Friday Nov 6 14:00 PST; the real time is not yet published)."
+  - PREREG §22 (TBD register): "T0, the kickoff time | TBD (assumed Sat Nov 7 03:30 IST; asked on Discord)".
+  - D-003: the Sonnet arm runs on Saturday.
+- **Now:**
+  - The sprint started at **T0 = Thu 2026-11-05 21:26:10 IST (15:56:10 UTC)**, with permission from Apart Research staff on the hackathon Discord (#help-desk, Nov 5): "You can start today 🙂 Friday has already started in some parts of the world".
+  - Every scheduled block shifts about 30 hours earlier. Gate times stay relative to T0, as §14 already states.
+  - The run order is unchanged: G0 → G1/G2 → Haiku core → Sonnet.
+  - D-003's "Sonnet arm on Saturday" becomes "Sonnet arm right after the Haiku core".
+- **Reason:** the organizers allowed an early start, and the assumed kickoff in §14 and §22 was only a placeholder.
+- **Effect on the design:** none. Cells, outcomes, hypotheses, prompts and sample sizes are unchanged. Only the calendar moves.
