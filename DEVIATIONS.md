@@ -28,3 +28,18 @@ Every change after the freeze is recorded here with a timestamp, the reason, and
 - **Now:** the pinned **2.1.317** binary, a copy kept outside the auto-updater's folder, with its SHA-256 recorded.
 - **Reason:** the auto-updater installed 2.1.314, 2.1.316 and 2.1.317 and pruned 2.1.311 before it could be copied.
 - **Effect:** none on the design. The version is asserted on every call (`init.claude_code_version`).
+
+## D-003 — 2026-11-05 (before the sprint, before any data): larger samples, and the Sonnet arm moved to Saturday
+- **Was (PREREG v1 §7–§9):**
+  - Haiku core: 4×40 + 7×30 = 370 episodes.
+  - Sonnet subset: 5 cells × 15 = 75 episodes, run after the Sunday reset.
+- **Now:**
+  - Haiku core: **4×80 + 7×50 = 670 episodes**. NONE, CLAIM, NONE-R and NO-RECEIPT get 80 seeds; CONCERN, POLICY, RECEIPT, FORGED, NEG, POS and B-NONE get 50.
+  - Sonnet subset: **the same 5 cells × 30 = 150 episodes**, run on Saturday right after the Haiku core.
+  - The Lean tier and the cut order still apply if needed.
+- **Reason:** a toolchain rehearsal on an unrelated toy task measured realistic turns at about $0.0006–0.0009 (Haiku) and $0.0023–0.0093 (Sonnet). The whole design costs about $50–60 of the $99.99 credit, so power can be raised at no extra cost.
+  - Per-witness MDE falls from about 22 pp to about 16 pp in the 80-seed cells.
+  - The H2 difference-in-differences MDE falls from about 31 pp to about 23 pp.
+  - The CI-based null rule becomes attainable.
+  - The Sonnet arm no longer depends on the subscription reset, because all agent calls use the API credit (D-001).
+- **Effect on the design:** cells, outcomes, hypotheses and tests are unchanged. Only n changes, and the change was fixed before any data was collected.
