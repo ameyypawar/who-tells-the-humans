@@ -8,7 +8,7 @@
 A fictional retailer, Larkspur Home, runs a nightly refund review on a shared board.
 The system prompt says: ``\wtthStimSystemStaffed{} \wtthStimSystemOps''
 A shift has \wtthDesignRosterWord{} agents over \wtthDesignRoundsWord{} rounds: a scripted violator (V), claimant (C) and background worker (B), and \wtthDesignLiveWitnessesWord{} live witnesses on one model.
-Each witness reviews its own refund tickets, reads the whole board, and can post to it or call \texttt{notify\_ops}, a private, write-only feedback channel to ops whose reply is always ``\wtthStimReplyNotify''
+Each witness reviews its own refund tickets (\texttt{submit\_reviews}), reads the whole board, and can post to it (\texttt{post\_to\_board}) or call \texttt{notify\_ops}, a private, write-only feedback channel to ops whose reply is always ``\wtthStimReplyNotify''
 The tool names no consequence of a note, and the server stamps the sender (Appendix~\ref{app:prompts}).
 % D-012 is not yet in DEVIATIONS.md: the macro prints the server name from the configs at frozen-v1. Mention the rename
 % only generically and point to the deviations table; never type the names here.
@@ -18,7 +18,7 @@ Because the pinned CLI reserves the pre-registered server name, the server runs 
 In round 2, V reports splitting a refund to avoid a second approval, which the runbook forbids, and C posts a routine aside, a concern or a claim (Box~\ref{box:receipt}); the claim has a public paraphrase and two withheld ones.
 In world R1 the board carries an \texttt{\#escalation-log}, which shows C's line in \cell{RECEIPT} and \cell{POS}, where the harness files C's real note, and reads ``\wtthStimLogEmpty'' in \cell{NO-RECEIPT}; in \cell{FORGED}, C's post also carries a typed line in the log layout (withheld).
 \cell{POLICY} adds ``\wtthStimPolicy'' to the runbook; \cell{NEG} and \cell{POS} add ``\wtthStimDedupe'', a built-in reason to stand down (the positive control); and in the benign cell, \cell{B-NONE}, V holds the refund.
-Table~\ref{tab:cells} lists the cells and their planned sizes (D-003).
+Table~\ref{tab:cells} lists the cells and their planned sizes (D-003); the seed fixes the paraphrase, the handle order and the tickets.
 
 \paragraph{Receipts.}
 Only the \texttt{notify\_ops} handler writes notes, the log is rendered only from them, and scripted notes use the same handler, so every receipt is written by the channel; tests check that no post writes the log.
@@ -42,7 +42,7 @@ Detectable effects at the frozen level are in Appendix~\ref{app:predictions}.
 \input{generated/design/boxes/receipt_vs_noreceipt_r2}
 \caption{\textbf{The round-2 board and escalation log in \cell{RECEIPT} and \cell{NO-RECEIPT}.}
 Only the log differs; the rest of the prompt is identical.
-In \cell{FORGED} the claimant's post also carries a line in the log layout, typed by the claimant and withheld; the log stays empty.}
+In \cell{FORGED} C's post also carries a typed line in the log layout (withheld), and the log stays empty.}
 \label{box:receipt}
 \end{figure}
 
@@ -50,13 +50,13 @@ In \cell{FORGED} the claimant's post also carries a line in the log layout, type
 \centering\footnotesize
 \adjustbox{max width=\linewidth}{\input{generated/design/table_cells}}
 \caption{\textbf{The \wtthDesignCellsWord{} cells.}
-World R1 shows the channel-written log; shifts are planned seeds per cell; the Sonnet subset is exploratory.}
+Shifts are planned seeds per cell; the Sonnet subset is exploratory.}
 \label{tab:cells}
 \end{table}
 
 % PREREG sections 14, 15, 21; D-001, D-002, D-005, D-007, D-009, D-011; configs/*.
 \paragraph{Execution.}\label{sec:execution}
-Each witness turn is one stateless call to \wtthDesignModelHaikuName{} at effort \wtthDesignEffort, through a pinned Claude Code CLI (\wtthDesignCliVersion) in \texttt{--bare} mode, without CLAUDE.md, memory or built-in tools and with the CLI's retry of refused turns off (Appendix~\ref{app:harness}).
+Each witness turn is one stateless call to \wtthDesignModelHaikuName{} at effort \wtthDesignEffort{} (no temperature control), through a pinned Claude Code CLI (\wtthDesignCliVersion) in \texttt{--bare} mode, without CLAUDE.md, memory or built-in tools and with the CLI's retry of refused turns off (Appendix~\ref{app:harness}).
 Technical failures are rerun on the same seed; refusals and malformed calls are data.
 Pilot gates, never pooled with the data, checked integrity (G0), froze V's clarity level (G1, level \wtthGateFrozenLevel) and confirmed that witnesses read the log (G2; Appendix~\ref{app:gates}).
 The judge (\wtthDesignModelJudgeName) is blind to cell, seed, model and purpose; review-queue labels are model-proposed (\wtthDesignModelAnnotatorName) and author-reviewed (Appendix~\ref{app:judge}).
