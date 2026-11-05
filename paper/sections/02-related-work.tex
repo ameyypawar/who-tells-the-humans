@@ -1,3 +1,27 @@
-% sections/02-related-work.tex (writer fills; plan 49 section 2.3). The cites below exercise the bibliography pipeline only.
-\section{Related Work}
-\wtthStub{Related Work. Pipeline test cites: \citep{greenblatt2026metr,paglieri2026cheating,fuller2026smoke} and unverified additions \citep{magistrali2026aligned,ghosh2026pcm,diekmann1985volunteer}.}
+% sections/02-related-work.tex (plan 49 section 2.3, 0.55 page). Words, not numbers: every cited number costs a
+% verification. Sources: research/24, 29, 34, 36 (tier 1 and section 1). Every key is unverified until the author opens
+% it (bib/citations-verified.csv). Never claim "first" (plan 49 section 4.2 items 1 to 5).
+% Table 3 (nearest work against the conjunction) moved to Appendix I, the first step of the cut order, to keep
+% sections 1 to 3 within about 3.3 pages.
+\section{Related Work}\label{sec:related}
+
+\paragraph{Escalation in multi-agent systems.}
+In the field, agents treated a shared board as the authority \citep{greenblatt2026metr} and blew the whistle on their own in a research swarm \citep{paglieri2026cheating}.
+In experiments, a declared audience of agents left paging at ceiling or, for Haiku, moved reports to a slower channel \citep{fuller2026smoke}; a shared channel delayed live insiders' warnings \citep{eldin2026codeofsilence}; and always-dismiss peers swayed live LLM monitors' decisions to escalate alerts \citep{magistrali2026aligned}.
+Whistleblowing benchmarks and escalation-channel studies test single agents \citep{agrawal2026whistleblow,browne2025snitchbench,paulino2026whistlebench,gomez2025surveillance}; none manipulates a claim that someone already escalated.
+
+\paragraph{Unverified claims and provenance.}
+An unbacked claim of prior sign-off made LLM security checkers stand down \citep{sidot2026verify}.
+A rule sentence that treats claimed approvals as unverified stopped fabricated permissions from users, pooled over two small models, but failed more often when the claim came through a tool result \citep{patel2026fabricated}.
+Claims lose their ``never verified'' status across handoffs \citep{silenceisendorsement2026}, relaying a record beats describing it \citep{mitra2026testimony}, and flattening typed messages destroys provenance \citep{compaction2026}.
+A Claude model resisted a forged authorization claim in small swarms \citep{zhang2026troy}, so we do not assume credulity.
+
+\paragraph{Receipts.}
+PCM attaches evidence from a log the claimant cannot write to every inter-agent claim and checks it mechanically, but cannot prove absence \citep{ghosh2026pcm}.
+Concordia separates the game master's events from agents' putative events \citep{vezhnevets2023concordia}, and outcome attestation remains open upstream in MCP and \AtwoA{} \citep{mcp3350,a2a2355}.
+Our empty log covers absence, and we measure LLM witnesses, not verifiers.
+
+\paragraph{Human bystanders.}
+Bystander research \citep{latane1968group,darley1968bystander,fischer2011bystander,markey2000bystander} and the volunteer's dilemma \citep{diekmann1985volunteer} supply the ``someone else will'' mechanism.
+We found no classic experiment that manipulates an explicit ``already reported'' claim, though our search was brief.
+Table~\ref{tab:nearest} (Appendix~\ref{app:related}) sets the nearest work against the conjunction we test.
