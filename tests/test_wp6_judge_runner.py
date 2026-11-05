@@ -192,6 +192,45 @@ class QuoteReask(unittest.TestCase):
         self.assertTrue(all("quote:not_substring" in e[0] for e in errs))
 
 
+class ReviewFixes(ValidationBase):
+    def test_technical_held_out_failure_is_not_a_validation_failure(self):
+        self.answer()
+        bad = next(i for i in self.first if i.held_out_key == "H3")
+        self.rig.rules.insert(0, {"match": {"prompt_contains": f"id: {bad.item_id}"}, "mode": "api_error",
+                                  "status": 529})
+        self.rig.write()
+        vr = self.validate()
+        self.assertTrue(vr.technical)
+        self.assertFalse(self.jdb.read(lambda c: c.execute("SELECT COUNT(*) FROM validations").fetchone()[0]))
+        self.assertEqual(get_meta(self.jdb, "validation_passed"), "0")
+        with self.assertRaises(JudgeStop):          # v1 never failed, so v2 stays unavailable
+            self.validate(prompt_version="v2", deviation="D-099")
+        self.rig.rules.pop(0)
+        self.rig.write()
+        vr = self.validate()
+        self.assertTrue(vr.passed and not vr.technical)
+
+    def test_gate_row_does_not_count_as_failed_v1(self):
+        ctx = C.make_context(self.s, run_id="gr", prompt_version="v1", k=1)
+        bid = C.register_batch(ctx, [], kind="gate", tier="G1", subtier="G1")
+        R._record_validation(ctx, bid, "L2", {f"H{n}": False for n in range(1, 13)})
+        self.assertEqual(self.jdb.read(lambda c: c.execute("SELECT COUNT(*) FROM validations").fetchone()[0]), 1)
+        self.assertIsNone(R._last_validation(self.jdb, "v1"))
+
+    def test_resume_at_ask_two(self):
+        item = self.ho[0]
+        ctx = C.make_context(self.s, run_id="rs", prompt_version="v1", k=1)
+        bid = C.register_batch(ctx, [item], kind="first", tier=None, subtier=None)
+        self.rig.rule(item, "not json", mode="normal")
+        self.rig.write()
+        asyncio.run(C.run_call(ctx, item, batch_id=bid, ask_no=1, try_no=1, cancel=asyncio.Event()))
+        self.assertIsNone(R._read_label(ctx, item.item_id))
+        lab = asyncio.run(R.judge_item(ctx, item, batch_id=bid, cancel=asyncio.Event()))
+        self.assertEqual(lab.status, "invalid")
+        asks = ctx.jdb.read(lambda c: [r[0] for r in c.execute("SELECT ask_no FROM calls ORDER BY launched_at")])
+        self.assertEqual(asks, [1, 2])
+
+
 class Recover(unittest.TestCase):
     def test_open_call_rows_are_charged_the_cap_and_closed(self):
         rig = Rig("recover1")

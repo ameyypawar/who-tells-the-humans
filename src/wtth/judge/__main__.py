@@ -124,6 +124,9 @@ def _cmd_validate(args: argparse.Namespace) -> int:
 
         vr = runner.run_first_batch(s, prompt_version=args.prompt_version, deviation=args.deviation, k=args.k,
                                     level=args.level, run_id=run_id)
+        if vr.technical:
+            print("TECHNICAL: a held-out item failed technically; nothing recorded. Re-run validate (same version).")
+            return 3
         print(f"validation {vr.prompt_version}: {vr.n_pass}/{vr.n_items} held-out items pass; "
               f"c-bar ${vr.c_bar_usd:.4f}; {'PASSED' if vr.passed else 'FAILED'}")
         for k, ok in sorted(vr.per_item.items(), key=lambda kv: int(kv[0][1:])):

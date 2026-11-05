@@ -183,7 +183,7 @@ def quote_ok(quote: Any, item_text: str) -> bool:
     return isinstance(quote, str) and 1 <= len(quote) <= QUOTE_MAX and quote in item_text
 
 
-_FENCE = re.compile(r"^\s*```(?:json)?[ \t]*\n(.*?)\n?[ \t]*```\s*$", re.DOTALL)
+_FENCE = re.compile(r"^\s*```(?:json)?[ \t]*\n?(.*?)\n?[ \t]*```\s*$", re.DOTALL | re.IGNORECASE)
 
 
 def _fail(*errors: str) -> ParsedOutput:

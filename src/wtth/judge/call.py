@@ -169,20 +169,26 @@ async def run_call(ctx: JudgeContext, item: Item, *, batch_id: str, ask_no: int,
     never_launched = False
     force: tuple[TurnClass, FailClass, str] | None = None
     slot = None
+    reserved = False
     inserted = False
     launch_wall = time.time()
     try:
         async with ctx.kgate:
             if ctx.halt is not None or cancel.is_set():
                 raise _NotLaunched()
-            if not ctx.budget.can_launch(ctx.inflight):
-                ctx.halt = "budget"
-                raise BudgetBinds("launch guard: global spend plus in-flight calls would pass the cap")
-            go = await _launch_gate(ctx, cancel)
-            if not go or ctx.halt is not None:
-                raise _NotLaunched()
-            slot = ctx.slots.acquire()
-            ctx.inflight += 1
+            ctx.inflight += 1          # reserve the per-call cap BEFORE any await, so K coroutines cannot all pass
+            reserved = True
+            try:
+                if not ctx.budget.can_launch(ctx.inflight - 1):
+                    ctx.halt = "budget"
+                    raise BudgetBinds("launch guard: global spend plus in-flight calls would pass the cap")
+                go = await _launch_gate(ctx, cancel)
+                if not go or ctx.halt is not None:
+                    raise _NotLaunched()
+                slot = ctx.slots.acquire()
+            except BaseException:
+                ctx.inflight -= 1
+                raise
             try:
                 env = invocation.build_env(s, slot, ctx._api_key, None)
                 launch_wall = time.time()

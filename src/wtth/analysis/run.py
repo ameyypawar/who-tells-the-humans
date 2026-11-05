@@ -152,7 +152,7 @@ def _judge_pack(settings: Any, seeds: AnalysisSeeds, *, strict: bool, notes: lis
         from wtth.judge.db import open_judge_db
 
         jdb = open_judge_db(settings)
-        rows = [dict(r) for r in jdb.read(lambda c: c.execute("SELECT * FROM validations ORDER BY ts").fetchall())]
+        rows = [dict(r) for r in jdb.read(lambda c: c.execute("SELECT v.* FROM validations v JOIN batches b ON b.batch_id=v.batch_id WHERE b.kind='first' ORDER BY v.ts").fetchall())]
         return (rows[-1] if rows else None), agreement_summary(jdb, seeds=seeds)
     except Exception as exc:     # noqa: BLE001 - provisional runs go on without the table
         if strict:

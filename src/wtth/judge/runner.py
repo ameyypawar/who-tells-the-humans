@@ -44,6 +44,7 @@ class ValidationResult:
     per_item: Mapping[str, bool]
     c_bar_usd: float
     prompt_version: str
+    technical: bool = False   # a held-out item failed technically: nothing recorded, re-run with the same version
 
 
 def new_run_id() -> str:
@@ -100,7 +101,10 @@ async def judge_item(ctx: JudgeContext, item: Item, *, batch_id: str, cancel: as
     done = _read_label(ctx, item.item_id)
     if done is not None:
         return done
-    for ask_no in (1, 2):
+    first_done = ctx.jdb.read(lambda c: c.execute(
+        "SELECT 1 FROM calls WHERE item_id=? AND prompt_version=? AND ask_no=1 AND \"class\" IN "
+        "('ok','max_turns','max_budget') LIMIT 1", (item.item_id, ctx.prompt.version)).fetchone())
+    for ask_no in ((2,) if first_done else (1, 2)):      # at most one re-ask per item, ever
         out = await _call_with_retries(ctx, item, batch_id, ask_no, cancel)
         if out is None:
             return None
@@ -220,7 +224,8 @@ def _seeds(settings: Any) -> Any:
 
 
 def _last_validation(jdb: Any, version: str) -> ValidationResult | None:
-    r = jdb.read(lambda c: c.execute("SELECT * FROM validations WHERE prompt_version=? ORDER BY ts DESC LIMIT 1",
+    r = jdb.read(lambda c: c.execute("SELECT v.* FROM validations v JOIN batches b ON b.batch_id=v.batch_id WHERE v.prompt_version=? "
+                                     "AND b.kind='first' ORDER BY v.ts DESC LIMIT 1",
                                      (version,)).fetchone())
     if r is None:
         return None
@@ -265,6 +270,12 @@ def run_first_batch(settings: Any, *, prompt_version: str = "v1", deviation: str
         res = asyncio.run(judge_batch(ctx, batch, kind="first", tier=None, subtier=None, seed=seeds.first_batch))
         ho = [i for i in batch if i.held_out_key is not None]
         per = score_held_out(ctx, ho)
+        unlabelled = [it.held_out_key for it in ho if _read_label(ctx, it.item_id) is None]
+        if unlabelled:      # technical failure (retries exhausted): not a validation failure, v2 is not burned
+            log_event(ctx.jdb, "validation", level="warn", run_id=ctx.run_id,
+                      detail={"technical": True, "prompt_version": prompt_version, "items": unlabelled})
+            code = 3
+            return ValidationResult(False, sum(per.values()), len(per), dict(per), 0.0, prompt_version, True)
         vr = _record_validation(ctx, res.batch_id, level, per)
         if vr.passed:
             set_meta(ctx.jdb, "validation_passed", "1")

@@ -49,6 +49,11 @@ class ParseOutputTable(unittest.TestCase):
             self.assertTrue(parse(wrapped).ok, wrapped[:20])
         self.assert_err(parse("```json\n" + body + "\n```", allow_fence=False), "json:not_one_object")
 
+    def test_fence_variants(self):
+        body = json.dumps(env(bp()))
+        for wrapped in ("```JSON\n" + body + "\n```", "```" + body + "```", "```json " + body + "```"):
+            self.assertTrue(parse(wrapped).ok, wrapped[:12])
+
     def test_prose_and_two_objects(self):
         body = json.dumps(env(bp()))
         self.assert_err(parse("Here you go: " + body), "json:not_one_object")
