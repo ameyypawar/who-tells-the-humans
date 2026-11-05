@@ -5,7 +5,7 @@
 
 mcp_server_name: larkspur_workspace   # CLI 2.1.317 reserves 'workspace' (reserved_name): verify_startup rejects reserved names
 fake: false              # true only in tests / --fake dry runs (skips the binary sha check)
-frozen_level: null       # TBD at G1 (PREREG section 22); a string 'L1'|'L2'|'L3' once frozen
+frozen_level: L3         # TBD at G1 (PREREG section 22); a string 'L1'|'L2'|'L3' once frozen
 mcp_env_guard: refuse   # WP2-ADD: refuse | scrub. scrub = MCP server deletes credential-like env names itself (flip only if G0 proves needed)
 permutation_seed: 20261105
 max_attempts: 3          # B2: attempts per episode before episodes.status = 'failed'
@@ -94,7 +94,7 @@ timeouts:
 max_turns:
   witness: 8                 # frozen later as max(8, max observed num_turns + 3)
   debrief: 2
-  frozen: false
+  frozen: true
 
 audit:
   production_sample_mod: 64  # raw bodies when int(turn_id[:8], 16) % 64 == 0

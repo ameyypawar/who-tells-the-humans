@@ -255,7 +255,7 @@ class GuardTests(unittest.TestCase):
         self.assertTrue(any(p.startswith("CLAUDECODE is set") for p in problems))
 
     def test_core_requires_freeze(self) -> None:
-        s, _ = self.settings("wp4_t44_freeze", fake=False)
+        s, _ = self.settings("wp4_t44_freeze", fake=False, frozen_level=None, **{"max_turns.frozen": False})
         problems = manifest.verify_startup(s, "live", "core")
         self.assertIn("HEAD does not carry tag frozen-v1", problems)
         self.assertIn("frozen_level is not set", problems)

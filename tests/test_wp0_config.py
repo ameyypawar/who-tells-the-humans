@@ -132,8 +132,8 @@ class SettingsTests(unittest.TestCase):
         self.assertEqual((80.0, 60.0), (self.s.budget.cap_usd, self.s.budget.warn_usd))  # B5
         self.assertEqual(8, self.s.max_turns.witness)
         self.assertEqual(2, self.s.max_turns.debrief)
-        self.assertFalse(self.s.max_turns.frozen)
-        self.assertIsNone(self.s.frozen_level)
+        self.assertIn(self.s.frozen_level, (None, "L1", "L2", "L3"))
+        self.assertEqual(self.s.frozen_level is not None, self.s.max_turns.frozen)
         self.assertEqual(20261105, self.s.permutation_seed)
         self.assertEqual(120, self.s.timeouts.turn_s)
         self.assertEqual({"claude-haiku-5-5": 0.02, "claude-sonnet-5-5": 0.10}, self.s.models.max_budget_usd)

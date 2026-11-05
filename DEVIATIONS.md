@@ -307,3 +307,35 @@ Every change after the freeze is recorded here with a timestamp, the reason, and
   - It precedes all pilot and confirmatory data.
   - A startup guard now refuses any reserved name before a live call (commit ceca889).
 - **Decided by:** the author approved it on 2026-11-06 at about 04:30 IST, under stop condition S-03 (research/42 §1.16), on the lead's recommendation.
+
+## D-013 — 2026-11-06 (before the core, before any confirmatory data): Freeze: gate results and TBD fills (before any confirmatory data)
+- **Sources:** `runs/reports/g0_20261105T231043Z-3273.md`, research/42 §1.5 rule 1 and §1.7, PREREG §14 (pivot table) and §22, D-005, D-007, D-011, D-012.
+- **Was:** `frozen_level` was null, `max_turns.frozen` was false, and the length caps, K schedule, bootstrap constants and judge settings were listed as TBD until the gates ran.
+- **Now:**
+  - **G0.** The first live run (phase g0, about 01:00 IST) was void, because the CLI refused the reserved MCP server name (D-012). Its seeds 9000–9004 are never reused.
+  - **G0 re-run (phase g0b, run 20261105T231043Z-3273, report `runs/reports/g0_20261105T231043Z-3273.md`):** PASS, with 0 FAIL across G0-2 to G0-15.
+    - Deny probe OK.
+    - 84 turns with 0 assertion violations.
+    - Tool replies byte-exact.
+    - Raw-body audit clean.
+    - Reconcile 60/60.
+    - Well-formed tool calls 81/82 (98.8%).
+    - Refusals 0/42 calls and 0/30 round turns.
+    - 0 key-pattern hits.
+    - No unexpected log lines.
+    - G0-1 (offline suite and fake dry run) is evidenced by 603/603 tests at commit 38c74b2, 609/610 at ceca889 (the one failure is a timing-flaky RSS-sampler test that passes alone) and a fake dry run of 11/11.
+  - **G1 (NONE × 16 per level, Haiku).** L2 gave 48/48 witnesses (100%) and L3 gave 48/48 (100%). The keyword rule and the any-note rule agree, so no judge fallback was needed. Both levels are above 85%, so this is the CEILING branch, and **F = L3** (pre-registered rule; research/42 §1.5 rule 1).
+  - **G2 (NEG/POS × 16 at L3).** Episodes with a live note were NEG 16/16 and POS 6/16, so d = 10 (≥ 4) and the result is **PASS**, a gap of 62.5 points. The exposure check covered 480 prompts with 0 violations. At witness level, P1 was NEG 48/48 and POS 7/48.
+  - **Gate branch.** GO under the ceiling caveat (PREREG §14 pivot table; research/42 §1.7). The core runs at F = L3.
+  - **TBD fills.**
+    - F = L3 (`frozen_level: L3`).
+    - Per-turn step cap 8 = max(8, highest observed 4 + 3) (`max_turns.witness: 8`, `max_turns.frozen: true`).
+    - Length caps: post 600, message 2,000, and subject **120**, doubled once from the draft 60 under P-11 because 7 G0 subjects exceeded 60 (the longest was 81), commit e27b221.
+    - K 9 → 12 → 15 (scheduler defaults, D-005): K starts at 9, targets 12, and may grow to 15 while memory pressure is normal.
+    - Bootstrap B = 10,000 and its seeds, in `configs/analysis.yaml` (D-011).
+    - Judge `claude-sonnet-5-5` at effort low (D-007).
+  - **Pilot calibration for judge planning (pilot data only, never pooled).** 0.126 posts per witness-round, 0.833 notes per witness, unmatched-note share 0.056.
+  - **Still pending the author.** F-07 (the optional blind sample) and F-25 (the judge cap). Each will get a dated note before any judge label is seen.
+  - **Pilot spend so far.** About $1.1.
+- **Reason:** PREREG §22 requires the TBD values to be filled from the gate results before any confirmatory data exist.
+- **Effect on the design:** fixes the frozen level at L3 and the witness step cap at 8. No change to cells, hypotheses, tests or stimuli. Ceiling caveat: at L3 the NONE arm is at 100%, which is carried into interpretation under PREREG §14. Decided by: the pre-registered gate rules (research/42 §1.5, §1.7) and the author's pre-authorisation of the gate playbook (P-01–P-12).

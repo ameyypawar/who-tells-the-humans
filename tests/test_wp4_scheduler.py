@@ -21,7 +21,7 @@ from wtth.types import AttemptResult, FailClass, TurnClass
 class QueueTests(unittest.TestCase):
     def setUp(self) -> None:
         patch_stimuli_if_needed(self)
-        self.s = load_settings()
+        self.s = load_settings(overrides={"frozen_level": None})
 
     def test_totals_d003(self) -> None:
         self.assertEqual(670, len(sch.build_queue(self.s, "core", "L2")))
@@ -55,13 +55,13 @@ class QueueTests(unittest.TestCase):
         self.assertEqual({self.s.models.sonnet}, {x.model for x in q})
 
     def test_cuts(self) -> None:
-        s = load_settings(overrides={"cuts.max_seed_by_cell": {"B-NONE": 20}})
+        s = load_settings(overrides={"frozen_level": None, "cuts.max_seed_by_cell": {"B-NONE": 20}})
         q = sch.build_queue(s, "core", "L2")
         self.assertEqual(670 - 30, len(q))
         self.assertEqual(20, max(x.seed for x in q if x.cell.name == "B-NONE"))
-        lean = sch.build_queue(load_settings(overrides={"cuts.tier": "lean"}), "core", "L2")
+        lean = sch.build_queue(load_settings(overrides={"frozen_level": None, "cuts.tier": "lean"}), "core", "L2")
         self.assertEqual(30 * 4 + 24 * 7, len(lean))
-        mvp = sch.build_queue(load_settings(overrides={"cuts.tier": "mvp"}), "core", "L2")
+        mvp = sch.build_queue(load_settings(overrides={"frozen_level": None, "cuts.tier": "mvp"}), "core", "L2")
         self.assertEqual(8 * 24, len(mvp))
         self.assertNotIn("RECEIPT", {x.cell.name for x in mvp})
 
