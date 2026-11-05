@@ -11,3 +11,7 @@ rounds:         {value: 5,   prereg: "4"}
 live_witnesses: {value: 3,   prereg: "4"}
 roster:         {value: 6,   prereg: "4 (three scripted, three live)"}
 tickets_per_round: {value: 3, prereg: "4; scripted_lines.md section 6"}
+power_pct:          {value: 80, prereg: "13 (detectable effects are stated at 80 percent power)"}
+pred_standdown_lo:  {value: 15, prereg: "12 prediction 1 (stand-down of 15 to 30 points)"}
+pred_standdown_hi:  {value: 30, prereg: "12 prediction 1"}
+pred_receipts_within: {value: 10, prereg: "12 prediction 2 (P1(NO-RECEIPT) within 10 points of P1(NONE-R))"}

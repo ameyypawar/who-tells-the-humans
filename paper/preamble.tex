@@ -39,6 +39,12 @@
 \newcommand{\wtthPart}{\ensuremath{\circ}}
 \newcommand{\wtthNR}{---}
 
+% ---- Box 1 sits in a figure float but is captioned and numbered as a box: \captionsetup{type=boxfloat} inside it ----
+\DeclareCaptionType[fileext=lob]{boxfloat}[Box][List of Boxes]
+
+% ---- P2-prime (``never told by any route''), typeset the same way everywhere ----
+\newcommand{\Ptwop}{P2\ensuremath{'}}
+
 % ---- verbatim stimulus helpers ----
 \DefineVerbatimEnvironment{wtthverb}{Verbatim}{fontsize=\footnotesize,breaklines=true,breakanywhere=true}
 \newsavebox{\wtthbox}   % holds Box 1 (verbatim cannot sit in a \fbox argument)

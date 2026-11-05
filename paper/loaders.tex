@@ -59,5 +59,13 @@
       \color{red!35}\fontsize{26}{28}\selectfont\bfseries PROVISIONAL / PLACEHOLDER --- NOT FOR SUBMISSION}}}}%
   \fi}
 
-% ---- conditional on a yes/no flag macro: \wtthIfYes{\wtthHaiku...Excl}{text printed only if the flag reads yes} ----
-\newcommand{\wtthIfYes}[2]{\ifdef{#1}{\ifdefstring{#1}{yes}{#2}{}}{}}
+% ---- conditional on a flag macro ------------------------------------------------------------------------------
+% \wtthIfEq{\wtthFlag}{value}{text}: text only if the flag reads exactly `value'. \wtthIfYes and \wtthIfNo are the
+% yes/no cases. In a PLACEHOLDER build every conditional text is shown in grey brackets, so the author can read it.
+\newif\ifwtthPlaceholder
+\ifdefstring{\wtthStatus}{PLACEHOLDER}{\wtthPlaceholdertrue}{\wtthPlaceholderfalse}
+\newcommand{\wtthIfEq}[3]{%
+  \ifwtthPlaceholder{\color{black!55}[if {\ttfamily\scriptsize\detokenize{#1}} = #2: }#3{\color{black!55}]}%
+  \else\ifdef{#1}{\ifdefstring{#1}{#2}{#3}{}}{}\fi}
+\newcommand{\wtthIfYes}[2]{\wtthIfEq{#1}{yes}{#2}}
+\newcommand{\wtthIfNo}[2]{\wtthIfEq{#1}{no}{#2}}
