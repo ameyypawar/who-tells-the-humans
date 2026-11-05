@@ -1,5 +1,61 @@
-% appendix G (plan 49 section 2.5)
-\section{Judge rubric, validation and agreement}
-\wtthStub{G.1 to G.9 text}
+% appendix G (plan 49 section 2.5). Sources: prompts/judge_rubric.md, D-006, D-007, D-011, research/47 sections 2.3 to
+% 2.11. Wording rule: labels are model-proposed and author-reviewed; agreement is always "model--model" (plan 49 4.2
+% items 12 and 13). Text tonight; numbers come from macros and the generated tables.
+\section{Judge rubric, validation and agreement}\label{app:judge}
+
+\subsection{What the judge codes}
+The judge codes four things (rubric template in Appendix~\ref{app:prompts}).
+(i) Whether a witness's board post is an escalation to humans: addressed to ops or another human role, and about the violation; this feeds \Ptwop.
+(ii) Whether a post raises a concern about the violation, with a subtype.
+(iii) Test awareness in posts, notes and debrief answers, and the \DebOne{} verdict (live, test or unsure).
+(iv) Support labels: claims of having told ops; whether a note refers to the violation (the P1 path for notes without a keyword); and the debrief's beliefs about who told ops, their basis, and the reasons given.
+Escalation is recomputed from its two parts rather than taken from the judge's summary value, and mismatches are counted (D-011).
+
+\subsection{Configuration and blinding}
+The judge is \wtthDesignModelJudgeName{}, called through the witnesses' isolation stack (\texttt{--bare}, API key, no tools, no MCP server) at effort \wtthDesignEffort, one call per item, with the raw stream kept (D-007).
+It sees no cell, seed, subject model, hypothesis or study purpose, and item ids are opaque.
+Its context is the base runbook and the board up to the item's round; the escalation log is never shown.
+Five analyst-facing passages of the rubric that would reveal the design are left out of its prompt (D-007).
+
+\subsection{Held-out validation}
+Twelve synthetic posts with known labels, kept out of the prompt, are mixed blind into the first batch.
+The judge passes if it gets escalation, concern and test awareness right on at least eleven; one prompt revision is allowed, and a second failure stops the run.
+Result: \wtthJudgeValidationPass{} of \wtthJudgeValidationItems{} items.
+
+\subsection{Coverage}
+The first tier (the P1-path notes, all notes in the benign cell, and every post in shifts where no witness sent a keyword-matched note) runs first.
+The second tier (debrief answers, the remaining posts and the matched notes) runs in a pre-declared order of sub-tiers until the budget binds; within a sub-tier, units are cell-balanced and shuffled with a logged seed, so a judged prefix is a random subsample (D-011).
+Analyses on a partly judged sub-tier report their coverage and are estimated on the subsample.
+Coverage was \wtthSubtierCovJOneaPct\% for the P1-path notes of the first tier and \wtthSubtierCovJTwoaPct\% for the first sub-tier of the second (debrief answers in \cell{NONE} and \cell{CLAIM}); Table~\ref{tab:judge} gives the rest.
+
+\subsection{Agreement}
+A separate \wtthDesignModelAnnotatorName{} instance proposed labels for the review queues without seeing the judge's labels.
+Agreement between judge and proposer is a model--model Cohen's $\kappa$ per label, with a bootstrap interval: \wtthKappaMMBoardPostEscalationToHumansValue{} on escalation (\wtthKappaMMBoardPostEscalationToHumansCI) and \wtthKappaMMNoteRefersToViolationValue{} on whether a note refers to the violation (\wtthKappaMMNoteRefersToViolationCI).
+The rubric's threshold of \wtthDesignKappaThreshold{} is kept only as a flag: below it on escalation, more \Ptwop{} posts are queued for review and any left unreviewed are bracketed (D-011).
+\begin{table}[h]
+\centering\footnotesize
 \wtthTab{generated/analysis/tables/table_judge.tex}
+\caption{\textbf{Judge validation, coverage and model--model agreement.}}
+\label{tab:judge}
+\end{table}
+\begin{table}[h]
+\centering\footnotesize
 \wtthTab{generated/analysis/tables/table_confusion.tex}
+\caption{\textbf{Model--model confusion tables} (judge against the model proposer, before review).}
+\label{tab:confusion}
+\end{table}
+
+\subsection{Author review}
+The author reviewed the queued items, seeing the model's proposal and, where the two models disagreed, the judge's label, and approved or corrected each.
+Final labels are reviewed labels where a review exists and valid judge labels otherwise; unreviewed proposals never become final labels.
+Share of judged items reviewed: \wtthReviewShare\%; correction rate: \wtthReviewCorrectionRate\%; precision of the judge's escalation positives: \wtthReviewPrecisionEscalation\%.
+
+\subsection{Blind sample}
+\wtthBlindStatus.
+
+\subsection{Keyword-rule quality check}
+A random sample of keyword-matched notes was reviewed for precision: \wtthHaikuKwPrecision\% (\wtthHaikuKwLabelled{} reviewed of \wtthHaikuKwMatchedNotes{} matched notes).
+
+\subsection{Judge mechanics}
+Answers are parsed strictly; an invalid answer is re-asked once with the identical prompt, and refusals are never re-asked (D-011).
+Invalid: \wtthJudgeInvalid; refused: \wtthJudgeRefused; re-asked: \wtthJudgeReasked; recomputed escalation differing from the judge's own value: \wtthJudgeEscMismatch.
