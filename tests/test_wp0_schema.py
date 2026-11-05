@@ -11,14 +11,14 @@ from wtth.db import Db, SchemaMismatch, WriteFailed, backup, check_schema, creat
 
 TABLES = ("runs", "episodes", "attempts", "turns", "exposures", "tool_calls", "posts", "notes", "escalation_log",
           "reviews", "stream_tool_uses", "debrief_answers", "cost_ledger", "server_starts", "fallback_rows",
-          "events", "gate_log")
+          "events", "gate_log", "exposure_checks")
 INDEXES = ("ux_attempt_done", "ux_attempt_running", "ux_scripted_post", "ux_script_note", "ix_ep_queue",
            "ix_posts_ep", "ix_notes_ep", "ix_log_ep", "ix_tc_turn", "ix_turns_ep")
 VIEWS = ("v_log_numbered", "v_final", "v_witnesses_final", "v_notes_final", "v_posts_final", "v_log_final",
          "v_tool_calls_final", "v_reviews_final", "v_turns_final", "v_exposures_final", "v_debrief_final",
          "v_stream_tool_uses_final", "v_attempt_counts", "v_turn_classes", "v_cost")
 NO_UPDATE = ("posts", "tool_calls", "notes", "escalation_log", "reviews", "stream_tool_uses", "debrief_answers",
-             "cost_ledger", "server_starts", "fallback_rows", "events")
+             "cost_ledger", "server_starts", "fallback_rows", "events", "exposure_checks")
 
 
 def names(conn: sqlite3.Connection, kind: str) -> set[str]:
@@ -221,6 +221,18 @@ class SchemaTests(unittest.TestCase):
         self.assertEqual("sqlite_locked", cm.exception.error_class)
         self.assertEqual(3, len(calls))  # sleeps between tries only
         self.assertEqual(1, self.db.write(lambda c: 1))  # connection recovered
+
+    def test_non_lock_operational_error_fails_at_once(self) -> None:
+        import wtth.db as dbmod
+
+        calls = []
+        orig = dbmod._sleep
+        dbmod._sleep = lambda s: calls.append(s)
+        self.addCleanup(setattr, dbmod, "_sleep", orig)
+        with self.assertRaises(WriteFailed) as cm:
+            self.db.write(lambda c: c.execute("SELECT * FROM no_such_table"))
+        self.assertEqual("sqlite_operational", cm.exception.error_class)
+        self.assertEqual([], calls)
 
     def test_write_rolls_back_on_other_errors(self) -> None:
         def bad(c: sqlite3.Connection) -> None:

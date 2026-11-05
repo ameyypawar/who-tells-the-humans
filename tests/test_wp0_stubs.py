@@ -41,6 +41,27 @@ EXPECTED = {
 }
 
 
+PARAMS = {
+    "wtth.config": {"load_settings": ("path", "overrides"), "load_toolsets": ("path",), "load_expected_init": ("path",),
+                    "load_prereg_hashes": ("path",), "env_allowlist": ("path",)},
+    "wtth.textnorm": {"collapse_breaks": ("s",), "cut": ("s", "n"), "one_line": ("s",), "fill": ("template", "values"),
+                      "sha256_text": ("s",), "canon_json": ("obj",)},
+    "wtth.stimuli": {"episode_spec": ("phase", "scenario", "model", "cell", "level", "seed", "queue_pos", "prefix"),
+                     "inject_round": ("db", "spec", "episode_id", "attempt", "round", "texts", "run_id"),
+                     "load_state": ("conn", "spec", "episode_id", "attempt")},
+    "wtth.render": {"round_prompt": ("state", "texts", "round", "slot"),
+                    "debrief_prompt": ("state", "texts", "slot", "which", "d1_answer")},
+    "wtth.runner.turn": {"run_turn": ("ctx", "req", "slot", "cancel")},
+    "wtth.orchestrator.episode": {"run_attempt": ("ctx", "spec", "episode_id")},
+    "wtth.orchestrator.scheduler": {"build_queue": ("settings", "phase", "level"), "enqueue": ("db", "specs"),
+                                    "resume_recover": ("ctx",)},
+    "wtth.orchestrator.manifest": {"verify_startup": ("settings", "mode", "phase"),
+                                   "build_manifest": ("settings", "run_id", "phase", "mode")},
+    "wtth.orchestrator.alerts": {"page": ("settings", "db", "run_id", "phase", "reason", "detail", "exit_code")},
+    "wtth.cli": {"main": ("argv",)},
+}
+
+
 class StubTests(unittest.TestCase):
     def test_names_exist(self) -> None:
         for mod, names in EXPECTED.items():
@@ -49,23 +70,25 @@ class StubTests(unittest.TestCase):
                 with self.subTest(module=mod, name=n):
                     self.assertTrue(hasattr(m, n), f"{mod}.{n}")
 
-    def test_unfinished_functions_raise_with_owner(self) -> None:
-        for mod in ("wtth.prereg", "wtth.render", "wtth.secrets", "wtth.runner.stream", "wtth.cli", "wtth.audit"):
+    def test_frozen_signatures(self) -> None:
+        for mod, funcs in PARAMS.items():
+            m = importlib.import_module(mod)
+            for name, params in funcs.items():
+                with self.subTest(fn=f"{mod}.{name}"):
+                    got = tuple(inspect.signature(getattr(m, name)).parameters)
+                    self.assertEqual(params, got)
+
+    def test_stub_or_implemented(self) -> None:
+        """Each function is implemented, or its body is a NotImplementedError naming the owning WP."""
+        for mod in EXPECTED:
             m = importlib.import_module(mod)
             for name, fn in inspect.getmembers(m, inspect.isfunction):
                 if fn.__module__ != mod or name.startswith("_"):
                     continue
-                n_params = len([p for p in inspect.signature(fn).parameters.values()
-                                if p.default is p.empty and p.kind in (p.POSITIONAL_ONLY, p.POSITIONAL_OR_KEYWORD)])
-                kw = {p.name: None for p in inspect.signature(fn).parameters.values()
-                      if p.default is p.empty and p.kind is p.KEYWORD_ONLY}
-                if inspect.iscoroutinefunction(fn):
-                    continue
-                with self.subTest(fn=f"{mod}.{name}"):
-                    try:
-                        fn(*([None] * n_params), **kw)
-                    except NotImplementedError as exc:
-                        self.assertRegex(str(exc), r"^WP\d$")
+                src = inspect.getsource(fn)
+                if "raise NotImplementedError" in src:
+                    with self.subTest(fn=f"{mod}.{name}"):
+                        self.assertRegex(src, r"raise NotImplementedError\(\"WP\d\"\)")
 
 
 if __name__ == "__main__":

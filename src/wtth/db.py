@@ -23,7 +23,7 @@ SCHEMA_PATH = Path(__file__).with_name("schema.sql")
 # Tables that reject every UPDATE (rows are immutable once written).
 NO_UPDATE_TABLES = (
     "posts", "tool_calls", "notes", "escalation_log", "reviews", "stream_tool_uses", "debrief_answers",
-    "cost_ledger", "server_starts", "fallback_rows", "events", "gate_log",
+    "cost_ledger", "server_starts", "fallback_rows", "events", "gate_log", "exposure_checks",
 )
 
 _sleep = time.sleep  # patched by tests
@@ -92,6 +92,9 @@ class Db:
                     conn.execute("COMMIT")
                     return result
                 except sqlite3.OperationalError as exc:
+                    if _error_class(exc) == "sqlite_operational":  # not a lock/busy/I-O problem: fail at once
+                        self._rollback()
+                        raise WriteFailed("sqlite_operational", str(exc)) from exc
                     last = exc
                     self._rollback_and_reset()
                     if i < attempts - 1:

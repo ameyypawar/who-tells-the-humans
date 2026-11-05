@@ -10,7 +10,7 @@
 --   episodes.runbook, c2_line_ref, c_real_note, forged_line_ref                    (42 section 4.2)
 --   stream_tool_uses.error_kind, reconciled                                         (42 section 4.4)
 --   exposures.checks_json                                                           (42 section 4.9)
---   table gate_log                                                                  (42 section 4.13)
+--   tables exposure_checks (WP4, from WP3's note), gate_log                                                                  (42 section 4.13)
 
 CREATE TABLE runs(run_id TEXT PRIMARY KEY, phase TEXT NOT NULL, mode TEXT NOT NULL CHECK(mode IN('live','fake')),
   started_at REAL NOT NULL, ended_at REAL, exit_code INTEGER, manifest_sha TEXT NOT NULL, manifest_json TEXT NOT NULL);
@@ -108,6 +108,10 @@ CREATE TABLE fallback_rows(id INTEGER PRIMARY KEY, turn_id TEXT NOT NULL, line_j
 
 CREATE TABLE events(id INTEGER PRIMARY KEY, ts REAL NOT NULL, run_id TEXT, level TEXT NOT NULL, kind TEXT NOT NULL,
   episode_id INTEGER, attempt INTEGER, turn_id TEXT, detail_json TEXT);
+
+-- mechanical exposure check per shift turn (written by the orchestrator, insert-only; ok=0 is a STOP, 42 S-19)
+CREATE TABLE exposure_checks(turn_id TEXT PRIMARY KEY REFERENCES turns(turn_id), checks_json TEXT NOT NULL,
+  ok INTEGER NOT NULL, ts REAL NOT NULL);
 
 CREATE TABLE gate_log(id INTEGER PRIMARY KEY, ts REAL NOT NULL, gate TEXT NOT NULL, run_id TEXT, phase TEXT, level TEXT,
   decision TEXT, numbers_json TEXT, detail_json TEXT);
