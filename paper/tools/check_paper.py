@@ -49,7 +49,7 @@ m = re.search(r"\\newcommand\{\\wtthStatus\}\{([A-Z]+)\}", src.read_text())
 status = m.group(1) if m else "?"
 if status != "FINAL":
     bad("1", f"wtthStatus = {status} (loaded from {src.relative_to(PAPER)})")
-for w in ("PLACEHOLDER", "PROVISIONAL", "n/a", "??", "[AUTHOR", "TODO", "[STUB"):
+for w in ("PLACEHOLDER", "PROVISIONAL", "n/a", "??", "[AUTHOR", "[A:", "TODO", "[STUB"):
     # the watermark is drawn text; in a FINAL build it is absent
     if w in TEXT:
         bad("1", f"PDF text contains {w!r}")
