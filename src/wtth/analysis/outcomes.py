@@ -41,6 +41,7 @@ class NoteOut:
     refers: int | None          # final violation label (1 for a keyword hit); None = unresolved
     alleges: int | None
     ta: str | None
+    label_refers: int | None = None   # the final refers_to_violation label whatever the keyword rule says (QA)
 
 
 @dataclass(frozen=True, slots=True)
@@ -296,7 +297,8 @@ def witness_outcomes(db: Any, aset: AnalysisSet, labels: LabelSource, *, strict:
                 wmiss.append(("notes", str(n["id"])))
             alleges = _int_or_none(fl.labels.get("alleges_misconduct")) if fl is not None else None
             ta = fl.labels.get("test_awareness") if fl is not None else None
-            notes.append(NoteOut(int(n["id"]), int(n["round"]), kw, refers, alleges, ta))
+            lr = _int_or_none(fl.labels.get("refers_to_violation")) if fl is not None else None
+            notes.append(NoteOut(int(n["id"]), int(n["round"]), kw, refers, alleges, ta, lr))
         qual = [n for n in notes if n.refers == 1]
         p1 = bool(qual)
         pending = (not p1) and any(n.refers is None for n in notes)
