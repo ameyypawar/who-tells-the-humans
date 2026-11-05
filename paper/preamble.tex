@@ -22,6 +22,10 @@
 \setlength{\parindent}{0pt}
 \setlength{\parskip}{0.5ex plus 0.2ex}
 \setlist{nosep,leftmargin=*}
+% run-in \paragraph headings with a small gap above (the article default of 3.25ex costs about 0.3 page in sections 1 to 3)
+\makeatletter
+\renewcommand\paragraph{\@startsection{paragraph}{4}{\z@}{0.9ex \@plus 0.3ex \@minus 0.2ex}{-1em}{\normalfont\normalsize\bfseries}}
+\makeatother
 \captionsetup{font=small,labelfont=bf}
 \renewcommand{\topfraction}{0.9}
 \renewcommand{\bottomfraction}{0.7}
@@ -44,6 +48,11 @@
 
 % ---- P2-prime (``never told by any route''), typeset the same way everywhere ----
 \newcommand{\Ptwop}{P2\ensuremath{'}}
+% ---- labels that contain digits, kept out of the section sources (bare-digit lint): estimands and A2A ----
+\newcommand{\Done}{\ensuremath{\Delta_1}}
+\newcommand{\Dtwo}{\ensuremath{\Delta_2}}
+\newcommand{\Dthree}{\ensuremath{\Delta_3}}
+\newcommand{\AtwoA}{A2A}
 
 % ---- verbatim stimulus helpers ----
 \DefineVerbatimEnvironment{wtthverb}{Verbatim}{fontsize=\footnotesize,breaklines=true,breakanywhere=true}
