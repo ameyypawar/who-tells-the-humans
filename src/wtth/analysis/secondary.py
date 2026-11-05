@@ -16,7 +16,7 @@ from wtth.analysis import rng as rngmod
 from wtth.analysis.bootstrap import (CellData, cluster_bootstrap_multi, seed_paired_bootstrap)
 from wtth.analysis.hypotheses import (H_CELLS, H_FN, bootstrap_contrast, d1_fn, d2_fn, d3_fn, direction_of,
                                       episode_cells, h2_on_p2, point_rates, witness_cells)
-from wtth.analysis.intervals import newcombe_diff, percentile_interval, rejects, wilson
+from wtth.analysis.intervals import newcombe_diff, percentile_interval, q, rejects, wilson
 from wtth.analysis.outcomes import P2_CELLS, EpisodeOutcome, WitnessOutcome
 from wtth.analysis.power import icc1
 from wtth.analysis.results import (BoardSubRate, CellRate, Contrast, CountRow, DescriptiveResults, Diff,
@@ -65,12 +65,37 @@ def wilson_rate(model: str, cell: str, outcome: str, k: int, n: int, n_ep: int, 
                     iv[0] if iv else None, iv[1] if iv else None, method, coverage)
 
 
+def stratified(units: Sequence[tuple[bool | None, bool]]) -> dict[str, Any]:
+    """Share over `units` = (value or None, free). A free unit has a value that needs no judging (a witness without
+    posts, an empty answer). Judged non-free units are a random prefix of their stratum, so the stratum rate is
+    estimated on the judged units only and combined with the free stratum by population weights (P1-5).
+    Returns k, n (known units), p, lo, hi, coverage (judged share of the non-free stratum), exact."""
+    free = [v for v, f in units if f]
+    rest = [v for v, f in units if not f]
+    judged = [v for v in rest if v is not None]
+    nN = len(units)
+    kf = sum(1 for v in free if v)
+    kj = sum(1 for v in judged if v)
+    cov = (len(judged) / len(rest)) if rest else 1.0
+    if len(judged) == len(rest):                      # everything known: plain share, plain Wilson
+        iv = wilson(kf + kj, nN)
+        return {"k": kf + kj, "n": nN, "p": ((kf + kj) / nN) if nN else None, "lo": iv[0] if iv else None,
+                "hi": iv[1] if iv else None, "coverage": cov, "exact": True}
+    if not judged:
+        return {"k": kf, "n": len(free), "p": None, "lo": None, "hi": None, "coverage": 0.0, "exact": False}
+    iv = wilson(kj, len(judged))
+    w = len(rest) / nN
+    return {"k": kf + kj, "n": len(free) + len(judged), "p": kf / nN + w * kj / len(judged),
+            "lo": kf / nN + w * iv[0], "hi": kf / nN + w * iv[1], "coverage": cov, "exact": False}
+
+
 def known_rate(model: str, cell: str, outcome: str, ws: Sequence[WitnessOutcome],
-               fn: Callable[[WitnessOutcome], bool | None]) -> CellRate:
-    vals = [fn(x) for x in ws]
-    known = [v for v in vals if v is not None]
-    return wilson_rate(model, cell, outcome, sum(1 for v in known if v), len(known), _n_episodes(ws),
-                       (len(known) / len(ws)) if ws else 0.0)
+               fn: Callable[[WitnessOutcome], bool | None],
+               free: Callable[[WitnessOutcome], bool] | None = None) -> CellRate:
+    r = stratified([(fn(x), bool(free(x)) if free else False) for x in ws])
+    return CellRate(model, cell, outcome, r["k"], r["n"], _n_episodes(ws), r["p"], r["lo"], r["hi"],
+                    "wilson" if r["exact"] or free is None else "wilson_stratified", r["coverage"] if free else
+                    ((sum(1 for x in ws if fn(x) is not None) / len(ws)) if ws else 0.0))
 
 
 def boot_ci(cells: Mapping[str, CellData], *, stream: str, seeds: AnalysisSeeds) -> dict[str, tuple[float, float]]:
@@ -83,19 +108,32 @@ def boot_ci(cells: Mapping[str, CellData], *, stream: str, seeds: AnalysisSeeds)
 
 
 def boot_rates(model: str, outcome: str, ws: Sequence[WitnessOutcome], fn: Callable[[WitnessOutcome], bool | None],
-               *, stream: str, seeds: AnalysisSeeds) -> list[CellRate]:
-    cells = witness_cells(ws, fn)
-    ci = boot_ci(cells, stream=stream, seeds=seeds)
+               *, stream: str, seeds: AnalysisSeeds,
+               free: Callable[[WitnessOutcome], bool] | None = None) -> list[CellRate]:
+    """Cluster-bootstrap share per cell. With `free`, judged non-free witnesses carry the weight stratum size / judged
+    count, so the ratio estimator is the population-weighted stratified share (P1-5)."""
     out = []
     by = _group(ws)
+    weights: dict[str, float] = {}
+    cov: dict[str, float] = {}
+    for c, cw in by.items():
+        rest = [x for x in cw if not (free and free(x))]
+        nj = sum(1 for x in rest if fn(x) is not None)
+        weights[c] = (len(rest) / nj) if nj else 0.0
+        cov[c] = (nj / len(rest)) if rest else 1.0
+    cells = witness_cells(ws, fn, weight=(lambda x: 1.0 if (free and free(x)) else weights[x.cell]) if free else None)
+    ci = boot_ci(cells, stream=stream, seeds=seeds)
     for c in by:
         if c not in cells:
             continue
         cd = cells[c]
-        n, k = int(cd.m.sum()), int(cd.y.sum())
+        tot = float(cd.m.sum())
+        n_known = sum(1 for x in by[c] if fn(x) is not None)
+        k = sum(1 for x in by[c] if fn(x))
+        p = (float(cd.y.sum()) / tot) if tot else None
         lo, hi = ci[c]
-        out.append(CellRate(model, c, outcome, k, n, len(cd.y), (k / n) if n else None, lo, hi,
-                            "cluster_bootstrap", (n / len(by[c])) if by[c] else 0.0))
+        out.append(CellRate(model, c, outcome, k, n_known, len(cd.y), p, lo, hi, "cluster_bootstrap",
+                            cov[c] if free else ((n_known / len(by[c])) if by[c] else 0.0)))
     return out
 
 
@@ -208,6 +246,18 @@ def _truth_map(e: Sequence[EpisodeOutcome]) -> dict[int, EpisodeOutcome]:
     return {x.episode_id: x for x in e}
 
 
+def _empty_d1(x: WitnessOutcome) -> bool:
+    return x.d1_verdict == "no_answer"
+
+
+def _empty_d2(x: WitnessOutcome) -> bool:
+    return x.believes == "no_answer"
+
+
+def _no_posts(x: WitnessOutcome) -> bool:
+    return not x.posts
+
+
 def debrief_rates(model: str, w: Sequence[WitnessOutcome], e: Sequence[EpisodeOutcome]) -> list[CellRate]:
     tm = _truth_map(e)
     out: list[CellRate] = []
@@ -232,7 +282,7 @@ def debrief_rates(model: str, w: Sequence[WitnessOutcome], e: Sequence[EpisodeOu
         for name, fn, cond in specs:
             sub = [x for x in ws if cond(x)]
             if sub:
-                out.append(known_rate(model, c, name, sub, fn))
+                out.append(known_rate(model, c, name, sub, fn, free=_empty_d2))
         for v in D1_VERDICTS:        # the same, split by the D1 verdict (A-43)
             part = [x for x in ws if x.d1_verdict == v]
             if not part:
@@ -243,7 +293,8 @@ def debrief_rates(model: str, w: Sequence[WitnessOutcome], e: Sequence[EpisodeOu
                 out.append(known_rate(model, c, f"{name}@d1={v}", part, fn))
         out.append(known_rate(model, c, "d1_known", ws, lambda x: x.d1_known))
         for v in D1_VERDICTS:
-            out.append(known_rate(model, c, f"d1:{v}", ws, lambda x, v=v: (x.d1_verdict == v) if x.d1_known else None))
+            out.append(known_rate(model, c, f"d1:{v}", ws, lambda x, v=v: (x.d1_verdict == v) if x.d1_known else None,
+                                  free=_empty_d1))
         for lvl in ("suspected", "asserted"):
             out.append(known_rate(model, c, f"ta_max:{lvl}", ws,
                                   lambda x, lvl=lvl: None if x.ta_max is None else x.ta_max == lvl))
@@ -255,36 +306,48 @@ def debrief_rates(model: str, w: Sequence[WitnessOutcome], e: Sequence[EpisodeOu
 def board_substitution(w: Sequence[WitnessOutcome], *, source: str) -> list[BoardSubRate]:
     """D-010 (exploratory). A witness qualifies with at least one live post in rounds 1-5 labelled concern or
     escalation AND no accepted note in rounds 1-5. source 'judge' (primary, as D-010 states) uses the judge's own
-    labels; 'final' (second version, F-22) uses the final labels. A noteless witness is 'known' if a qualifying post
-    exists, or all of the witness's posts are labelled, or it has no posts.
-    LEAD-REVIEW: plan 2.15 defines known as "all posts judged or no posts"; a qualifying witness is also known (one
-    positive post settles it), otherwise k could exceed the known denominator."""
+    labels; 'final' (second version, F-22) uses the final labels.
+
+    Strata among all live witnesses of a cell: (a) witnesses with a note or without any post: known not to qualify;
+    (b) noteless witnesses with posts ("posters"). A poster is a judged unit only if ALL its posts are labelled
+    (J2d judges whole witnesses, a random prefix), whatever the outcome. The rate is estimated on judged posters only
+    and combined with stratum (a) by population weights: p = n_posters / n_witnesses * k / n_judged. When every poster
+    is judged this is simply k / n_witnesses (Wilson). The judged fraction (J2d prefix) is reported (P1-5)."""
     if source not in ("judge", "final"):
         raise ValueError("source must be 'judge' or 'final'")
     model = _model(w)
     out: list[BoardSubRate] = []
     for c, ws in _group(w).items():
         noteless = [x for x in ws if x.noteless]
+        posters = [x for x in noteless if x.posts]
+
+        def judged(x: WitnessOutcome) -> bool:
+            return x.all_posts_judged if source == "judge" else x.all_posts_final
 
         def qual(x: WitnessOutcome) -> bool:
             return x.conc_esc_judge if source == "judge" else x.conc_esc_final
 
-        def known(x: WitnessOutcome) -> bool:
-            allk = x.all_posts_judged if source == "judge" else x.all_posts_final
-            return qual(x) or allk or not x.posts
-
-        n_known = sum(1 for x in noteless if known(x))
-        k = sum(1 for x in noteless if qual(x))
-        everything = n_known == len(noteless)
-        cond = not everything
-        num, den = (k, len(ws)) if everything else (k, n_known)
-        iv = wilson(num, den)
-        cov = (n_known / len(noteless)) if noteless else 1.0
+        jp = [x for x in posters if judged(x)]
+        k = sum(1 for x in jp if qual(x))
+        n = len(ws)
+        frac = (len(jp) / len(posters)) if posters else 1.0
+        n_known = len(noteless) - len(posters) + len(jp)
+        if len(jp) == len(posters):
+            p, iv, cond = (k / n if n else None), wilson(k, n), False
+            lo, hi = (iv[0], iv[1]) if iv else (None, None)
+        elif not jp:
+            p = lo = hi = None
+            cond = True
+        else:
+            wgt = len(posters) / n
+            iv = wilson(k, len(jp))
+            p, lo, hi, cond = wgt * k / len(jp), wgt * iv[0], wgt * iv[1], True
         note = ("exploratory (D-010); Wilson interval ignores clustering of witnesses within episodes" +
-                ("" if everything else
-                 f"; conditional rate k/n_noteless_known, coverage {cov:.3f}, unjudged posts remain"))
-        out.append(BoardSubRate(model, c, source, len(ws), len(noteless), n_known, k, (num / den) if den else None,
-                                iv[0] if iv else None, iv[1] if iv else None, cond, cov, note))
+                ("" if not cond else
+                 f"; estimated on the {len(jp)} of {len(posters)} noteless witnesses with posts that are judged "
+                 f"(prefix fraction {frac:.3f}), weighted to the cell"))
+        out.append(BoardSubRate(model, c, source, n, len(noteless), n_known, k, p, lo, hi, cond, frac, note,
+                                frac, len(posters)))
     return out
 
 
@@ -303,24 +366,35 @@ def secondary(w: Sequence[WitnessOutcome], e: Sequence[EpisodeOutcome], db: Any,
     for c, ws in _group(w).items():
         rates.append(known_rate(model, c, "any_note", ws, lambda x: x.any_note))
         if c == "B-NONE":
-            rates.append(known_rate(model, c, "false_report", ws, lambda x: x.false_report))
+            rates.append(known_rate(model, c, "false_report", ws, lambda x: x.false_report,
+                                    free=lambda x: not x.notes))
     # concern: witness share by cluster bootstrap, episode share by Wilson, each with subtypes
-    rates += boot_rates(model, "concern_witness", w, lambda x: x.concern, stream="concern", seeds=seeds)
+    rates += boot_rates(model, "concern_witness", w, lambda x: x.concern, stream="concern", seeds=seeds,
+                        free=_no_posts)
     for st in CONCERN_SUBTYPES:
         rates += boot_rates(model, f"concern_witness:{st}", w,
                             lambda x, st=st: None if x.concern is None else (st in x.concern_subtypes),
-                            stream="concern", seeds=seeds)
+                            stream="concern", seeds=seeds, free=_no_posts)
     eps_by_w: dict[int, list[WitnessOutcome]] = defaultdict(list)
     for x in w:
         eps_by_w[x.episode_id].append(x)
     for c, es in _group(e).items():
         n = len(es)
-        k = sum(1 for x in es if x.concern_episode)
-        nk = sum(1 for x in es if x.concern_episode is not None)
-        rates.append(wilson_rate(model, c, "concern_episode", k, nk, n, nk / n if n else 0.0))
-        for st in CONCERN_SUBTYPES:
-            hit = [any(st in y.concern_subtypes for y in eps_by_w[x.episode_id]) for x in es]
-            rates.append(wilson_rate(model, c, f"concern_episode:{st}", sum(hit), n, n, 1.0))
+        def ep_free(x: EpisodeOutcome) -> bool:
+            return all(not y.posts for y in eps_by_w[x.episode_id])
+
+        def ep_unit(x: EpisodeOutcome, st: str | None) -> bool | None:
+            if x.concern_episode is None:
+                return None
+            if st is None:
+                return x.concern_episode
+            return any(st in y.concern_subtypes for y in eps_by_w[x.episode_id])
+
+        for st in (None, *CONCERN_SUBTYPES):
+            r = stratified([(ep_unit(x, st), ep_free(x)) for x in es])
+            rates.append(CellRate(model, c, "concern_episode" if st is None else f"concern_episode:{st}", r["k"], r["n"], n,
+                                  r["p"], r["lo"], r["hi"], "wilson" if r["exact"] else "wilson_stratified",
+                                  r["coverage"]))
     rates += debrief_rates(model, w, e)
     # Delta1 without witnesses whose D1 verdict is test_or_simulation (needs J2a complete)
     d1x: Contrast | None = None
@@ -413,14 +487,14 @@ def _three(prefix: str, cells: Mapping[str, CellData], *, stream: str, seeds: An
     out = []
     for h, fn in fns.items():
         lo, hi = percentile_interval(reps[h])
-        est = fn(pr)
+        est = q(fn(pr))
         out.append(Contrast(f"{prefix}:{h}", est, lo, hi, 0.95, seeds.bootstrap_B, stream, None, direction_of(est),
                             "exploratory", {f"p_{c}": pr[c] for c in needed}, note))
     return out
 
 
 def sensitivity(w: Sequence[WitnessOutcome], e: Sequence[EpisodeOutcome], db: Any, aset: Any, *,
-                seeds: AnalysisSeeds) -> SensitivityResults:
+                seeds: AnalysisSeeds, qa_keys: Any = None) -> SensitivityResults:
     model = _model(w, e)
     contrasts: list[Contrast] = []
     contrasts += _three("P1any", witness_cells(w, lambda x: x.any_note), stream="p1_any", seeds=seeds,
@@ -445,8 +519,9 @@ def sensitivity(w: Sequence[WitnessOutcome], e: Sequence[EpisodeOutcome], db: An
         except ValueError:
             continue
         lo, hi = percentile_interval(reps)
-        pr = {c: sum(v[0] for v in per_seed[c].values()) / sum(v[1] for v in per_seed[c].values()) for c in cs}
-        est = fn(pr)
+        common = set.intersection(*(set(per_seed[c]) for c in cs))      # the CI resamples exactly these seeds
+        pr = {c: sum(per_seed[c][s][0] for s in common) / sum(per_seed[c][s][1] for s in common) for c in cs}
+        est = q(fn(pr))
         contrasts.append(Contrast(f"seedpaired:{h}", est, lo, hi, 0.95, seeds.bootstrap_B, "seed_paired", None,
                                   direction_of(est), "exploratory", {}, "seeds resampled jointly across cells"))
     rates: list[CellRate] = []
@@ -466,27 +541,35 @@ def sensitivity(w: Sequence[WitnessOutcome], e: Sequence[EpisodeOutcome], db: An
     for c, ws in by.items():
         hazard += hazard_by_round([x.first_round for x in ws], model=model, cell=c)
     # keyword rule QA: precision among matched notes that carry a final label (H-QA draws are labelled by the annotators)
-    qa = _qa_precision(w)
+    qa = _qa_precision(w, qa_keys)
     pooled, per = icc1(witness_cells(w))
     notes = ["breakdowns by paraphrase index and by handle order cannot be separated: paraphrase = (seed-1) mod 3 is a "
              "function of handle_idx = (seed-1) mod 6 (research/45)",
              "witness-level Wilson intervals ignore clustering within episodes"]
+    km_any = [kaplan_meier([x.first_round_any for x in es], cell=c, unit="episode_any_note")
+              for c, es in _group(e).items()]
+    km_any += [kaplan_meier([min((n.round for n in x.notes), default=None) for x in ws], cell=c, unit="witness_any_note")
+               for c, ws in by.items()]
     return SensitivityResults(model, tuple(contrasts), tuple(rates), tuple(hazard),
                               None if pooled != pooled else pooled, {k: v for k, v in per.items() if v == v}, qa,
-                              tuple(notes))
+                              tuple(notes), tuple(km_any))
 
 
-def _qa_precision(w: Sequence[WitnessOutcome]) -> dict[str, Any]:
-    """Precision of the keyword rule: among keyword-matched notes with a final label, the share labelled as referring to
-    the violation. LEAD-REVIEW: plan 2.15 names the H-QA draw (50 random matched notes); the analysis cannot see which
-    notes the annotators drew, so it uses every matched note that has a final label (H-QA plus any judged matched note)."""
-    lab = [n for x in w for n in x.notes if n.kw_match and n.label_refers is not None]
+def _qa_precision(w: Sequence[WitnessOutcome], qa_keys: Any = None) -> dict[str, Any]:
+    """Precision of the keyword rule on the REVIEWED H-QA rows only (a random sample of keyword-matched notes; the other
+    matched notes, B-NONE notes included, are not a sample of the rule's precision)."""
+    # qa_keys: {("notes", id)} of ann_queue rows whose reasons CONTAIN "H-QA" and that have a review (a drawn item can
+    # keep a higher queue). Without it, fall back to the FinalLabel's queue name.
+    def is_qa(n: Any) -> bool:
+        return (("notes", str(n.note_id)) in qa_keys) if qa_keys is not None else n.qa_reviewed
+
+    lab = [n for x in w for n in x.notes if n.kw_match and is_qa(n) and n.label_refers is not None]
     k = sum(1 for n in lab if n.label_refers == 1)
     iv = wilson(k, len(lab))
     n_matched = sum(1 for x in w for n in x.notes if n.kw_match)
     return {"n_matched_notes": n_matched, "n_labelled": len(lab), "k_true_positive": k,
             "precision": (k / len(lab)) if lab else None, "lo": iv[0] if iv else None, "hi": iv[1] if iv else None,
-            "coverage": (len(lab) / n_matched) if n_matched else None}
+            "coverage": (len(lab) / n_matched) if n_matched else None, "population": "reviewed H-QA rows"}
 
 
 # ---- Sonnet (exploratory) ---------------------------------------------------------------------------------

@@ -8,6 +8,21 @@ import numpy as np
 Z95 = 1.959963984540054
 
 
+QUANT_DECIMALS = 12
+
+
+def q(x: float) -> float:
+    """The one shared quantizer of the confirmatory decision layer. Rates are ratios of integers, so every contrast of
+    them is a rational whose distinct values differ by far more than 1e-12; rounding removes float noise (a
+    mathematically-zero difference-in-differences that evaluates to 5.55e-17, a 15-point bound that evaluates to
+    0.14999999999999997) before any comparison with 0 or with the 15-point margin."""
+    return x if x != x else round(float(x), QUANT_DECIMALS) + 0.0
+
+
+def qa(values: np.ndarray) -> np.ndarray:
+    return np.round(np.asarray(values, dtype=float), QUANT_DECIMALS) + 0.0
+
+
 def wilson(k: int, n: int) -> tuple[float, float] | None:
     """95% Wilson score interval, no continuity correction. None when n = 0."""
     if n <= 0:
@@ -40,15 +55,16 @@ def newcombe_diff(k1: int, n1: int, k2: int, n2: int) -> tuple[float, float, flo
 
 def percentile_interval(values: np.ndarray, level: float = 0.95) -> tuple[float, float]:
     """Percentile interval (numpy 'linear'); NaN replicates are dropped. (nan, nan) if nothing is left."""
-    v = np.asarray(values, dtype=float)
+    v = qa(values)
     v = v[~np.isnan(v)]
     if v.size == 0:
         return float("nan"), float("nan")
     a = round(100.0 * (1.0 - level) / 2.0, 10)
     lo, hi = np.percentile(v, [a, 100.0 - a], method="linear")
-    return float(lo), float(hi)
+    return q(float(lo)), q(float(hi))
 
 
 def rejects(lo: float, hi: float) -> bool:
     """A test rejects only if the interval excludes 0 strictly. An endpoint exactly at 0 does not reject (A-45)."""
+    lo, hi = q(lo), q(hi)
     return bool(lo > 0 or hi < 0)

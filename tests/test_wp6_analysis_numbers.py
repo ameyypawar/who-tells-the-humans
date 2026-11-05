@@ -16,7 +16,8 @@ class FormatTest(unittest.TestCase):
         self.assertEqual(fmt_value(0.2855, "prop"), "28.6")          # half up on the shortest decimal form
         self.assertEqual(fmt_value(0.0025, "pp"), "0.3")
         self.assertEqual(fmt_value(-0.0025, "pp"), "\\ensuremath{-}0.3")
-        self.assertEqual(fmt_value(-0.0004, "pp"), "0.0")             # never "-0.0"
+        self.assertEqual(fmt_value(-0.0004, "pp"), "\\ensuremath{-}0.04")      # tiny non-zero keeps two decimals
+        self.assertEqual(fmt_value(-0.000004, "pp"), "0.00")
         self.assertEqual(fmt_value(-0.125, "pp"), "\\ensuremath{-}12.5")
         self.assertEqual(fmt_value(1234567, "count"), "1{,}234{,}567")
         self.assertEqual(fmt_value(12, "count"), "12")

@@ -99,23 +99,72 @@ def _check_fingerprints(settings: Any, asets: Sequence[AnalysisSet], *, strict: 
             notes.append(msg)
 
 
+def _hqa_keys(settings: Any) -> set | None:
+    """Reviewed H-QA rows: ann_queue rows whose reasons_json contains "H-QA" and that have a review."""
+    jpath = Path(settings.paths.runs_dir) / "judge" / "judge.sqlite"
+    if not jpath.exists():
+        return None
+    conn = sqlite3.connect(f"file:{jpath}?mode=ro", uri=True)
+    try:
+        rows = conn.execute(
+            "SELECT i.source_id FROM ann_queue q JOIN items i ON i.item_id=q.item_id JOIN v_review_latest r "
+            "ON r.ann_id=q.ann_id WHERE i.source_table='notes' AND q.reasons_json LIKE '%\"H-QA\"%'").fetchall()
+    except sqlite3.Error:
+        return None
+    finally:
+        conn.close()
+    return {("notes", str(r[0])) for r in rows}
+
+
 def _cost(settings: Any, db: Db) -> dict[str, Any]:
-    rows = [dict(r) for r in db.read(lambda c: c.execute("SELECT * FROM v_cost ORDER BY phase, model").fetchall())]
-    main = sum(float(r["total_usd"] or 0.0) for r in rows)
+    """Keys as tables.table_cost reads them: phase_model [{phase, model, n_calls, usd}], judge_tier [{tier, n_calls,
+    usd, n_estimated}]."""
+    rows = [{"phase": r["phase"], "model": r["model"], "n_calls": int(r["n_turns"]), "usd": float(r["total_usd"] or 0.0),
+             "n_estimated": int(r["n_estimated"] or 0)}
+            for r in db.read(lambda c: c.execute("SELECT * FROM v_cost ORDER BY phase, model").fetchall())]
+    main = sum(r["usd"] for r in rows)
     judge_rows: list[dict[str, Any]] = []
     jpath = Path(settings.paths.runs_dir) / "judge" / "judge.sqlite"
     if jpath.exists():
         conn = sqlite3.connect(f"file:{jpath}?mode=ro", uri=True)
         try:
-            judge_rows = [dict(zip(("tier", "item_type", "n_calls", "usd"), r)) for r in conn.execute(
-                "SELECT tier, item_type, COUNT(*), COALESCE(SUM(cost_usd),0) FROM judge_ledger GROUP BY tier, item_type")]
+            judge_rows = [dict(zip(("tier", "n_calls", "usd", "n_estimated"), r)) for r in conn.execute(
+                "SELECT tier, COUNT(*), COALESCE(SUM(cost_usd),0), COALESCE(SUM(estimated),0) FROM judge_ledger "
+                "GROUP BY tier ORDER BY tier")]
         except sqlite3.Error:
             judge_rows = []
         finally:
             conn.close()
     judge = sum(r["usd"] for r in judge_rows)
-    return {"by_phase_model": rows, "judge_by_tier": judge_rows, "main_usd": main, "judge_usd": judge,
-            "prior_usd": float(settings.budget.prior_spend_usd), "total_usd": main + judge + float(settings.budget.prior_spend_usd)}
+    prior = float(settings.budget.prior_spend_usd)
+    return {"phase_model": rows, "judge_tier": judge_rows, "main_usd": main, "judge_usd": judge, "prior_usd": prior,
+            "total_usd": main + judge + prior}
+
+
+def _judge_counts(settings: Any) -> dict[str, Any] | None:
+    """Judge mechanics numbers (F-20 mismatches, invalid / refused / re-asks, sub-tier coverage), read-only."""
+    jpath = Path(settings.paths.runs_dir) / "judge" / "judge.sqlite"
+    if not jpath.exists():
+        return None
+    conn = sqlite3.connect(f"file:{jpath}?mode=ro", uri=True)
+    try:
+        ver = conn.execute("SELECT value FROM jmeta WHERE key='active_prompt_version'").fetchone()
+        ver = ver[0] if ver else "v1"
+        st = {s: n for s, n in conn.execute("SELECT status, COUNT(*) FROM judge_labels WHERE prompt_version=? "
+                                            "GROUP BY status", (ver,))}
+        mism = conn.execute("SELECT COALESCE(SUM(escalation_mismatch),0), COUNT(escalation_returned) FROM judge_labels "
+                            "WHERE prompt_version=?", (ver,)).fetchone()
+        reasks = conn.execute("SELECT COUNT(*) FROM judge_labels WHERE prompt_version=? AND n_asks>1", (ver,)).fetchone()[0]
+        cov = [{"subtier": a, "n_items": int(b), "n_judged": int(c)} for a, b, c in conn.execute(
+            "SELECT i.subtier, COUNT(*), COUNT(l.item_id) FROM items i LEFT JOIN judge_labels l ON l.item_id=i.item_id "
+            "AND l.prompt_version=? AND l.status='valid' WHERE i.tier IN ('J1','J2') GROUP BY i.subtier ORDER BY i.subtier",
+            (ver,))]
+    except sqlite3.Error:
+        return None
+    finally:
+        conn.close()
+    return {"valid": st.get("valid", 0), "invalid": st.get("invalid", 0), "refused": st.get("refused", 0),
+            "reasks": int(reasks), "esc_mismatch": int(mism[0]), "esc_returned": int(mism[1]), "subtiers": cov}
 
 
 def _write_figures_tables(out_dir: Path, book: NumberBook, *, label: str, hyp: Any, sec: Any, desc: Any, p1r: Any,
@@ -232,7 +281,7 @@ def run_analysis(settings: Any, *, strict: bool, labels: LabelSource | None = No
             hyp = hypotheses.run_hypotheses(w, e, seeds=seeds, gate_log=gate_for_h)
             sec = secondary.secondary(w, e, db, aset, seeds=seeds)
             desc = secondary.descriptive(w, e, seeds=seeds)
-            sens = secondary.sensitivity(w, e, db, aset, seeds=seeds)
+            sens = secondary.sensitivity(w, e, db, aset, seeds=seeds, qa_keys=_hqa_keys(settings))
             p1r = secondary.p1_rates(w, seeds=seeds)
             label_h = model_label(aset.model)
             # power, recomputed at F
@@ -284,6 +333,9 @@ def run_analysis(settings: Any, *, strict: bool, labels: LabelSource | None = No
     book.add("CostJudgeUsd", cost["judge_usd"], "usd", source="judge_ledger")
     book.add("CostTotalUsd", cost["total_usd"], "usd", source="prior spend + main ledger + judge ledger")
     judge_pack = _judge_pack(settings, seeds, strict=strict, notes=notes)
+    jc = _judge_counts(settings)
+    if jc is not None:
+        register.register_judge_counts(book, jc)
     if judge_pack is not None:
         register.register_judge(book, judge_pack[0], judge_pack[1])
 
@@ -304,14 +356,29 @@ def run_analysis(settings: Any, *, strict: bool, labels: LabelSource | None = No
     macros = out_dir / ("macros.tex" if strict else "macros.provisional.tex")
     book.write_json(numbers_json)
     book.write_macros(macros, status=status)
+    summary["judge_counts"] = jc
     summary["notes"] = notes
     summary["n_numbers"] = len(book)
     (out_dir / "summary.json").write_text(json.dumps(summary, indent=1, sort_keys=True, default=str) + "\n", encoding="utf-8")
-    if export_paper is not None:
+    runs = Path(settings.paths.runs_dir).resolve()
+    outside = runs not in out_dir.resolve().parents
+    if export_paper is not None or outside:
         if private is None:
             from wtth.prereg import load_private
 
             private = load_private(settings)
-        files = sorted(p for p in out_dir.rglob("*") if p.is_file() and p.name != "summary.json")
-        _scan_and_copy(files, Path(export_paper), private, out_dir)
+        if outside:     # files written outside runs/ pass the residual scan (summary.json included)
+            from wtth.redact import _Redactor
+
+            red = _Redactor(dict(private))
+            for f in sorted(p for p in out_dir.rglob("*") if p.is_file()):
+                hits = red.residual(f.read_bytes())
+                if hits:
+                    import shutil
+
+                    shutil.rmtree(out_dir, ignore_errors=True)
+                    raise PrivateLeakError(f"private string ids {sorted(hits)} found in {f.name}; output removed")
+        if export_paper is not None:
+            files = sorted(p for p in out_dir.rglob("*") if p.is_file() and p.name != "summary.json")
+            _scan_and_copy(files, Path(export_paper), private, out_dir)
     return RunOutputs(out_dir, status, numbers_json, macros, figs, tabs)

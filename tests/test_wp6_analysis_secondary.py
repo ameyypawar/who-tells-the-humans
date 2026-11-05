@@ -197,15 +197,45 @@ class BoardSubstitutionTest(unittest.TestCase):
         w = witness_outcomes(m.db, aset, src, strict=False)
         judge = secondary.board_substitution(w, source="judge")[0]
         final = secondary.board_substitution(w, source="final")[0]
-        # witnesses: 1 noteless+concern, 2 noteless with one unjudged post, 3 has a note
-        self.assertEqual((judge.n_witnesses, judge.n_noteless, judge.n_noteless_known, judge.k_qualifying), (3, 2, 1, 1))
+        # witnesses: 1 noteless poster, fully judged, concern; 2 noteless poster with an unlabelled post; 3 has a note
+        self.assertEqual((judge.n_witnesses, judge.n_noteless, judge.n_posters, judge.k_qualifying), (3, 2, 2, 1))
         self.assertTrue(judge.conditional)
-        self.assertEqual((judge.p, judge.coverage), (1.0, 0.5))
-        self.assertEqual(judge.lo, wilson(1, 1)[0])
-        # final labels: witness 2 now qualifies (reviewed concern) and so is known
-        self.assertEqual((final.n_noteless_known, final.k_qualifying), (2, 2))
-        self.assertTrue(final.conditional is False)
-        self.assertEqual(final.p, 2 / 3)
+        self.assertAlmostEqual(judge.p, 2 / 3 * 1.0)          # 2 of 3 witnesses are posters; judged posters: 1 of 1
+        self.assertEqual((judge.coverage, judge.judged_fraction), (0.5, 0.5))
+        self.assertAlmostEqual(judge.lo, 2 / 3 * wilson(1, 1)[0])
+        # final labels: witness 2 still has an unlabelled post, so it is not a judged unit either
+        self.assertEqual((final.k_qualifying, final.judged_fraction), (1, 0.5))
+
+    def test_reviewer_example_ten_noteless_witnesses(self) -> None:
+        """P1-5: 6 noteless witnesses without posts, 4 noteless posters (all concern); truth 40%."""
+        from tests.wp6_mini import Mini
+        m = Mini("wp6_boardsub10")
+        conc = post_labels(concern=1, concern_subtype="warn_peers", about_violation=1)
+        # one episode has 3 witnesses; use 4 episodes: 12 witnesses -> make 10 noteless by adding notes to 2
+        for seed in range(1, 5):
+            posts = [(1, 2, "worried", conc)] if seed <= 4 else []
+            m.episode("RECEIPT", seed=seed, notes=[(3, 2, "Refund", "lamp", "tool")], posts=posts)
+        src = DictLabelSource(m.labels)
+        w = witness_outcomes(m.db, m.aset(), src, strict=False)
+        r = secondary.board_substitution(w, source="judge")[0]
+        self.assertEqual((r.n_witnesses, r.n_noteless, r.n_posters, r.k_qualifying), (12, 8, 4, 4))
+        self.assertAlmostEqual(r.p, 4 / 12)
+        # drop 2 of the 4 posters' labels (the J2d prefix judged only half)
+        keep = dict(m.labels)
+        for pid, _ in m.post_ids[:0]:
+            pass
+        import sqlite3
+        ids = [str(x[0]) for x in m.db.read(lambda c: c.execute("SELECT id FROM posts ORDER BY id").fetchall())]
+        for pid in ids[2:]:
+            keep.pop(("posts", pid), None)
+        w2 = witness_outcomes(m.db, m.aset(), DictLabelSource(keep), strict=False)
+        r2 = secondary.board_substitution(w2, source="judge")[0]
+        self.assertEqual((r2.k_qualifying, r2.judged_fraction, r2.conditional), (2, 0.5, True))
+        self.assertAlmostEqual(r2.p, 4 / 12)             # not 2/12: the estimate is on judged posters, weighted
+        keep0 = {k: v for k, v in keep.items() if k[0] != "posts"}
+        w0 = witness_outcomes(m.db, m.aset(), DictLabelSource(keep0), strict=False)
+        r0 = secondary.board_substitution(w0, source="judge")[0]
+        self.assertIsNone(r0.p)                          # nothing judged: not estimated, never 0.0%
 
 
 class SurvivalTest(unittest.TestCase):
@@ -344,8 +374,7 @@ class DescriptiveSensitivitySonnetTest(unittest.TestCase):
         self.assertIsNotNone(s.icc_pooled)
         self.assertIn("NONE", s.icc_by_cell)
         qa = s.qa
-        self.assertEqual(qa["n_labelled"], qa["k_true_positive"])       # every planted matched note is a true positive
-        self.assertEqual(qa["precision"], 1.0)
+        self.assertEqual((qa["n_labelled"], qa["precision"]), (0, None))     # no reviewed H-QA rows in the synth
         self.assertTrue(any("aliased" in n or "cannot be separated" in n for n in s.notes))
 
     def test_sonnet(self) -> None:
@@ -364,3 +393,35 @@ class DescriptiveSensitivitySonnetTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class QaPrecisionTest(unittest.TestCase):
+    def test_only_reviewed_hqa_rows(self) -> None:
+        from tests.wp6_mini import Mini, note_labels
+        m = Mini("wp6_qa_prec")
+        m.episode("NONE", seed=1, notes=[(1, 2, "Hendricks", "split", "tool"), (2, 2, "batch of tickets", "refunds", "tool"),
+                                          (3, 2, "split bill", "lunch", "tool")])
+        ids = m.note_ids
+        for nid, refers, queue, reviewed in ((ids[0], 1, "H-QA", True), (ids[1], 0, "H-QA", True), (ids[2], 0, "H-1", True)):
+            key = ("notes", str(nid))
+            lab = note_labels(refers=refers)
+            m.labels[key] = FinalLabel(key, ItemType.NOTE, lab, "reviewed" if reviewed else "judge", 0, lab, queue, reviewed)
+        aset = m.aset()
+        w = witness_outcomes(m.db, aset, DictLabelSource(m.labels), strict=False)
+        qa = secondary._qa_precision(w)
+        self.assertEqual((qa["n_matched_notes"], qa["n_labelled"], qa["k_true_positive"], qa["precision"]), (3, 2, 1, 0.5))
+        # by reasons: a drawn item may keep a higher queue; the key set decides
+        qa = secondary._qa_precision(w, {("notes", str(ids[2]))})
+        self.assertEqual((qa["n_labelled"], qa["precision"]), (1, 0.0))
+
+
+class FormatNearZeroTest(unittest.TestCase):
+    def test_two_decimals_below_005_pp_and_verdict(self) -> None:
+        from wtth.analysis.numbers import contrast_verdict, fmt_value
+        from wtth.analysis.results import Contrast
+        self.assertEqual(fmt_value(0.0003, "pp"), "0.03")
+        self.assertEqual(fmt_value((0.0, 0.0003), "ci"), "0.0 to 0.03")
+        self.assertEqual(fmt_value(0.0, "pp"), "0.0")
+        self.assertEqual(fmt_value(0.0005, "pp"), "0.1")
+        z = Contrast("X", 0.0, 0.0, 0.1, 0.95, 1, "h1", True, "zero", "confirmatory", {})
+        self.assertEqual(contrast_verdict(z), "rejected")

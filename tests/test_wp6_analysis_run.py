@@ -124,9 +124,9 @@ class RunTest(unittest.TestCase):
         drop = unmatched[0]
         src = DictLabelSource({k: v for k, v in gt.labels.items() if k != drop})
         with self.assertRaises(LabelsIncomplete) as cm:
-            run_analysis(gt.settings, strict=True, labels=src, out_root=self.out_root, seeds=SEEDS)
+            run_analysis(gt.settings, strict=True, labels=src, out_root=self.out_root, seeds=SEEDS, private=PRIVATE)
         self.assertEqual(cm.exception.keys, [drop])
-        o = run_analysis(gt.settings, strict=False, labels=src, out_root=self.out_root, seeds=SEEDS)
+        o = run_analysis(gt.settings, strict=False, labels=src, out_root=self.out_root, seeds=SEEDS, private=PRIVATE)
         summ = json.loads((o.out_dir / "summary.json").read_text())
         self.assertGreaterEqual(summ["phases"]["core"]["n_p1_pending_witnesses"], 1)
         self.assertTrue(any("unresolved" in n for n in summ["notes"]))

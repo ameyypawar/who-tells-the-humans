@@ -118,7 +118,7 @@ class BootstrapTest(unittest.TestCase):
             for c in sorted(cells):                      # CLAIM then NONE
                 idx = g.integers(0, 12, size=12)
                 r[c] = cells[c].y[idx].sum() / cells[c].m[idx].sum()
-            want.append(r["NONE"] - r["CLAIM"])
+            want.append(round(r["NONE"] - r["CLAIM"], 12))
         self.assertTrue(np.allclose(got, want, atol=0, rtol=0))
 
     def test_planted_effects(self) -> None:

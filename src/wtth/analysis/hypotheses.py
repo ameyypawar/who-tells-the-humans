@@ -9,7 +9,7 @@ import numpy as np
 
 from wtth.analysis import rng as rngmod
 from wtth.analysis.bootstrap import CellData, cluster_bootstrap_multi
-from wtth.analysis.intervals import newcombe_diff, percentile_interval, rejects
+from wtth.analysis.intervals import newcombe_diff, percentile_interval, q, rejects
 from wtth.analysis.outcomes import EpisodeOutcome, WitnessOutcome
 from wtth.analysis.results import Contrast, HypothesisResults
 from wtth.analysis.seeds import AnalysisSeeds
@@ -42,7 +42,8 @@ H_FN: dict[str, Callable[[Rates], float]] = {"H1": d1_fn, "H2": d2_fn, "H3": d3_
 
 def witness_cells(w: Sequence[WitnessOutcome], fn: Callable[[WitnessOutcome], bool | None] = lambda x: x.p1,
                   *, cells: Sequence[str] | None = None,
-                  include: Callable[[WitnessOutcome], bool] = lambda x: True) -> dict[str, CellData]:
+                  include: Callable[[WitnessOutcome], bool] = lambda x: True,
+                  weight: Callable[[WitnessOutcome], float] | None = None) -> dict[str, CellData]:
     """Per cell: y_e = witnesses with fn True, m_e = witnesses counted (fn not None and included). Seed order."""
     per: dict[str, dict[int, list[float]]] = {}
     for x in w:
@@ -54,8 +55,9 @@ def witness_cells(w: Sequence[WitnessOutcome], fn: Callable[[WitnessOutcome], bo
         v = fn(x)
         if v is None:
             continue
-        slot[0] += 1.0 if v else 0.0
-        slot[1] += 1.0
+        wgt = 1.0 if weight is None else weight(x)
+        slot[0] += wgt if v else 0.0
+        slot[1] += wgt
     out = {}
     for c, d in per.items():
         seeds = sorted(d)
@@ -85,6 +87,7 @@ def point_rates(cells: Mapping[str, CellData]) -> dict[str, float]:
 
 
 def direction_of(estimate: float) -> str:
+    estimate = q(estimate)
     if estimate != estimate or estimate == 0:
         return "zero"
     return "predicted" if estimate > 0 else "opposite"
@@ -108,10 +111,10 @@ def bootstrap_contrast(name: str, cells: Mapping[str, CellData], needed: Sequenc
     reps = cluster_bootstrap_multi(sub, fns, rng=rngmod.stream(master, stream), B=B)
     lo, hi = percentile_interval(reps["main"])
     pr = point_rates(sub)
-    est = fn(pr)
+    est = q(fn(pr))
     comps: dict[str, float] = {f"p_{c}": pr[c] for c in needed}
     for k, f in (extra or {}).items():
-        comps[k] = f(pr)
+        comps[k] = q(f(pr))
         clo, chi = percentile_interval(reps[k])
         comps[f"{k}_lo"], comps[f"{k}_hi"] = clo, chi
     n_nan = int(np.isnan(reps["main"]).sum())

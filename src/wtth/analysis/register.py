@@ -164,6 +164,7 @@ def register_model(book: NumberBook, model: str, *, aset: AnalysisSet, w: Sequen
     book.add(M + "IccPooled", sens.icc_pooled, "kappa", source="one-way ANOVA ICC(1), pooled within cells")
     for c, v in sens.icc_by_cell.items():
         book.add(M + "Icc" + cell_token(c), v, "kappa", source=f"ICC(1) {c}")
+    register_km_any(book, M, sens.km_any)
     q = sens.qa
     if q:
         book.add(M + "KwMatchedNotes", q.get("n_matched_notes"), "count", source="keyword-rule QA")
@@ -221,3 +222,22 @@ def register_judge(book: NumberBook, validation: Mapping[str, Any] | None, agree
     book.add("ReviewPrecisionEscalation", prec.get("precision"), "prop", source="judge escalation positives in H-3")
     blind = agreement.get("blind") or {}
     book.add("BlindStatus", blind.get("status", "not run"), "text", source="author-blind sample")
+
+
+def register_judge_counts(book: NumberBook, jc: Mapping[str, Any]) -> None:
+    src = "judge database (active prompt version)"
+    for k, name in (("valid", "JudgeValid"), ("invalid", "JudgeInvalid"), ("refused", "JudgeRefused"),
+                    ("reasks", "JudgeReasked"), ("esc_mismatch", "JudgeEscMismatch"), ("esc_returned", "JudgeEscReturned")):
+        book.add(name, jc[k], "count", source=src, note="F-20: recomputed escalation is used everywhere" if "esc" in k else "")
+    for r in jc["subtiers"]:
+        pre = "SubtierCov" + token(r["subtier"])
+        book.add(pre + "N", r["n_items"], "count", source=f"sub-tier {r['subtier']}")
+        book.add(pre + "K", r["n_judged"], "count", source=f"sub-tier {r['subtier']}")
+        book.add(pre + "Pct", (r["n_judged"] / r["n_items"]) if r["n_items"] else None, "prop",
+                 source=f"sub-tier {r['subtier']} judged fraction (D-011 F-02)")
+
+
+def register_km_any(book: NumberBook, M: str, curves: Sequence[Any]) -> None:
+    for k in curves:
+        pre = M + "Km" + token(k.unit) + cell_token(k.cell)
+        book.add(pre + "SFive", k.surv[-1], "prop", source=f"any-note Kaplan-Meier {k.unit} {k.cell}, S(round 5)")

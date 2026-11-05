@@ -10,6 +10,8 @@ from dataclasses import dataclass
 
 import numpy as np
 
+from wtth.analysis.intervals import q, qa
+
 
 @dataclass(frozen=True, slots=True)
 class CellData:
@@ -47,7 +49,7 @@ def cluster_bootstrap_multi(cells: Mapping[str, CellData], contrasts: Mapping[st
             rates[c] = _rate(ys[c][idx], ms[c][idx])
         bad = any(r != r for r in rates.values())
         for k, fn in contrasts.items():
-            out[k][b] = float("nan") if bad else fn(rates)
+            out[k][b] = float("nan") if bad else q(fn(rates))
     return out
 
 
@@ -71,5 +73,5 @@ def seed_paired_bootstrap(cells_by_seed: Mapping[str, Mapping[int, tuple[float, 
     for b in range(B):
         idx = rng.integers(0, n, size=n)
         rates = {c: _rate(ys[c][idx], ms[c][idx]) for c in names}
-        out[b] = float("nan") if any(r != r for r in rates.values()) else contrast(rates)
+        out[b] = float("nan") if any(r != r for r in rates.values()) else q(contrast(rates))
     return out

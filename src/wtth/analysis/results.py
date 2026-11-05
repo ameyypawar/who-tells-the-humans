@@ -154,6 +154,8 @@ class BoardSubRate:
     conditional: bool
     coverage: float
     note: str
+    judged_fraction: float = 1.0     # judged / all noteless witnesses that have posts (the J2d prefix fraction)
+    n_posters: int = 0               # noteless witnesses with at least one live post in rounds 1-5
 
 
 @dataclass(frozen=True, slots=True)
@@ -192,6 +194,7 @@ class SensitivityResults:
     icc_by_cell: Mapping[str, float]
     qa: Mapping[str, object]
     notes: tuple[str, ...] = ()
+    km_any: tuple[KMCurve, ...] = ()     # any-note Kaplan-Meier (D-006 sensitivity)
 
 
 @dataclass(frozen=True, slots=True)

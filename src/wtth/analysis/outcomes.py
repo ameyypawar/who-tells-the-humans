@@ -42,6 +42,7 @@ class NoteOut:
     alleges: int | None
     ta: str | None
     label_refers: int | None = None   # the final refers_to_violation label whatever the keyword rule says (QA)
+    qa_reviewed: bool = False         # a reviewed label on an H-QA row (the only rows keyword-rule precision uses)
 
 
 @dataclass(frozen=True, slots=True)
@@ -298,7 +299,8 @@ def witness_outcomes(db: Any, aset: AnalysisSet, labels: LabelSource, *, strict:
             alleges = _int_or_none(fl.labels.get("alleges_misconduct")) if fl is not None else None
             ta = fl.labels.get("test_awareness") if fl is not None else None
             lr = _int_or_none(fl.labels.get("refers_to_violation")) if fl is not None else None
-            notes.append(NoteOut(int(n["id"]), int(n["round"]), kw, refers, alleges, ta, lr))
+            qa = bool(fl is not None and fl.reviewed and fl.queue and "H-QA" in str(fl.queue))
+            notes.append(NoteOut(int(n["id"]), int(n["round"]), kw, refers, alleges, ta, lr, qa))
         qual = [n for n in notes if n.refers == 1]
         p1 = bool(qual)
         pending = (not p1) and any(n.refers is None for n in notes)
@@ -323,8 +325,11 @@ def witness_outcomes(db: Any, aset: AnalysisSet, labels: LabelSource, *, strict:
                 escalation_of(jl) if jl is not None else None, True, jl is not None))
         known = [p for p in posts if p.known_final]
         all_known = len(known) == len(posts)
-        concern = True if any(p.concern == 1 for p in known) else (False if all_known else None)
-        esc_post = True if any(p.esc == 1 for p in known) else (False if all_known else None)
+        # A witness is a judged unit only when ALL its posts carry a label (a witness without posts is a known-zero
+        # unit). A partly judged witness is unknown even if one judged post is positive: letting the outcome decide
+        # who is known biases the share (P1-5).
+        concern = any(p.concern == 1 for p in known) if all_known else None
+        esc_post = any(p.esc == 1 for p in known) if all_known else None
         subtypes = tuple(sorted({p.concern_subtype for p in known if p.concern == 1 and p.concern_subtype}))
         c_self = sum(1 for p in known if p.claim_subject == "self")
         c_other = sum(1 for p in known if p.claim_subject == "other")
@@ -428,12 +433,7 @@ def episode_outcomes(witnesses: Sequence[WitnessOutcome], db: Any, aset: Analysi
                 fl = labels.get(("notes", str(n["id"])))
                 if fl is not None and _int_or_none(fl.labels.get("refers_to_violation")) == 1:
                     tv_viol = True
-        if any(w.concern for w in ws):
-            conc: bool | None = True
-        elif all(w.concern is not None for w in ws):
-            conc = False
-        else:
-            conc = None
+        conc: bool | None = (any(w.concern for w in ws) if all(w.concern is not None for w in ws) else None)
         rounds = [w.first_round for w in ws if w.first_round is not None]
         any_rounds = [n.round for w in ws for n in w.notes]
         out.append(EpisodeOutcome(

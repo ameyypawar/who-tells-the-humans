@@ -81,6 +81,12 @@ def _dec(value: float | int | str) -> Decimal:
     return Decimal(repr(value) if isinstance(value, float) else str(value))
 
 
+def _pp(value: float) -> str:
+    """Percentage points, one decimal; two when 0 < |value| < 0.05 pp so a tiny non-zero endpoint is not shown as 0.0."""
+    v = _dec(value) * 100
+    return _fixed(value, 2, 100) if v != 0 and abs(v) < Decimal("0.05") else _fixed(value, 1, 100)
+
+
 def _fixed(value: float, places: int, scale: int = 1) -> str:
     """ROUND_HALF_UP of value*scale to `places` decimals; the sign is written as \\ensuremath{-} unless it rounds to 0."""
     d = (_dec(value) * scale).quantize(Decimal(1).scaleb(-places), rounding=ROUND_HALF_UP)
@@ -107,13 +113,15 @@ def fmt_value(value: Any, kind: str) -> str:
         return _count(int(value))
     if kind == "plain":
         return str(int(value)) if isinstance(value, (int, float)) and float(value) == int(value) else str(value)
-    if kind in ("prop", "pp"):
+    if kind == "prop":
         return _fixed(value, 1, 100)
+    if kind == "pp":
+        return _pp(value)
     if kind == "ci":
         lo, hi = value
         if lo is None or hi is None or lo != lo or hi != hi:
             return "n/a"
-        return f"{_fixed(lo, 1, 100)} to {_fixed(hi, 1, 100)}"
+        return f"{_pp(lo)} to {_pp(hi)}"
     if kind == "kappa":
         return _fixed(value, 2)
     if kind == "kappaci":
@@ -246,7 +254,7 @@ def contrast_verdict(c: Contrast) -> str:
     if c.status == "unavailable":
         return "unavailable"
     if c.rejected is True:
-        return "rejected" if c.direction == "predicted" else "rejected in the opposite direction"
+        return "rejected in the opposite direction" if c.direction == "opposite" else "rejected"
     if c.rejected is False:
         return "not rejected"
     return "descriptive" if c.status == "descriptive" else "exploratory"
