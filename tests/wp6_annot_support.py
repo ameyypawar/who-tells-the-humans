@@ -123,3 +123,34 @@ def _enqueue(self: Jdb, iid: str, queue: str, reasons: list[str] | None = None, 
 
 
 Jdb.enqueue = _enqueue  # type: ignore[attr-defined]
+
+
+def label_all(j: Jdb, settings: Any, labels: dict[str, Any], *, uncertain: dict[str, int] | None = None,
+              annotator: str = "claude-opus-5-5", seed: int = 1) -> Path:
+    """Export every not-yet-exported queued item and import `labels` (ann_id -> labels dict; ids missing from the
+    mapping get the default labels of their type). Returns the export directory."""
+    from wtth.annotate import export as ex
+    from wtth.annotate import importer
+
+    exp = ex.export_annotator_batches(settings, j.db, j.dir / "export", seed=seed, include_exported_unlabeled=True)
+    lines = []
+    for p in sorted(exp.glob("batch_*.jsonl")):
+        for x in p.read_text(encoding="utf-8").splitlines():
+            r = json.loads(x)
+            lines.append(json.dumps({"ann_id": r["ann_id"], "labels": labels.get(r["ann_id"], labels_for(r["type"])),
+                                     "quote": r["text"][:10], "confidence": "high",
+                                     "uncertain": (uncertain or {}).get(r["ann_id"], 0), "justification": "because"}))
+    f = exp / "labels" / "labels_all.jsonl"
+    f.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    res = importer.import_label_files(settings, j.db, [f], annotator=annotator)
+    assert not res["invalid"], res["invalid"]
+    return exp
+
+
+def key_of(j: Jdb, iid: str) -> tuple[str, str]:
+    r = j.db.read(lambda c: c.execute("SELECT source_table, source_id FROM items WHERE item_id=?", (iid,)).fetchone())
+    return (r[0], r[1])
+
+
+def set_meta(j: Jdb, k: str, v: str) -> None:
+    j.db.write(lambda c: c.execute("INSERT INTO jmeta(key,value) VALUES (?,?) ON CONFLICT(key) DO UPDATE SET value=excluded.value", (k, v)))

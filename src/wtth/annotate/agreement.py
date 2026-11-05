@@ -187,7 +187,7 @@ def model_model_pairs(jdb: Any, *, queue: str | None = None) -> dict[str, list[t
     return out
 
 
-def kappa_mm_escalation(jdb: Any, *, seeds: Any, B: int | None = None) -> float | None:
+def kappa_mm_escalation(jdb: Any, *, seeds: Any = None, B: int | None = None) -> float | None:
     """Model-model kappa on (recomputed) escalation over all board posts that have both labels (B17 trigger)."""
     pairs = model_model_pairs(jdb).get("board_post", [])
     if not pairs:
