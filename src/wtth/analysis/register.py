@@ -194,3 +194,30 @@ def register_sonnet(book: NumberBook, s: SonnetResults, *, aset: AnalysisSet, ep
     for d in s.diffs:
         add_diff(book, M, d)
     book.add(M + "Ceiling", "yes" if s.ceiling else "no", "verdict", source="P1(NONE) >= 85%")
+
+
+def register_judge(book: NumberBook, validation: Mapping[str, Any] | None, agreement: Mapping[str, Any]) -> None:
+    """Appendix G numbers: held-out validation, model-model kappa (never called human agreement), review rates, blind."""
+    if validation:
+        book.add("JudgeValidationPass", validation.get("n_pass"), "count", source="held-out validation")
+        book.add("JudgeValidationItems", validation.get("n_items"), "count", source="held-out validation")
+        book.add("JudgeValidationVerdict", "pass" if validation.get("passed") else "fail", "verdict",
+                 source="held-out validation (at least 11 of 12)")
+        book.add("JudgeCBar", validation.get("c_bar_usd"), "usd", source="mean judge cost per call in the first batch")
+    for block, tag in (("model_model", "KappaMM"), ("model_model_h5", "KappaMMH")):
+        for typ, labels in sorted((agreement.get(block) or {}).items()):
+            for label, r in sorted(labels.items()):
+                pre = tag + token(typ) + token(label)
+                src = f"{block} {typ} {label} (judge vs Claude proposal; model-model, not human)"
+                book.add(pre + "N", r.get("n"), "count", source=src)
+                book.add(pre + "Agree", r.get("raw_agreement"), "prop", source=src)
+                book.add(pre + "Value", r.get("kappa"), "kappa", source=src)
+                book.add(pre + "CI", (r.get("kappa_lo"), r.get("kappa_hi")), "kappaci", source=src)
+    corr = agreement.get("correction") or {}
+    book.add("ReviewReviewed", corr.get("reviewed"), "count", source="author review")
+    book.add("ReviewShare", corr.get("share_reviewed"), "prop", source="author review")
+    book.add("ReviewCorrectionRate", corr.get("rate"), "prop", source="author review: correct or use-judge")
+    prec = agreement.get("precision_escalation_h3") or {}
+    book.add("ReviewPrecisionEscalation", prec.get("precision"), "prop", source="judge escalation positives in H-3")
+    blind = agreement.get("blind") or {}
+    book.add("BlindStatus", blind.get("status", "not run"), "text", source="author-blind sample")

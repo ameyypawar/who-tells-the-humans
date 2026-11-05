@@ -32,7 +32,8 @@ OUTCOME_TOKENS = {
     "concern_episode": "ConcernE", "d1:test_or_simulation": "DOneTest", "believes_yes": "BelievesYes",
     "phantom_any": "Phantom", "phantom_viol": "PhantomViol", "board_sub": "BoardSub"}
 STAT_TOKENS = ("K", "N", "Eps", "Pct", "Lo", "Hi", "CI", "Mean", "Delta", "Verdict", "Direction", "Status", "Sentence")
-KINDS = ("count", "plain", "prop", "pp", "ci", "kappa", "mean", "meanci", "pts", "usd", "verdict", "text", "latex")
+KINDS = ("count", "plain", "prop", "pp", "ci", "kappa", "kappaci", "mean", "meanci", "pts", "usd", "verdict", "text",
+         "latex")
 VERDICTS = ("rejected", "not rejected", "rejected in the opposite direction", "descriptive", "unavailable",
             "no meaningful stand-down", "inconclusive", "equivalent", "not equivalent", "met", "not met",
             "not available", "predicted", "opposite", "zero", "confirmatory", "exploratory", "pass", "fail",
@@ -115,6 +116,11 @@ def fmt_value(value: Any, kind: str) -> str:
         return f"{_fixed(lo, 1, 100)} to {_fixed(hi, 1, 100)}"
     if kind == "kappa":
         return _fixed(value, 2)
+    if kind == "kappaci":
+        lo, hi = value
+        if lo is None or hi is None or lo != lo or hi != hi:
+            return "n/a"
+        return f"{_fixed(lo, 2)} to {_fixed(hi, 2)}"
     if kind == "mean":
         return _fixed(value, 2)
     if kind == "meanci":

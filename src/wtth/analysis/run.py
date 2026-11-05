@@ -138,6 +138,7 @@ def _write_figures_tables(out_dir: Path, book: NumberBook, *, label: str, hyp: A
     tabs.append(T.table_cost(cost, book, tdir))
     if judge_pack is not None:
         tabs.append(T.table_judge(judge_pack[0], judge_pack[1], book, tdir))
+        tabs.append(T.table_confusion(judge_pack[1], book, tdir))
     return figs, tabs
 
 
@@ -151,8 +152,8 @@ def _judge_pack(settings: Any, seeds: AnalysisSeeds, *, strict: bool, notes: lis
         from wtth.judge.db import open_judge_db
 
         jdb = open_judge_db(settings)
-        validation = [dict(r) for r in jdb.read(lambda c: c.execute("SELECT * FROM validations ORDER BY ts").fetchall())]
-        return validation, agreement_summary(jdb, seeds=seeds)
+        rows = [dict(r) for r in jdb.read(lambda c: c.execute("SELECT * FROM validations ORDER BY ts").fetchall())]
+        return (rows[-1] if rows else None), agreement_summary(jdb, seeds=seeds)
     except Exception as exc:     # noqa: BLE001 - provisional runs go on without the table
         if strict:
             raise
@@ -283,6 +284,8 @@ def run_analysis(settings: Any, *, strict: bool, labels: LabelSource | None = No
     book.add("CostJudgeUsd", cost["judge_usd"], "usd", source="judge_ledger")
     book.add("CostTotalUsd", cost["total_usd"], "usd", source="prior spend + main ledger + judge ledger")
     judge_pack = _judge_pack(settings, seeds, strict=strict, notes=notes)
+    if judge_pack is not None:
+        register.register_judge(book, judge_pack[0], judge_pack[1])
 
     stamp = datetime.fromtimestamp(time.time(), timezone.utc).strftime("%Y%m%dT%H%M%S")
     root = Path(out_root) if out_root is not None else Path(settings.paths.runs_dir) / "analysis" / "out"
