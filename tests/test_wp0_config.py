@@ -217,7 +217,8 @@ class SideFileTests(unittest.TestCase):
         self.assertEqual("UTC", base["TZ"])
         self.assertEqual("/usr/bin:/bin", base["PATH"])
         self.assertEqual("false", base["ENABLE_TOOL_SEARCH"])
-        self.assertEqual(15, len(base))
+        self.assertEqual(16, len(base))
+        self.assertEqual("1", base["CLAUDE_CODE_DISABLE_REFUSAL_RETRY"])
         self.assertEqual({"CLAUDE_CODE_ENABLE_TELEMETRY", "OTEL_LOGS_EXPORTER", "OTEL_METRICS_EXPORTER",
                           "OTEL_LOG_RAW_API_BODIES", "OTEL_LOGS_EXPORT_INTERVAL"}, set(audit))
         dynamic = env_dynamic_names(CONFIGS / "env_allowlist.json")
