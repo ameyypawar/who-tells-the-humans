@@ -121,8 +121,9 @@ def fig1a(haiku_p1: Sequence[CellRate], haiku_p2: Sequence[EpisodeRate], out_dir
                       "sonnet": None if hs else fr.p1, "p2h": p2 if hs else "", "p2s": "" if hs else p2})
         groups.append((FOLLOWUP_GROUP, g))
     n_rows = sum(len(g) for _, g in groups)
-    gap = 0.55
-    pitch_in = 0.152 if not followup else 0.138
+    # the follow-up group adds four rows' height at most: tighter rows and group gaps keep Fig. 1 near its budget
+    gap = 0.55 if not followup else 0.40
+    pitch_in = 0.152 if not followup else 0.130
     top_in, bottom_in = 0.36, 0.36
     height = top_in + bottom_in + pitch_in * (n_rows + gap * (len(groups) - 1) + 0.4)
     width = FIG1A_WIDTH_IN
