@@ -283,11 +283,11 @@ def table_judge(validation: Mapping[str, Any] | None, agreement: Mapping[str, An
     rows.append(None)
     corr = agreement.get("correction", {})
     prec = agreement.get("precision_escalation_h3", {})
-    rows.append([text("Author review"), text("share of queued items reviewed"), integer(corr.get("reviewed")),
+    rows.append([text("AI-audited, author-approved review"), text("share of queued items reviewed"), integer(corr.get("reviewed")),
                  pct(corr.get("share_reviewed")), text(""), text("")])
-    rows.append([text("Author review"), text("correction rate (correct or use-judge)"), integer(corr.get("reviewed")),
+    rows.append([text("AI-audited, author-approved review"), text("correction rate (correct or use-judge)"), integer(corr.get("reviewed")),
                  pct(corr.get("rate")), text(""), text("")])
-    rows.append([text("Author review"), text("precision of judge escalation positives"),
+    rows.append([text("AI-audited, author-approved review"), text("precision of judge escalation positives"),
                  integer(prec.get("n_judge_positive_reviewed")), pct(prec.get("precision")), text(""), text("")])
     rows.append(None)
     blind = agreement.get("blind", {"status": "not run", "by_type": {}})

@@ -11,7 +11,7 @@ from pathlib import Path
 from tests.util import tmp_dir
 from tests.wp6_synth import D003_HAIKU, SynthSpec, build_synth
 from wtth.analysis import __main__ as cli
-from wtth.analysis.numbers import fmt_value, rate_prefix
+from wtth.analysis.numbers import cell_token, fmt_value, rate_prefix, token
 from wtth.analysis.outcomes import LabelsIncomplete
 from wtth.analysis.run import PrivateLeakError, run_analysis
 from wtth.analysis.seeds import AnalysisSeeds, MissingAnalysisConfig, load_analysis_seeds
@@ -90,6 +90,26 @@ class RunTest(unittest.TestCase):
         self.assertEqual(self.disp("HaikuSC"), "80")
         self.assertEqual(self.disp("SonnetSC"), "30")
         self.assertEqual(self.disp("HaikuEpisodesInSet"), "670")
+
+    def test_d2_code_macros_match_secondary_rates_table(self) -> None:
+        import csv
+
+        rows = list(csv.DictReader((self.prov.out_dir / "tables" / "table_secondary_rates.csv").read_text().splitlines()))
+        checked = 0
+        for r in rows:
+            if not r["Outcome"].startswith(("reason:", "basis:")) or "@" in r["Outcome"] or r["Cell"] not in D003_HAIKU:
+                continue
+            pre = "HaikuDTwo" + token(r["Outcome"]) + cell_token(r["Cell"])
+            k, n = r["k/n"].split("/")
+            self.assertEqual(self.disp(pre + "K"), fmt_value(int(k), "count"))
+            self.assertEqual(self.disp(pre + "N"), fmt_value(int(n), "count"))
+            self.assertEqual(self.disp(pre + "Pct"), r["%"])
+            self.assertEqual(self.disp(pre + "CI"), r["95% CI"])
+            self.assertIn("exploratory", self.doc[pre + "Pct"]["source"])
+            checked += 1
+        self.assertGreater(checked, 10)
+        self.assertIn("HaikuDTwoReasonSomeoneElseToldReceiptPct", self.doc)
+        self.assertIn("HaikuDTwoBasisLogLineReceiptPct", self.doc)
 
     def test_sentences_exist_as_macros(self) -> None:
         t = self.prov.macros.read_text()

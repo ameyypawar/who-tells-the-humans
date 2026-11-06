@@ -38,6 +38,11 @@ def _pair_token(rest: str) -> str:
     return token(rest)
 
 
+def is_d2_code_rate(outcome: str) -> bool:
+    """D2 debrief reason-code and basis rates over all units of the cell (not the @d1= splits or conditionals)."""
+    return outcome.startswith(("reason:", "basis:")) and "@" not in outcome and "|" not in outcome
+
+
 def contrast_key(name: str) -> str:
     head, _, rest = name.partition(":")
     if not rest:
@@ -152,6 +157,9 @@ def register_model(book: NumberBook, model: str, *, aset: AnalysisSet, w: Sequen
             book.add_rate(rate_prefix(model, r.outcome, r.cell), r)
         if r.outcome == "any_note":
             book.add_rate(rate_prefix(model, "p1_any", r.cell), replace(r, outcome="p1_any"))
+        if is_d2_code_rate(r.outcome):
+            book.add_rate(M + "DTwo" + token(r.outcome) + cell_token(r.cell), r,
+                          source_suffix="; D2 debrief code, exploratory/descriptive, final labels")
     from wtth.analysis.secondary import known_rate
 
     by: dict[str, list] = {}
@@ -249,9 +257,9 @@ def register_judge(book: NumberBook, validation: Mapping[str, Any] | None, agree
                 book.add(pre + "Value", r.get("kappa"), "kappa", source=src)
                 book.add(pre + "CI", (r.get("kappa_lo"), r.get("kappa_hi")), "kappaci", source=src)
     corr = agreement.get("correction") or {}
-    book.add("ReviewReviewed", corr.get("reviewed"), "count", source="author review")
-    book.add("ReviewShare", corr.get("share_reviewed"), "prop", source="author review")
-    book.add("ReviewCorrectionRate", corr.get("rate"), "prop", source="author review: correct or use-judge")
+    book.add("ReviewReviewed", corr.get("reviewed"), "count", source="AI-audited, author-approved review")
+    book.add("ReviewShare", corr.get("share_reviewed"), "prop", source="AI-audited, author-approved review")
+    book.add("ReviewCorrectionRate", corr.get("rate"), "prop", source="AI-audited, author-approved review: correct or use-judge")
     prec = agreement.get("precision_escalation_h3") or {}
     book.add("ReviewPrecisionEscalation", prec.get("precision"), "prop", source="judge escalation positives in H-3")
     blind = agreement.get("blind") or {}

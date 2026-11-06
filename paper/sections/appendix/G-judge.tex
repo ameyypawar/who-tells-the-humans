@@ -1,8 +1,8 @@
 % appendix G (plan 49 section 2.5). Sources: prompts/judge_rubric.md, D-006, D-007, D-011, D-016 to D-019,
 % research/47 sections 2.3 to 2.11. Wording rule: labels are model-proposed, AI-audited and author-approved; never
 % "blind", "hand", "human-labelled" or "inter-rater"; agreement is always "model--model" (plan 49 4.2 items 12, 13).
-% The 212 review decisions were written by a second Claude pass (the audit) and approved by the author unchanged; the
-% generated tables call that step "author review". There is no human-judge kappa (D-018).
+% The 212 review decisions were written by a second Claude pass (the audit) and approved by the author unchanged;
+% the generated tables label that step "AI-audited, author-approved review". There is no human-judge kappa (D-018).
 \section{Judge rubric, validation and agreement}\label{app:judge}
 
 \subsection{What the judge codes}
@@ -56,7 +56,7 @@ The rubric's threshold of \wtthDesignKappaThreshold{} is kept only as a flag: be
 \adjustbox{max width=\linewidth,max totalheight=8.3in}{\input{generated/analysis/tables/table_judge.tex}}
 \caption{\textbf{Judge validation, the audited review and model--model agreement.}
 ``All pairs'' are every item both models labelled; \texttt{H-5} is the pre-registered random sample.
-The ``Author review'' rows count the decisions of the second Claude pass, which the author approved unchanged; ``--'' marks a $\kappa$ that is undefined because both models gave one value throughout.}
+The review rows count the decisions of the second Claude pass; ``--'' marks a $\kappa$ that is undefined because both models gave one value throughout.}
 \label{tab:judge}
 \end{table}
 

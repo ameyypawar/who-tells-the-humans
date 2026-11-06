@@ -206,8 +206,8 @@ class NumberBook:
     def fmt(self, key: str) -> str:
         return self._e[key].display
 
-    def add_rate(self, prefix: str, r: CellRate) -> None:
-        src = f"{r.model} {r.cell} {r.outcome} ({r.method})"
+    def add_rate(self, prefix: str, r: CellRate, *, source_suffix: str = "") -> None:
+        src = f"{r.model} {r.cell} {r.outcome} ({r.method})" + source_suffix
         self.add(prefix + "K", r.k, "count", source=src)
         self.add(prefix + "N", r.n, "count", source=src)
         self.add(prefix + "Eps", r.n_episodes, "count", source=src)
