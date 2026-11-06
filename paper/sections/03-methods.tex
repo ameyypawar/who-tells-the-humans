@@ -11,8 +11,8 @@
 A fictional retailer, Larkspur Home, runs a nightly refund review on a shared board.
 The system prompt says: ``\wtthStimSystemStaffed{} \wtthStimSystemOps''
 A shift has \wtthDesignRosterWord{} agents over \wtthDesignRoundsWord{} rounds: a scripted violator (V), claimant (C) and background worker (B), and \wtthDesignLiveWitnessesWord{} live witnesses on one model.
-Each witness reviews its own refund tickets (\texttt{submit\_reviews}), reads the whole board, and can post to it (\texttt{post\_to\_board}) or call \texttt{notify\_ops}, a private, write-only feedback channel to ops whose reply is always ``\wtthStimReplyNotify''
-The tool names no consequence; the server stamps the sender (Appendix~\ref{app:prompts}).
+Each witness reviews tickets (\texttt{submit\_reviews}), reads the board, and can post (\texttt{post\_to\_board}) or call \texttt{notify\_ops}, a private, write-only channel to ops whose reply is always ``\wtthStimReplyNotify''
+Senders are server-stamped (Appendix~\ref{app:prompts}).
 
 \paragraph{Cells.}
 In round 2, V reports releasing a refund over the approval limit as three smaller batches, which the runbook forbids, and C posts a routine aside, a concern or a claim (Box~\ref{box:receipt}, Appendix~\ref{app:prompts}); the claim has a public paraphrase and two withheld ones.
@@ -21,7 +21,7 @@ In world R1 the board carries an \texttt{\#escalation-log}, which shows C's line
 The seed fixes paraphrase, handle order and tickets (Table~\ref{tab:cells}).
 
 \paragraph{Receipts.}
-Only the \texttt{notify\_ops} handler writes notes, the log is rendered only from them, and scripted notes use the same handler, so every receipt is channel-written; tests check that no post writes the log.
+Only the \texttt{notify\_ops} handler writes notes, the log is rendered only from them, and scripted notes use the same handler, so every receipt is channel-written (tests check that posts cannot write it).
 The log lists every accepted note, a witness's own included, from the round after it is sent.
 The deployer rule under test: \emph{a receipt is written by the channel, never by the claimant}.
 
@@ -29,10 +29,9 @@ The deployer rule under test: \emph{a receipt is written by the channel, never b
 % of PREREG section 11 (a rejection opposite to the prediction still counts, so the sequence goes on). Review 2 S1: in the
 % core every P1 came from the keyword rule (the judge path decided none), with the model-coded check of D-024.
 \paragraph{Outcomes and analysis.}\label{sec:outcomes}
-P1 (``told ops''): a witness sent a note about the violation by round 5, as decided by a pre-registered keyword rule or, for other notes, by the judge, which decided \wtthHaikuKwCheckPOneLabelOnlyK{} of the \wtthHaikuKwCheckPOneK{} witnesses with P1; the rule's pre-registered precision check was not done, and a post hoc, model-coded check finds \wtthHaikuKwCheckMatchedFinalPct\% of its matches about the violation (D-024, D-026).
+P1 (``told ops''): a witness sent a note about the violation by round 5, as decided by a pre-registered keyword rule (which supplied all \wtthHaikuKwCheckPOneK{} P1 witnesses; the judge added none); the rule's pre-registered precision check was not done, and a post hoc, model-coded check finds \wtthHaikuKwCheckMatchedFinalPct\% of its matches about the violation (D-024, D-026).
 P2 (``operator never told''): no witness in the shift has P1, in the \wtthDesignPTwoCellsWord{} cells where C did not really report.
-Alert load counts violation notes per shift.
-H1 to H3 are tested in a fixed sequence, two-sided at $\alpha = \wtthDesignAlpha$, stopping at the first whose null is not rejected (a rejection opposite to the prediction still counts), on \Done{} $=$ P1(\cell{NONE}) $-$ P1(\cell{CLAIM}), \Dtwo{} $=$ \Done{} $-$ [P1(\cell{NONE-R}) $-$ P1(\cell{NO-RECEIPT})] and \Dthree{} $=$ P1(\cell{NO-RECEIPT}) $-$ P1(\cell{FORGED}), each predicted positive; a null is rejected only if the \wtthProtocolLevel\% interval of a shift-cluster bootstrap excludes zero (planned power and realised precision: Appendix~\ref{app:predictions}).
+H1 to H3 are tested in a fixed sequence, two-sided at $\alpha = \wtthDesignAlpha$, stopping at the first whose null is not rejected (a rejection opposite to the prediction still counts), on \Done{} $=$ P1(\cell{NONE}) $-$ P1(\cell{CLAIM}), \Dtwo{} $=$ \Done{} $-$ [P1(\cell{NONE-R}) $-$ P1(\cell{NO-RECEIPT})] and \Dthree{} $=$ P1(\cell{NO-RECEIPT}) $-$ P1(\cell{FORGED}), each predicted positive; a null is rejected only if the \wtthProtocolLevel\% shift-cluster bootstrap interval excludes zero (power: Appendix~\ref{app:predictions}).
 
 % PREREG sections 14, 15, 21; D-001, D-002, D-005, D-007, D-009, D-011; configs/*.
 \paragraph{Execution.}\label{sec:execution}
@@ -40,7 +39,7 @@ Each witness turn is one stateless call to \wtthDesignModelHaikuName{} at effort
 Pilot gates, never pooled with the data, checked integrity, fixed how clearly V's line states the violation (P1 in \cell{NONE} topped the \wtthDesignGOneCeiling\% ceiling at every level tried, so the least clear was frozen) and confirmed that witnesses read the log (Appendix~\ref{app:gates}).
 The judge (\wtthDesignModelJudgeName, also the exploratory subjects' model) is not told the cell, seed, model or purpose.
 % D-020: the decisions were pre-filled by a second Claude pass and approved unchanged; never say the author reviewed items.
-Review-queue labels are model-proposed, AI-audited by the same model (\wtthDesignModelAnnotatorName) and author-approved (\wtthDesignReviewAuthorChanged{} of \wtthReviewReviewed{} decisions changed), not human labels; agreement figures are model--model (Appendix~\ref{app:judge}).
+Review-queue labels are model-proposed, AI-audited by that proposing model (\wtthDesignModelAnnotatorName, not the judge) and author-approved (\wtthDesignReviewAuthorChanged{} of \wtthReviewReviewed{} decisions changed), not human labels; agreement figures are model--model (Appendix~\ref{app:judge}).
 
 % PREREG header, sections 17 and 23; tag prereg-v1; DEVIATIONS.md. The one pointer sentence for deviation IDs (research/66).
 \paragraph{Pre-registration, deviations and what did not work.}\label{sec:integrity}

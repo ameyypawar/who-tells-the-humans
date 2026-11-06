@@ -15,14 +15,14 @@ We give every witness the private route those agents did not see, and test a fur
 % The finding, in the order of research/68 section 0. "Within the shift": one witness of an untold shift called notify_ops
 % only in the debrief. The relay count is the final labels' claim_present = 1, claim_subject = other, in the untold shifts.
 A bare claim barely mattered to live \wtthDesignModelHaikuName{} witnesses; text shaped like a receipt did.
-A line in the channel's log format, typed by the claiming peer into its own post, cut reporting by \wtthHaikuHThreeDelta{} points and produced the only shifts in which no one told ops within the shift (\wtthHaikuPTwoForgedK{} of \wtthHaikuPTwoForgedN), in \wtthHaikuRelayUntoldForgedShiftsK{} of which a witness relayed the claim on the board.
+A line in the channel's log format, typed by the claiming peer into its own post, cut reporting by \wtthHaikuHThreeDelta{} points and produced the only pre-registered shifts in which no one told ops within the shift (\wtthHaikuPTwoForgedK{} of \wtthHaikuPTwoForgedN), in \wtthHaikuRelayUntoldForgedShiftsK{} of which a witness relayed the claim on the board.
 The defence supplied the format for the attack.
 
 % Claims stand in for actions. The Paglieri post is not shown to be false (plan 49 section 4.2 item 24). The MetaGPT
 % string is in the code, not the 2023 paper; "by default" because the function can be overwritten (research/50 A2).
 % Audit headline on the rubric (research/65, research/68 B): peers-verify Yes in none, Partial in seven, No in eight.
 Agents do post such claims, unprompted (``I've reported this bug to the organizers'', just before a formal report \citep{paglieri2026cheating}), and MetaGPT's \texttt{reply\_to\_human} by default returns ``SUCCESS, human has received your reply'' but delivers nothing \citep{metagptmgxenv}.
-Of \wtthAuditN{} agent frameworks and protocols we audited, \wtthAuditFullVerifyWord{} gives peers a queryable escalation record, and in \wtthAuditPartialVerifyWord{} peers see a framework-built trace of the call (Appendix~\ref{app:audit}; the audit was written and re-checked by Claude agents, with no human spot-check).
+Of \wtthAuditN{} agent frameworks and protocols we audited, \wtthAuditFullVerifyWord{} gives peers a queryable escalation record, and in \wtthAuditPartialVerifyWord{}, peers see a framework-built trace of the call (Appendix~\ref{app:audit}; the audit was written and re-checked by Claude agents, with no human spot-check).
 We call the failure \emph{phantom escalation}: a peer's claim to have told the humans takes the place of the act of telling.
 We define it by behaviour, not belief: in the untold shifts witnesses relayed the claim on the board, but none said in a debrief that ops was told.
 Claims are not receipts.
@@ -43,8 +43,8 @@ A \emph{stand-down} is the drop, in points, in the share of witnesses who told o
 \caption[Reporting by cell, and when witnesses first reported]{%
 \textbf{Reporting by cell} (\wtthDesignModelHaikuName; \wtthDesignModelSonnetName{} exploratory).
 (a)~P1, the share of witnesses who sent ops a note about the split, with \wtthProtocolLevel\% \wtthFigOneAIntervalMethod{} intervals (rows at \wtthHaikuPOneBNonePct\% or \wtthHaikuPOneNonePct\% have none), and P2, the shifts in which no witness did.
-Each row's gloss defines its cell (Table~\ref{tab:cells}).
-Shaded rows: C really told ops, so standing down there is correct; ``---'': P2 does not apply (C told ops, or there was no violation).
+Row glosses define the cells (Table~\ref{tab:cells}).
+Shaded rows: C really told ops, so standing down there is correct; ``---'': P2 does not apply (C told ops, or no violation); in \cell{B-NONE}, low is correct.
 Hollow, dashed rows ran later and are not concurrent (exploratory; Section~\ref{sec:followup}).
 (b)~Post hoc: when witnesses first told ops in the H2 cells; hatched, never-reporters with a peer's line in the log at their next turn.
 \wtthInputBranch{fig1}}
@@ -73,7 +73,7 @@ Agents share a board and reach a human operator only through a private, write-on
 % generated macros (Section 4); the contributions describe results.
 Our main contributions are:
 \begin{enumerate}
-\item \textbf{A behavioural definition, a threat model and a pre-registered testbed} whose endpoint is whether a human is told (redundant live Claude witnesses, a private operator channel, a channel-written log, a real-receipt comparator, controls).
-\item \textbf{The headline} (H3): a typed receipt-style line cut reporting by \wtthHaikuHThreeDelta{} points and produced the only untold shifts, in \wtthHaikuRelayUntoldForgedShiftsK{} of which the claim spread between witnesses.
+\item \textbf{A behavioural definition, a threat model and a pre-registered testbed} whose endpoint is whether a human is told.
+\item \textbf{The headline} (H3): a typed receipt-style line cut reporting by \wtthHaikuHThreeDelta{} points and produced the only pre-registered untold shifts, in \wtthHaikuRelayUntoldForgedShiftsK{} of which the claim spread between witnesses.
 \item \textbf{Two results against prediction}: a negligible bare-claim effect (H1, borderline, one wording) that the log enlarged (H2), fitting de-duplication on peers' real receipts as well as deference.
 \end{enumerate}
