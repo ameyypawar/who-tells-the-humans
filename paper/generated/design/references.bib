@@ -98,13 +98,7 @@
   url           = {https://arxiv.org/abs/2511.17085},
 }
 
-@misc{browne2025snitchbench,
-  author       = {Browne, Theo},
-  title        = {{SnitchBench}: {AI} model whistleblowing behavior analysis},
-  year         = {2025},
-  howpublished = {GitHub repository and online dashboard},
-  url          = {https://github.com/T3-Content/SnitchBench},
-}
+
 
 @misc{gomez2025surveillance,
   author        = {Gomez, Francesca},
@@ -206,13 +200,7 @@
   url          = {https://github.com/marimeireles/evidence-of-swarm},
 }
 
-@misc{greenblatt2026metr,
-  author       = {Greenblatt, Ryan and Cotra, Ajeya and Wijk, Hjalmar},
-  title        = {Brief independent investigation of agents' behavior, reasoning and collaboration in the {OpenAI} / {Hugging Face} hacking incident},
-  year         = {2026},
-  howpublished = {METR and Redwood Research report},
-  url          = {https://metr.org/blog/2026-08-26-openai-hugging-face-incident-investigation/},
-}
+
 
 % UNVERIFIED: date taken from a page summary; the page was not read in full.
 % was: Dated 13 Aug 2026 per a page summary; secondary, not read in full; no experiment on reporting peers to humans was found
@@ -247,42 +235,16 @@
 }
 
 % UNVERIFIED: only the surname "Sidot" and the title are recorded in research/29 (a primary read of the paper); first name, co-authors and any subtitle are not recorded. The year follows the arXiv identifier (YYMM = 2607). Scanner model in the paper: claude-haiku-4-5.
-@misc{sidot2026verify,
-  author        = {{Sidot}},
-  title         = {They'll Verify. They Just Won't Act},
-  year          = {2026},
-  eprint        = {2607.19267},
-  archivePrefix = {arXiv},
-  url           = {https://arxiv.org/abs/2607.19267},
-}
+
 
 % UNVERIFIED: author name taken from research/27 ("Fatimah Emad Eldin"); the split into given and family name is unconfirmed, and EXECUTION_PLAN writes "Emad Eldin". The title is the short form in research/24; the Apart page slug suggests a longer subtitle ("... and How a Private Place to Write Delays It"), not confirmed. Code is MIT-licensed at github.com/astral-fate/code-of-silence. Sprint dates 23--25 Oct 2026; PDF dated 2026-10-25 per research/24.
-@misc{eldin2026codeofsilence,
-  author       = {{Fatimah Emad Eldin}},
-  title        = {Code of Silence? Non-Disclosure of Harm by {LLM} Agents},
-  year         = {2026},
-  howpublished = {Report, Apart Research AI Collusion Research Sprint (23--25 Oct 2026)},
-  url          = {https://apartresearch.com/sprints/projects/code-of-silence-nondisclosure-of-harm-by-llm-agents-and-how-a-private-place-to-write-delays-it-gx8m},
-}
+
 
 % UNVERIFIED: authors are not recorded; the author field is the GitHub handle. Repository created 2026-10-04, last push 2026-10-14 (research/24); no licence. Title is the repository name.
-@misc{lmmontoya2026peerreporting,
-  author       = {{lmmontoya-ai}},
-  title        = {peer-reporting-benchmark},
-  year         = {2026},
-  howpublished = {GitHub repository, October 2026},
-  url          = {https://github.com/lmmontoya-ai/peer-reporting-benchmark},
-}
+
 
 % UNVERIFIED: authors are not recorded (research/30 and 34 give title and identifier only; abstract read per research/34). Cited as arXiv:2609.20211 (2026), with no month, by the author's decision of 2026-10-28; the year follows the identifier (YYMM = 2609) and research/34 now says the same. Nearest conceptual neighbour of this study.
-@misc{silenceisendorsement2026,
-  key           = {Silence Is Endorsement},
-  title         = {Silence Is Endorsement: Verification-Status Laundering in {LLM} Agent Pipelines},
-  year          = {2026},
-  eprint        = {2609.20211},
-  archivePrefix = {arXiv},
-  url           = {https://arxiv.org/abs/2609.20211},
-}
+
 
 % UNVERIFIED: authors and month are not recorded. Title as listed in research/30 (a search result, title only); research/34 abbreviates it to "False Success in LLM Agents". Year follows the identifier (YYMM = 2606).
 @misc{falsesuccess2026,
@@ -295,24 +257,10 @@
 }
 
 % UNVERIFIED: authors and month are not recorded. Title as listed in research/30 and 34. Year follows the identifier (YYMM = 2608).
-@misc{verifiedtoolcalls2026,
-  key           = {Verified Tool Calls},
-  title         = {Verified Tool Calls Improve {LLM} Agent Reliability Under Non-Atomic Failures},
-  year          = {2026},
-  eprint        = {2608.02645},
-  archivePrefix = {arXiv},
-  url           = {https://arxiv.org/abs/2608.02645},
-}
+
 
 % UNVERIFIED: authors and month are not recorded. Title as listed in research/30; research/34 abbreviates it to "deterministic gates recover silent policy violations". Year follows the identifier (YYMM = 2607).
-@misc{reasonlessverifymore2026,
-  key           = {Reason Less, Verify More},
-  title         = {Reason Less, Verify More: Deterministic Gates Recover a Silent Policy-Violation Failure Mode in Tool-Using {LLM} Agents},
-  year          = {2026},
-  eprint        = {2607.07405},
-  archivePrefix = {arXiv},
-  url           = {https://arxiv.org/abs/2607.07405},
-}
+
 
 % ---------------------------------------------------------------------------
 % 4. Bystander effect, whistleblowing and organisational research (from the research/17b BibTeX block)
@@ -697,44 +645,121 @@
   archivePrefix = {arXiv},
 }
 
+% bib/references-corrections.bib: whole-entry replacements for keys in the FROZEN prereg/references.bib.
+% tools/build_bib.py drops the prereg entry of each key listed here and uses this one instead.
+% Fixes from research/50-citation-verification.md section B (verified 2026-11-06). No `note` fields.
+
+@misc{silenceisendorsement2026,
+  author        = {Hu, Yibo},
+  key           = {Silence Is Endorsement},
+  title         = {Silence Is Endorsement: Verification-Status Laundering in {LLM} Agent Pipelines},
+  year          = {2026},
+  eprint        = {2609.20211},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.CR},
+  url           = {https://arxiv.org/abs/2609.20211}
+}
+
+@misc{verifiedtoolcalls2026,
+  author        = {Mansoor, Isham Kalappurackal and Phadke, Abhishek and Rana, Pratip},
+  key           = {Verified Tool Calls},
+  title         = {Verified Tool Calls Improve {LLM} Agent Reliability Under Non-Atomic Failures},
+  year          = {2026},
+  eprint        = {2608.02645},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.SE},
+  url           = {https://arxiv.org/abs/2608.02645}
+}
+
+@misc{reasonlessverifymore2026,
+  author        = {Reddy, Vikas and Challaram, Sumanth Reddy and Basu, Abhishek},
+  key           = {Reason Less, Verify More},
+  title         = {Reason Less, Verify More: Deterministic Gates Recover a Silent Policy-Violation Failure Mode in Tool-Using {LLM} Agents},
+  year          = {2026},
+  eprint        = {2607.07405},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.AI},
+  url           = {https://arxiv.org/abs/2607.07405}
+}
+
+@misc{eldin2026codeofsilence,
+  author       = {{Fatimah Emad Eldin}},
+  title        = {Code of Silence? Non-Disclosure of Harm by {LLM} Agents, and How a Private Place to Write Delays It},
+  year         = {2026},
+  howpublished = {Report, Apart Research AI Collusion Research Sprint (23--25 Oct 2026)},
+  url          = {https://apartresearch.com/sprints/projects/code-of-silence-nondisclosure-of-harm-by-llm-agents-and-how-a-private-place-to-write-delays-it-gx8m}
+}
+
+@misc{browne2025snitchbench,
+  author       = {Browne, Theo},
+  title        = {{SnitchBench}},
+  year         = {2025},
+  howpublished = {GitHub repository and online dashboard},
+  url          = {https://github.com/T3-Content/SnitchBench}
+}
+
+@misc{sidot2026verify,
+  author        = {Sidot, Yohann},
+  title         = {They'll Verify. They Just Won't Act: How Authority Framing and Laundered Code Turn a Trusted Agentic {CI/CD} Pipeline Into an Attack Surface},
+  year          = {2026},
+  eprint        = {2607.19267},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.CR},
+  url           = {https://arxiv.org/abs/2607.19267}
+}
+
+@misc{greenblatt2026metr,
+  author       = {Greenblatt, Ryan and Cotra, Ajeya and Wijk, Hjalmar},
+  title        = {Brief independent investigation of agents' behavior, reasoning and collaboration in the {OpenAI} / {Hugging Face} hacking incident},
+  year         = {2026},
+  month        = aug,
+  howpublished = {METR report},
+  url          = {https://metr.org/hugging-face-incident-report-aug-2026.pdf}
+}
+
+@misc{lmmontoya2026peerreporting,
+  author       = {Montoya Henao, Luis Miguel},
+  title        = {peer-reporting-benchmark},
+  year         = {2026},
+  howpublished = {GitHub repository, October 2026},
+  url          = {https://github.com/lmmontoya-ai/peer-reporting-benchmark}
+}
+
 % bib/references-added.bib: entries the frozen prereg/references.bib lacks (plan 49 section 2.3, Related Work).
-% EVERY ENTRY IS UNVERIFIED. Only fields recorded in research/29, 34 and 36 are given; nothing is guessed except where marked
-% "from memory". Status lives in bib/citations-verified.csv (check_paper --final needs `verified` for each cited key).
+% Entries verified 2026-11-06 (research/50-citation-verification.md) except claudecode-issues. Status lives in bib/citations-verified.csv (check_paper --final needs `verified` for each cited key).
 % No `note` field, so nothing prints "UNVERIFIED" in the reference list.
 
-% R/36 hit 1: arXiv 2608.22444 (v3, 2026-10-30)
 @misc{magistrali2026aligned,
-  author = {Magistrali and Shani},
+  author = {Magistrali, Isotta and Shani, Chen},
   title = {Aligned Alone, Misaligned Together: Forecasting Adversarial Capture in {LLM} Agent Populations},
-  year = {2026}, eprint = {2608.22444}, archivePrefix = {arXiv}
+  year = {2026}, eprint = {2608.22444}, archivePrefix = {arXiv}, url = {https://arxiv.org/abs/2608.22444}
 }
-% R/36 hit 2: arXiv 2610.39109 (2026-10-29), Ghosh, Cygnux Labs
 @misc{ghosh2026pcm,
-  author = {Ghosh},
+  author = {Ghosh, Bravish},
   title = {{PCM}: A Proof-Carrying Message Protocol for Verifiable Multi-Agent Communication},
-  year = {2026}, eprint = {2610.39109}, archivePrefix = {arXiv}
+  year = {2026}, eprint = {2610.39109}, archivePrefix = {arXiv}, primaryClass = {cs.CE}, url = {https://arxiv.org/abs/2610.39109}
 }
-% R/36 hit 4: arXiv 2610.32876 (2026-10-23)
 @misc{trustingtool2026,
+  author = {Liu, ZhiHong and Gao, Shuyao},
   title = {Trusting the Tool: Asymmetric Deference of {LLM} Vulnerability Auditors to Static-Analysis Evidence},
-  year = {2026}, eprint = {2610.32876}, archivePrefix = {arXiv}
+  year = {2026}, eprint = {2610.32876}, archivePrefix = {arXiv}, primaryClass = {cs.SE}, url = {https://arxiv.org/abs/2610.32876}
 }
-% R/36 hit 6: arXiv 2610.29869 (2026-10-21)
 @misc{compaction2026,
+  author = {Dabirsiaghi, Arshan},
   title = {Compaction Laundering: Provenance Destruction in Context-Compacting Coding Agents},
-  year = {2026}, eprint = {2610.29869}, archivePrefix = {arXiv}
+  year = {2026}, eprint = {2610.29869}, archivePrefix = {arXiv}, primaryClass = {cs.CR}, url = {https://arxiv.org/abs/2610.29869}
 }
-% R/36 section (b): authors from a summariser read; workshop poster only, no arXiv version
 @misc{patel2026fabricated,
   author = {Aayushya Patel and Yash Thakur},
-  title = {Fabricated Authority in the Wild},
-  year = {2026}, howpublished = {NeurIPS 2026 workshop}
+  title = {Fabricated Authority in the Wild: One Sentence in an Agent's Rules Decides Whether a Fake Permission Works},
+  year = {2026}, howpublished = {Poster, NeurIPS 2026 Third Workshop on Agents in the Wild: Safety, Security, and Beyond},
+  url = {https://neurips.cc/virtual/2026/168157}
 }
-% R/36 section (a): author order uncertain (positions 3 and 4), so only the first author is given
 @misc{mitra2026testimony,
   author = {Rupsa Mitra and others},
-  title = {When Testimony Is Not Enough},
-  year = {2026}, howpublished = {NeurIPS 2026 workshop}
+  title = {When Testimony Is Not Enough: Corrective-Evidence Delivery in Multi-Agent {LLM} Teams},
+  year = {2026}, howpublished = {Poster, NeurIPS 2026 workshops ``Who Verifies the Agents? Toward Reliable Agent Development'' and ``SocialAgent''},
+  url = {https://neurips.cc/virtual/2026/172926}
 }
 % R/36 hit 3
 @misc{verdogan2026sibling,
@@ -742,49 +767,68 @@
   title = {sibling-agents},
   year = {2026}, howpublished = {GitHub repository}, url = {https://github.com/verdogan/sibling-agents}
 }
-% R/36 hit 11 (same-event entry)
 @misc{swarmhandoff2026,
-  author = {KrishanKVerma},
-  title = {swarm-handoff-propagation},
+  author = {Verma, Krishan Kumar and others},
+  title = {Error propagation through agent handoffs},
   year = {2026}, howpublished = {GitHub repository}, url = {https://github.com/KrishanKVerma/swarm-handoff-propagation}
 }
-% R/24 hit 7 and R/29
 @misc{swarmreceipts2026,
-  author = {ISWT42},
+  author = {Bauer, Joshua},
   title = {swarm-receipts},
-  year = {2026}, howpublished = {GitHub repository}, url = {https://github.com/ISWT42/swarm-receipts}
+  year = {2026}, howpublished = {GitHub repository, AI Swarm Dynamics Hackathon, 3--4 Oct 2026}, url = {https://github.com/ISWT42/swarm-receipts}
 }
-% R/34: MCP issue 3350 "Tool Outcome Attestation", closed 2026-09-22 and routed to a working group
 @misc{mcp3350,
-  title = {Tool Outcome Attestation},
-  year = {2026}, howpublished = {MCP specification issue 3350}
+  author = {dulrajnr},
+  title = {{SEP} submission: Tool Outcome Attestation extension (dev.agentstatus/toa)},
+  year = {2026}, howpublished = {GitHub issue modelcontextprotocol/modelcontextprotocol\#3350, closed 2026-09-22},
+  url = {https://github.com/modelcontextprotocol/modelcontextprotocol/issues/3350}
 }
-% R/34: A2A #2355 sponsored as an experimental extension on 2026-10-19
 @misc{a2a2355,
-  title = {A2A experimental extension proposal (issue 2355)},
-  year = {2026}, howpublished = {A2A project issue 2355}
+  author = {xtrycatchx},
+  title = {[Extension Proposal] {CRATB-Auth}: Claim Rich Agent Task Bound Authentication},
+  year = {2026}, howpublished = {GitHub issue a2aproject/A2A\#2355, opened 2026-10-15},
+  url = {https://github.com/a2aproject/A2A/issues/2355}
 }
 % R/34: Claude Code issues 46755, 67730, 77284 (subagents falsely claim completion; closed as stale)
 @misc{claudecode-issues,
   title = {Claude Code issues 46755, 67730 and 77284: subagents falsely claim completion},
   howpublished = {GitHub issues}
 }
-% from memory, UNVERIFIED: MetaGPT (R/34 row 14 names the tool; the paper entry is not in the research notes)
 @misc{metagpt2023,
-  author = {Hong and others},
-  title = {{MetaGPT}: Meta Programming for a Multi-Agent Collaborative Framework},
-  year = {2023}, eprint = {2308.00352}, archivePrefix = {arXiv}
+  author = {Hong, Sirui and others},
+  title = {{MetaGPT}: Meta Programming for A Multi-Agent Collaborative Framework},
+  year = {2023}, eprint = {2308.00352}, archivePrefix = {arXiv}, url = {https://arxiv.org/abs/2308.00352}
 }
-% from memory, UNVERIFIED: Concordia
 @misc{vezhnevets2023concordia,
-  author = {Vezhnevets and others},
+  author = {Vezhnevets, Alexander Sasha and others},
   title = {Generative agent-based modeling with actions grounded in physical, social, or digital space using {Concordia}},
-  year = {2023}, eprint = {2312.03664}, archivePrefix = {arXiv}
+  year = {2023}, eprint = {2312.03664}, archivePrefix = {arXiv}, url = {https://arxiv.org/abs/2312.03664}
 }
-% from memory, UNVERIFIED: the volunteer's dilemma
 @article{diekmann1985volunteer,
   author = {Diekmann, Andreas},
   title = {Volunteer's Dilemma},
   journal = {Journal of Conflict Resolution},
-  year = {1985}
+  year = {1985}, volume = {29}, number = {4}, pages = {605--610}, doi = {10.1177/0022002785029004003}
+}
+
+% research/50 A2: the code behind the MetaGPT reply_to_human claim (commit 1fa0abf, 2024-10-15)
+@misc{metagptmgxenv,
+  author = {{FoundationAgents}},
+  title = {{MetaGPT} source file metagpt/environment/mgx/mgx\_env.py},
+  year = {2024}, howpublished = {GitHub, commit 1fa0abf},
+  url = {https://github.com/FoundationAgents/MetaGPT/blob/1fa0abf6e867221209bb279d9fac3a461389861e/metagpt/environment/mgx/mgx_env.py}
+}
+% research/50 A3: A2A issue 1769, opened 2026-04-20, open
+@misc{a2a1769,
+  author = {{Poke-nushi}},
+  title = {Where should verifier-side trust / permit / receipt artifacts for risky external actions live relative to {A2A}?},
+  year = {2026}, howpublished = {GitHub issue a2aproject/A2A\#1769, opened 2026-04-20, open},
+  url = {https://github.com/a2aproject/A2A/issues/1769}
+}
+% research/50 A4: "phantom" naming collision; third author shown on the page as "Dasgupta" only (no given name)
+@misc{phantomconsensus2026,
+  author = {Sheshanarayana, Disha and Pal, Rajat and Dasgupta and Sinha, Manjira},
+  title = {Phantom Consensus: Measuring Social Reasoning in Multi-Agent {LLM} Decision-Making},
+  year = {2026}, howpublished = {Poster, NeurIPS 2026 SocialAgent workshop},
+  url = {https://neurips.cc/virtual/2026/176547}
 }
