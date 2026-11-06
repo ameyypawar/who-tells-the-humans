@@ -1,12 +1,152 @@
-% appendix D (plan 49 section 2.5): analysis exports, in place
+% appendix D (plan 49 section 2.5): analysis exports, in place. Every number is generated: macros, or tables written by
+% wtth.analysis and input unedited. The full table_secondary_rates (several hundred rows, some with "@d1=" strata
+% labels) cannot be set as one tabular and is not printed; its debrief reason and basis rows are filtered at build
+% time below (the reader types no number), and the CSV is in the repository.
 \section{Full results}\label{app:full}
+The tables and figures below are the unedited export of \texttt{wtth.analysis} for snapshot \texttt{\wtthSnapshotShaShort}.
+Rates are witness-level with Wilson intervals unless marked, and differences are in points.
+
+\paragraph{Analysis set.}
+The confirmatory set holds all \wtthHaikuEpisodesInSet{} planned Haiku shifts, and \wtthHaikuEpisodesAbove{} shifts lie above it.
+The observed intra-shift correlation of P1 was \wtthHaikuIccPooled{} pooled (\wtthHaikuIccClaim{} in \cell{CLAIM}, \wtthHaikuIccNoReceipt{} in \cell{NO-RECEIPT}, \wtthHaikuIccForged{} in \cell{FORGED}), below the \wtthHaikuPowerRho{} assumed for power.
+The seed fixes both the claim's paraphrase and the handle order, so their effects are aliased.
+
+\paragraph{Sensitivity and exploratory contrasts.}
+Table~\ref{tab:sens} repeats the three confirmatory differences under the pre-registered sensitivity analyses.
+Excluding test-aware witnesses leaves H1 at \wtthHaikuSecHOneExclTestDelta{} points (CI \wtthHaikuSecHOneExclTestCI), because no \DebOne{} answer was coded as calling the shift a test; the P2 version of H2 is \wtthHaikuSecHTwoOnPTwoDelta{} (CI \wtthHaikuSecHTwoOnPTwoCI), because the operator was told in every shift of all four H2 cells.
+Both are exploratory.
+
+\begin{table}[h]
+\centering\footnotesize
+\begin{tabular}{@{}lccc@{}}
+\toprule
+Analysis & H1 & H2 & H3 \\
+\midrule
+Primary (keyword rule and judge path) & \wtthHaikuHOneDelta{} (\wtthHaikuHOneCI) & \wtthHaikuHTwoDelta{} (\wtthHaikuHTwoCI) & \wtthHaikuHThreeDelta{} (\wtthHaikuHThreeCI) \\
+P1 counts any accepted note & \wtthHaikuSensPOneAnyDOneDelta{} (\wtthHaikuSensPOneAnyDOneCI) & \wtthHaikuSensPOneAnyDTwoDelta{} (\wtthHaikuSensPOneAnyDTwoCI) & \wtthHaikuSensPOneAnyDThreeDelta{} (\wtthHaikuSensPOneAnyDThreeCI) \\
+Attempted notes, lower bound & \wtthHaikuSensPOneAttLoDOneDelta{} (\wtthHaikuSensPOneAttLoDOneCI) & \wtthHaikuSensPOneAttLoDTwoDelta{} (\wtthHaikuSensPOneAttLoDTwoCI) & \wtthHaikuSensPOneAttLoDThreeDelta{} (\wtthHaikuSensPOneAttLoDThreeCI) \\
+Attempted notes, upper bound & \wtthHaikuSensPOneAttHiDOneDelta{} (\wtthHaikuSensPOneAttHiDOneCI) & \wtthHaikuSensPOneAttHiDTwoDelta{} (\wtthHaikuSensPOneAttHiDTwoCI) & \wtthHaikuSensPOneAttHiDThreeDelta{} (\wtthHaikuSensPOneAttHiDThreeCI) \\
+Seed-paired bootstrap & \wtthHaikuSensSeedPairedHOneDelta{} (\wtthHaikuSensSeedPairedHOneCI) & \wtthHaikuSensSeedPairedHTwoDelta{} (\wtthHaikuSensSeedPairedHTwoCI) & \wtthHaikuSensSeedPairedHThreeDelta{} (\wtthHaikuSensSeedPairedHThreeCI) \\
+\bottomrule
+\end{tabular}
+\caption{\textbf{Sensitivity of the confirmatory differences} (points, \wtthProtocolLevel\% CI). Only the primary row carries a verdict.}
+\label{tab:sens}
+\end{table}
+
+\paragraph{Debriefs.}
+The debrief answers are post-hoc self-reports coded by the judge, and most reason codes agreed poorly between the two models (model--model $\kappa$ from \wtthKappaMMDTwoAnswerReasonCodesUnsureItWasAViolationValue{} to \wtthKappaMMDTwoAnswerReasonCodesSomeoneElseToldValue; Appendix~\ref{app:judge}), so Tables~\ref{tab:reasons} and~\ref{tab:basis} are descriptive.
+``Someone else told ops'' ($\kappa$ \wtthKappaMMDTwoAnswerReasonCodesSomeoneElseToldValue) and citing the log as evidence ($\kappa$ \wtthKappaMMDTwoAnswerBasisLogLineValue) are the codes the models agreed on.
+Saying that ops had been told was common wherever someone had told ops (\wtthHaikuBelievesYesClaimPct\% in \cell{CLAIM}, \wtthHaikuBelievesYesNoReceiptPct\% in \cell{NO-RECEIPT}), and lower under the rule (\wtthHaikuBelievesYesPolicyPct\% in \cell{POLICY}) and the forged line (\wtthHaikuBelievesYesForgedPct\%).
+No witness said in its debrief that ops had been told in a shift in which no one had (phantom beliefs: \wtthHaikuPhantomForgedPct\% in \cell{FORGED}, the only cell with such shifts).
+
+% ---- debrief reason and basis rows, filtered from the generated table at build time (no number typed here) ----
+% Keeps rows whose cell is one of six and whose outcome starts with reason: or basis:, and drops the "@d1=" strata.
+% Parameterless on purpose: the bare-digit lint covers sections/**, and a macro argument would need a digit.
+\makeatletter
+\newread\srIn
+\newif\ifsrKeep
+\def\srRowsReason{}
+\def\srRowsBasis{}
+\def\srTNone{\in@{|NONE &}}
+\def\srTClaim{\in@{|CLAIM &}}
+\def\srTNoneR{\in@{|NONE-R &}}
+\def\srTNoReceipt{\in@{|NO-RECEIPT &}}
+\def\srTReceipt{\in@{|RECEIPT &}}
+\def\srTForged{\in@{|FORGED &}}
+\def\srTAt{\in@{@}}
+\def\srTReason{\in@{& reason:}}
+\def\srTBasis{\in@{& basis:}}
+\openin\srIn=generated/analysis/tables/table_secondary_rates.tex
+\loop
+  \read\srIn to \srLine
+  \unless\ifeof\srIn
+  \srKeepfalse
+  \expandafter\srTNone\expandafter{\expandafter|\srLine}\ifin@\srKeeptrue\fi
+  \expandafter\srTClaim\expandafter{\expandafter|\srLine}\ifin@\srKeeptrue\fi
+  \expandafter\srTNoneR\expandafter{\expandafter|\srLine}\ifin@\srKeeptrue\fi
+  \expandafter\srTNoReceipt\expandafter{\expandafter|\srLine}\ifin@\srKeeptrue\fi
+  \expandafter\srTReceipt\expandafter{\expandafter|\srLine}\ifin@\srKeeptrue\fi
+  \expandafter\srTForged\expandafter{\expandafter|\srLine}\ifin@\srKeeptrue\fi
+  \expandafter\srTAt\expandafter{\srLine}\ifin@\srKeepfalse\fi
+  \ifsrKeep
+    \expandafter\srTReason\expandafter{\srLine}%
+    \ifin@\expandafter\g@addto@macro\expandafter\srRowsReason\expandafter{\srLine}\fi
+    \expandafter\srTBasis\expandafter{\srLine}%
+    \ifin@\expandafter\g@addto@macro\expandafter\srRowsBasis\expandafter{\srLine}\fi
+  \fi
+\repeat
+\closein\srIn
+\makeatother
+
+\begin{table}[p]
+\centering\fontsize{7pt}{8.2pt}\selectfont\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}llrrrrlr@{}}
+\toprule
+Cell & Debrief reason & k/n & Shifts & \% & \wtthProtocolLevel\% CI & Method & Coverage (\%) \\
+\midrule
+\srRowsReason
+\bottomrule
+\end{tabular}
+\caption{\textbf{Reasons witnesses gave in \DebTwo{} for sending or not sending a note} (judge codes; several per answer allowed), in the cells that bear on H1 to H3. Descriptive; model--model agreement is low for most codes (Appendix~\ref{app:judge}).}
+\label{tab:reasons}
+\end{table}
+
+\begin{table}[h]
+\centering\fontsize{7pt}{8.2pt}\selectfont\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}llrrrrlr@{}}
+\toprule
+Cell & Basis for ``Did anyone tell ops?'' & k/n & Shifts & \% & \wtthProtocolLevel\% CI & Method & Coverage (\%) \\
+\midrule
+\srRowsBasis
+\bottomrule
+\end{tabular}
+\caption{\textbf{What witnesses cited, in \DebTwo, as their evidence about whether ops was told} (judge codes; descriptive).}
+\label{tab:basis}
+\end{table}
+
+\paragraph{Other tables and figures.}
+The full per-cell rates of every secondary label, including \DebOne{} verdicts, concern and the strata by \DebOne{} verdict, are in \nolinkurl{paper/generated/analysis/tables/table_secondary_rates.csv}; they are too long to print.
+Alert-load rows in the analysis log's contrast tables are scaled by a hundred, so the text reports alert load from the cell means.
+
+\begin{table}[h]
+\centering\footnotesize
 \wtthTab{generated/analysis/tables/table_hypotheses.tex}
+\caption{\textbf{The confirmatory sequence, as generated} (Table~\ref{tab:hyp} is its short form).}
+\label{tab:hypfull}
+\end{table}
+
+\begin{table}[h]
+\centering\footnotesize
 \wtthTab{generated/analysis/tables/table_p2.tex}
-\wtthTab{generated/analysis/tables/table_secondary_rates.tex}
+\caption{\textbf{P2 and \Ptwop{} by cell} (Wilson intervals) and their Newcombe differences.}
+\label{tab:ptwo}
+\end{table}
+
+\begin{table}[h]
+\centering\footnotesize
 \wtthTab{generated/analysis/tables/table_secondary_means.tex}
+\caption{\textbf{Alert load}: violation notes per shift, the claimant's note excluded (episode bootstrap).}
+\label{tab:alert}
+\end{table}
+
+\begin{table}[h]
+\centering\footnotesize
 \wtthTab{generated/analysis/tables/table_secondary_board_substitution.tex}
-\wtthTab{generated/analysis/tables/table_secondary_contrasts.tex}
-\wtthTab{generated/analysis/tables/table_secondary_diffs.tex}
+\caption{\textbf{Board substitution} (exploratory, D-010): witnesses who raised concern or addressed humans on the board but sent no note.}
+\label{tab:boardsub}
+\end{table}
+
+\begin{figure}[h]
+\centering
 \wtthFig{generated/analysis/figures/fig_p1_by_cell.pdf}{\linewidth}
+\caption{\textbf{P1 by cell for the three confirmatory contrasts}, with shift-level cluster-bootstrap intervals.}
+\label{fig:pone}
+\end{figure}
+
+\begin{figure}[h]
+\centering
 \wtthFig{generated/analysis/figures/fig_km.pdf}{\linewidth}
-\wtthStub{D: ICC, aliasing note, shifts above the analysis set (\wtthHaikuEpisodesAbove)}
+\caption{\textbf{Round of the first violation note}, Kaplan--Meier by cell and world (shift level).}
+\label{fig:km}
+\end{figure}
+\clearpage
