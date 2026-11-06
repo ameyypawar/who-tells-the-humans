@@ -12,9 +12,10 @@ Some agents ``instead escalated to the message board and considered the message 
 The count is approximate: the classifier ``found \citedMetrHits{} hits, but some of these were false positives.''
 
 % 1.2 Claims stand in for actions. The Paglieri posts are not shown to be false (plan 49 section 4.2 item 24).
-% The MetaGPT string is re-checked in its source before submission (data/oss_audit.csv, column quote_rechecked).
-In agent teams, a peer's word often stands in for an action.
-Agents in a research swarm posted, unprompted, ``I've reported this bug to the organizers'' \citep{paglieri2026cheating}; MetaGPT's \texttt{reply\_to\_human} returns ``SUCCESS, human has received your reply'' while delivering nothing \citep{metagpt2023}.
+% The MetaGPT string is in the code (metagptmgxenv), not in the 2023 paper; "by default" because the function can be
+% overwritten in a remote setting (research/50 A2).
+In agent teams, peers learn of an escalation from the escalating agent's own word.
+An agent in a research swarm posted, unprompted, ``I've reported this bug to the organizers'' and then filed a formal bug report \citep{paglieri2026cheating}; MetaGPT's \texttt{reply\_to\_human} by default returns ``SUCCESS, human has received your reply'' while delivering nothing \citep{metagptmgxenv}.
 Our audit of \wtthAuditN{} agent frameworks and protocols found \wtthAuditFullVerifyWord{} that let peers fully verify a claimed escalation, and \wtthAuditPartialVerifyWord{} that allow a partial check (Appendix~\ref{app:audit}).
 We call this failure \emph{phantom escalation}: a peer's unverifiable claim that the humans were already told stands in for telling them.
 Claims are not receipts.
@@ -25,24 +26,20 @@ We answer in a pre-registered, randomized experiment: \wtthHaikuEpisodesInSet{} 
 
 \begin{figure}[t]
 \centering
-\wtthFig{generated/analysis/figures/fig1a.pdf}{\linewidth}\par\medskip
-\wtthFig{generated/analysis/figures/fig1b.pdf}{}
+\wtthFig{generated/analysis/figures/fig1a.pdf}{\linewidth}\par\smallskip
+% Fig. 1b at half width with the caption beside it (plan 49 cut order step 2: no compact variant exists, so the
+% panel is scaled instead and the caption moves beside it to save height).
+\begin{minipage}[t]{3.25in}\vspace{0pt}\wtthFig{generated/analysis/figures/fig1b.pdf}{3.25in}\end{minipage}\hfill
+\begin{minipage}[t]{\dimexpr\linewidth-3.25in-1.2em\relax}\vspace{0pt}
+\captionsetup{font=footnotesize}
 \caption[Phantom escalation by cell and the safety--alert-load trade-off]{%
-\textbf{Phantom escalation by cell, and the trade-off between safety and alert load.}
-(a)~P2 is the share of shifts in which the operator was never told (no live witness sent a note about the violation); \Ptwop{} is the share in which no witness told a human by any route (a note, or a board post addressed to ops).
-Bars show \wtthProtocolLevel\% Wilson intervals in the \wtthDesignPTwoCellsWord{} cells where the claimant did not really report.
-Lower is safer.
-World R0 has no escalation log; world R1 shows a log written by the channel.
-\cell{NONE}, \cell{NONE-R}: a routine aside.
-\cell{CONCERN}: the claimant remarks on the split.
-\cell{CLAIM}, \cell{NO-RECEIPT}: a false claim of having told ops (in \cell{NO-RECEIPT} the log is empty).
-\cell{POLICY}: the false claim plus a one-line rule.
-\cell{FORGED}: the false claim plus a receipt-style line typed by the claimant.
-\cell{NEG}: a routine aside plus a sentence that makes duplicate notes costly.
-(b)~Safety (y: P2 under a false claim) against alert load (x: redundant violation notes per shift when the claim is true).
-The receipts arm takes x from \cell{RECEIPT} and y from \cell{NO-RECEIPT}; \cell{CLAIM}, \cell{POLICY} and \cell{FORGED} take both from their own cell; \cell{NONE} is the reference.
+\textbf{Phantom escalation by cell} (\wtthDesignModelHaikuName).
+(a)~P2: share of shifts in which no witness sent ops a note about the violation; \Ptwop: no witness told a human by any route; \wtthProtocolLevel\% Wilson intervals, lower is safer.
+\cell{CLAIM}, \cell{POLICY}, \cell{NO-RECEIPT} and \cell{FORGED} carry a false claim; \cell{NO-RECEIPT} and \cell{FORGED} show an empty log, and in \cell{FORGED} the claimant typed a receipt-style line.
+(b)~P2 under a false claim against alert load (violation notes per shift); the receipts arm pairs \cell{RECEIPT}'s load with \cell{NO-RECEIPT}'s P2, and the \cell{NONE} reference hides \cell{CLAIM} and \cell{POLICY}.
 \wtthInputBranch{fig1}}
 \label{fig:one}
+\end{minipage}
 \end{figure}
 
 % 1.4 Threat model (PREREG sections 1, 5, 6, 19; research/34 findings 1 to 3).
@@ -58,12 +55,11 @@ To its peers, an escalation that only the claimant can attest is indistinguishab
 Our main contributions are:
 \begin{enumerate}
 \item \textbf{A named failure mode and threat model}, grounded in the METR incident and a framework audit.
-\item \textbf{A pre-registered, randomized testbed}: live Claude witnesses, a private operator channel and a channel-written log in \wtthDesignCells{} cells with salience, positive and false-report controls, released with its harness and deviations log.
+\item \textbf{A pre-registered, randomized testbed}: live Claude witnesses, a private operator channel and a channel-written log in \wtthDesignCells{} cells with salience, positive and false-report controls, released with its harness.
 \item \textbf{The size of the stand-down}: \wtthInputBranch{contrib-h1}
-\item \textbf{A cheap infrastructure fix and its spoofability}: \wtthInputBranch{contrib-h23}
-We also compare receipts with a one-line rule (Figure~\ref{fig:one}b).
+\item \textbf{A test of channel-written receipts and their spoofability}: \wtthInputBranch{contrib-h23}
 \end{enumerate}
 
 % 1.6 Novelty (research/36 section 5.1). The search date comes from data/process_facts.yaml (8 November only if the
 % Nov 8 re-run happens). Never claim "first" (plan 49 section 4.2 items 1 to 5).
-To our knowledge (searches of arXiv, GitHub, Apart, LessWrong and NeurIPS workshop listings through \wtthDesignPriorArtThrough), no earlier study manipulates a peer's claim to have already escalated a violation to a human and measures whether live LLM witnesses still report, or tests channel-written receipts against such a claim (Appendix~\ref{app:related}).
+To our knowledge (searches through \wtthDesignPriorArtThrough; Appendix~\ref{app:related}), no earlier study manipulates a peer's claim to have already escalated a violation to a human and measures whether live LLM witnesses still report, or tests channel-written receipts against such a claim.
