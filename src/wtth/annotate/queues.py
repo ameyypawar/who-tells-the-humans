@@ -16,6 +16,8 @@ import secrets
 import time
 from typing import Any, Mapping
 
+from wtth.annotate import void
+
 from wtth.annotate.agreement import with_escalation
 
 PRIORITY = ("H-1", "H-3", "H-4", "H-2", "H-6", "H-QA", "H-5", "H-HO")
@@ -133,6 +135,7 @@ def build_queues(settings: Any, jdb: Any, *, stage: int, seeds: Any,
     Re-running is idempotent for items already queued."""
     if stage not in (1, 2):
         raise ValueError("stage must be 1 or 2")
+    void.ensure(jdb)
     h3b_on = kappa_mm_escalation is not None and kappa_mm_escalation < float(seeds.kappa_threshold)
     rows, queued, kw_eps = _load(jdb)
     assign: dict[str, tuple[str, list[str], int | None, int | None, int | None]] = {}  # item -> queue, reasons, ...
@@ -156,7 +159,8 @@ def build_queues(settings: Any, jdb: Any, *, stage: int, seeds: Any,
             qa_rank[iid] = rank
             q, reasons, *_ = assign.get(iid, ("H-QA", [], None, None, None))
             assign[iid] = (q, reasons + ["H-QA"] if "H-QA" not in reasons else reasons, int(seeds.qa_sample), rank, None)
-    if stage == 2:
+    h5_exists = jdb.read(lambda c: c.execute("SELECT COUNT(*) FROM ann_queue WHERE queue='H-5'").fetchone()[0])
+    if stage == 2 and not h5_exists:   # H-5 is drawn ONCE (the pre-registered sample is the first draw only)
         strata: dict[tuple, list[str]] = {}
         for r in rows:
             iid = r["item_id"]

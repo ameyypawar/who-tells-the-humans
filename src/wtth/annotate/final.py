@@ -9,6 +9,7 @@ from __future__ import annotations
 import json
 from typing import Any, Mapping
 
+from wtth.annotate import void
 from wtth.judge.labels import LABELS, validate_labels
 from wtth.judge.types import FinalLabel, ItemKey, ItemType
 
@@ -61,7 +62,7 @@ class _State:
             return {
                 "items": g("SELECT item_id, item_type, source_table, source_id, tier, in_analysis_set, model, cell, kw_match, "
                           "episode_id, attempt FROM items"),
-                "queue": g("SELECT ann_id, item_id, queue, reasons_json FROM ann_queue"),
+                "queue": g(f"SELECT ann_id, item_id, queue, reasons_json FROM {void.ensure(jdb)}"),
                 "judge": g("SELECT item_id, status, labels_json, uncertain FROM v_judge_current"),
                 "ann": g("SELECT ann_id, revision, labels_json, uncertain FROM ann_labels"),
                 "review": g("SELECT ann_id, decision, corrections_json, based_on_ann_revision FROM v_review_latest"),

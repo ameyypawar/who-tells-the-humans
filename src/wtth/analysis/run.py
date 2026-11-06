@@ -108,7 +108,15 @@ def _hqa_keys(settings: Any) -> set | None:
     try:
         rows = conn.execute(
             "SELECT i.source_id FROM ann_queue q JOIN items i ON i.item_id=q.item_id JOIN v_review_latest r "
-            "ON r.ann_id=q.ann_id WHERE i.source_table='notes' AND q.reasons_json LIKE '%\"H-QA\"%'").fetchall()
+            "ON r.ann_id=q.ann_id WHERE i.source_table='notes' AND q.reasons_json LIKE '%\"H-QA\"%' "
+            "AND q.ann_id NOT IN (SELECT ann_id FROM ann_queue_void)").fetchall()
+    except sqlite3.OperationalError:       # a database from before D-019 has no ann_queue_void: nothing voided
+        try:
+            rows = conn.execute(
+                "SELECT i.source_id FROM ann_queue q JOIN items i ON i.item_id=q.item_id JOIN v_review_latest r "
+                "ON r.ann_id=q.ann_id WHERE i.source_table='notes' AND q.reasons_json LIKE '%\"H-QA\"%'").fetchall()
+        except sqlite3.Error:
+            return None
     except sqlite3.Error:
         return None
     finally:

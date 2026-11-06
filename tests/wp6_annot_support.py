@@ -114,11 +114,13 @@ def labels_for(typ: str) -> dict[str, Any]:
     return {"note": note_labels, "board_post": post_labels, "d1_answer": d1_labels, "d2_answer": d2_labels}[typ]()
 
 
-def _enqueue(self: Jdb, iid: str, queue: str, reasons: list[str] | None = None, stage: int = 1) -> str:
+def _enqueue(self: Jdb, iid: str, queue: str, reasons: list[str] | None = None, stage: int = 1, *,
+             created_at: float | None = None, draw_rank: int | None = None) -> str:
     ann_id = "a" + format(abs(hash((iid, queue))) % (16 ** 10), "010x")
     self.db.write(lambda c: c.execute(
-        "INSERT INTO ann_queue(ann_id,item_id,queue,reasons_json,stage,created_at) VALUES (?,?,?,?,?,?)",
-        (ann_id, iid, queue, json.dumps(reasons or [queue]), stage, time.time())))
+        "INSERT INTO ann_queue(ann_id,item_id,queue,reasons_json,stage,draw_rank,created_at) VALUES (?,?,?,?,?,?,?)",
+        (ann_id, iid, queue, json.dumps(reasons or [queue]), stage, draw_rank,
+         time.time() if created_at is None else created_at)))
     return ann_id
 
 

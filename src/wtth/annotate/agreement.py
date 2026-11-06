@@ -7,6 +7,8 @@ from typing import Any, Mapping, Sequence
 
 import numpy as np
 
+from wtth.annotate import void
+
 
 def _index(values: Sequence[Any], categories: Sequence[Any]) -> np.ndarray:
     pos = {c: i for i, c in enumerate(categories)}
@@ -179,8 +181,9 @@ def model_model_pairs(jdb: Any, *, queue: str | None = None) -> dict[str, list[t
     The synthetic held-out items (H-HO) are never part of any pair set."""
     if queue == "H-HO":
         return {}
+    void.ensure(jdb)
     sql = ("SELECT i.item_type, j.labels_json, a.labels_json FROM v_ann_latest a "
-           "JOIN ann_queue q ON q.ann_id = a.ann_id JOIN items i ON i.item_id = q.item_id "
+           "JOIN v_ann_queue q ON q.ann_id = a.ann_id JOIN items i ON i.item_id = q.item_id "
            "JOIN v_judge_current j ON j.item_id = i.item_id AND j.status = 'valid' "
            + ("WHERE q.queue = ? " if queue else "WHERE q.queue != 'H-HO' ") + "ORDER BY q.ann_id")
     rows = jdb.read(lambda c: c.execute(sql, (queue,) if queue else ()).fetchall())
@@ -223,8 +226,9 @@ def agreement_summary(jdb: Any, *, seeds: Any) -> Mapping[str, Any]:
 
 
 def correction_rate(jdb: Any) -> dict[str, Any]:
+    void.ensure(jdb)
     rows = jdb.read(lambda c: c.execute(
-        "SELECT q.queue, r.decision FROM v_review_latest r JOIN ann_queue q ON q.ann_id = r.ann_id").fetchall())
+        "SELECT q.queue, r.decision FROM v_review_latest r JOIN v_ann_queue q ON q.ann_id = r.ann_id").fetchall())
     total = len(rows)
     corrected = sum(1 for _, d in rows if d in ("correct", "use_judge"))
     by_queue: dict[str, dict[str, int]] = {}
@@ -236,7 +240,7 @@ def correction_rate(jdb: Any) -> dict[str, Any]:
         "SELECT COUNT(*) FROM items i JOIN v_judge_current j ON j.item_id = i.item_id WHERE i.tier IN ('J1','J2')"
     ).fetchone()[0])
     n_rj = jdb.read(lambda c: c.execute(
-        "SELECT COUNT(*) FROM v_review_latest r JOIN ann_queue q ON q.ann_id = r.ann_id "
+        "SELECT COUNT(*) FROM v_review_latest r JOIN v_ann_queue q ON q.ann_id = r.ann_id "
         "JOIN v_judge_current j ON j.item_id = q.item_id").fetchone()[0])
     return {"reviewed": total, "corrected": corrected, "rate": (corrected / total) if total else None,
             "judged": n_j, "reviewed_judged": n_rj, "share_reviewed": (n_rj / n_j) if n_j else None,
@@ -246,6 +250,8 @@ def correction_rate(jdb: Any) -> dict[str, Any]:
 def escalation_precision(jdb: Any) -> dict[str, Any]:
     """Of the judge's escalation=1 posts that were reviewed, the share whose reviewed label is escalation=1."""
     from wtth.annotate.final import reviewed_labels  # lazy: final imports this module's helpers
+
+    void.ensure(jdb)
 
     rows = jdb.read(lambda c: c.execute(
         "SELECT q.ann_id, j.labels_json FROM ann_queue q JOIN items i ON i.item_id = q.item_id "

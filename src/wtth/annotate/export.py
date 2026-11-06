@@ -12,6 +12,7 @@ import time
 from pathlib import Path
 from typing import Any
 
+from wtth.annotate import void
 from wtth.annotate.masking import Masker, assert_clean_file, make_masker
 from wtth.judge.labels import LABELS
 from wtth.judge.types import ItemType
@@ -77,6 +78,7 @@ def export_annotator_batches(settings: Any, jdb: Any, out_dir: Path, *, batch_si
     Every file passes the residual scan or the export directory is removed. Returns the export directory."""
     if batch_size < 1:
         raise ValueError("batch_size must be >= 1")
+    void.ensure(jdb)
     version, system_text = _active_system(jdb)
     instructions = instructions_text(system_text)
     if include_exported_unlabeled:
@@ -84,7 +86,7 @@ def export_annotator_batches(settings: Any, jdb: Any, out_dir: Path, *, batch_si
     else:
         where = "NOT EXISTS (SELECT 1 FROM ann_export_items e WHERE e.ann_id = q.ann_id)"
     rows = jdb.read(lambda c: [dict(r) for r in c.execute(
-        "SELECT q.ann_id, i.item_type, i.text, i.context_text FROM ann_queue q JOIN items i ON i.item_id = q.item_id "
+        "SELECT q.ann_id, i.item_type, i.text, i.context_text FROM v_ann_queue q JOIN items i ON i.item_id = q.item_id "
         f"WHERE {where} ORDER BY q.ann_id").fetchall()])
     if not rows:
         raise ValueError("nothing to export: every queued item has already been exported")

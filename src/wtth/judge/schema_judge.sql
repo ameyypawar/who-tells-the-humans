@@ -98,6 +98,9 @@ CREATE TABLE reviews(ann_id TEXT NOT NULL REFERENCES ann_queue(ann_id), revision
   based_on_ann_revision INTEGER NOT NULL, judge_shown INTEGER NOT NULL,
   report_export_id TEXT NOT NULL REFERENCES ann_exports(export_id), source_sha256 TEXT NOT NULL,
   imported_at REAL NOT NULL, PRIMARY KEY(ann_id, revision));
+CREATE TABLE ann_queue_void(ann_id TEXT PRIMARY KEY REFERENCES ann_queue(ann_id), reason TEXT NOT NULL,
+  created_at REAL NOT NULL);                                    -- D-019: voided queue rows (insert-only)
+CREATE VIEW v_ann_queue AS SELECT q.* FROM ann_queue q WHERE q.ann_id NOT IN (SELECT ann_id FROM ann_queue_void);
 CREATE TABLE blind_sample(blind_id TEXT PRIMARY KEY, item_id TEXT NOT NULL UNIQUE REFERENCES items(item_id),
   stratum TEXT NOT NULL, draw_seed INTEGER NOT NULL, draw_rank INTEGER NOT NULL, created_at REAL NOT NULL);
 CREATE TABLE blind_labels(blind_id TEXT NOT NULL REFERENCES blind_sample(blind_id), revision INTEGER NOT NULL,

@@ -62,6 +62,12 @@ def main(argv: list[str] | None = None) -> int:
     p = sub.add_parser("report", parents=[common], help="write the author review report")
     p.add_argument("--out", type=Path, default=DOWNLOADS)
     p.add_argument("--include-reviewed", action="store_true")
+    p.add_argument("--queues", default=None, help="comma-separated queues, e.g. H-1,H-3,H-4,H-5")
+    p.add_argument("--max-per-queue", action="append", default=[], metavar="Q=N",
+                   help="slice a queue to its first N rows by draw_rank, round-robin across strata (repeatable)")
+    p.add_argument("--dry-run", action="store_true", help="count the items; write nothing")
+    p = sub.add_parser("void-h5-redraw", parents=[common], help="void the duplicate H-5 draw (D-019); idempotent")
+    p.add_argument("--expect", type=int, default=None, help="refuse unless exactly this many rows are voided")
     p = sub.add_parser("import-review", parents=[common], help="import the DECISION lines of a review report")
     p.add_argument("file", type=Path)
     sub.add_parser("status", parents=[common], help="queue, review and gate progress; model-model agreement")
@@ -112,9 +118,19 @@ def main(argv: list[str] | None = None) -> int:
             from wtth.annotate import report
 
             path = report.report_path(args.out)
+            mpq = {}
+            for item in args.max_per_queue:
+                k, _, v = item.partition("=")
+                mpq[k.strip()] = int(v)
             stats = report.write_review_report(settings, jdb, path, include_reviewed=args.include_reviewed,
-                                               seed=_seeds(settings).export_order)
-            _dump({"path": str(path), **stats})
+                                               seed=_seeds(settings).export_order,
+                                               queues=[x.strip() for x in args.queues.split(",")] if args.queues else None,
+                                               max_per_queue=mpq or None, dry_run=args.dry_run)
+            _dump({"path": None if args.dry_run else str(path), "dry_run": args.dry_run, **stats})
+        elif args.cmd == "void-h5-redraw":
+            from wtth.annotate import void
+
+            _dump(void.void_h5_redraw(jdb, expect=args.expect))
         elif args.cmd == "import-review":
             from wtth.annotate import report
 

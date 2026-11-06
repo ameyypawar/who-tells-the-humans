@@ -14,8 +14,9 @@ import secrets
 import time
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Mapping
+from typing import Any, Mapping, Sequence
 
+from wtth.annotate import void
 from wtth.annotate.agreement import with_escalation
 from wtth.annotate.blind import blind_pending_items
 from wtth.annotate.final import merge_corrections, parse_label_value
@@ -100,11 +101,12 @@ def _legend() -> list[str]:
 
 
 def _load_rows(jdb: Any, include_reviewed: bool) -> list[dict[str, Any]]:
+    void.ensure(jdb)
     sql = (
-        "SELECT q.ann_id, q.queue, i.item_id, i.item_type, ei.masked_text, ei.masked_context, ei.batch_no, ei.position, "
+        "SELECT q.ann_id, q.queue, q.draw_rank, i.model, i.cell, i.item_id, i.item_type, ei.masked_text, ei.masked_context, ei.batch_no, ei.position, "
         "a.revision AS ann_rev, a.labels_json AS ann_labels, a.quote, a.confidence, a.uncertain AS ann_unc, "
         "a.justification, j.status AS jstatus, j.labels_json AS jlabels, j.uncertain AS junc, "
-        "r.revision AS review_rev FROM ann_queue q JOIN items i ON i.item_id = q.item_id "
+        "r.revision AS review_rev FROM v_ann_queue q JOIN items i ON i.item_id = q.item_id "
         "JOIN v_ann_latest a ON a.ann_id = q.ann_id "
         "JOIN ann_export_items ei ON ei.ann_id = q.ann_id AND ei.export_id = "
         "(SELECT e.export_id FROM ann_export_items x JOIN ann_exports e ON e.export_id = x.export_id "
@@ -147,12 +149,54 @@ def report_path(out_path: Path, now: float | None = None) -> Path:
     return p if p.suffix == ".md" else p / ("wtth-review-" + time.strftime("%Y%m%d-%H%M", time.localtime(now)) + ".md")
 
 
+def _slice(rows: list[dict[str, Any]], n: int) -> list[dict[str, Any]]:
+    """The first n rows by draw_rank, round-robin across strata (model, cell, item type): still a random spread."""
+    groups: dict[tuple, list[dict[str, Any]]] = {}
+    for r in rows:
+        groups.setdefault((str(r["model"]), str(r["cell"]), r["item_type"]), []).append(r)
+    for g in groups.values():
+        g.sort(key=lambda r: (r["draw_rank"] if r["draw_rank"] is not None else 10**9, r["ann_id"]))
+    out: list[dict[str, Any]] = []
+    depth = 0
+    keys = sorted(groups)
+    while len(out) < n and any(depth < len(groups[k]) for k in keys):
+        for k in keys:
+            if depth < len(groups[k]) and len(out) < n:
+                out.append(groups[k][depth])
+        depth += 1
+    return out
+
+
+def select_rows(jdb: Any, rows: list[dict[str, Any]], queues: Sequence[str] | None,
+                max_per_queue: Mapping[str, int] | None) -> list[dict[str, Any]]:
+    """Focused report: keep the selected queues (default all), slice any queue to its max (round-robin by draw_rank).
+    Members of the gate populations stay whenever their gate's queue (H-1 for P1, H-3 for P2') is selected, whatever
+    queue they sit in, and are never sliced away."""
+    if queues is None and not max_per_queue:
+        return rows
+    sel = set(queues) if queues else set(PRIORITY)
+    bad = (sel | set(max_per_queue or ())) - set(PRIORITY)
+    if bad:
+        raise ValueError("unknown queue(s): " + ", ".join(sorted(bad)))
+    from wtth.annotate.final import JudgeDbLabelSource
+
+    src = JudgeDbLabelSource(jdb, strict=True)
+    gate = (src.pop_p1 if "H-1" in sel else set()) | (src.pop_p2 if "H-3" in sel else set())
+    keep = [r for r in rows if r["queue"] in sel or r["item_id"] in gate]
+    for q, n in (max_per_queue or {}).items():
+        grp = [r for r in keep if r["queue"] == q and r["item_id"] not in gate]
+        drop = {r["ann_id"] for r in grp} - {r["ann_id"] for r in _slice(grp, n)}
+        keep = [r for r in keep if r["ann_id"] not in drop]
+    return keep
+
+
 def write_review_report(settings: Any, jdb: Any, out_path: Path, *, include_reviewed: bool = False,
-                        seed: int) -> Mapping[str, int]:
+                        seed: int, queues: Sequence[str] | None = None,
+                        max_per_queue: Mapping[str, int] | None = None, dry_run: bool = False) -> Mapping[str, int]:
     """Write the review file (out_path is a file ending in .md, or a directory that gets wtth-review-<stamp>.md).
     Returns counts: items, part_a, part_b, conflicts, uncertain, no_judge, hidden_blind."""
     masker = make_masker(settings)
-    rows = _load_rows(jdb, include_reviewed)
+    rows = select_rows(jdb, _load_rows(jdb, include_reviewed), queues, max_per_queue)
     if not rows:
         raise ValueError("nothing to review: no labelled, unreviewed, unblinded items")
     hidden = len(blind_pending_items(jdb))
@@ -166,7 +210,6 @@ def write_review_report(settings: Any, jdb: Any, out_path: Path, *, include_revi
     id_hash = hashlib.sha256("\n".join(ids).encode()).hexdigest()
     export_id = "rv" + time.strftime("%Y%m%dT%H%M%S", time.gmtime()) + secrets.token_hex(2)
     path = report_path(out_path)
-    path.parent.mkdir(parents=True, exist_ok=True)
 
     def block(r: dict[str, Any], conflicts: Mapping[str, Any], tags: list[str]) -> list[str]:
         t = ItemType(r["item_type"])
@@ -189,20 +232,25 @@ def write_review_report(settings: Any, jdb: Any, out_path: Path, *, include_revi
     lines += [f"## Part B: agreements ({len(part_b)})", ""]
     for r, c, tg in part_b:
         lines += block(r, c, tg)
+    stats = {"items": len(prepared), "part_a": len(part_a), "part_b": len(part_b),
+             "conflicts": sum(1 for _, c, _ in prepared if c),
+             "uncertain": sum(1 for _, _, tg in prepared if "UNCERTAIN" in tg),
+             "no_judge": sum(1 for r, _, _ in prepared if r["jstatus"] != "valid"), "hidden_blind": hidden}
+    if dry_run:
+        return stats
+    path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text("\n".join(lines), encoding="utf-8")
     assert_clean_file(path, masker.private)
     sha = hashlib.sha256(path.read_bytes()).hexdigest()
     detail = {"ann_ids": ids, "revisions": {r["ann_id"]: r["ann_rev"] for r, _, _ in prepared},
               "judge_shown": {r["ann_id"]: int(bool(c)) for r, c, _ in prepared},
-              "item_types": {r["ann_id"]: r["item_type"] for r, _, _ in prepared}, "include_reviewed": include_reviewed}
+              "item_types": {r["ann_id"]: r["item_type"] for r, _, _ in prepared}, "include_reviewed": include_reviewed,
+              "queues": list(queues) if queues else None, "max_per_queue": dict(max_per_queue or {})}
     jdb.write(lambda cn: cn.execute(
         "INSERT INTO ann_exports(export_id, kind, path, sha256, n_items, seed, created_at, detail_json) "
         "VALUES (?,?,?,?,?,?,?,?)", (export_id, "review", str(path), sha, len(prepared), int(seed), time.time(),
                                      json.dumps(detail))))
-    return {"items": len(prepared), "part_a": len(part_a), "part_b": len(part_b),
-            "conflicts": sum(1 for _, c, _ in prepared if c),
-            "uncertain": sum(1 for _, _, tg in prepared if "UNCERTAIN" in tg),
-            "no_judge": sum(1 for r, _, _ in prepared if r["jstatus"] != "valid"), "hidden_blind": hidden}
+    return stats
 
 
 # ---- parsing -----------------------------------------------------------------------------------------------
