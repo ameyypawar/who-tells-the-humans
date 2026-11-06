@@ -543,8 +543,11 @@ class Isolation(unittest.TestCase):
         conf_b = {k: v for k, v in b.items() if not k.startswith("ExpOne")}
         self.assertEqual(set(conf_a), set(conf_b))
         diff = {k for k in conf_a if conf_a[k] != conf_b[k]}
+        # The TurnIntegrity* keys (register_turn_integrity) count every phase of the main DB, so they move when
+        # exp1 turns exist.
+        all_phase_integrity = {"TurnIntegrityAllN", "TurnIntegrityOkN", "TurnIntegrityOkNoUsageK"}
         self.assertEqual({"CostMainUsd", "CostJudgeUsd", "CostTotalUsd", "CostExpOneRunUsd", "CostExpOneProbeUsd",
-                          "CostExpOneJudgeUsd", "CostExpOneTotalUsd", "SnapshotShaShort"}, diff)
+                          "CostExpOneJudgeUsd", "CostExpOneTotalUsd", "SnapshotShaShort"} | all_phase_integrity, diff)
         self.assertAlmostEqual(b["CostJudgeUsd"][0] - a["CostJudgeUsd"][0], 0.75)       # the exp1 judge ledger
         self.assertAlmostEqual(b["CostExpOneJudgeUsd"][0], 0.75)
         self.assertEqual(a["CostBeforeExpOneUsd"], b["CostBeforeExpOneUsd"])
