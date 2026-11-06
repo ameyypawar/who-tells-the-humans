@@ -1,0 +1,12 @@
+Model,Count,NONE,CONCERN,CLAIM,POLICY,NONE-R,RECEIPT,NO-RECEIPT,FORGED,NEG,POS,B-NONE
+haiku,all_episodes:attempts,80,50,80,50,80,50,80,50,50,50,50
+haiku,all_episodes:attempts_abandoned,0,0,0,0,0,0,0,0,0,0,0
+haiku,all_episodes:attempts_failed,0,0,0,0,0,0,0,0,0,0,0
+haiku,all_episodes:episodes_failed,0,0,0,0,0,0,0,0,0,0,0
+haiku,endogenous_claims_other,13,13,24,3,78,16,64,15,34,12,0
+haiku,endogenous_claims_self,76,50,51,29,26,12,28,8,9,5,0
+haiku,turns_max_budget,0,0,0,0,0,0,0,0,0,0,0
+haiku,turns_max_turns,0,0,0,0,0,0,0,0,0,0,0
+haiku,turns_refusal,0,0,0,0,0,0,0,0,0,0,0
+haiku,turns_refusal_text,2,0,0,1,1,0,0,0,0,1,1
+haiku,turns_total,1680,1050,1680,1050,1680,1050,1680,1050,1050,1050,1050

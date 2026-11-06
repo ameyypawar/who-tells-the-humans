@@ -1,0 +1,15 @@
+Source,Phase / model or tier,Calls,Cost,Estimated
+experiment,core / claude-haiku-5-5,14072,$9.05,
+experiment,g0 / claude-haiku-5-5,18,$0.00,
+experiment,g0b / claude-haiku-5-5,63,$0.04,
+experiment,g0b / claude-sonnet-5-5,21,$0.22,
+experiment,g0bprobe / claude-haiku-5-5,1,$0.00,
+experiment,g0probe / claude-haiku-5-5,3,$0.00,
+experiment,g1 / claude-haiku-5-5,336,$0.21,
+experiment,g1b / claude-haiku-5-5,336,$0.21,
+experiment,g2 / claude-haiku-5-5,672,$0.44,
+experiment,sonnet / claude-sonnet-5-5,3227,$29.35,
+judge,tier HO,36,$0.11,0
+judge,tier J1,201,$0.82,0
+judge,tier J2,8377,$39.96,0
+total,,,$80.40,

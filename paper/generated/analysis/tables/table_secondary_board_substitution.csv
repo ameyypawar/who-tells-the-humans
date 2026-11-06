@@ -1,0 +1,23 @@
+Cell,Labels,Witnesses,No note,"No note, known",Qualifying,%,95% CI,Rate,Coverage (%)
+NONE,final,240,0,0,0,0.0,0.0 to 1.6,overall,100
+CONCERN,final,150,0,0,0,0.0,0.0 to 2.5,overall,100
+CLAIM,final,240,4,4,2,0.8,0.2 to 3.0,overall,100
+POLICY,final,150,1,1,1,0.7,0.1 to 3.7,overall,100
+NONE-R,final,240,0,0,0,0.0,0.0 to 1.6,overall,100
+RECEIPT,final,150,47,47,39,26.0,19.6 to 33.6,overall,100
+NO-RECEIPT,final,240,23,23,19,7.9,5.1 to 12.0,overall,100
+FORGED,final,150,47,47,40,26.7,20.2 to 34.3,overall,100
+NEG,final,150,0,0,0,0.0,0.0 to 2.5,overall,100
+POS,final,150,111,111,95,63.3,55.4 to 70.6,overall,100
+B-NONE,final,150,138,138,0,0.0,0.0 to 2.5,overall,100
+NONE,judge,240,0,0,0,0.0,0.0 to 1.6,overall,100
+CONCERN,judge,150,0,0,0,0.0,0.0 to 2.5,overall,100
+CLAIM,judge,240,4,4,2,0.8,0.2 to 3.0,overall,100
+POLICY,judge,150,1,1,1,0.7,0.1 to 3.7,overall,100
+NONE-R,judge,240,0,0,0,0.0,0.0 to 1.6,overall,100
+RECEIPT,judge,150,47,47,39,26.0,19.6 to 33.6,overall,100
+NO-RECEIPT,judge,240,23,23,19,7.9,5.1 to 12.0,overall,100
+FORGED,judge,150,47,47,40,26.7,20.2 to 34.3,overall,100
+NEG,judge,150,0,0,0,0.0,0.0 to 2.5,overall,100
+POS,judge,150,111,111,95,63.3,55.4 to 70.6,overall,100
+B-NONE,judge,150,138,138,0,0.0,0.0 to 2.5,overall,100

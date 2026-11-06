@@ -1,0 +1,81 @@
+\begin{tabular}{llrrrr}
+\toprule
+Section & Item & n & Agreement (\%) & Kappa & 95\% CI \\
+\midrule
+Held-out validation & prompt v2 & 11/12 & passed &  &  \\
+\midrule
+model--model (all pairs) & board\_post: escalation\_to\_humans & 150 & 97.3 & \ensuremath{-}0.01 & \ensuremath{-}0.03 to 0.00 \\
+model--model (all pairs) & board\_post: addressed\_to\_humans & 150 & 97.3 & \ensuremath{-}0.01 & \ensuremath{-}0.03 to 0.00 \\
+model--model (all pairs) & board\_post: about\_violation & 150 & 100.0 & 1.00 & 1.00 to 1.00 \\
+model--model (all pairs) & board\_post: concern & 150 & 100.0 & 1.00 & 1.00 to 1.00 \\
+model--model (all pairs) & board\_post: concern\_subtype & 150 & 94.7 & 0.90 & 0.82 to 0.96 \\
+model--model (all pairs) & board\_post: claim\_present & 150 & 99.3 & 0.99 & 0.96 to 1.00 \\
+model--model (all pairs) & board\_post: claim\_subject & 150 & 97.3 & 0.96 & 0.92 to 0.99 \\
+model--model (all pairs) & board\_post: test\_awareness & 150 & 100.0 & -- & -- \\
+model--model (all pairs) & d1\_answer: test\_awareness & 245 & 84.1 & 0.23 & 0.09 to 0.37 \\
+model--model (all pairs) & d1\_answer: d1\_verdict & 245 & 94.3 & 0.84 & 0.76 to 0.92 \\
+model--model (all pairs) & d2\_answer: test\_awareness & 255 & 100.0 & -- & -- \\
+model--model (all pairs) & d2\_answer: believes\_ops\_told & 255 & 98.8 & 0.79 & 0.49 to 1.00 \\
+model--model (all pairs) & d2\_answer: basis:own\_note & 255 & 89.4 & 0.53 & 0.37 to 0.68 \\
+model--model (all pairs) & d2\_answer: basis:c\_post & 255 & 86.7 & 0.72 & 0.64 to 0.81 \\
+model--model (all pairs) & d2\_answer: basis:log\_line & 255 & 99.2 & 0.98 & 0.96 to 1.00 \\
+model--model (all pairs) & d2\_answer: basis:board\_inference & 255 & 93.3 & 0.25 & 0.00 to 0.48 \\
+model--model (all pairs) & d2\_answer: basis:none & 255 & 99.6 & 0.66 & 0.00 to 1.00 \\
+model--model (all pairs) & d2\_answer: reason\_codes:noticed\_violation & 255 & 95.3 & 0.44 & 0.15 to 0.68 \\
+model--model (all pairs) & d2\_answer: reason\_codes:judged\_rule\_broken & 255 & 93.3 & 0.35 & 0.11 to 0.57 \\
+model--model (all pairs) & d2\_answer: reason\_codes:someone\_else\_told & 255 & 94.1 & 0.71 & 0.55 to 0.84 \\
+model--model (all pairs) & d2\_answer: reason\_codes:trusted\_claim & 255 & 98.0 & 0.28 & \ensuremath{-}0.01 to 0.66 \\
+model--model (all pairs) & d2\_answer: reason\_codes:could\_not\_verify\_reported\_anyway & 255 & 49.0 & 0.18 & 0.12 to 0.25 \\
+model--model (all pairs) & d2\_answer: reason\_codes:not\_my\_job & 255 & 89.8 & 0.30 & 0.09 to 0.49 \\
+model--model (all pairs) & d2\_answer: reason\_codes:no\_channel\_perceived & 255 & 68.6 & 0.00 & 0.00 to 0.00 \\
+model--model (all pairs) & d2\_answer: reason\_codes:thought\_ops\_aware & 255 & 92.9 & 0.51 & 0.29 to 0.70 \\
+model--model (all pairs) & d2\_answer: reason\_codes:feared\_duplicate & 255 & 83.9 & 0.43 & 0.29 to 0.56 \\
+model--model (all pairs) & d2\_answer: reason\_codes:unsure\_it\_was\_a\_violation & 255 & 96.1 & \ensuremath{-}0.02 & \ensuremath{-}0.03 to \ensuremath{-}0.01 \\
+model--model (all pairs) & d2\_answer: reason\_codes:other & 255 & 73.3 & 0.08 & \ensuremath{-}0.02 to 0.18 \\
+model--model (all pairs) & note: refers\_to\_violation & 382 & 100.0 & 1.00 & 1.00 to 1.00 \\
+model--model (all pairs) & note: names\_rd09 & 382 & 100.0 & 1.00 & 1.00 to 1.00 \\
+model--model (all pairs) & note: mentions\_claim\_or\_log & 382 & 98.2 & 0.95 & 0.90 to 0.98 \\
+model--model (all pairs) & note: alleges\_misconduct & 382 & 94.5 & 0.88 & 0.82 to 0.92 \\
+model--model (all pairs) & note: test\_awareness & 382 & 100.0 & -- & -- \\
+\midrule
+model--model (H-5) & board\_post: escalation\_to\_humans & 120 & 100.0 & -- & -- \\
+model--model (H-5) & board\_post: addressed\_to\_humans & 120 & 100.0 & -- & -- \\
+model--model (H-5) & board\_post: about\_violation & 120 & 100.0 & 1.00 & 1.00 to 1.00 \\
+model--model (H-5) & board\_post: concern & 120 & 100.0 & 1.00 & 1.00 to 1.00 \\
+model--model (H-5) & board\_post: concern\_subtype & 120 & 100.0 & 1.00 & 1.00 to 1.00 \\
+model--model (H-5) & board\_post: claim\_present & 120 & 99.2 & 0.98 & 0.95 to 1.00 \\
+model--model (H-5) & board\_post: claim\_subject & 120 & 97.5 & 0.96 & 0.91 to 1.00 \\
+model--model (H-5) & board\_post: test\_awareness & 120 & 100.0 & -- & -- \\
+model--model (H-5) & d1\_answer: test\_awareness & 181 & 90.1 & 0.37 & 0.14 to 0.58 \\
+model--model (H-5) & d1\_answer: d1\_verdict & 181 & 94.5 & 0.87 & 0.79 to 0.94 \\
+model--model (H-5) & d2\_answer: test\_awareness & 191 & 100.0 & -- & -- \\
+model--model (H-5) & d2\_answer: believes\_ops\_told & 191 & 98.4 & 0.79 & 0.49 to 1.00 \\
+model--model (H-5) & d2\_answer: basis:own\_note & 191 & 94.2 & 0.74 & 0.58 to 0.87 \\
+model--model (H-5) & d2\_answer: basis:c\_post & 191 & 89.0 & 0.77 & 0.68 to 0.86 \\
+model--model (H-5) & d2\_answer: basis:log\_line & 191 & 99.0 & 0.98 & 0.95 to 1.00 \\
+model--model (H-5) & d2\_answer: basis:board\_inference & 191 & 92.1 & 0.27 & 0.00 to 0.50 \\
+model--model (H-5) & d2\_answer: basis:none & 191 & 99.5 & 0.66 & 0.00 to 1.00 \\
+model--model (H-5) & d2\_answer: reason\_codes:noticed\_violation & 191 & 93.7 & 0.43 & 0.15 to 0.67 \\
+model--model (H-5) & d2\_answer: reason\_codes:judged\_rule\_broken & 191 & 91.1 & 0.34 & 0.10 to 0.56 \\
+model--model (H-5) & d2\_answer: reason\_codes:someone\_else\_told & 191 & 93.2 & 0.73 & 0.57 to 0.85 \\
+model--model (H-5) & d2\_answer: reason\_codes:trusted\_claim & 191 & 97.4 & 0.27 & \ensuremath{-}0.02 to 0.66 \\
+model--model (H-5) & d2\_answer: reason\_codes:could\_not\_verify\_reported\_anyway & 191 & 44.5 & 0.14 & 0.09 to 0.21 \\
+model--model (H-5) & d2\_answer: reason\_codes:not\_my\_job & 191 & 88.5 & 0.30 & 0.08 to 0.51 \\
+model--model (H-5) & d2\_answer: reason\_codes:no\_channel\_perceived & 191 & 78.0 & 0.00 & 0.00 to 0.00 \\
+model--model (H-5) & d2\_answer: reason\_codes:thought\_ops\_aware & 191 & 92.7 & 0.57 & 0.34 to 0.75 \\
+model--model (H-5) & d2\_answer: reason\_codes:feared\_duplicate & 191 & 88.5 & 0.59 & 0.43 to 0.73 \\
+model--model (H-5) & d2\_answer: reason\_codes:unsure\_it\_was\_a\_violation & 191 & 95.3 & \ensuremath{-}0.02 & \ensuremath{-}0.04 to 0.00 \\
+model--model (H-5) & d2\_answer: reason\_codes:other & 191 & 71.7 & 0.07 & \ensuremath{-}0.03 to 0.19 \\
+model--model (H-5) & note: refers\_to\_violation & 197 & 100.0 & -- & -- \\
+model--model (H-5) & note: names\_rd09 & 197 & 100.0 & 1.00 & 1.00 to 1.00 \\
+model--model (H-5) & note: mentions\_claim\_or\_log & 197 & 98.5 & 0.96 & 0.92 to 1.00 \\
+model--model (H-5) & note: alleges\_misconduct & 197 & 99.5 & 0.66 & 0.00 to 1.00 \\
+model--model (H-5) & note: test\_awareness & 197 & 100.0 & -- & -- \\
+\midrule
+Author review & share of queued items reviewed & 212 & 2.5 &  &  \\
+Author review & correction rate (correct or use-judge) & 212 & 1.4 &  &  \\
+Author review & precision of judge escalation positives & 1 & 0.0 &  &  \\
+\midrule
+blind human check & declined &  &  &  &  \\
+\bottomrule
+\end{tabular}

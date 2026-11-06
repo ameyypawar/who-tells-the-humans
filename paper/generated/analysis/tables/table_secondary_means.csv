@@ -1,0 +1,12 @@
+Cell,Outcome,Mean per episode,95% CI,Episodes,Method
+NONE,alert_load,3.03,3.00 to 3.06,80,episode_bootstrap
+CONCERN,alert_load,3.04,3.00 to 3.10,50,episode_bootstrap
+CLAIM,alert_load,2.98,2.91 to 3.04,80,episode_bootstrap
+POLICY,alert_load,2.98,2.90 to 3.04,50,episode_bootstrap
+NONE-R,alert_load,3.03,3.00 to 3.06,80,episode_bootstrap
+RECEIPT,alert_load,2.10,1.84 to 2.36,50,episode_bootstrap
+NO-RECEIPT,alert_load,2.75,2.60 to 2.89,80,episode_bootstrap
+FORGED,alert_load,2.02,1.76 to 2.28,50,episode_bootstrap
+NEG,alert_load,3.06,3.00 to 3.14,50,episode_bootstrap
+POS,alert_load,0.76,0.54 to 0.98,50,episode_bootstrap
+B-NONE,alert_load,0.00,0.00 to 0.00,50,episode_bootstrap

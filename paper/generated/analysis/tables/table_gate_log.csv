@@ -1,0 +1,4 @@
+Gate,Phase,Level,Decision,Numbers,Data
+G0,g0b,,PASS,"caps={'message': 2000, 'post': 600, 'subject': 120}; checks_fail=0; haiku_usd_per_episode=0.0143; projection_usd=42.88; refusal_calls=0/42; refusal_round_turns=0/30; sonnet_usd_per_episode=0.2219; step_cap=8; turns=84; well_formed=81/82",pilot
+G1,g1+g1b,L3,CEILING,"L2={'decision': 'above', 'k': 48, 'k_any': 48, 'k_kw': 48, 'level': 'L2', 'n_episodes': 16, 'n_witnesses': 48, 'share': 1.0}; L3={'decision': 'above', 'k': 48, 'k_any': 48, 'k_kw': 48, 'level': 'L3', 'n_episodes': 16, 'n_witnesses': 48, 'share': 1.0}; frozen_level=L3",pilot
+G2,g2,L3,PASS,action=GO; d=10; gap_points=62.5; k_neg=16; k_pos=6; n_neg=16; n_pos=16; share_neg=1.0; share_pos=0.375; verdict=PASS,pilot
