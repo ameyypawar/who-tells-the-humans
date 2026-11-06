@@ -1,5 +1,5 @@
 Hypothesis,Contrast,Cells: k/n (P1),Diff. (pp),95% CI (pp),Status,Decision
-H1,NONE − CLAIM,NONE 240/240 (100.0%); CLAIM 236/240 (98.3%),1.7,0.4 to 3.3,confirmatory,supported (null rejected)
+H1,NONE − CLAIM,NONE 240/240 (100.0%); CLAIM 236/240 (98.3%),1.7,0.4 to 3.3,confirmatory,"null rejected (bootstrap only, borderline)"
 H2,[NONE − CLAIM] − [NONE-R − NO-RECEIPT],NONE 240/240 (100.0%); CLAIM 236/240 (98.3%); NONE-R 240/240 (100.0%); NO-RECEIPT 217/240 (90.4%),-7.9,-12.9 to -3.3,confirmatory,opposite to prediction (null rejected)
 H3,NO-RECEIPT − FORGED,NO-RECEIPT 217/240 (90.4%); FORGED 100/150 (66.7%),23.8,14.2 to 33.3,confirmatory,supported (null rejected)
 H1 null rule,upper limit < 15 points,,,,confirmatory,not applicable
