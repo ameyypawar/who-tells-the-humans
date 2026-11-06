@@ -111,16 +111,18 @@ def _tidy(rows: Sequence[Sequence[Cell] | None]) -> list[Sequence[Cell] | None]:
     return out
 
 
-def write_table(stem: Path, header: Sequence[str], rows: Sequence[Sequence[Cell] | None], *, align: str | None = None
-                ) -> TableFiles:
-    """Write <stem>.tex and <stem>.csv. A None row is a \\midrule (not written to the CSV)."""
+def write_table(stem: Path, header: Sequence[str], rows: Sequence[Sequence[Cell] | None], *, align: str | None = None,
+                colspec: str | None = None) -> TableFiles:
+    """Write <stem>.tex and <stem>.csv. A None row is a \\midrule (not written to the CSV). `colspec`, when given, is
+    the tabular preamble used verbatim (e.g. p-columns that wrap so the table fits the text width unscaled); `align`
+    then only has to have one letter per column."""
     stem = Path(stem)
     stem.parent.mkdir(parents=True, exist_ok=True)
     ncol = len(header)
     align = align or ("l" + "r" * (ncol - 1))
     if len(align) != ncol:
         raise ValueError("align must have one letter per column")
-    lines = [r"\begin{tabular}{" + align + "}", r"\toprule",
+    lines = [r"\begin{tabular}{" + (colspec or align) + "}", r"\toprule",
              " & ".join(latex_escape(h) for h in header) + r" \\", r"\midrule"]
     data = []
     rows = _tidy(rows)
@@ -191,7 +193,18 @@ def table_hypotheses(h: HypothesisResults, rates: Sequence[CellRate], book: Any,
                  text("exploratory"), text(tost_decision(str(verdict)))])
     return write_table(Path(out_dir) / "table_hypotheses",
                        ["Hypothesis", "Contrast", "Cells: k/n (P1)", "Diff. (pp)", "95% CI (pp)", "Status", "Decision"],
-                       rows, align="lllrrll")
+                       rows, align="lllrrll", colspec=HYP_COLSPEC)
+
+
+def _wrap(frac: float, align: str = "raggedright") -> str:
+    return rf">{{\{align}\arraybackslash}}p{{{frac}\linewidth}}"
+
+
+# Table 14 (Appendix D): wrapping columns that fit the text width, so \wtthTab never scales it down (review 2 N3: the
+# one-line tabular was about twice the text width and printed unreadably small). Fractions of \linewidth sum to 0.945
+# (443.9 pt of 469.8 pt), plus six 4 pt gaps between the seven columns: 467.9 pt.
+HYP_COLSPEC = ("@{}" + r"@{\hspace{4pt}}".join([_wrap(0.10), _wrap(0.18), _wrap(0.24), _wrap(0.06, "raggedleft"),
+                                                _wrap(0.11, "raggedleft"), _wrap(0.115), _wrap(0.14)]) + "@{}")
 
 
 # ---- P2 / P2' --------------------------------------------------------------------------------------------
@@ -249,8 +262,8 @@ def table_secondary(sec: SecondaryResults, book: Any, out_dir: Path) -> list[Tab
              integer(r.k_qualifying), pct(r.p), ci(r.lo, r.hi), text("conditional" if r.conditional else "overall"),
              pct(r.coverage, 0)] for r in sorted(sec.board_substitution, key=lambda x: (x.source, cell_key(x.cell)))]
     out.append(write_table(d / "table_secondary_board_substitution",
-                           ["Cell", "Labels", "Witnesses", "No note", "No note, known", "Qualifying", "%", "95% CI",
-                            "Rate", "Coverage (%)"], rows, align="llrrrrrrlr"))
+                           ["Cell", "Labels", "Witnesses", "No note at all", "No note, known", "Qualifying", "%",
+                            "95% CI", "Rate", "Coverage (%)"], rows, align="llrrrrrrlr"))
     contrasts = [c for c in (sec.delta1_no_test_aware, sec.h2_p2) if c is not None]
     rows = [[text(c.name), pp(c.estimate) if c.status != "unavailable" else text("n/a"),
              ci(c.lo, c.hi) if c.status != "unavailable" else text("n/a"), text(c.status), text(decision_text(c))]

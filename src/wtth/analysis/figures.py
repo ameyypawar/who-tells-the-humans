@@ -24,6 +24,14 @@ GROUPS = (("H1", ("NONE", "CLAIM")), ("H2", ("NONE", "CLAIM", "NONE-R", "NO-RECE
           ("H3", ("NO-RECEIPT", "FORGED")))
 
 
+MINUS_SIGN = "\u2212"
+
+
+def _minus(s: str) -> str:
+    """A formatted number with its leading hyphen-minus replaced by the minus sign U+2212."""
+    return MINUS_SIGN + s[1:] if s.startswith("-") else s
+
+
 def _p(x: float | None) -> str:
     return "n/a" if x is None else _dec(x * 100.0, 1) + "%"
 
@@ -336,20 +344,23 @@ def fig1b(t: Any, out_dir: Path, *, model_label: str, cells: Sequence[str] = TIM
 # ---- safety / alert-load frontier (Fig. 1b until D-021; not in Fig. 1 any more) ----------------------------
 
 _FRONTIER_STYLE = {"CLAIM": ("blue", "o"), "POLICY": ("green", "^"), "RECEIPT": ("orange", "D"),
-                   "RECEIPTS": ("orange", "D"), "RECEIPT ARM": ("orange", "D"), "FORGED": ("vermillion", "s")}
+                   "RECEIPTS": ("orange", "D"), "RECEIPT ARM": ("orange", "D"), "RECEIPTS ARM": ("orange", "D"),
+                   "FORGED": ("vermillion", "s")}
 _FALLBACK = (("purple", "v"), ("sky", "P"), ("vermillion", "X"))
 
 
-def _label_offsets(points: Sequence[FrontierPoint]) -> dict[int, tuple[float, float, str]]:
+def _label_offsets(points: Sequence[FrontierPoint], y_span: float = 1.0) -> dict[int, tuple[float, float, str]]:
     """Label offsets (points) and alignment. A point alone gets (6, 6). Points that sit on top of each other (x within
-    0.25 and y within 0.08 of one another, e.g. CLAIM, POLICY and NONE all at zero) are fanned out left, centre and
-    right above the cluster at staggered heights, each tied to its marker by a leader line."""
+    0.25 and y within 8% of the y-axis span `y_span` of one another, e.g. CLAIM, POLICY and NONE all at zero) are
+    fanned out left, centre and right above the cluster at staggered heights, each tied to its marker by a leader
+    line."""
     out: dict[int, tuple[float, float, str]] = {id(pt): (6.0, 6.0, "left") for pt in points}
     seen: set[int] = set()
+    y_near = 0.08 * y_span
     for pt in points:
         if id(pt) in seen:
             continue
-        near = [q for q in points if abs(q.x - pt.x) <= 0.25 and abs((q.y or 0.0) - (pt.y or 0.0)) <= 0.08]
+        near = [q for q in points if abs(q.x - pt.x) <= 0.25 and abs((q.y or 0.0) - (pt.y or 0.0)) <= y_near]
         if len(near) < 2:
             continue
         near.sort(key=lambda q: q.x)
@@ -360,13 +371,26 @@ def _label_offsets(points: Sequence[FrontierPoint]) -> dict[int, tuple[float, fl
     return out
 
 
+FRONTIER_Y_TOP = 0.25      # review 2 N3: every P2 and its interval sit near 0, so a 0 to 1 axis hides them
+
+
+def frontier_y_top(points: Sequence[FrontierPoint]) -> float:
+    """Top of the P2 axis: 0.25, or the next multiple of 0.05 above the highest interval end (plus 0.02) when an
+    interval reaches higher, so no point or interval is ever cut."""
+    import math
+
+    hi = max([max(pt.y_hi, pt.y) for pt in points if pt.y_hi == pt.y_hi] or [0.0])
+    return min(1.0, max(FRONTIER_Y_TOP, math.ceil(round((hi + 0.02) / 0.05, 9)) * 0.05))
+
+
 def fig_frontier(points: Sequence[FrontierPoint], out_dir: Path, *, model_label: str) -> FigureFiles:
     """The frontier: x = mean alert load (bootstrap interval), y = P2 (Wilson interval). The NONE reference is a
     grey-toned star (palette black at half opacity). Points are labelled directly."""
     fig, ax = new_figure(SINGLE_COLUMN_IN + 1.6, 3.2)
     rows: list[dict[str, Any]] = []
     fb = iter(_FALLBACK)
-    offsets = _label_offsets(points)
+    y_top = frontier_y_top(points)
+    offsets = _label_offsets(points, y_top)
     for pt in points:
         if pt.reference:
             ax.errorbar([pt.x], [pt.y], xerr=[[pt.x - pt.x_lo], [pt.x_hi - pt.x]], yerr=[[pt.y - pt.y_lo], [pt.y_hi - pt.y]],
@@ -387,7 +411,7 @@ def fig_frontier(points: Sequence[FrontierPoint], out_dir: Path, *, model_label:
                      "y_lo": pt.y_lo, "y_hi": pt.y_hi, "x_cell": pt.x_cell, "y_cell": pt.y_cell, "reference": pt.reference})
     ax.set_xlabel("Mean alert load (violation notes per shift)")
     ax.set_ylabel(P2_Y_LABEL)
-    ax.set_ylim(0, 1)
+    ax.set_ylim(-0.04 * y_top, y_top)      # a small margin below 0 keeps the markers and x-intervals at P2 = 0 in view
     ax.set_xlim(0, 1.25 * max([pt.x_hi for pt in points] or [1.0]))   # room for the fanned labels
     ax.grid(axis="x", alpha=0.12)
     fig.tight_layout()
@@ -425,8 +449,11 @@ def fig_p1_by_cell(rates: Sequence[CellRate], h: HypothesisResults, out_dir: Pat
         ax.set_ylim(0, 1)
         c = contrast[name]
         ok = c.status != "unavailable"
-        ax.set_title(f"{name}: " + (f"{_dec(c.estimate * 100, 1)} pp [{_dec(c.lo * 100, 1)}, {_dec(c.hi * 100, 1)}]"
-                                    if ok else "not available") + f" ({c.status})", fontsize=8)
+        # two short lines per panel (review 2 N3: one long line overlapped the next panel's and was cut at the right
+        # edge), with true minus signs (U+2212), as the tick labels have
+        ax.set_title(f"{name} ({c.status})\n" + (f"{_minus(_dec(c.estimate * 100, 1))} points "
+                                                  f"({_minus(_dec(c.lo * 100, 1))} to {_minus(_dec(c.hi * 100, 1))})"
+                                                  if ok else "not available"), fontsize=8, linespacing=1.25)
     axes[0].set_ylabel("P1 (witness sent a violation note)")
     fig.tight_layout()
     alt = ("P1 by cell for Haiku, the share of witnesses who sent a note about the violation, with cluster-bootstrap 95% "
