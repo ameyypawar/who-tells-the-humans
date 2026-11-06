@@ -99,12 +99,33 @@ _FRONTIER_STYLE = {"CLAIM": ("blue", "o"), "POLICY": ("green", "^"), "RECEIPT": 
 _FALLBACK = (("purple", "v"), ("sky", "P"), ("vermillion", "X"))
 
 
+def _label_offsets(points: Sequence[FrontierPoint]) -> dict[int, tuple[float, float, str]]:
+    """Label offsets (points) and alignment. A point alone gets (6, 6). Points that sit on top of each other (x within
+    0.25 and y within 0.08 of one another, e.g. CLAIM, POLICY and NONE all at zero) are fanned out left, centre and
+    right above the cluster at staggered heights, each tied to its marker by a leader line."""
+    out: dict[int, tuple[float, float, str]] = {id(pt): (6.0, 6.0, "left") for pt in points}
+    seen: set[int] = set()
+    for pt in points:
+        if id(pt) in seen:
+            continue
+        near = [q for q in points if abs(q.x - pt.x) <= 0.25 and abs((q.y or 0.0) - (pt.y or 0.0)) <= 0.08]
+        if len(near) < 2:
+            continue
+        near.sort(key=lambda q: q.x)
+        slots = [(-30.0, 34.0, "right"), (0.0, 62.0, "center"), (30.0, 34.0, "left"), (0.0, 90.0, "center")]
+        for q, slot in zip(near, slots):
+            out[id(q)] = slot
+            seen.add(id(q))
+    return out
+
+
 def fig1b(points: Sequence[FrontierPoint], out_dir: Path, *, model_label: str) -> FigureFiles:
     """The frontier: x = mean alert load (bootstrap interval), y = P2 (Wilson interval). The NONE reference is a
     grey-toned star (palette black at half opacity). Points are labelled directly."""
     fig, ax = new_figure(SINGLE_COLUMN_IN + 1.6, 3.2)
     rows: list[dict[str, Any]] = []
     fb = iter(_FALLBACK)
+    offsets = _label_offsets(points)
     for pt in points:
         if pt.reference:
             ax.errorbar([pt.x], [pt.y], xerr=[[pt.x - pt.x_lo], [pt.x_hi - pt.x]], yerr=[[pt.y - pt.y_lo], [pt.y_hi - pt.y]],
@@ -116,14 +137,17 @@ def fig1b(points: Sequence[FrontierPoint], out_dir: Path, *, model_label: str) -
             ax.errorbar([pt.x], [pt.y], xerr=[[pt.x - pt.x_lo], [pt.x_hi - pt.x]], yerr=[[pt.y - pt.y_lo], [pt.y_hi - pt.y]],
                         linestyle="none", color=col, marker=mk, markersize=6, markerfacecolor=col, capsize=CAP_PT,
                         elinewidth=LINE_PT, capthick=LINE_PT)
-        ax.annotate(pt.label + (" (reference)" if pt.reference else ""), (pt.x, pt.y), xytext=(6, 6),
-                    textcoords="offset points", fontsize=8)
+        dx, dy, ha = offsets[id(pt)]
+        ax.annotate(pt.label + (" (reference)" if pt.reference else ""), (pt.x, pt.y), xytext=(dx, dy),
+                    textcoords="offset points", fontsize=8, ha=ha, va="bottom",
+                    arrowprops=None if (dx, dy) == (6, 6) else dict(arrowstyle="-", color=PALETTE["black"], lw=0.7,
+                                                                    alpha=0.6, shrinkA=1, shrinkB=3))
         rows.append({"model": model_label, "label": pt.label, "x": pt.x, "x_lo": pt.x_lo, "x_hi": pt.x_hi, "y": pt.y,
                      "y_lo": pt.y_lo, "y_hi": pt.y_hi, "x_cell": pt.x_cell, "y_cell": pt.y_cell, "reference": pt.reference})
     ax.set_xlabel("Mean alert load (qualifying notes per episode)")
     ax.set_ylabel(P2_Y_LABEL)
     ax.set_ylim(0, 1)
-    ax.set_xlim(left=0)
+    ax.set_xlim(0, 1.25 * max([pt.x_hi for pt in points] or [1.0]))   # room for the fanned labels
     ax.grid(axis="x", alpha=0.12)
     fig.tight_layout()
     parts = [f"{pt.label}{' (reference)' if pt.reference else ''}: alert load {_dec(pt.x, 2)} ({_dec(pt.x_lo, 2)} to "
