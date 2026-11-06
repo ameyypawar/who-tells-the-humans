@@ -1,11 +1,12 @@
 % cited.tex: the ONLY hand-entered numbers. Numbers from other people's work, never from our logs.
 % Each macro: source, page, verified=no|yes. check_paper --final requires verified=yes everywhere.
-% Values were taken from the research notes (not from the primary PDFs) and are unverified.
-\newcommand{\citedIncidentMonthYear}{July 2026}      % source: METR report (greenblatt2026metr), p.3; verified=no
-\newcommand{\citedMetrAgents}{1{,}200}               % source: METR p.3, p.5 (dataset 1,206); verified=no
-\newcommand{\citedMetrAttackers}{700}                % source: METR p.3, p.7 (688 verified); verified=no
-\newcommand{\citedMetrTranscripts}{1{,}300}          % source: METR pp.22--24 (note R/15); verified=no
-\newcommand{\citedMetrConsidered}{3--6}              % source: METR p.62, p.76 ("3-6 actual examples"); verified=no
-\newcommand{\citedMetrHits}{10}                      % source: METR p.62 fn100 ("10 hits ... false positives"); verified=no
-\newcommand{\citedFullerExclStudyOne}{68\%}          % source: Fuller et al. p.3 (Haiku sessions left out, Study 1); verified=no
-\newcommand{\citedFullerExclStudyTwo}{48\%}          % source: Fuller et al. p.5, Table J5 (Study 2); verified=no
+% Checked against the primary PDFs by the citation verifier (research/50, 2026-11-06, section D). METR page numbers are
+% PDF pages (they equal the printed pages); Fuller pages are printed pages (the PDF page is the printed page + 1).
+\newcommand{\citedIncidentMonthYear}{July 2026}      % source: METR report (greenblatt2026metr), p.2 (also p.5); verified=yes (ai-verifier 2026-11-06, primary PDF p.2)
+\newcommand{\citedMetrAgents}{1{,}200}               % source: METR p.3, p.5, p.6 ("Roughly 1200 agents"); verified=yes (ai-verifier 2026-11-06, primary PDF p.3)
+\newcommand{\citedMetrAttackers}{700}                % source: METR p.3, p.7 ("700 went on to participate"); verified=yes (ai-verifier 2026-11-06, primary PDF p.3)
+\newcommand{\citedMetrTranscripts}{1{,}300}          % source: METR p.3, p.22, p.24 ("approximately 1300 transcripts"); verified=yes (ai-verifier 2026-11-06, primary PDF p.24)
+\newcommand{\citedMetrConsidered}{3--6}              % source: METR p.62, p.76 ("3-6 actual examples"); verified=yes (ai-verifier 2026-11-06, primary PDF p.62)
+\newcommand{\citedMetrHits}{10}                      % source: METR p.62 fn 100 ("10 hits ... false positives"); verified=yes (ai-verifier 2026-11-06, primary PDF p.62)
+\newcommand{\citedFullerExclStudyOne}{68\%}          % source: Fuller, 111 of 164 Haiku sessions left out of Study 1 = 67.7% (printed pp.19, 42; never printed as a percentage); verified=yes (ai-verifier 2026-11-06, primary PDF printed p.42)
+\newcommand{\citedFullerExclStudyTwo}{48\%}          % source: Fuller, "71 of 147 Haiku sessions (48%)" left out of Study 2 (printed p.7; Table J5 p.36; counts p.5); verified=yes (ai-verifier 2026-11-06, primary PDF printed p.7)
