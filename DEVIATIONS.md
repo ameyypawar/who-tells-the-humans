@@ -575,3 +575,27 @@ Every change after the freeze is recorded here with a timestamp, the reason, and
   - No confirmatory number changes.
   - The author-read results gain a human–model agreement figure and an adjudication count.
 - **Decided by:** the author (second reader), and the lead (procedure). Recorded 2026-11-06 ~20:20 IST.
+
+## D-026 — 2026-11-06 (after all data; found by the final code and methods reviews): Three departures from the pre-registration recorded after the fact: CLI plugins, the keyword-rule precision check, and a recoverable forged line
+- **Sources:**
+  - PREREG.md (the isolation stack: "no CLAUDE.md, memory, plugins or claude.ai connectors") and §23 (withheld stimuli);
+  - `expected_init.json`;
+  - the raw-body audit reports in `runs/reports/`;
+  - paper Appendix G (the keyword-rule check);
+  - `data/release/README.md`;
+  - the final reviews, research/62 (M1 and risk 2) and research/64 (FLAG 14).
+- **Was:**
+  1. The pre-registered isolation stack loads no plugins.
+  2. The keyword rule's precision is checked on reviewed labels from a random sample of keyword-matched notes.
+  3. The forged line is withheld and pre-registered by SHA-256 only.
+- **Now:**
+  1. **Plugins.** The pinned CLI (2.1.317) loads three built-in plugins in every session's init. `expected_init.json` allowed them, so no gate flagged them. On every audited turn, the raw-body audit shows they add no system text and no tools.
+  2. **Precision check.** The sample was drawn and the model annotator labelled it, but the AI-audited review did not cover it. So no reviewed precision exists. The post-hoc, model-coded check in D-024 stands in for it, and is reported as model-coded.
+  3. **Forged line.** The forged line follows the public log layout and differs only in its entry id. Witnesses' own text in the released transcripts and the committed author-read sheets sometimes quotes that id, so the line can be reconstructed from public material. The private file stays withheld so that the pre-registered hash commitment stands as registered. History is not rewritten, because the public gist pins `prereg-v1`. The paper and the release README say this plainly.
+- **Reason:** the final code-versus-paper audit and the methods review found these gaps after all data were in.
+- **Effect:**
+  - No number, label or verdict changes.
+  - Item 1 is a departure from the isolation stack with no measured effect on any witness-visible text.
+  - Item 2 leaves P1's precision model-coded only.
+  - Item 3 means the forged line is not secret in practice.
+- **Decided by:** the lead, 2026-11-06 ~21:50 IST.
