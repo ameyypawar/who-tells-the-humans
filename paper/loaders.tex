@@ -1,0 +1,71 @@
+% loaders.tex: number sources, fallback chain, figure/table guards, watermark (plan 49 section 1.4).
+% One source per printed number:
+%   results     generated/analysis/macros.tex | macros.provisional.tex | generated/placeholder/macros.placeholder.tex
+%   design      generated/design/design.tex, audit.tex        (\wtthDesign..., \wtthAudit...)
+%   stimuli     generated/design/stimuli.tex                  (\wtthStim...)
+%   cited       cited.tex                                     (\cited..., numbers from other works only)
+
+% ---- helpers ------------------------------------------------------------------------------------------------
+\newcommand{\wtthRequire}[1]{\InputIfFileExists{#1}{}{%
+  \PackageError{wtth}{Required generated file #1 is missing}{Run paper/build.sh (it runs the generators first).}}}
+
+% Grey box for a result macro that has no data yet (written by tools/make_placeholders.py).
+\newcommand{\wtthPH}[1]{{\setlength{\fboxsep}{1pt}\colorbox{black!15}{\ttfamily\scriptsize\detokenize{#1}}}}
+
+% Visible stub marker for text the writer has not written yet. check_paper fails a FINAL build while any remains.
+\newcommand{\wtthStub}[1]{\par{\color{red!60!black}\small[STUB: #1]}\par}
+
+% ---- results macros: first existing file wins; never two (a duplicate \newcommand would fail, by design) ------
+\IfFileExists{generated/analysis/macros.tex}{%
+  \input{generated/analysis/macros.tex}%
+}{%
+  \IfFileExists{generated/analysis/macros.provisional.tex}{%
+    \input{generated/analysis/macros.provisional.tex}%
+  }{%
+    \input{generated/placeholder/macros.placeholder.tex}%
+  }%
+}
+
+% ---- design, stimuli, audit: always loaded ------------------------------------------------------------------
+\wtthRequire{generated/design/design.tex}
+\wtthRequire{generated/design/stimuli.tex}
+\wtthRequire{generated/design/audit.tex}
+
+% ---- status ----
+\newif\ifwtthFinal
+\ifdefstring{\wtthStatus}{FINAL}{\wtthFinaltrue}{\wtthFinalfalse}
+
+% ---- figure guard: \wtthFig{path}{width}; an empty width means natural size -----------------------------------
+\newcommand{\wtthMissingBox}[3]{%
+  \ifblank{#2}{\def\wtthPHwidth{0.7\linewidth}}{\def\wtthPHwidth{#2}}%
+  \par\noindent\fbox{\parbox[c][#3\linewidth][c]{\dimexpr\wtthPHwidth-2\fboxsep-2\fboxrule\relax}{%
+    \centering\footnotesize\textbf{[MISSING FILE]}\\[2pt]\texttt{\detokenize{#1}}}}\par}
+\newcommand{\wtthFig}[2]{%
+  \IfFileExists{#1}{%
+    \ifblank{#2}{\includegraphics{#1}}{\includegraphics[width=#2]{#1}}%
+  }{\wtthMissingBox{#1}{#2}{0.3}}}
+
+% ---- table guard: \wtthTab{path}; bare tabular scaled down to the text width when wider -------------------------
+\newcommand{\wtthTab}[1]{%
+  \IfFileExists{#1}{\adjustbox{max width=\linewidth}{\input{#1}}}{\wtthMissingBox{#1}{\linewidth}{0.12}}}
+
+% ---- optional text that exists only when a macro exists (R21: cells missing under MVP, Sonnet cut) -------------
+\newcommand{\wtthIfDef}[3]{\ifcsdef{#1}{#2}{#3}}
+
+% ---- watermark on every page of a non-FINAL build --------------------------------------------------------------
+\AddToHook{shipout/background}{%
+  \ifwtthFinal\else
+    \put(0.5\paperwidth,-0.5\paperheight){\makebox(0,0){\rotatebox{52}{\scalebox{1}{%
+      \color{red!35}\fontsize{26}{28}\selectfont\bfseries PROVISIONAL / PLACEHOLDER --- NOT FOR SUBMISSION}}}}%
+  \fi}
+
+% ---- conditional on a flag macro ------------------------------------------------------------------------------
+% \wtthIfEq{\wtthFlag}{value}{text}: text only if the flag reads exactly `value'. \wtthIfYes and \wtthIfNo are the
+% yes/no cases. In a PLACEHOLDER build every conditional text is shown in grey brackets, so the author can read it.
+\newif\ifwtthPlaceholder
+\ifdefstring{\wtthStatus}{PLACEHOLDER}{\wtthPlaceholdertrue}{\wtthPlaceholderfalse}
+\newcommand{\wtthIfEq}[3]{%
+  \ifwtthPlaceholder{\color{black!55}[if {\ttfamily\scriptsize\detokenize{#1}} = #2: }#3{\color{black!55}]}%
+  \else\ifdef{#1}{\ifdefstring{#1}{#2}{#3}{}}{}\fi}
+\newcommand{\wtthIfYes}[2]{\wtthIfEq{#1}{yes}{#2}}
+\newcommand{\wtthIfNo}[2]{\wtthIfEq{#1}{no}{#2}}

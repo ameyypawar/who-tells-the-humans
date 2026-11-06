@@ -1,0 +1,62 @@
+% preamble.tex: packages and layout. Engine: tectonic (XeTeX). No shell escape, no biber.
+% Allowed packages only (plan 49 section 1.3).
+\usepackage{fontspec}                 % default Latin Modern
+\usepackage[letterpaper,margin=1in]{geometry}
+\usepackage{microtype}
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage[table]{xcolor}
+\usepackage{booktabs,array,tabularx}
+\usepackage{adjustbox}
+\usepackage{caption,subcaption}
+\usepackage{enumitem}
+\usepackage{fvextra}                   % fancyvrb + breaklines; verbatim prompts and Box 1 (UTF-8 is fine under XeTeX)
+\usepackage{etoolbox}                 % branch logic
+\usepackage[numbers,sort&compress]{natbib}
+\usepackage{xurl}
+\usepackage{hyperref}                 % loaded last
+\hypersetup{colorlinks=true,linkcolor=blue!50!black,citecolor=blue!50!black,urlcolor=blue!50!black,
+  pdftitle={Who Tells the Humans? Phantom Escalation and Channel-Written Receipts in Agent Swarms}}
+
+% ---- layout ----
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.5ex plus 0.2ex}
+\setlist{nosep,leftmargin=*}
+% run-in \paragraph headings with a small gap above (the article default of 3.25ex costs about 0.3 page in sections 1 to 3)
+\makeatletter
+\renewcommand\paragraph{\@startsection{paragraph}{4}{\z@}{0.9ex \@plus 0.3ex \@minus 0.2ex}{-1em}{\normalfont\normalsize\bfseries}}
+\makeatother
+\captionsetup{font=small,labelfont=bf}
+\renewcommand{\topfraction}{0.9}
+\renewcommand{\bottomfraction}{0.7}
+\renewcommand{\textfraction}{0.1}
+\renewcommand{\floatpagefraction}{0.8}
+\setcounter{topnumber}{3}
+\setcounter{totalnumber}{5}
+
+% ---- cell names: sans-serif, matching the figures (never break at the hyphen) ----
+\newcommand{\cell}[1]{\mbox{\textsf{\small #1}}}
+
+% ---- marks for comparison tables (Table 3): amssymb checkmark ----
+\newcommand{\wtthYes}{\ensuremath{\checkmark}}
+\newcommand{\wtthNo}{\ensuremath{\times}}
+\newcommand{\wtthPart}{\ensuremath{\circ}}
+\newcommand{\wtthNR}{---}
+
+% ---- Box 1 sits in a figure float but is captioned and numbered as a box: \captionsetup{type=boxfloat} inside it ----
+\DeclareCaptionType[fileext=lob]{boxfloat}[Box][List of Boxes]
+
+% ---- P2-prime (``never told by any route''), typeset the same way everywhere ----
+\newcommand{\Ptwop}{P2\ensuremath{'}}
+% ---- labels that contain digits, kept out of the section sources (bare-digit lint): estimands and A2A ----
+\newcommand{\Done}{\ensuremath{\Delta_1}}
+\newcommand{\Dtwo}{\ensuremath{\Delta_2}}
+\newcommand{\Dthree}{\ensuremath{\Delta_3}}
+\newcommand{\AtwoA}{A2A}
+\newcommand{\AGtwo}{AG2}
+\newcommand{\DebOne}{D1}   % debrief question labels
+\newcommand{\DebTwo}{D2}
+
+% ---- verbatim stimulus helpers ----
+\DefineVerbatimEnvironment{wtthverb}{Verbatim}{fontsize=\footnotesize,breaklines=true,breakanywhere=true}
+\newsavebox{\wtthbox}   % holds Box 1 (verbatim cannot sit in a \fbox argument)

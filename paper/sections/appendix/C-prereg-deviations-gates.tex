@@ -1,0 +1,109 @@
+% appendix C (plan 49 section 2.5; PREREG sections 14 and 17 name it for the gate log and the pre-registration diff).
+% [W] structure tonight; [D] the run dates and gate rows come from generated macros and tables after the data.
+\section{Pre-registration, deviations and gates}\label{app:prereg}
+
+\subsection{Timeline}\label{app:timeline}
+% Run-phase dates (core, Sonnet, judge) are results macros the analysis lead adds (plan 49 section 2.7 item 7).
+\begin{center}\footnotesize
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{3.3in}>{\raggedright\arraybackslash}p{1.6in}>{\raggedright\arraybackslash}p{1.3in}@{}}
+\toprule
+Event & When & Record \\
+\midrule
+Pre-registration content frozen (PREREG v1) & \wtthDesignPreregFrozenDate & PREREG.md header \\
+Tag \texttt{prereg-v1} (commit \texttt{\wtthDesignPreregTagCommit}), message holds the SHA-256 of PREREG.md & \wtthDesignPreregTagDate & git tag \\
+The same SHA-256 posted in a public gist & \wtthDesignPreregGistDate & [A: gist URL] \\
+Sprint start & \wtthDesignTZero & README; D-004 \\
+Deviations D-001 to \wtthDesignDeviationsLast, each before it took effect & Table~\ref{tab:deviations} & DEVIATIONS.md \\
+Void G0 run, its rerun on fresh pilot seeds, G1 and G2 & Table~\ref{tab:gatelog} & gate log; D-012 \\
+Tag \texttt{frozen-v1} (commit \texttt{\wtthDesignFrozenTagCommit}) & before the core & git tag \\
+Haiku core & \wtthOpsCoreStart{} to \wtthOpsCoreEnd & run manifest \\
+Analysis snapshot & \texttt{\wtthSnapshotShaShort} & \texttt{numbers.json} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection{Preexisting work}\label{app:preexisting}
+The pre-registration's list of preexisting work, word for word:
+\input{generated/design/prereg_preexisting}
+Six later research notes (a setup check, the final prior-art sweep, the toolchain rehearsal, two design reviews and the build specification) were also last modified before the sprint started.
+[A: approve extending the list to them here and in the README, or say why they are covered.]
+
+\subsection{Deviations}\label{app:deviations}
+Each entry in \texttt{DEVIATIONS.md} gives what changed, why, who decided and which analyses it touches; every one was written before it took effect and before any confirmatory data.
+None changes the cells, hypotheses, tests or the keyword rule.
+Three touch text a witness sees, each identically in every cell: the input schemas the pre-registration left open (D-005), rendering formats it left open (D-006), and the server name, which sets the prefix of every tool name (D-012).
+\begin{table}[h]
+\centering\footnotesize
+\input{generated/design/table_deviations}
+\caption{\textbf{Deviations from PREREG v1.} Timing as recorded in each entry's heading.}
+\label{tab:deviations}
+\end{table}
+
+\subsection{Pre-registered open items, as resolved}\label{app:tbd}
+The pre-registration listed the values still open at freeze and where each would be set.
+\begin{center}\footnotesize
+\begin{tabular}{@{}p{2.2in}p{2.7in}l@{}}
+\toprule
+Item & Resolved value & Record \\
+\midrule
+Frozen clarity level F & \wtthGateFrozenLevel & G1, gate log \\
+Sprint start & \wtthDesignTZero & D-004 \\
+Full or lean tier & larger than full: \wtthDesignCoreEpisodes{} planned Haiku shifts & D-003 \\
+Pinned model ids & \wtthDesignModelHaiku, \wtthDesignModelSonnet & configuration \\
+Pinned CLI version & \wtthDesignCliVersion & D-002 \\
+Step cap & \wtthOpsStepCap & G0, D-006 \\
+Concurrency K & up to \wtthOpsKMax{} processes & D-005 \\
+Post, message and subject caps (characters) & \wtthDesignLenPost, \wtthDesignLenMessage{} and \wtthDesignLenSubject & G0, D-006 \\
+Judge model & \wtthDesignModelJudge & D-007 \\
+Bootstrap resamples & \wtthDesignBootstrapResamples & D-011 \\
+Level for the Sonnet subset & the frozen Haiku level & configuration \\
+Cell order inside a seed & one fixed pseudo-random permutation & D-008 \\
+Pivot addendum, backup scenario & needed only if a gate called for them: \wtthGateDecision & gate log \\
+Hashes of the pre-registered files & SHA-256 register in the configuration & Appendix~\ref{app:withheld} \\
+Model behind Fabricated Authority's one-sentence result & pooled over two models & research notes \\
+Name split for Emad Eldin & [A: confirm] & references \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection{Gate log}\label{app:gates}
+Every row is a pilot; pilot seeds are never pooled with confirmatory data.
+G0 checked integrity on live shifts: the raw-body audit, the init and result assertions, the reply bytes, exposure to the stimulus of round 2, the share of well-formed calls and the refusal rate (limit \wtthDesignGZeroRefusal\%).
+G1 froze the clarity level from P1 in \cell{NONE} (band \wtthDesignGOneBandLo{} to \wtthDesignGOneBandHi\%, ceiling \wtthDesignGOneCeiling\%), and G2 compared \cell{NEG} with \cell{POS} (pass at a gap of \wtthDesignGTwoGap{} points or more).
+The first G0 run was void because the CLI refused to load the server under its pre-registered name (D-012); it was rerun on fresh pilot seeds, and both runs are listed.
+\begin{table}[h]
+\centering\footnotesize
+\wtthTab{generated/analysis/tables/table_gate_log.tex}
+\caption{\textbf{Gate log.} Pilot runs only.}
+\label{tab:gatelog}
+\end{table}
+
+\subsection{Integrity: bugs caught before data}\label{app:integrity}
+Before any confirmatory data, separate Claude agents, each in a fresh context, reviewed the design and the code: design reviews before the build, a second code review of the harness, and a review of the judging and analysis code.
+These were model reviews, not human code review.
+They found these validity bugs, all fixed before any confirmatory data.
+\begin{enumerate}
+\item \textbf{Refusals rerun.} The pinned CLI reports a refusal as a successful result with an error flag and a refusal stop reason, a shape the test client never produced. Real refusals would have been classified as technical failures and rerun, which resamples on the outcome. They are now data and never rerun (D-009).
+\item \textbf{An injected message.} The CLI retries a refused turn once by itself and shows the model a message saying that its previous response was stopped by a safety classifier. That text is not part of the pre-registered stimulus, and the retry hides the refusal. The retry is disabled in every turn (D-009).
+\item \textbf{False stops from model text.} Clipped turns had their model text scanned for API-error words, and refund-desk words such as ``payment'' would have caused false stops and reruns. Clips are now classified from the result record alone (D-009).
+\item \textbf{Floating-point verdicts.} Rates are ratios of integers, and floating-point subtraction left about half of the mathematically zero difference-in-differences slightly above or below zero. This could have rejected H2 at an interval endpoint of exactly zero, and it licensed the null claim at an upper bound of exactly \wtthProtocolMargin{} points, which the pre-registration forbids. The decision layer now uses exact arithmetic.
+\item \textbf{Wrapped replies.} The tool framework wrapped every reply in JSON instead of the pre-registered bytes. The server now returns the bare reply, and G0 checks the bytes the model sees (D-005).
+\end{enumerate}
+
+\subsection{Recorded predictions and power}\label{app:predictions}
+The pre-registration recorded these predictions before any run, from evidence on an earlier Claude generation (\texttt{claude-haiku-4-5}) that may not carry over.
+Each check is descriptive.
+\begin{center}\footnotesize
+\begin{tabular}{@{}p{4.1in}l@{}}
+\toprule
+Prediction & Check \\
+\midrule
+Stand-down: P1 in \cell{CLAIM} below \cell{NONE} by \wtthDesignPredStandDownLo{} to \wtthDesignPredStandDownHi{} points & \wtthHaikuPredDeltaOneOneFiveToThreeZeroPoints \\
+Receipts: P1 in \cell{NO-RECEIPT} within \wtthDesignPredReceiptsWithin{} points of \cell{NONE-R} & \wtthHaikuPredReceiptsWithinOneZeroPoints \\
+\cell{POLICY}, protection: P1 between \cell{CLAIM} and \cell{NONE} & \wtthHaikuPredPolicyBetweenClaimAndNone \\
+\cell{POLICY}, alert load: higher than \cell{RECEIPT} when the claim is true & \wtthHaikuPredPolicyAlertLoadAboveReceipt \\
+\bottomrule
+\end{tabular}
+\end{center}
+Recomputed at the frozen level, the effects detectable at \wtthDesignPowerPct\% power are \wtthHaikuPowerHOneMDE, \wtthHaikuPowerHTwoMDE{} and \wtthHaikuPowerHThreeMDE{} points for H1 to H3 (assumed intra-class correlation \wtthHaikuPowerRho, base rate \wtthHaikuPowerP).
+Under a true stand-down of zero, the H1 null rule is met with probability \wtthHaikuPowerHOnePNullDZero.

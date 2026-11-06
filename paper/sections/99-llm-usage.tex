@@ -1,0 +1,34 @@
+% sections/99-llm-usage.tex (plan 49 section 2.6 item 4; template order: last, after the appendices).
+% AUTHOR TO FINALIZE: resolve every [A: ...] bracket. Do not soften the wording of (d). This is the one public artifact
+% where AI use must be disclosed in full (plan 49 section 4.1 item 3).
+\section*{LLM Usage Statement}
+\addcontentsline{toc}{section}{LLM Usage Statement}
+The author designed and directed this study and made every decision recorded in the pre-registration and the deviations log.
+Claude models (Anthropic) were used through Claude Code, as follows.
+
+\paragraph{(a) Research and design support.}
+Claude agents compiled the pre-sprint notes on the literature and prior art, and the framework audit (Appendix~\ref{app:audit}).
+Claude drafted the pre-registration and the witness-visible prompts; the author edited and approved them.
+The stimuli are therefore Claude-written text shown to a Claude subject (Appendix~\ref{app:limits}).
+
+\paragraph{(b) Code.}
+Claude wrote most of the harness, the judge pipeline and the analysis code.
+Before any confirmatory data, separate Claude agents, each in a fresh context, reviewed the code and the design.
+These were model reviews, not human code review; the bugs they found are listed in Appendix~\ref{app:integrity}.
+
+\paragraph{(c) Running the study.}
+Claude agents launched and monitored the gates and the runs under a gate playbook that the author had pre-authorised.
+Anything outside the playbook stopped the run for the author's decision.
+
+\paragraph{(d) Measurement.}
+\wtthDesignModelHaikuName{} and \wtthDesignModelSonnetName{} are the subjects, and \wtthDesignModelJudgeName{} is the LLM judge.
+A separate \wtthDesignModelAnnotatorName{} instance proposed labels for the review queues without seeing the judge's labels.
+The author approved or corrected each proposed label while seeing it.
+We report these as model-proposed, author-reviewed labels.
+They are not blind or independent human labels, and agreement between the judge and the proposer is a model--model $\kappa$.
+[A: if the optional blind sample (D-011) ran: ``The author also labelled \wtthBlindN{} items without seeing any model label; only these are human labels.'' If not: ``No blind human reliability check was done.'']
+
+\paragraph{(e) Writing.}
+Claude drafted most of this paper's text from the author's outline and the generated results.
+The author reviewed, edited and approved all of it [A: name the sections you rewrote yourself].
+No result number was typed by hand: results come from generated macros, and the numbers cited from other work were checked against their sources by [A: the author].

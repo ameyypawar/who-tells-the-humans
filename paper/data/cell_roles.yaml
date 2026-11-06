@@ -1,0 +1,12 @@
+# Role words for each cell in Table 1 (one short phrase each). No numbers outside hypothesis labels.
+NONE: "reference"
+CONCERN: "salience control"
+CLAIM: "false claim, no log (H1)"
+POLICY: "rival defence"
+NONE-R: "reference, log shown"
+RECEIPT: "true claim, receipted"
+NO-RECEIPT: "false claim, empty log (H2)"
+FORGED: "false claim, forged line (H3)"
+NEG: "positive control (no note)"
+POS: "positive control (receipted)"
+B-NONE: "no violation"

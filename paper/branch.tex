@@ -1,0 +1,124 @@
+% branch.tex: maps generated verdict strings to branch codes and inputs the matching branch file (plan 49 section 1.5).
+% The verdict vocabulary is fixed in wtth/analysis/numbers.py (VERDICTS). Nothing here types a verdict word into prose:
+% branch files hold context and interpretation only; verdict sentences come from \wtthHaiku...Sentence macros.
+%
+% Codes
+%   h1 : S rejected | O rejected in the opposite direction | N not rejected + "no meaningful stand-down" | I not rejected + "inconclusive"
+%   h2, h3 : S | O | NR not rejected | D descriptive
+%   X  : anything else (macro undefined, placeholder, unavailable ...)
+% A FINAL build with any X stops with a \PackageError. A non-final build with X, or with \wtthShowAllBranchestrue,
+% inputs every variant of the family, each under a label, so the author can read all variants.
+
+\newif\ifwtthShowAllBranches
+% \wtthShowAllBranchestrue   % uncomment (or pass via build.sh --all-branches) to print every variant
+
+% ---- single verdict -> code ---------------------------------------------------------------------------------
+% \wtthSetCode{<code macro>}{<verdict macro>}
+\newcommand{\wtthSetStdCode}[2]{%
+  \ifdef{#2}{%
+    \ifdefstring{#2}{rejected}{\def#1{S}}{%
+    \ifdefstring{#2}{rejected in the opposite direction}{\def#1{O}}{%
+    \ifdefstring{#2}{not rejected}{\def#1{NR}}{%
+    \ifdefstring{#2}{descriptive}{\def#1{D}}{\def#1{X}}}}}%
+  }{\def#1{X}}}
+
+\def\wtthBcodeHOne{X}
+\ifdef{\wtthHaikuHOneVerdict}{%
+  \ifdefstring{\wtthHaikuHOneVerdict}{rejected}{\def\wtthBcodeHOne{S}}{%
+  \ifdefstring{\wtthHaikuHOneVerdict}{rejected in the opposite direction}{\def\wtthBcodeHOne{O}}{%
+  \ifdefstring{\wtthHaikuHOneVerdict}{not rejected}{%
+    \ifdef{\wtthHaikuHOneNull}{%
+      \ifdefstring{\wtthHaikuHOneNull}{no meaningful stand-down}{\def\wtthBcodeHOne{N}}{%
+      \ifdefstring{\wtthHaikuHOneNull}{inconclusive}{\def\wtthBcodeHOne{I}}{}}%
+    }{}%
+  }{}}}%
+}{}
+\def\wtthBcodeHTwo{X}\wtthSetStdCode{\wtthBcodeHTwo}{\wtthHaikuHTwoVerdict}
+\def\wtthBcodeHThree{X}\wtthSetStdCode{\wtthBcodeHThree}{\wtthHaikuHThreeVerdict}
+
+% ---- combination code (the discussion story of plan 49 section 5.1): SSS SSNR SSO SNR SO O N I -------------------
+% H1 S: H2 S -> "SS"+H3 code (S, NR, O) ; H2 NR -> SNR ; H2 O -> SO.  H1 O, N, I -> that code (H2, H3 are descriptive).
+\def\wtthBcodeCombo{X}
+\ifdefstring{\wtthBcodeHOne}{S}{%
+  \ifdefstring{\wtthBcodeHTwo}{S}{%
+    \ifdefstring{\wtthBcodeHThree}{S}{\def\wtthBcodeCombo{SSS}}{%
+    \ifdefstring{\wtthBcodeHThree}{NR}{\def\wtthBcodeCombo{SSNR}}{%
+    \ifdefstring{\wtthBcodeHThree}{O}{\def\wtthBcodeCombo{SSO}}{}}}%
+  }{%
+    \ifdefstring{\wtthBcodeHTwo}{NR}{\def\wtthBcodeCombo{SNR}}{%
+    \ifdefstring{\wtthBcodeHTwo}{O}{\def\wtthBcodeCombo{SO}}{}}%
+  }%
+}{%
+  \ifdefstring{\wtthBcodeHOne}{O}{\def\wtthBcodeCombo{O}}{%
+  \ifdefstring{\wtthBcodeHOne}{N}{\def\wtthBcodeCombo{N}}{%
+  \ifdefstring{\wtthBcodeHOne}{I}{\def\wtthBcodeCombo{I}}{}}}%
+}
+
+% ---- frontier code (Fig. 1b / section 4.4): safer flag and cheaper flag, each yes or no --------------------------
+\def\wtthBcodeFrontier{X}
+\newcommand{\wtthFrontierPart}[2]{% #1 = macro to set, #2 = flag macro
+  \ifdef{#2}{%
+    \ifdefstring{#2}{yes}{\def#1{yes}}{\ifdefstring{#2}{no}{\def#1{no}}{\def#1{X}}}%
+  }{\def#1{X}}}
+\wtthFrontierPart{\wtthBsafer}{\wtthHaikuFrontierSaferExcl}
+\wtthFrontierPart{\wtthBcheaper}{\wtthHaikuFrontierCheaperExcl}
+\ifboolexpr{test{\ifdefstring{\wtthBsafer}{X}} or test{\ifdefstring{\wtthBcheaper}{X}}}{}{%
+  \edef\wtthBcodeFrontier{\wtthBsafer-\wtthBcheaper}}
+
+% ---- families: name -> kind, kind -> variants ----------------------------------------------------------------
+% kinds: h1 h2 h3 combo frontier
+\newcommand{\wtthRegisterBranch}[2]{\csdef{wtthBK@#1}{#2}}
+\csdef{wtthBV@h1}{S,O,N,I}
+\csdef{wtthBV@h2}{S,O,NR,D}
+\csdef{wtthBV@h3}{S,O,NR,D}
+\csdef{wtthBV@combo}{SSS,SSNR,SSO,SNR,SO,O,N,I}
+\csdef{wtthBV@frontier}{yes-yes,yes-no,no-yes,no-no}
+\csdef{wtthBC@h1}{\wtthBcodeHOne}
+\csdef{wtthBC@h2}{\wtthBcodeHTwo}
+\csdef{wtthBC@h3}{\wtthBcodeHThree}
+\csdef{wtthBC@combo}{\wtthBcodeCombo}
+\csdef{wtthBC@frontier}{\wtthBcodeFrontier}
+
+\wtthRegisterBranch{h1}{h1}
+\wtthRegisterBranch{abstract-h1}{h1}
+\wtthRegisterBranch{contrib-h1}{h1}
+\wtthRegisterBranch{h2}{h2}
+\wtthRegisterBranch{abstract-h2}{h2}
+\wtthRegisterBranch{h3}{h3}
+\wtthRegisterBranch{abstract-h3}{h3}
+\wtthRegisterBranch{contrib-h23}{combo}
+\wtthRegisterBranch{disc}{combo}
+\wtthRegisterBranch{concl}{combo}
+\wtthRegisterBranch{fig1}{combo}
+\wtthRegisterBranch{frontier}{frontier}
+
+% ---- inputs ---------------------------------------------------------------------------------------------------
+\newcommand{\wtthBranchLabel}[2]{%
+  \par\medskip\noindent{\color{blue!60!black}\rule{\linewidth}{0.4pt}\\\footnotesize\textsf{BRANCH VARIANT \detokenize{#1}\,=\,\detokenize{#2}}}\par\nopagebreak}
+
+% one file: prefix-code.tex ; a missing file is an error in a FINAL build and a visible note otherwise
+\newcommand{\wtthInputOne}[2]{%
+  \InputIfFileExists{sections/branches/#1-#2.tex}{}{%
+    \ifwtthFinal\PackageError{wtth}{Branch file sections/branches/#1-#2.tex is missing}{}%
+    \else\wtthStub{missing branch file #1-#2}\fi}}
+
+\newcommand{\wtthInputBranch}[1]{%
+  \ifcsdef{wtthBK@#1}{%
+    \edef\wtthBkind{\csuse{wtthBK@#1}}%
+    \edef\wtthBcode{\csuse{wtthBC@\wtthBkind}}%
+    \edef\wtthBvariants{\csuse{wtthBV@\wtthBkind}}%
+    \ifwtthFinal
+      \ifdefstring{\wtthBcode}{X}{\PackageError{wtth}{Branch code X for family #1 in a FINAL build}{A verdict or flag macro is missing or outside the fixed vocabulary (numbers.py VERDICTS). Fix the analysis export, never the branch.}}{}%
+      \wtthInputOne{#1}{\wtthBcode}%
+    \else
+      \ifwtthShowAllBranches
+        \wtthShowAllOf{#1}%
+      \else
+        \ifdefstring{\wtthBcode}{X}{\wtthShowAllOf{#1}}{\wtthInputOne{#1}{\wtthBcode}}%
+      \fi
+    \fi
+  }{\PackageError{wtth}{Unknown branch family #1}{Register it in branch.tex.}}}
+
+\newcommand{\wtthShowAllOf}[1]{%
+  \def\do##1{\wtthBranchLabel{#1}{##1}\wtthInputOne{#1}{##1}}%
+  \expandafter\docsvlist\expandafter{\wtthBvariants}}

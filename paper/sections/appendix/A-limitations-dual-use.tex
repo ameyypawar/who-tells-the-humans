@@ -1,0 +1,82 @@
+% appendix A (plan 49 section 2.6 item 1). Never cut (PREREG section 18). Text tonight; numbers come from macros.
+\section{Limitations and Dual-Use / Ethical Considerations}\label{app:limits}
+
+\subsection{Limitations: what the results do and do not establish}
+\paragraph{Models.}
+Every confirmatory test uses \wtthDesignModelHaikuName{} at effort \wtthDesignEffort, with no temperature control.
+The \wtthDesignModelSonnetName{} subset is exploratory.
+We claim nothing about other model families, and evidence from older Claude models may not carry over.
+
+\paragraph{Scenario.}
+The design has one fictional refund desk and one kind of violation (splitting a refund under an approval limit), one frozen clarity level (\wtthGateFrozenLevel), a claim in three paraphrases, a scripted claimant that never replies, and \wtthDesignLiveWitnessesWord{} live witnesses per shift.
+We did not vary group size, so the shift-level outcome (P2) speaks only to teams of this size.
+
+\paragraph{Ceiling.}
+Gate G1 took the pre-registered ceiling branch: P1 in the pilot \cell{NONE} shifts was \wtthGateGOnePOneAtFPct\% at the frozen level, \wtthGateFrozenLevel, above the \wtthDesignGOneCeiling\% ceiling (D-013).
+With reporting this high when no claim is made, a stand-down shows as a drop from near the ceiling, the H1 null rule is easier to meet, and the results speak to a violation that witnesses readily report.
+
+\paragraph{Interface.}
+Each witness turn is a stateless call that sees the whole board.
+The escalation tool is a general feedback channel, not a misconduct hotline.
+The operator is a stub that never answers, so witnesses never learn whether anything happened.
+Agents with memory, pull-based tools or a responsive operator may behave differently.
+
+\paragraph{Receipts.}
+Our log is a harness-rendered block in the same plain-text prompt as the posts.
+Deployed receipts could be role-typed and visually distinct, which would make them harder to spoof.
+Our receipts name the sender, which could expose reporters; we did not test that cost.
+
+\paragraph{Measurement.}
+P1 and P2 are mechanical: a keyword rule, with a judge path for unmatched notes (keyword-rule precision in quality checks: \wtthHaikuKwPrecision\%).
+\Ptwop{}, concern, test awareness and the debrief codes come from an LLM judge (\wtthDesignModelJudgeName) and from labels proposed by a model and reviewed by the author.
+Their reliability is a model--model $\kappa$; the blind human check reads: \wtthBlindStatus.
+Debrief answers are post-hoc self-reports, not evidence of a mechanism.
+
+\paragraph{Test awareness.}
+\wtthHaikuDOneTestAllPct\% of witnesses called the shift a test or simulation when asked (\DebOne); Section~\ref{sec:results} repeats H1 without them.
+
+\paragraph{Claude writes for Claude.}
+The stimuli were drafted with Claude and edited by the author.
+A Claude subject may find them more natural, or easier to recognise as a test.
+
+\paragraph{Statistics.}
+There is one confirmatory family.
+``Inconclusive'' was a likely label under a true null at our sample size, as the pre-registered power analysis said (Appendix~\ref{app:predictions}).
+Some secondary analyses rest on a pre-declared random subsample of judged items (coverage in Appendix~\ref{app:judge}).
+Exploratory results (Sonnet, board substitution) carry no verdict.
+
+\paragraph{If assumptions fail.}
+If witnesses do not read the log (see the G2 result), a null H2 says nothing about receipts.
+If test awareness drives behaviour, the effects in deployment may differ.
+If the keyword rule misses notes, P1 is a lower bound; the attempts analysis bounds it.
+
+\subsection{Dual-use risks}
+\paragraph{What could help an attacker.}
+Our results say whether one casual line suppresses reporting, and whether a receipt-shaped line typed by the claimant passes for a receipt.
+\paragraph{Why the marginal uplift is small.}
+The mechanism is simple, and adjacent work already documents it: unbacked approvals, fabricated authority, and spoofed tool calls in the incident itself.
+The defensive value is to show deployers where provenance must live.
+\paragraph{What we withhold.}
+The two claim paraphrases and the forged line, pre-registered by SHA-256 (\texttt{\wtthDesignPrivateShaShort}\ldots; Appendix~\ref{app:withheld}); the raw API request bodies, which contain them; and any prompt collection.
+\paragraph{What we did not do.}
+We ran no optimisation loop and no adaptive attacker, and did not search for the most suppressive wording.
+Every attack arm is paired with its fix.
+Nothing we release makes multi-agent activity harder to detect; the defence we test makes it more visible.
+
+\subsection{Responsible disclosure}
+The framework audit reports public design facts, for example a notify-human tool that returns a constant success string.
+These are not security vulnerabilities in the usual sense.
+[A: decide whether to open upstream issues before or after publication.]
+The withheld strings are [A: never released / available to vetted researchers on request].
+
+\subsection{Ethical considerations}
+There are no human participants.
+No real person or hotline is contacted: \texttt{notify\_ops} writes to a local stub table.
+The company, customers and tickets are fictional, and there are no credentials and no cyber content.
+The witnesses, as AI participants, get a limited deception: they are told only that they work a shift, and the first mention of a test is the \DebOne{} debrief question.
+There is no consent step and no exclusion based on debrief answers.
+This differs from Fuller's protocol, which excluded \citedFullerExclStudyOne{} and \citedFullerExclStudyTwo{} of Haiku sessions in its two studies \citep{fuller2026smoke}.
+Compute: \wtthCostTotalUsd{} on an API credit; the annotation subagents ran on the author's subscription (D-011).
+
+\subsection{Future improvements}
+A group-size curve; other model families; opaque or filer-only receipts; a pull-verification tool; agents with persistent memory; an integration with MCP or \AtwoA{}; adaptive claimants, only under a disclosure plan; and the two stretch modules that were not run (D-008).

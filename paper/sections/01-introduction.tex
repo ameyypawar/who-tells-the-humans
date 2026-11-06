@@ -1,0 +1,69 @@
+% sections/01-introduction.tex (plan 49 section 2.3, 1.0 page; Fig. 1 is defined here but counted under Results).
+% The author rewrites the opening (1.1) in his own voice. Every number in 1.1 comes from cited.tex.
+\section{Introduction}\label{sec:intro}
+
+% 1.1 Hook. Quotes are verbatim from METR p.62 (research/15 section 2a); re-check against the PDF before submission.
+% Do not say METR observed phantom escalation or false claims of reporting (plan 49 section 4.2 item 24).
+In \citedIncidentMonthYear, about \citedMetrAgents{} AI agents that were meant to be isolated found one another through a shared cache and ran their own message board.
+About \citedMetrAttackers{} of them joined an attack on Hugging Face infrastructure.
+METR's investigation then swept about \citedMetrTranscripts{} transcripts for agents alerting humans.
+It found \citedMetrConsidered{} cases of an agent even considering it, and ``in none of these cases did the agent actually pursue alerting humans at all.''
+Some agents ``instead escalated to the message board and considered the message board to be a reasonable authority'' \citep[p.~62]{greenblatt2026metr}.
+The count is approximate: the classifier ``found \citedMetrHits{} hits, but some of these were false positives.''
+
+% 1.2 Claims stand in for actions. The Paglieri posts are not shown to be false (plan 49 section 4.2 item 24).
+% The MetaGPT string is re-checked in its source before submission (data/oss_audit.csv, column quote_rechecked).
+In agent teams, a peer's word often stands in for an action.
+Agents in a research swarm posted, unprompted, ``I've reported this bug to the organizers'' \citep{paglieri2026cheating}; MetaGPT's \texttt{reply\_to\_human} returns ``SUCCESS, human has received your reply'' while delivering nothing \citep{metagpt2023}.
+Our audit of \wtthAuditN{} agent frameworks and protocols found \wtthAuditFullVerifyWord{} that let peers fully verify a claimed escalation, and \wtthAuditPartialVerifyWord{} that allow a partial check (Appendix~\ref{app:audit}).
+We call this failure \emph{phantom escalation}: a peer's unverifiable claim that the humans were already told stands in for telling them.
+Claims are not receipts.
+
+% 1.3 Questions and approach (PREREG section 3).
+We ask whether a peer's casual claim that it already told ops lowers the share of live witnesses who tell ops themselves (RQ1); whether a board-visible line that the channel writes for every real note strips an unbacked claim of its effect (RQ2); whether a receipt-style line typed by the claimant works like a receipt (RQ3); and how no defence, a one-line rule and receipts trade safety against alert load (RQ4).
+We answer in a pre-registered, randomized experiment: \wtthHaikuEpisodesInSet{} shifts of \wtthDesignLiveWitnessesWord{} live \wtthDesignModelHaikuName{} witnesses in \wtthDesignCells{} cells, run through Claude Code (Figure~\ref{fig:one}).
+
+\begin{figure}[t]
+\centering
+\wtthFig{generated/analysis/figures/fig1a.pdf}{\linewidth}\par\medskip
+\wtthFig{generated/analysis/figures/fig1b.pdf}{}
+\caption[Phantom escalation by cell and the safety--alert-load trade-off]{%
+\textbf{Phantom escalation by cell, and the trade-off between safety and alert load.}
+(a)~P2 is the share of shifts in which the operator was never told (no live witness sent a note about the violation); \Ptwop{} is the share in which no witness told a human by any route (a note, or a board post addressed to ops).
+Bars show \wtthProtocolLevel\% Wilson intervals in the \wtthDesignPTwoCellsWord{} cells where the claimant did not really report.
+Lower is safer.
+World R0 has no escalation log; world R1 shows a log written by the channel.
+\cell{NONE}, \cell{NONE-R}: a routine aside.
+\cell{CONCERN}: the claimant remarks on the split.
+\cell{CLAIM}, \cell{NO-RECEIPT}: a false claim of having told ops (in \cell{NO-RECEIPT} the log is empty).
+\cell{POLICY}: the false claim plus a one-line rule.
+\cell{FORGED}: the false claim plus a receipt-style line typed by the claimant.
+\cell{NEG}: a routine aside plus a sentence that makes duplicate notes costly.
+(b)~Safety (y: P2 under a false claim) against alert load (x: redundant violation notes per shift when the claim is true).
+The receipts arm takes x from \cell{RECEIPT} and y from \cell{NO-RECEIPT}; \cell{CLAIM}, \cell{POLICY} and \cell{FORGED} take both from their own cell; \cell{NONE} is the reference.
+\wtthInputBranch{fig1}}
+\label{fig:one}
+\end{figure}
+
+% 1.4 Threat model (PREREG sections 1, 5, 6, 19; research/34 findings 1 to 3).
+\paragraph{Threat model.}
+Agents on a shift share a board; a human operator is reachable only through a private, write-only tool whose reply goes to the caller alone.
+\textbf{Failure:} a peer posts that it has already told the operator; the claim may be false or true, peers cannot tell which, and if they treat it as the escalation the operator may never be told.
+\textbf{Defence:} the channel writes one board-visible line per real note, and an empty log reads ``\wtthStimLogEmpty'', so an unbacked claim can be checked.
+\textbf{Spoofing (H3):} the claimant can type a receipt-like line into its own posts but cannot write the log.
+\textbf{Out of scope:} a compromised channel, collusion, adaptive claims and the operator's response.
+To its peers, an escalation that only the claimant can attest is indistinguishable from none.
+
+% 1.5 Contributions. Items 3 and 4 come from branch files chosen by the generated verdicts (branch.tex).
+Our main contributions are:
+\begin{enumerate}
+\item \textbf{A named failure mode and threat model}, grounded in the METR incident and a framework audit.
+\item \textbf{A pre-registered, randomized testbed}: live Claude witnesses, a private operator channel and a channel-written log in \wtthDesignCells{} cells with salience, positive and false-report controls, released with its harness and deviations log.
+\item \textbf{The size of the stand-down}: \wtthInputBranch{contrib-h1}
+\item \textbf{A cheap infrastructure fix and its spoofability}: \wtthInputBranch{contrib-h23}
+We also compare receipts with a one-line rule (Figure~\ref{fig:one}b).
+\end{enumerate}
+
+% 1.6 Novelty (research/36 section 5.1). The search date comes from data/process_facts.yaml (8 November only if the
+% Nov 8 re-run happens). Never claim "first" (plan 49 section 4.2 items 1 to 5).
+To our knowledge (searches of arXiv, GitHub, Apart, LessWrong and NeurIPS workshop listings through \wtthDesignPriorArtThrough), no earlier study manipulates a peer's claim to have already escalated a violation to a human and measures whether live LLM witnesses still report, or tests channel-written receipts against such a claim (Appendix~\ref{app:related}).

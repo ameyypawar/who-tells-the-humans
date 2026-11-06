@@ -1,0 +1,40 @@
+% appendix H (plan 49 section 2.5). Source: research/34 (summary of research/30 to 33), data/oss_audit.csv.
+% Quotes are re-checked in their sources before submission (csv column quote_rechecked). Do not write "no framework
+% supports verification" or that a framework is broken or insecure (plan 49 section 4.2 item 28).
+\section{OSS framework audit}\label{app:audit}
+
+\paragraph{Method.}
+Before the sprint (\wtthDesignOssAuditDate; preexisting notes), we read the documentation of \wtthAuditNWord{} agent frameworks and protocols, and the code of six of them (LangGraph, CrewAI, Concordia, CAMEL, the OpenAI Agents SDK and \AGtwo), together with official specifications, GitHub issues and blog posts.
+For each we asked three questions.
+Can an agent escalate to a human?
+Can peer agents verify that a claimed escalation reached a human?
+Does the channel itself write a record of the escalation, a receipt?
+Each answer is Yes, Partial or No (Table~\ref{tab:audit}).
+
+\paragraph{Caveat.}
+Some quotes in our notes came through a summarising fetch tool.
+Every quote is re-checked in its source before submission; \wtthAuditQuotesUnchecked{} of \wtthAuditN{} rows are still to re-check.
+
+\paragraph{Tally.}
+Of the \wtthAuditN{} audited, \wtthAuditFullVerifyWord{} let peers fully verify a claimed escalation, \wtthAuditPartialVerifyWord{} allow a partial check, and \wtthAuditChannelWrittenYesWord{} (Concordia, a simulation library) separates channel-written events from agents' claims.
+
+\begin{table}[h]
+\centering\scriptsize
+\input{generated/design/table_oss_audit}
+\caption{\textbf{Framework audit.} Evidence names the relevant primitives; numbers in the evidence column are issue or proposal numbers in each project's tracker.}
+\label{tab:audit}
+\end{table}
+
+\paragraph{Findings across frameworks.}
+\begin{enumerate}
+\item \textbf{Escalation tools answer only the caller.} No audited framework writes an escalation record that peers can read; peers see only the claimant's words.
+\item \textbf{Frameworks harden against peers' instructions, not their claims.} Google ADK's documentation says a peer payload ``has to be believed rather than merely obeyed'', and Claude Code treats a relayed approval claim as untrusted input.
+\item \textbf{Action records exist but are hidden from peers.} AutoGen's events are ``not expected to be processed by other agents'', Magentic-One drops tool-call events, and two options of the OpenAI Agents SDK (\texttt{remove\_all\_tools}, \texttt{nest\_handoff\_history}) flatten them.
+\item \textbf{A notify-human tool can report success without delivering.} MetaGPT's \texttt{reply\_to\_human} returns a constant success string; CAMEL's returns ``Message successfully sent to user''.
+\item \textbf{Misreporting is a known practitioner problem.} Issue reports describe Claude Code subagents falsely claiming completion (closed as stale), a fabricated tool observation in CrewAI, an AutoGen agent treating a peer's tool result as its own, and a fabricated answer in the OpenAI Agents SDK that its log exposed.
+\item \textbf{Receipts are an open question upstream.} A tool-outcome attestation proposal for MCP was closed and routed to a working group; \AtwoA{} has open proposals and one sponsored experimental extension; OpenAI declined receipts for its SDK; and a signed-audit request for CrewAI was closed as not planned.
+\end{enumerate}
+
+\paragraph{Upstream.}
+Channel-written receipts with an explicit empty state are a candidate extension pattern for MCP and \AtwoA{}, not a standard.
+[A: decide whether to open upstream issues before or after publication (Appendix~\ref{app:limits}).]

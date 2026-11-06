@@ -1,0 +1,15 @@
+% sections/07-code-data.tex (plan 49 section 2.6 item 2). [A: ...] marks an author decision; check_paper --final fails
+% while any remains. The repository goes public at submission (plan 49 section 4.1 item 8).
+% The harness reads the withheld file at start-up (prereg.load_private); no public-paraphrase-only mode exists in the
+% code read on 2026-11-06, so none is claimed here.
+\section*{Code and Data}\label{sec:code}
+\addcontentsline{toc}{section}{Code and Data}
+Repository: \url{https://github.com/ameyypawar/who-tells-the-humans} [A: public at submission; licences for code and data].
+It holds the pre-registration (tag \texttt{prereg-v1}, with the witness-visible prompts), the deviations log, the harness, the configuration frozen at tag \texttt{frozen-v1}, the judge and analysis code, and this paper's sources; every result number and figure is regenerated from the run database by \texttt{wtth.analysis} (snapshot \texttt{\wtthSnapshotShaShort}).
+Released data [A: confirm]: per-shift and per-witness outcome tables, judge and reviewed labels, and transcripts with the withheld strings masked.
+Withheld: the two claim paraphrases and the forged line (SHA-256 in Appendix~\ref{app:withheld}) and the raw API request bodies, which contain them.
+A full rerun needs an Anthropic API key, the pinned CLI (Appendix~\ref{app:harness}) and the withheld file [A: release policy for the withheld file].
+
+\paragraph{Preexisting work.}
+Research notes, the pre-registration and prompt drafts, the reference list, a toolchain rehearsal on an unrelated toy task (its code was discarded) and toolchain probes predate the sprint start (\wtthDesignTZero; Appendix~\ref{app:preexisting}).
+All harness and analysis code was written after it.

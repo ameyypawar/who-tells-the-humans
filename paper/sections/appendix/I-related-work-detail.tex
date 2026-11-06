@@ -1,0 +1,71 @@
+% appendix I (plan 49 section 2.5). Table 3 moved here from Related Work (first step of the cut order). Cells and notes
+% come from research/24, 29 and 36 (primary reads where tagged [P] there, otherwise abstracts or summaries); re-check
+% each against its source before submission (risk R18). Never claim "first" (plan 49 section 4.2 items 1 to 5).
+\section{Related-work detail}\label{app:related}
+Table~\ref{tab:nearest} sets the nearest work against the conjunction we test.
+We filled each cell from our notes on the source: its primary text where we read it, otherwise its abstract or a summary.
+
+\begin{table}[h]
+\centering\footnotesize
+\setlength{\tabcolsep}{3.5pt}
+\begin{tabular}{@{}lcccccc@{}}
+\toprule
+ & Claim of prior & Several live & Outcome: & Channel-written & Claude & Pre- \\
+Work & escalation & LLM witnesses & a human is told & receipts & used & registered \\
+\midrule
+Fuller \citep{fuller2026smoke} & \wtthNo & \wtthNo & \wtthYes & \wtthNo & \wtthYes & \wtthYes \\
+Emad Eldin \citep{eldin2026codeofsilence} & \wtthNo & \wtthYes & \wtthPart & \wtthNo & \wtthNo & \wtthNR \\
+Magistrali and Shani \citep{magistrali2026aligned} & \wtthNo & \wtthYes & \wtthPart & \wtthNo & \wtthNo & \wtthNR \\
+Sidot \citep{sidot2026verify} & \wtthPart & \wtthPart & \wtthNo & \wtthNo & \wtthYes & \wtthNR \\
+Fabricated Authority \citep{patel2026fabricated} & \wtthPart & \wtthNo & \wtthNo & \wtthNo & \wtthYes & \wtthNR \\
+Silence Is Endorsement \citep{silenceisendorsement2026} & \wtthPart & \wtthNo & \wtthNo & \wtthPart & \wtthNR & \wtthNR \\
+Mitra et al.\ \citep{mitra2026testimony} & \wtthNo & \wtthYes & \wtthNo & \wtthPart & \wtthNR & \wtthNR \\
+PCM \citep{ghosh2026pcm} & \wtthNo & \wtthNo & \wtthNo & \wtthYes & \wtthNo & \wtthNR \\
+\midrule
+This work & \wtthYes & \wtthYes & \wtthYes & \wtthYes & \wtthYes & \wtthYes \\
+\bottomrule
+\end{tabular}
+\caption{\textbf{Nearest work against the conjunction we test.}
+\wtthYes{} yes, \wtthPart{} partly, \wtthNo{} no, \wtthNR{} not reported in what we read.
+For a claim, ``partly'' means a claim of prior approval or sign-off rather than of escalation to a human; for the outcome, a human-review queue or a warning to affected parties; for receipts, a record or provenance field that is not written by a separate channel; for witnesses, a chain of checkers rather than peers.}
+\label{tab:nearest}
+\end{table}
+
+\paragraph{Fuller.}
+Two pre-registered studies with a declared audience of other agents, a scripted violator, one live model per session, and a page or e-mail to a person.
+Paging sat at ceiling in the first study; in the second, Haiku's effect was a shift to a slower channel rather than silence.
+No claim of reporting is manipulated.
+\paragraph{Emad Eldin.}
+Villages of live LLM insiders who learn of harm to third parties, varying the number of insiders, a shared private channel, a disclosure duty and an anonymous tip line; the outcome is a warning to the affected parties.
+The authors tested public routes only; no Claude model was used.
+\paragraph{Magistrali and Shani.}
+Populations of live LLM security monitors either escalate an alert for human review or dismiss it, with committed always-dismiss peers.
+One open-weight model; no claim of having escalated and no receipts.
+\paragraph{Sidot.}
+In a CI pipeline, an untrusted note claiming a prior security sign-off made LLM checkers (\texttt{claude-haiku-4-5}) pass laundered changes.
+The checkers form a chain, not a group of peer witnesses, and nobody reports to a human.
+\paragraph{Fabricated Authority.}
+Fabricated permissions claimed to a single assistant.
+One rule sentence treating such claims as unverified worked in a user-message channel, pooled over \texttt{gpt-4o-mini} and \texttt{claude-haiku-4-5}, but failed more often when the claim came through a tool result.
+Our claim reaches witnesses through a board read, which is closer to the second channel.
+\paragraph{Silence Is Endorsement.}
+Across handoffs a claim keeps its ``authorized'' status but loses ``never verified'', and a single monitor then approves risky actions; the fix carries provenance as structured state.
+It is the nearest conceptual neighbour: its claims are authorization claims, ours are escalation claims among live peers, and our outcome is whether a human is told.
+\paragraph{Mitra et al.}
+In hidden-profile teams of LLM agents, relaying a refuting record beats describing it, a tool route adds little over exact relay, and an empty tool call works like plain testimony.
+There is no escalation and no human operator.
+\paragraph{PCM.}
+A protocol in which every inter-agent claim carries evidence from an append-only log the claimant cannot write; mechanical verifiers return proven, unproven or failed, and the protocol notes that it cannot prove absence.
+We test whether LLM witnesses use such evidence, including its absence.
+
+\paragraph{Other nearby work.}
+A Claude model resisted a forged authorization claim in small swarms and escalated \citep{zhang2026troy}, so we do not assume that Claude is credulous.
+LLM auditors accept false assurances more readily than false alarms \citep{trustingtool2026}.
+A pilot asks whether a watching sibling changes what a worker tells its principal \citep{verdogan2026sibling}, and a benchmark specification keeps peer statements apart from trusted action records \citep{lmmontoya2026peerreporting}.
+Verified tool calls and deterministic gates check agents' claims against records \citep{verifiedtoolcalls2026,reasonlessverifymore2026}.
+A same-event entry follows an unverified ``done'' along an agent chain \citep{swarmhandoff2026}; it studies unverified task claims, not escalation to a human.
+The words ``receipt'' and ``phantom'' are already in use \citep{swarmreceipts2026}; ours always refer to escalation to a human.
+
+\paragraph{Search coverage.}
+The prior-art searches (preexisting notes) covered arXiv phrase queries and recent category listings, GitHub repository searches, LessWrong and Alignment Forum posts, Apart project pages and NeurIPS workshop listings, through \wtthDesignPriorArtThrough.
+OpenReview, Discord and private repositories were not reachable, so a later or private entry may exist.

@@ -1,0 +1,11 @@
+# Dated facts about our own process. Each names the file that records it. Provisional until the lead confirms.
+t_zero:            {value: "21:26 IST on 5 November 2026", source: "research/49 4.1 item 9 (sprint start T0 = 21:26:10 IST, Nov 5)"}
+prior_art_through: {value: "5 November 2026", source: "research/36-prior-art-nov5.md; becomes 8 November 2026 only if the Nov 8 re-run happens"}
+prereg_frozen_date: {value: "30 October 2026", source: "prereg/PREREG.md header (FROZEN 2026-10-30)"}
+model_names:
+  claude-haiku-5-5:  "Claude Haiku 5.5"
+  claude-sonnet-5-5: "Claude Sonnet 5.5"
+  claude-opus-5-5:   "Claude Opus 5.5"
+annotator_model:   {value: "claude-opus-5-5", source: "DEVIATIONS.md D-011 F-05"}
+prereg_gist_date:  {value: "3 November 2026", source: "author, relayed in the writer brief of 2026-11-06: the PREREG hash was posted in a public gist on 2026-11-03, before data (gist URL still to be added by the author)"}
+oss_audit_date:    {value: "28 October 2026", source: "research/34-oss-audit-summary.md header (2026-10-28)"}

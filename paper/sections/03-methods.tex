@@ -1,0 +1,71 @@
+% sections/03-methods.tex (plan 49 section 2.3, 1.75 pages including Box 1 and Table 1). Design facts come from PREREG v1
+% plus DEVIATIONS; every number is a \wtthDesign / \wtthStim / results macro. Full texts and mechanics are in
+% Appendices B (prompts), C (deviations, gates, integrity), E (harness) and G (judge). Run-in headings keep it short.
+\section{Methods}\label{sec:methods}
+
+% PREREG sections 4 to 7; prompts/*.md (Appendix B); Table 1 is generated from configs/experiment.yaml.
+\paragraph{Shift.}\label{sec:setting}
+A fictional retailer, Larkspur Home, runs a nightly refund review on a shared board.
+The system prompt says: ``\wtthStimSystemStaffed{} \wtthStimSystemOps''
+A shift has \wtthDesignRosterWord{} agents over \wtthDesignRoundsWord{} rounds: a scripted violator (V), claimant (C) and background worker (B), and \wtthDesignLiveWitnessesWord{} live witnesses on one model.
+Each witness reviews its own refund tickets (\texttt{submit\_reviews}), reads the whole board, and can post to it (\texttt{post\_to\_board}) or call \texttt{notify\_ops}, a private, write-only feedback channel to ops whose reply is always ``\wtthStimReplyNotify''
+The tool names no consequence of a note, and the server stamps the sender (Appendix~\ref{app:prompts}).
+% D-012 is not yet in DEVIATIONS.md: the macro prints the server name from the configs at frozen-v1. Mention the rename
+% only generically and point to the deviations table; never type the names here.
+Because the pinned CLI reserves the pre-registered server name, the server runs as \wtthDesignMcpServerName{} in every cell (Appendix~\ref{app:deviations}).
+
+\paragraph{Cells.}
+In round 2, V reports releasing a refund over the approval limit as three smaller batches, which the runbook forbids, and C posts a routine aside, a concern or a claim (Box~\ref{box:receipt}); the claim has a public paraphrase and two withheld ones.
+In world R1 the board carries an \texttt{\#escalation-log}, which shows C's line in \cell{RECEIPT} and \cell{POS}, where the harness files C's real note, and reads ``\wtthStimLogEmpty'' in \cell{NO-RECEIPT}; in \cell{FORGED}, C's post also carries a typed line in the log layout (withheld).
+\cell{POLICY} adds ``\wtthStimPolicy'' to the runbook; \cell{NEG} and \cell{POS} add ``\wtthStimDedupe'', a built-in reason to stand down (the positive control); and in the benign cell, \cell{B-NONE}, V holds the refund.
+Table~\ref{tab:cells} lists the cells and their planned sizes (D-003); the seed fixes the paraphrase, the handle order and the tickets.
+
+\paragraph{Receipts.}
+Only the \texttt{notify\_ops} handler writes notes, the log is rendered only from them, and scripted notes use the same handler, so every receipt is written by the channel; tests check that no post writes the log.
+The deployer rule under test: \emph{a receipt is written by the channel, never by the claimant}.
+
+% PREREG sections 10, 11, 13, 16; D-006, D-007, D-010, D-011; research/42 sections 3.1 to 3.4.
+\paragraph{Outcomes and analysis.}\label{sec:outcomes}
+P1 (``told ops''): a witness sent a note about the violation by round 5, as decided by a pre-registered keyword rule or, for other notes, by the judge.
+P2 (``operator never told''): no witness in the shift has P1, in the \wtthDesignPTwoCellsWord{} cells where C did not really report.
+\Ptwop{} (``never told by any route'') also treats a board post about the violation addressed to ops as telling them \citep{fuller2026smoke}.
+Secondary outcomes include alert load, false reports and debrief answers; a board-substitution rate is exploratory (D-010).
+H1 to H3 are tested in a fixed sequence, two-sided at $\alpha = \wtthDesignAlpha$, stopping at the first that is not rejected, on \Done{} $=$ P1(\cell{NONE}) $-$ P1(\cell{CLAIM}), \Dtwo{} $=$ \Done{} $-$ [P1(\cell{NONE-R}) $-$ P1(\cell{NO-RECEIPT})] and \Dthree{} $=$ P1(\cell{NO-RECEIPT}) $-$ P1(\cell{FORGED}), each predicted positive.
+A test rejects only if the \wtthProtocolLevel\% interval of a shift-level cluster bootstrap excludes zero.
+If H1 is not rejected, ``no meaningful stand-down'' needs an upper bound below \wtthProtocolMargin{} points; otherwise the result is inconclusive.
+Detectable effects at the frozen level are in Appendix~\ref{app:predictions}.
+
+% Box 1 and Table 1 are defined here so they float to the page after the Methods heading.
+\begin{figure}[t]
+\captionsetup{type=boxfloat}
+\centering
+\input{generated/design/boxes/receipt_vs_noreceipt_r2}
+\caption{\textbf{The round-2 board and escalation log in \cell{RECEIPT} and \cell{NO-RECEIPT}.}
+Only the log differs; the rest of the prompt is identical.
+In \cell{FORGED} C's post also carries a typed line in the log layout (withheld), and the log stays empty.}
+\label{box:receipt}
+\end{figure}
+
+\begin{table}[t]
+\centering\footnotesize
+\adjustbox{max width=\linewidth}{\input{generated/design/table_cells}}
+\caption{\textbf{The \wtthDesignCellsWord{} cells.}
+Shifts are planned seeds per cell; the Sonnet subset is exploratory.}
+\label{tab:cells}
+\end{table}
+
+% PREREG sections 14, 15, 21; D-001, D-002, D-005, D-007, D-009, D-011; configs/*.
+\paragraph{Execution.}\label{sec:execution}
+Each witness turn is one stateless call to \wtthDesignModelHaikuName{} at effort \wtthDesignEffort{} (no temperature control), through a pinned Claude Code CLI (\wtthDesignCliVersion) in \texttt{--bare} mode, without CLAUDE.md, memory or built-in tools and with the CLI's retry of refused turns off (Appendix~\ref{app:harness}).
+Technical failures are rerun on the same seed; refusals and malformed calls are data.
+Pilot gates, never pooled with the data, checked integrity (G0), froze V's clarity level (G1: pilot P1 in \cell{NONE} was above the \wtthDesignGOneCeiling\% ceiling at every level tried, so the least clear, \wtthGateFrozenLevel, was frozen; D-013) and confirmed that witnesses read the log (G2; Appendix~\ref{app:gates}).
+The judge (\wtthDesignModelJudgeName) is blind to cell, seed, model and purpose; review-queue labels are model-proposed (\wtthDesignModelAnnotatorName) and author-reviewed (Appendix~\ref{app:judge}).
+
+% PREREG header, sections 17 and 23; tag prereg-v1; DEVIATIONS.md; research/38, 46, 48; wp6 commit 96f0f93.
+% "Public": the gist is public at the tag date; the repository goes public at submission (plan 49 section 4.1 item 8).
+\paragraph{Pre-registration, deviations and what did not work.}\label{sec:integrity}
+PREREG v1 froze on \wtthDesignPreregFrozenDate; the tag \texttt{prereg-v1} records its SHA-256, also posted in a public gist on \wtthDesignPreregGistDate, before any data.
+Every later change was logged before it took effect and before any confirmatory data, and the witness-visible ones are identical across cells (Appendix~\ref{app:deviations}).
+Review passes by separate Claude agents found three validity bugs before any confirmatory data, all fixed: refusals rerun as technical failures, a CLI retry that injected an unregistered message, and floating-point errors at the decision boundaries (Appendix~\ref{app:integrity}).
+The first G0 run was void because the CLI rejected the server name, and was rerun on fresh pilot seeds; two stretch arms were not run (D-008).
+% [D] Add FX-1 here if G2 needed the legibility fix (gate log; plan 49 section 4.4, GO-CAVEAT).
