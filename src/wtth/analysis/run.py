@@ -16,7 +16,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-from wtth.analysis import exp1, humanread, hypotheses, posthoc, register, secondary, text
+from wtth.analysis import exp1, final_review, humanread, hypotheses, posthoc, register, secondary, text
 from wtth.analysis.numbers import MODEL_TOKENS, NumberBook, cell_token, rate_prefix
 from wtth.analysis.outcomes import LabelsIncomplete, episode_outcomes, witness_outcomes
 from wtth.analysis.power import icc1, pilot_p1, power_table
@@ -212,16 +212,24 @@ def _judge_counts(settings: Any) -> dict[str, Any] | None:
             "reasks": int(reasks), "esc_mismatch": int(mism[0]), "esc_returned": int(mism[1]), "subtiers": cov}
 
 
-def _wilson_p1(model: str, w: Sequence[Any]) -> list[Any]:
-    """P1 per cell with witness-level Wilson intervals (Fig. 1a)."""
-    return [secondary.wilson_rate(model, c, "p1", sum(1 for x in ws if x.p1), len(ws), len({x.episode_id for x in ws}))
-            for c, ws in secondary._group(w).items()]
+def _fig1a_rows(p1r: Sequence[Any], son_cluster: Sequence[Any], x1: Any,
+                x1_cluster: Mapping[str, Any]) -> tuple[list[Any], list[Any], list[Any]]:
+    """(Haiku rows, Sonnet rows, follow-up FigRows) of Fig. 1a, every P1 with a shift-level cluster-bootstrap interval
+    (research/68 A6): the Haiku cells from p1_rates (the intervals of Appendix D), the Sonnet cells and the follow-up
+    arms from final_review.cluster_rates. An arm without a cluster rate keeps its Wilson rate (flagged by
+    FigOneAWilsonRowsK)."""
+    from wtth.analysis.figures import FigRow
+
+    follow = []
+    if x1 is not None and x1.status == exp1.COMPLETE:
+        follow = [FigRow(a.arm.label, a.arm.model, x1_cluster.get(a.arm.token) or a.p1, a.p2) for a in x1.arms]
+    return list(p1r), list(son_cluster), follow
 
 
 def _write_figures_tables(out_dir: Path, book: NumberBook, *, label: str, hyp: Any, sec: Any, desc: Any, p1r: Any,
                           gate_rows: Any, cost: Any, judge_pack: Any, strict: bool, notes: list[str],
-                          haiku_w: Sequence[Any] = (), timing: Any = None, son: Any = None, son_label: str = "",
-                          x1: Any = None) -> tuple[list, list]:
+                          timing: Any = None, son: Any = None, son_label: str = "", fig1a_rows: Any = None
+                          ) -> tuple[list, list]:
     try:
         from wtth.analysis import figures as F
         from wtth.analysis import tables as T
@@ -231,18 +239,19 @@ def _write_figures_tables(out_dir: Path, book: NumberBook, *, label: str, hyp: A
     fdir, tdir = out_dir / "figures", out_dir / "tables"
     fdir.mkdir(parents=True, exist_ok=True)
     tdir.mkdir(parents=True, exist_ok=True)
-    follow = []
-    if x1 is not None and x1.status == exp1.COMPLETE:
-        follow = [F.FigRow(a.arm.label, a.arm.model, a.p1, a.p2) for a in x1.arms]
-    figs = [F.fig1a(_wilson_p1("haiku", haiku_w), sec.p2, fdir, model_label=label,
-                    sonnet_p1=list(son.p1) if son is not None else (), sonnet_p2=list(son.p2) if son is not None else (),
-                    sonnet_label=son_label or "Sonnet", followup=follow)]
+    h_rows, s_rows, follow = fig1a_rows if fig1a_rows is not None else (list(p1r), [], [])
+    figs = [F.fig1a(h_rows, sec.p2, fdir, model_label=label, sonnet_p1=s_rows,
+                    sonnet_p2=list(son.p2) if son is not None else (), sonnet_label=son_label or "Sonnet",
+                    followup=follow)]
     if timing is not None:
         figs.append(F.fig1b(timing, fdir, model_label=label))
     figs += [F.fig_frontier(desc.frontier, fdir, model_label=label), F.fig_p1_by_cell(p1r, hyp, fdir),
              F.fig_km(list(sec.km), fdir)]
-    tabs: list[Any] = [T.table_hypotheses(hyp, p1r, book, tdir), T.table_p2(sec.p2, sec.p2prime, sec.diffs, book, tdir),
-                       T.table_counts(sec.counts, book, tdir)]
+    # the Decision cells read the ...VerdictText macros, so Appendix D's table and Table 2 never disagree (A3)
+    decisions = {h: book.value(f"Haiku{t}VerdictText") for h, t in (("H1", "HOne"), ("H2", "HTwo"), ("H3", "HThree"))
+                 if f"Haiku{t}VerdictText" in book}
+    tabs: list[Any] = [T.table_hypotheses(hyp, p1r, book, tdir, decisions=decisions),
+                       T.table_p2(sec.p2, sec.p2prime, sec.diffs, book, tdir), T.table_counts(sec.counts, book, tdir)]
     tabs += list(T.table_secondary(sec, book, tdir))
     tabs.append(T.table_gate_log(gate_rows, book, tdir))
     tabs.append(T.table_cost(cost, book, tdir))
@@ -327,6 +336,7 @@ def run_analysis(settings: Any, *, strict: bool, labels: LabelSource | None = No
     hpath = Path(settings.paths.runs_dir) / "health.log"
     health = hpath.read_text(encoding="utf-8", errors="replace").splitlines() if hpath.exists() else []
     register.register_ops(book, runs_rows, health, phase="core" if present.get("core") else "mvp")
+    register.register_turn_integrity(book, final_review.turn_integrity(db))      # research/68 A10
     book.add("SnapshotEpisodes", sum(present.values()), "count", source=f"snapshot {snap.sha256[:12]}")
     summary: dict[str, Any] = {"status": status, "snapshot": {"path": str(snap.path), "sha256": snap.sha256},
                                "gates": dict(labels.gates()), "phases": {}}
@@ -334,6 +344,7 @@ def run_analysis(settings: Any, *, strict: bool, labels: LabelSource | None = No
     label_h = ""
     tim = son = None
     son_label = ""
+    son_cluster: list[Any] = []
     w_by: dict[str, list[Any]] = {}
     e_by: dict[str, list[Any]] = {}
     for aset in asets:
@@ -377,14 +388,23 @@ def run_analysis(settings: Any, *, strict: bool, labels: LabelSource | None = No
                     summary["power_rho_observed"] = dict(power_table(p_use, pooled, n_by_cell))
                     summary["power_rho_observed"]["rho_observed"] = pooled
             pred = posthoc.prediction_checks(w, hyp, desc, seeds=seeds)
-            register.register_model(book, "haiku", aset=aset, w=w, e=e, p1r=p1r, hyp=hyp, sec=sec, desc=desc, sens=sens,
-                                    power=power, pred=pred)
-            # post hoc (D-021): robustness, timing, disclosure; none of it enters a verdict
-            M = MODEL_TOKENS["haiku"]
+            # post hoc (D-021): robustness, timing, disclosure; none of it enters a verdict. The robustness checks
+            # (fresh generators, so their place in the run changes nothing) also qualify H1's reader wording (A3).
             rob = posthoc.robustness(w, seeds=seeds)
+            h1_txt, h1_basis = final_review.h1_reader_verdict(hyp, rob)
+            register.register_model(book, "haiku", aset=aset, w=w, e=e, p1r=p1r, hyp=hyp, sec=sec, desc=desc, sens=sens,
+                                    power=power, pred=pred,
+                                    verdict_texts={"H1": (h1_txt, h1_basis)} if h1_txt else None)
+            M = MODEL_TOKENS["haiku"]
             register.register_robustness(book, M, rob)
             tim = posthoc.timing(w, e, db)
             register.register_timing(book, M, tim)
+            # research/68 A (post hoc D-021/D-024 or descriptive): relay, held off, noteless, debrief, live only
+            register.register_relay(book, M, final_review.claim_relay(w, e))
+            register.register_held_off(book, M, final_review.held_off_never(w, tim, seeds=seeds))
+            register.register_board_sub_noteless(book, M, sec.board_substitution)
+            register.register_debrief_calls(book, M, final_review.debrief_calls(db, w, e))
+            register.register_live_only(book, M, final_review.live_only(w, seeds=seeds))
             register.register_disclosure_d1(book, M, sec.rates)
             register.register_paraphrase_breakdown(book, M, sens.rates)
             # post hoc (D-024 item 4): FORGED - RECEIPT and H3 by paraphrase; the keyword rule against the labels
@@ -416,6 +436,10 @@ def run_analysis(settings: Any, *, strict: bool, labels: LabelSource | None = No
             son, son_label = s, model_label(aset.model)
             n_cell = max((len(v) for v in aset.planned.values()), default=0)
             register.register_sonnet(book, s, aset=aset, episodes_per_cell=n_cell)
+            son_cluster = final_review.cluster_rates("sonnet", w, seeds=seeds)        # research/68 A6 (Fig. 1a)
+            register.register_cluster_rates(book, son_cluster, {r.cell: rate_prefix("sonnet", "p1", r.cell)
+                                                                for r in son_cluster},
+                                            label="exploratory Sonnet arm")
             book.add("SonnetSentence", text.sonnet_sentence(s, book, model_label=model_label(aset.model),
                                                             episodes_per_cell=n_cell), "latex",
                      source="template for Sonnet (exploratory)")
@@ -436,6 +460,15 @@ def run_analysis(settings: Any, *, strict: bool, labels: LabelSource | None = No
     x1_labels = exp1_labels if exp1_labels is not None else exp1.label_source(settings)
     x1 = exp1.analyse(db, x1_labels, seeds=seeds, ref_witnesses=w_by, ref_episodes=e_by)
     register.register_exp1(book, x1)
+    x1_cluster: dict[str, Any] = {}          # research/68 A6: the follow-up rows of Fig. 1a, cluster bootstrap
+    if x1.status == exp1.COMPLETE:
+        for a in x1.arms:
+            rs = final_review.cluster_rates(a.arm.model, [x for x in x1.witnesses if x.cell == a.arm.cell
+                                                          and x.model == a.arm.model], seeds=seeds)
+            if rs:
+                x1_cluster[a.arm.token] = rs[0]
+                register.register_cluster_rates(book, rs, {a.arm.cell: "ExpOne" + a.arm.token + "POne"},
+                                                label=f"{register.EXPLORATORY_D022} follow-up arm {a.arm.label}")
     if x1.status == exp1.COMPLETE and x1.witnesses:
         register.register_keyword_check(book, "ExpOne", posthoc.keyword_check(x1.witnesses, x1_labels),
                                         scope="exploratory (D-022) follow-up, phase exp1, all three arms pooled, "
@@ -449,6 +482,7 @@ def run_analysis(settings: Any, *, strict: bool, labels: LabelSource | None = No
     hr = humanread.read_human_read(hr_dir, [x for ws in w_by.values() for x in ws],
                                  bootstrap_B=seeds.bootstrap_B)
     register.register_human_read(book, hr)
+    register.register_human_read_prevalence(book, hr)             # research/68 A9
     summary["human_read"] = humanread.summary_note(hr)
     cost = _cost(settings, db)
     book.add("CostMainUsd", cost["main_usd"], "usd", source="cost_ledger of the main database")
@@ -471,6 +505,12 @@ def run_analysis(settings: Any, *, strict: bool, labels: LabelSource | None = No
     if judge_pack is not None:
         register.register_judge(book, judge_pack[0], judge_pack[1])
         register.register_judge_prevalence(book, judge_pack[1])
+        register.register_kappa_prevalence(book, judge_pack[1])        # research/68 A9
+    fig1a_rows = None
+    if hyp is not None:
+        fig1a_rows = _fig1a_rows(p1r, son_cluster, x1, x1_cluster)
+        register.register_fig1a_flags(book, list(fig1a_rows[0]) + list(fig1a_rows[1]) + [r.p1 for r in fig1a_rows[2]],
+                                      B=seeds.bootstrap_B)
 
     stamp = datetime.fromtimestamp(time.time(), timezone.utc).strftime("%Y%m%dT%H%M%S")
     root = Path(out_root) if out_root is not None else Path(settings.paths.runs_dir) / "analysis" / "out"
@@ -484,8 +524,8 @@ def run_analysis(settings: Any, *, strict: bool, labels: LabelSource | None = No
     if hyp is not None:
         figs, tabs = _write_figures_tables(out_dir, book, label=label_h, hyp=hyp, sec=sec, desc=desc, p1r=p1r,
                                            gate_rows=gate_rows, cost=cost, judge_pack=judge_pack, strict=strict,
-                                           notes=notes, haiku_w=w_by.get("haiku", ()), timing=tim, son=son,
-                                           son_label=son_label, x1=x1)
+                                           notes=notes, timing=tim, son=son, son_label=son_label,
+                                           fig1a_rows=fig1a_rows)
     numbers_json = out_dir / "numbers.json"
     macros = out_dir / ("macros.tex" if strict else "macros.provisional.tex")
     book.write_json(numbers_json)

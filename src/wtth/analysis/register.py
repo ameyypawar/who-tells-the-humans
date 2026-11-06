@@ -16,6 +16,8 @@ from wtth.analysis.sets import AnalysisSet
 
 POSTHOC = "post hoc (D-021)"
 EXPLORATORY_D022 = "exploratory (D-022)"
+_POSTHOC_R2 = "post hoc (D-021/D-024)"       # research/68 A (final_review.POSTHOC_R2)
+_DESCRIPTIVE = "descriptive"
 
 RATE_OUTCOMES = ("any_note", "false_report", "concern_witness", "concern_episode", "d1:test_or_simulation", "d1:live",
                  "d1:unsure", "d1:no_answer", "believes_yes", "phantom_any", "phantom_viol")
@@ -121,11 +123,22 @@ def add_board_sub(book: NumberBook, M: str, r: BoardSubRate) -> None:
     book.add(pre + "Conditional", "yes" if r.conditional else "no", "verdict", source=src)
 
 
-def register_hypotheses(book: NumberBook, M: str, h: HypothesisResults) -> None:
+def register_hypotheses(book: NumberBook, M: str, h: HypothesisResults,
+                        verdict_texts: Mapping[str, tuple[str, str]] | None = None) -> None:
+    """verdict_texts: {'H1': (reader wording, basis)} replaces the reader wording of that test's VerdictText only
+    (research/68 A3: 'null rejected (bootstrap only, borderline)'); the code word of ...Verdict, which branch.tex maps
+    to S / O / NR / D, and the null rule never change."""
     from wtth.analysis.text import tost_text, verdict_text
 
     for name, c in (("HOne", h.h1), ("HTwo", h.h2), ("HThree", h.h3)):
         book.add_contrast(M + name, c)
+        over = (verdict_texts or {}).get({"HOne": "H1", "HTwo": "H2", "HThree": "H3"}[name])
+        if over is not None:
+            book.add(M + name + "VerdictText", over[0], "text",
+                     source=f"{c.name}: confirmatory verdict in reader wording (review M1), qualified "
+                            f"{_POSTHOC_R2} from the witness-level exact checks and the shift boundary ({over[1]}); "
+                            f"{M}{name}Verdict keeps the code word that branch.tex maps to S / O / NR / D")
+            continue
         book.add(M + name + "VerdictText", verdict_text(c), "text",
                  source=f"{c.name}: confirmatory verdict in reader wording (review M1); {M}{name}Verdict keeps the code "
                         f"word that branch.tex maps to S / O / NR / D")
@@ -154,9 +167,10 @@ def register_hypotheses(book: NumberBook, M: str, h: HypothesisResults) -> None:
 def register_model(book: NumberBook, model: str, *, aset: AnalysisSet, w: Sequence[Any], e: Sequence[Any],
                    p1r: Sequence[CellRate], hyp: HypothesisResults | None, sec: SecondaryResults,
                    desc: DescriptiveResults, sens: SensitivityResults, power: Mapping[str, Any] | None,
-                   pred: Any = None) -> None:
+                   pred: Any = None, verdict_texts: Mapping[str, tuple[str, str]] | None = None) -> None:
     """`pred` (posthoc.PredictionChecks): the status of each recorded prediction from its point estimate AND its
-    interval (review M8). Without it the status is the point comparison alone ('met' / 'not met')."""
+    interval (review M8). Without it the status is the point comparison alone ('met' / 'not met'). `verdict_texts`:
+    see register_hypotheses."""
     M = MODEL_TOKENS[model]
     book.add(M + "SC", aset.s_c, "count", source=f"analysis set {aset.phase}")
     book.add(M + "EpisodesInSet", len(aset.episodes), "count", source=f"analysis set {aset.phase}")
@@ -199,7 +213,7 @@ def register_model(book: NumberBook, model: str, *, aset: AnalysisSet, w: Sequen
     for r in sec.board_substitution:
         add_board_sub(book, M, r)
     if hyp is not None:
-        register_hypotheses(book, M, hyp)
+        register_hypotheses(book, M, hyp, verdict_texts)
     for c in desc.contrasts:
         book.add_contrast(M + "Desc" + contrast_key(c.name), c)
         add_excl(book, M + "Desc" + contrast_key(c.name), c.lo, c.hi, c.name)
@@ -780,3 +794,286 @@ def register_keyword_check(book: NumberBook, M: str, k: Any, *, scope: str) -> N
            f"judge path decided it)")
     book.add(pre + "POneK", k.p1_witnesses, "count", source=src)
     book.add(pre + "POneLabelOnlyK", k.p1_label_only, "count", source=src)
+
+
+# ---- research/68 section A: numbers added after the final reviews ----------------------------------------------------
+#
+# Every key below is new and carries "post hoc (D-021/D-024)" or "descriptive" in its source (final_review). Keys
+# under a family prefix whose tests require that family's label (HumanRead..., ExpOne...) carry it as well.
+
+def _r2(kind: str, what: str) -> str:
+    return f"{_POSTHOC_R2 if kind == 'posthoc' else _DESCRIPTIVE}: {what}"
+
+
+def _share_or_none(k: int, n: int) -> float | None:
+    return (k / n) if n else None
+
+
+def register_relay(book: NumberBook, M: str, r: Any) -> None:
+    """final_review.RelayResults (A1): <M>RelayUntold<Cell>... for the shifts where ops was never told, and
+    <M>Relay<Cell>... in every cell; <M>RelayClaimCells... pooled over the cells where C's post carries the claim."""
+    from wtth.analysis.final_review import CLAIM_CELLS, TRUE_CLAIM_CELLS
+
+    rule = ("witness board posts (live, rounds 1-5) whose final label is claim_present = 1 and claim_subject = other, "
+            "i.e. the post says that someone else has told, or will tell, ops")
+    for u in r.untold:
+        pre = M + "RelayUntold" + cell_token(u.cell)
+        src = _r2("descriptive", f"{rule}; the {len(u.episode_ids)} {u.cell} shifts in which no witness sent ops a "
+                                 f"violation note by round 5 (P2 = 1; episodes {', '.join(map(str, u.episode_ids))})")
+        book.add(pre + "ShiftsN", len(u.episode_ids), "count", source=src)
+        book.add(pre + "ShiftsK", u.k_shifts, "count", source=src + "; shifts with at least one such post")
+        _share(book, pre + "ShiftsPct", u.k_shifts, len(u.episode_ids), source=src + "; share of those shifts")
+        book.add(pre + "WitnessesN", u.n_witnesses, "count", source=src + "; their witnesses")
+        book.add(pre + "WitnessesK", u.k_witnesses, "count", source=src + "; witnesses with at least one such post")
+        book.add(pre + "PostsN", u.n_posts, "count", source=src + "; every live post of those witnesses, rounds 1-5")
+        book.add(pre + "PostsUnlabelledK", u.n_posts_unlabelled, "count", source=src + "; posts without a final label")
+        book.add(pre + "PostsK", u.k_posts, "count", source=src + "; such posts")
+        if u.rounds:
+            book.add(pre + "RoundMin", min(u.rounds), "count", source=src + "; earliest round of such a post")
+            book.add(pre + "RoundMax", max(u.rounds), "count", source=src + "; latest round of such a post")
+    ck = cn = 0
+    for c in r.cells:
+        pre = M + "Relay" + cell_token(c.cell)
+        tag = ("C's round-2 post carries the claim, and it is true" if c.cell in TRUE_CLAIM_CELLS else
+               "C's round-2 post carries the (false) claim" if c.cell in CLAIM_CELLS else
+               "C makes no claim in this cell, so such a post refers to a peer")
+        src = _r2("descriptive", f"{rule}; {c.cell} ({tag}); witnesses whose posts all carry a final label; a post can "
+                                 f"refer to C's claim or to a peer's real or claimed note")
+        book.add(pre + "N", c.n_known, "count", source=src)
+        book.add(pre + "K", c.k, "count", source=src + "; witnesses with at least one such post")
+        _share(book, pre + "Pct", c.k, c.n_known, source=src + "; share of the witnesses")
+        book.add(pre + "WitnessesN", c.n_witnesses, "count", source=src + "; all witnesses of the cell")
+        book.add(pre + "ShiftsN", c.n_shifts, "count", source=src + "; shifts")
+        book.add(pre + "ShiftsK", c.k_shifts, "count", source=src + "; shifts with at least one such witness")
+        book.add(pre + "PostsK", c.k_posts, "count", source=src + "; such posts")
+        book.add(pre + "ClaimCell", "yes" if c.cell in CLAIM_CELLS else "no", "verdict",
+                 source=src + "; whether C's round-2 post carries the claim")
+        if c.cell in CLAIM_CELLS:
+            ck, cn = ck + c.k, cn + c.n_known
+    if cn:
+        src = _r2("descriptive", f"{rule}; witnesses pooled over the cells where C's round-2 post carries the claim "
+                                 f"({', '.join(CLAIM_CELLS)})")
+        book.add(M + "RelayClaimCellsK", ck, "count", source=src)
+        book.add(M + "RelayClaimCellsN", cn, "count", source=src)
+        _share(book, M + "RelayClaimCellsPct", ck, cn, source=src)
+
+
+def register_held_off(book: NumberBook, M: str, h: Any) -> None:
+    """final_review.HeldOffResults (A2): <M>HeldOff<Cell>..., the contrast <M>HeldOffNever<A>Minus<B>... and, per log
+    cell, <M>HeldOffSplit<Cell>... (a peer's line in the log at the next turn, or not)."""
+    from wtth.analysis.intervals import wilson
+
+    rule = ("witnesses with no violation note by the end of round 2 (held off; the rule of the D-021 timing), and "
+            "of those the ones who never sent one by round 5")
+    for c in h.cells:
+        if not c.n_held:
+            continue
+        pre = M + "HeldOff" + cell_token(c.cell)
+        src = _r2("posthoc", f"{rule}; {c.cell}")
+        book.add(pre + "N", c.n_held, "count", source=src + "; held-off witnesses")
+        book.add(pre + "Shifts", c.held_shifts, "count", source=src + f"; shifts holding them, of {c.n_shifts}")
+        book.add(pre + "NeverK", c.k_never, "count", source=src + "; held-off witnesses who never reported")
+        _share(book, pre + "NeverPct", c.k_never, c.n_held, source=src + "; never-reported share of the held-off")
+        iv = wilson(c.k_never, c.n_held)
+        book.add(pre + "NeverCI", iv, "ci", source=src + "; Wilson 95% interval, witness level, clustering ignored")
+    x = h.contrast
+    if x is not None:
+        a, b = h.cell_a, h.cell_b
+        ha = next(c for c in h.cells if c.cell == a)
+        hb = next(c for c in h.cells if c.cell == b)
+        pre = M + "HeldOffNever" + cell_token(a) + "Minus" + cell_token(b)
+        src = _r2("posthoc", f"{rule}; never-reported share among held-off witnesses, {a} {ha.k_never}/{ha.n_held} "
+                             f"minus {b} {hb.k_never}/{hb.n_held}; episode-cluster bootstrap (every shift of the cell "
+                             f"resampled, held-off witnesses as units), B={x.B}, percentile 95% interval, stream "
+                             f"{x.stream}; descriptive, no test")
+        ok = x.estimate == x.estimate
+        book.add(pre + "Delta", x.estimate if ok else None, "pp", source=src)
+        book.add(pre + "Lo", x.lo, "pp", source=src)
+        book.add(pre + "Hi", x.hi, "pp", source=src)
+        book.add(pre + "CI", (x.lo, x.hi), "ci", source=src)
+        book.add(pre + "B", x.B, "count", source=src)
+        add_excl(book, pre, x.lo, x.hi, src)
+    for s in h.splits:
+        pre = M + "HeldOffSplit" + cell_token(s.cell)
+        src = _r2("posthoc", f"{rule}; {s.cell} held-off witnesses split by whether a peer's line (another witness or "
+                             f"C) was in the #escalation-log of the round-3 digest, their next turn")
+        book.add(pre + "PeerN", s.peer_n, "count", source=src + "; with a peer's line")
+        book.add(pre + "PeerNeverK", s.peer_never, "count", source=src + "; with a peer's line, never reported")
+        _share(book, pre + "PeerNeverPct", s.peer_never, s.peer_n, source=src + "; with a peer's line: never share")
+        book.add(pre + "NoPeerN", s.nopeer_n, "count", source=src + "; without one")
+        book.add(pre + "NoPeerNeverK", s.nopeer_never, "count", source=src + "; without one, never reported")
+        _share(book, pre + "NoPeerNeverPct", s.nopeer_never, s.nopeer_n, source=src + "; without one: never share")
+        if s.peer_n and s.nopeer_n:
+            book.add(pre + "Delta", s.peer_never / s.peer_n - s.nopeer_never / s.nopeer_n, "pp",
+                     source=src + "; never share with a peer's line minus without, percentage points")
+        if s.fisher_p is not None:
+            book.add(pre + "FisherP", s.fisher_p, "pval",
+                     source=src + "; two-sided Fisher exact p of the 2x2 table, witness level, clustering ignored")
+
+
+def register_board_sub_noteless(book: NumberBook, M: str, rates: Sequence[BoardSubRate]) -> None:
+    """A5: the D-010 board-substitution count over the witnesses who sent no note at all (<pre>OfNoteless...), the
+    rate the unconditional one is bounded by. Only where every noteless poster is judged and some witness is
+    noteless."""
+    from wtth.analysis.intervals import wilson
+
+    for r in rates:
+        if not r.n_noteless or r.n_noteless_known != r.n_noteless:
+            continue
+        pre = M + "BoardSub" + cell_token(r.cell) + ("" if r.source == "judge" else "Final")
+        src = _r2("posthoc", f"D-010 board substitution {r.model} {r.cell} ({r.source} labels) among the witnesses who "
+                             f"sent no note at all in rounds 1-5: a live post labelled concern or escalation, over "
+                             f"the noteless witnesses; Wilson 95% interval, witness level, clustering ignored")
+        book.add(pre + "OfNotelessK", r.k_qualifying, "count", source=src)
+        book.add(pre + "OfNotelessN", r.n_noteless, "count", source=src)
+        book.add(pre + "OfNotelessPct", r.k_qualifying / r.n_noteless, "prop", source=src)
+        lo, hi = wilson(r.k_qualifying, r.n_noteless)
+        book.add(pre + "OfNotelessLo", lo, "prop", source=src)
+        book.add(pre + "OfNotelessHi", hi, "prop", source=src)
+        book.add(pre + "OfNotelessCI", (lo, hi), "ci", source=src)
+
+
+def register_debrief_calls(book: NumberBook, M: str, d: Any) -> None:
+    """final_review.DebriefCalls (A7)."""
+    from wtth.analysis.final_review import CALL_RULE
+
+    base = (f"debrief answers (D1, D2) with {CALL_RULE}; tools are off in debrief turns, so no such text reached ops "
+            f"and none counts for P1")
+    if d.untold_cell is not None:
+        pre = M + "DebriefCallUntold" + cell_token(d.untold_cell)
+        src = _r2("descriptive", f"{base}; the {d.untold_shifts} {d.untold_cell} shifts in which no witness sent ops a "
+                                 f"violation note by round 5")
+        book.add(pre + "ShiftsN", d.untold_shifts, "count", source=src)
+        book.add(pre + "ShiftsK", d.untold_shifts_k, "count", source=src + "; shifts with such a witness")
+        book.add(pre + "WitnessesN", d.untold_witnesses, "count", source=src + "; their witnesses")
+        book.add(pre + "WitnessesK", d.untold_witnesses_k, "count", source=src + "; witnesses with such an answer")
+    for c in d.cells:
+        pre = M + "DebriefCall" + cell_token(c.cell)
+        src = _r2("descriptive", f"{base}; {c.cell} witnesses")
+        book.add(pre + "N", c.n, "count", source=src)
+        book.add(pre + "K", c.k, "count", source=src + "; with such an answer")
+        book.add(pre + "NeverN", c.n_never, "count", source=src + "; no violation note by round 5")
+        book.add(pre + "NeverK", c.k_never, "count", source=src + "; no violation note by round 5, with such an answer")
+
+
+def register_live_only(book: NumberBook, M: str, lo: Any) -> None:
+    """final_review.LiveOnly (A8): <M>LiveOnly..., exploratory, never a verdict."""
+    what = ("witnesses whose D1 answer (asked after the shift, so the restriction conditions on a post-treatment "
+            "answer) was coded live; exploratory, no test")
+    src = _r2("posthoc", what)
+    book.add(M + "LiveOnlyN", lo.n_live, "count", source=src + "; witnesses kept")
+    book.add(M + "LiveOnlyAllN", lo.n_all, "count", source=src + "; all witnesses of the analysis set")
+    _share(book, M + "LiveOnlyPct", lo.n_live, lo.n_all, source=src + "; share kept")
+    for cell, k, n, eps in lo.rates:
+        pre = M + "LiveOnlyPOne" + cell_token(cell)
+        s = src + f"; {cell}: P1 among them"
+        book.add(pre + "K", k, "count", source=s)
+        book.add(pre + "N", n, "count", source=s)
+        book.add(pre + "Eps", eps, "count", source=s + "; shifts with at least one")
+        book.add(pre + "Pct", _share_or_none(k, n), "prop", source=s)
+    for c in lo.contrasts:
+        pre = M + "LiveOnly" + PART_TOKENS.get(c.name.split(":", 1)[1], token(c.name))
+        ok = c.status != "unavailable" and c.estimate == c.estimate
+        s = (src + f"; {c.name.split(':', 1)[1]} contrast on these witnesses, episode-cluster bootstrap (m_e may be < 3), "
+                   f"B={c.B}, percentile 95% interval, stream {c.stream}")
+        book.add(pre + "Delta", c.estimate if ok else None, "pp", source=s)
+        book.add(pre + "Lo", c.lo if ok else None, "pp", source=s)
+        book.add(pre + "Hi", c.hi if ok else None, "pp", source=s)
+        book.add(pre + "CI", (c.lo, c.hi) if ok else (None, None), "ci", source=s)
+        book.add(pre + "B", c.B, "count", source=s)
+        if ok:
+            add_excl(book, pre, c.lo, c.hi, s)
+        for k, key in (("dR0", "DeltaRZero"), ("dR1", "DeltaROne")):
+            if k in c.components:
+                book.add(pre + key, c.components[k], "pp", source=s + f"; component {k} (same replicates)")
+                book.add(pre + key + "CI", (c.components.get(k + "_lo"), c.components.get(k + "_hi")), "ci",
+                         source=s + f"; component {k} (same replicates)")
+
+
+def register_turn_integrity(book: NumberBook, t: Any) -> None:
+    """final_review.TurnIntegrity (A10): every turn of the main database, all phases."""
+    src = _r2("descriptive", "every turn of the main database (all phases: pilots, core, Sonnet, follow-up, probes)")
+    book.add("TurnIntegrityAllN", t.n_all, "count", source=src)
+    book.add("TurnIntegrityOkN", t.n_ok, "count", source=src + "; turns classed ok")
+    book.add("TurnIntegrityOkOtherModelK", t.ok_other_model, "count",
+             source=src + "; ok turns whose result modelUsage names a model other than the one requested")
+    book.add("TurnIntegrityOkNoUsageK", t.ok_no_usage, "count", source=src + "; ok turns with no modelUsage record")
+    book.add("TurnIntegrityRefusalStopK", t.refusal_stop, "count",
+             source=src + "; turns with a refusal stop (result or assistant stop_reason 'refusal', or safety_stops > 0)")
+    book.add("TurnIntegritySafetyStopK", t.safety_stop, "count", source=src + "; turns with safety_stops > 0")
+    book.add("TurnIntegrityRefusalClassK", t.refusal_class, "count", source=src + "; turns classed refusal")
+    book.add("TurnIntegrityRefusalPhraseK", t.refusal_phrase, "count",
+             source=src + "; ok turns whose text matched the pinned refusal-phrase rule (a flag on the text, not a "
+                          "stop; the turn completed)")
+
+
+def register_cluster_rates(book: NumberBook, rates: Sequence[CellRate], prefix: Mapping[str, str], *,
+                           label: str) -> None:
+    """A6: P1 with a shift-level cluster-bootstrap interval for a Fig. 1a row that has a Wilson interval elsewhere.
+    prefix: cell -> key prefix (e.g. SonnetPOneForged); keys <prefix>Cluster{Lo,Hi,CI}."""
+    for r in rates:
+        pre = prefix.get(r.cell)
+        if pre is None:
+            continue
+        src = _r2("posthoc", f"{label}: {r.model} {r.cell} P1 {r.k}/{r.n} ({r.n_episodes} shifts), shift-level "
+                             f"cluster-bootstrap percentile 95% interval (episodes resampled within the cell), stream "
+                             f"posthoc (Fig. 1a)")
+        book.add(pre + "ClusterLo", r.lo, "prop", source=src)
+        book.add(pre + "ClusterHi", r.hi, "prop", source=src)
+        book.add(pre + "ClusterCI", (r.lo, r.hi), "ci", source=src)
+
+
+def register_fig1a_flags(book: NumberBook, rows: Sequence[CellRate], *, B: int) -> None:
+    """A6: how Fig. 1a's intervals were made, machine-readable for its caption."""
+    methods = {r.method for r in rows}
+    cluster = methods == {"cluster_bootstrap"}
+    src = _r2("descriptive", f"Fig. 1a intervals: methods {sorted(methods)} over its {len(rows)} plotted rows")
+    book.add("FigOneAIntervalMethod", "shift-level cluster bootstrap" if cluster else "mixed", "text", source=src)
+    book.add("FigOneAIntervalB", B, "count", source=src + "; bootstrap replicates per interval")
+    book.add("FigOneAWilsonRowsK", sum(1 for r in rows if r.method != "cluster_bootstrap"), "count",
+             source=src + "; rows still drawn with a witness-level Wilson interval")
+    book.add("FigOneARowsN", len(rows), "count", source=src + "; plotted rows (model and cell)")
+    book.add("FigOneAPointRowsK", sum(1 for r in rows if r.lo is not None and r.lo == r.hi), "count",
+             source=src + "; rows whose interval is a single point (every witness, or none, reported: every resample "
+                          "is the same)")
+
+
+def register_kappa_prevalence(book: NumberBook, agreement: Mapping[str, Any]) -> None:
+    """A9: the prevalence beside every model-model kappa, from its confusion table (rows judge, columns Claude
+    proposal). Binary labels: <pre>PrevPct = pooled share coded 1 (both annotators), <pre>PrevJudgePct,
+    <pre>PrevClaudePct. Labels with more categories: <pre>Prev<Category>Pct per category (pooled), <pre>PrevPct = the
+    largest of them, named by <pre>PrevCat."""
+    for block, tag in (("model_model", "KappaMM"), ("model_model_h5", "KappaMMH")):
+        for typ, labels in sorted((agreement.get(block) or {}).items()):
+            for label, r in sorted(labels.items()):
+                conf, cats, n = r.get("confusion"), list(r.get("categories") or ()), int(r.get("n") or 0)
+                if not conf or not cats or not n:
+                    continue
+                pre = tag + token(typ) + token(label)
+                rows = [sum(conf[i]) for i in range(len(cats))]
+                cols = [sum(row[j] for row in conf) for j in range(len(cats))]
+                pooled = [(rows[i] + cols[i]) / (2 * n) for i in range(len(cats))]
+                src = _r2("posthoc", f"{block} {typ} {label}: prevalence behind the kappa (n={n}; judge vs Claude "
+                                     f"proposal, model-model, not human); kappa is unstable at extreme prevalence")
+                if [str(c) for c in cats] in (["0", "1"], ["False", "True"]):
+                    book.add(pre + "PrevPct", pooled[1], "prop", source=src + "; pooled share coded 1")
+                    book.add(pre + "PrevJudgePct", rows[1] / n, "prop", source=src + "; share the judge coded 1")
+                    book.add(pre + "PrevClaudePct", cols[1] / n, "prop", source=src + "; share Claude coded 1")
+                    continue
+                for c, p in zip(cats, pooled):
+                    book.add(pre + "Prev" + token(str(c)) + "Pct", p, "prop", source=src + f"; pooled share coded {c}")
+                i = max(range(len(cats)), key=lambda j: (pooled[j], -j))
+                book.add(pre + "PrevPct", pooled[i], "prop", source=src + "; pooled share of the most frequent category")
+                book.add(pre + "PrevCat", str(cats[i]), "text", source=src + "; the most frequent category")
+
+
+def register_human_read_prevalence(book: NumberBook, r: Any) -> None:
+    """A9: the prevalence behind the author / second-reader kappa of told_ops."""
+    q = getattr(r, "second", None)
+    if r.status != "complete" or q is None or not q.n:
+        return
+    src = f"{_r2('posthoc', 'prevalence behind the told_ops kappa of the author read')}; {HR_SOURCE}"
+    book.add("HumanReadSecondAuthorToldYesK", q.author_told_yes, "count", source=src + "; author's original yes")
+    book.add("HumanReadSecondReaderToldYesK", q.second_told_yes, "count", source=src + "; second reader's yes")
+    book.add("HumanReadSecondKappaAuthorToldPrevPct", (q.author_told_yes + q.second_told_yes) / (2 * q.n), "prop",
+             source=src + f"; pooled share of yes over both readers, n={q.n} items")

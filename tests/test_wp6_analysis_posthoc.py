@@ -545,8 +545,14 @@ class SynthRunTest(unittest.TestCase):
                     self.assertEqual(e["display"], "exploratory", k)
 
     def test_exp1_never_moves_a_confirmatory_number(self) -> None:
-        a = {k: (e["value"], e["display"]) for k, e in self.out["a"].items() if not k.startswith("ExpOne")}
-        b = {k: (e["value"], e["display"]) for k, e in self.out["b"].items() if not k.startswith("ExpOne")}
+        # research/68 A6 and A10: the Fig. 1a flags count its rows (the follow-up included) and the turn-integrity
+        # counts cover every turn of the database, so both see the follow-up by design; they are descriptive
+        whole = ("ExpOne", "FigOneA", "TurnIntegrity")
+        for k, e in self.out["b"].items():
+            if k.startswith(whole[1:]):
+                self.assertTrue(e["source"].startswith("descriptive"), k)
+        a = {k: (e["value"], e["display"]) for k, e in self.out["a"].items() if not k.startswith(whole)}
+        b = {k: (e["value"], e["display"]) for k, e in self.out["b"].items() if not k.startswith(whole)}
         self.assertEqual(set(a), set(b))
         self.assertEqual({k for k in a if a[k] != b[k]}, {"SnapshotShaShort"})
         self.assertGreater(len(a), 1000)

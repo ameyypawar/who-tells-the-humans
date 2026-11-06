@@ -56,6 +56,8 @@ class SecondReaderResults:
     kappa_seed: int
     kappa_undefined_draws: int
     p1_differences: tuple[str, ...] = ()    # item ids where the second reader and P1 differ
+    author_told_yes: int = 0                # research/68 A9: the prevalence behind the kappa
+    second_told_yes: int = 0
 
 
 @dataclass(frozen=True, slots=True)
@@ -245,7 +247,7 @@ def _second_reader(path: Path, item_row: Mapping[str, Mapping[str, str]], told_o
     ci, undef = bootstrap_kappa(a, b, B=B, seed=seed)
     return SecondReaderResults(SECOND_MODEL_NAME, len(ids), sum(x == y for x, y in zip(a, b)),
                                sum(x == y for x, y in zip(am, bm)), len(matched), len(matched) - len(diff),
-                               kappa_binary(a, b), ci, B, seed, undef, diff)
+                               kappa_binary(a, b), ci, B, seed, undef, diff, sum(a), sum(b))
 
 
 def _adjudication(path: Path, item_row: Mapping[str, Mapping[str, str]], *, second_told: Mapping[str, bool | None],

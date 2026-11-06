@@ -172,9 +172,12 @@ def tost_decision(verdict: str) -> str:
     return str(verdict).replace("_", " ")
 
 
-def table_hypotheses(h: HypothesisResults, rates: Sequence[CellRate], book: Any, out_dir: Path) -> TableFiles:
+def table_hypotheses(h: HypothesisResults, rates: Sequence[CellRate], book: Any, out_dir: Path, *,
+                     decisions: Mapping[str, str] | None = None) -> TableFiles:
     """H1-H3: cells (k/n, %), contrast in percentage points, 95% bootstrap interval, status, decision; then the
-    H1 null rule and the exploratory TOST. `rates` are the P1 cell rates (outcome 'P1' when present)."""
+    H1 null rule and the exploratory TOST. `rates` are the P1 cell rates (outcome 'P1' when present). `decisions`
+    ({'H1': text}) replaces a Decision cell with the wording of the matching ...VerdictText macro (research/68 A3), so
+    the table and Table 2 never disagree."""
     p1 = [r for r in rates if r.outcome == "P1"] or list(rates)
     by = {r.cell: r for r in p1}
     rows: list[Sequence[Cell] | None] = []
@@ -182,8 +185,9 @@ def table_hypotheses(h: HypothesisResults, rates: Sequence[CellRate], book: Any,
         cells = "; ".join(f"{k} {by[k].k}/{by[k].n} ({_dec(by[k].p * 100, 1)}%)" if k in by and by[k].p is not None
                           else f"{k} n/a" for k in _HYP_CELLS[name])
         ok = c.status != "unavailable"
+        dec = (decisions or {}).get(name) or decision_text(c)
         rows.append([text(name), text(_HYP_LABEL[name]), text(cells), pp(c.estimate) if ok else text("n/a"),
-                     ci(c.lo, c.hi) if ok else text("n/a"), text(c.status), text(decision_text(c))])
+                     ci(c.lo, c.hi) if ok else text("n/a"), text(c.status), text(dec)])
     rows.append(None)
     nr = h.null_rule or "not applicable"
     rows.append([text("H1 null rule"), text("upper limit < 15 points"), text(""), text(""), text(""), text("confirmatory"),
