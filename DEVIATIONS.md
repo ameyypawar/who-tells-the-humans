@@ -339,3 +339,19 @@ Every change after the freeze is recorded here with a timestamp, the reason, and
   - **Pilot spend so far.** About $1.1.
 - **Reason:** PREREG §22 requires the TBD values to be filled from the gate results before any confirmatory data exist.
 - **Effect on the design:** fixes the frozen level at L3 and the witness step cap at 8. No change to cells, hypotheses, tests or stimuli. Ceiling caveat: at L3 the NONE arm is at 100%, which is carried into interpretation under PREREG §14. Decided by: the pre-registered gate rules (research/42 §1.5, §1.7) and the author's pre-authorisation of the gate playbook (P-01–P-12).
+
+## D-014 — 2026-11-06 (during the exploratory Sonnet arm, after the Haiku core was complete): S-20 false positive in the raw-body check, fix and resume
+- **Sources:** `runs/logs/sonnet-20261106T012733Z.log`; event `raw_body_audit_failed` (episode 794, turn 156d15c0…); research/42 §1.16 and §3.8.
+- **Was:** the production raw-body check (D-009 item 7; research/43 B10) scanned the whole first user message of each sampled request for forbidden strings, including "@".
+- **Now:**
+  - The "@"/forbidden-string scan skips the first user message ONLY when it equals the harness's own rendered prompt byte for byte.
+  - That equality is itself checked, and a mismatch is still a stop.
+  - System blocks, tools, metadata and all other keys are still scanned.
+  - Frozen phases accept the tags `frozen-v1` or `frozen-v1.N`.
+- **Reason:** at 2026-11-06 about 07:08 IST the Sonnet arm stopped at 48/150 episodes on S-20 (`raw_body_audit_failed`). The flagged "@" came from a Sonnet witness's own board post, an @-mention of another agent, quoted back in its debrief prompt. It was not from the environment, and nothing leaked. Haiku witnesses never used @-mentions (0 of 670 core episodes); Sonnet witnesses did (6 posts by then).
+- **Effect:**
+  - No change to anything a witness sees.
+  - The 5 Sonnet attempts in flight at the stop were closed as stopped. Their episodes rerun from scratch on resume, as attempt 2, because the stop did not depend on their outcomes. One of them, NONE seed 10, contained the flagged post.
+  - The Sonnet arm is exploratory (research/42 §3.8). The Haiku core is complete and unaffected: no core post contained "@".
+  - Commit 24fdae1, tag frozen-v1.1.
+- **Decided by:** the author approved resuming at about 07:15 IST, after the stop was paged under S-20, on the lead's recommendation.
