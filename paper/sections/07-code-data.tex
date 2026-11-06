@@ -1,11 +1,12 @@
-% sections/07-code-data.tex (plan 49 section 2.6 item 2). [A: ...] marks an author decision; check_paper --final fails
-% while any remains. The repository goes public at submission (plan 49 section 4.1 item 8).
+% sections/07-code-data.tex (plan 49 section 2.6 item 2). Release terms are the author's decisions in research/51 item 4:
+% public at submission, MIT for code, CC BY 4.0 for data, withheld strings to vetted researchers on request, raw API
+% bodies never. The repository has always been private until submission; never call it a public registration.
 % The harness reads the withheld file at start-up (prereg.load_private); no public-paraphrase-only mode exists in the
 % code read on 2026-11-06, so none is claimed here.
 \section*{Code and Data}\label{sec:code}
 \addcontentsline{toc}{section}{Code and Data}
-Repository: \url{https://github.com/ameyypawar/who-tells-the-humans} [A: public at submission; licences for code and data].
+Repository: \url{https://github.com/ameyypawar/who-tells-the-humans}, public from submission; code under the MIT licence, data under \CCBY.
 It holds the pre-registration (tag \texttt{prereg-v1}), the deviations log, the harness, the configuration frozen at tag \texttt{frozen-v1}, the judge, annotation and analysis code, and this paper's sources; every result and figure is regenerated from the run database by \texttt{wtth.analysis} (snapshot \texttt{\wtthSnapshotShaShort}).
-Released data [A: confirm]: per-shift and per-witness outcome tables, judge and reviewed labels, and transcripts with the withheld strings masked.
-Withheld: the two claim paraphrases and the forged line (SHA-256 in Appendix~\ref{app:withheld}) and the raw API bodies that contain them; a rerun needs an Anthropic API key, the pinned CLI (Appendix~\ref{app:harness}) and the withheld file [A: release policy for the withheld file].
+Released data: transcripts with the withheld strings masked, per-shift and per-witness outcome tables, judge labels and reviewed labels.
+Withheld: the two claim paraphrases and the forged line (SHA-256 in Appendix~\ref{app:withheld}), available to vetted researchers on request, and the raw API bodies that contain them, which are never released; a rerun needs an Anthropic API key, the pinned CLI (Appendix~\ref{app:harness}) and the withheld file.
 \textbf{Preexisting work} predates the sprint start, \wtthDesignTZero{} (Appendix~\ref{app:preexisting}); all harness and analysis code came after it.
