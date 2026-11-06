@@ -16,10 +16,10 @@ Sprint start & \wtthDesignTZero & README; D-004 \\
 Deviations D-001 to \wtthDesignDeviationsLast & before the core & Table~\ref{tab:deviations} \\
 Void G0 run, its rerun on fresh pilot seeds, G1 and G2 & Table~\ref{tab:gatelog} & gate log; D-012 \\
 Tag \texttt{frozen-v1} (commit \texttt{\wtthDesignFrozenTagCommit}) & before the core & git tag \\
-Haiku core & \wtthOpsCoreStart{} to \wtthOpsCoreEnd & run manifest \\
+Haiku core & \wtthOpsCoreStart{} to \wtthOpsCoreEnd & runs table \\
 Deviations D-014 to D-019 & after the core, before any review report & Appendix~\ref{app:deviations} \\
 Deviation D-020 (who made the review decisions) & after the review was imported & Appendix~\ref{app:deviations} \\
-Deviations D-021 to \wtthDesignDeviationsLastHead{} (post hoc analyses, \ifdefstring{\wtthHumanReadStatus}{complete}{the author read and its second reader}{a planned author read}, follow-up cells) & after the strict analysis & Appendix~\ref{app:deviations} \\
+Deviations D-021 to \wtthDesignDeviationsLastHead{} (post hoc analyses, \ifdefstring{\wtthHumanReadStatus}{complete}{the author read and its second reader}{a planned author read}, follow-up cells, the departures of D-026) & after the strict analysis & Appendix~\ref{app:deviations} \\
 Analysis snapshot & \texttt{\wtthSnapshotShaShort} & \texttt{numbers.json} \\
 \bottomrule
 \end{tabular}
@@ -37,7 +37,8 @@ We extend that list, here and in the README, to the research notes written after
 
 \subsection{Deviations}\label{app:deviations}
 Each entry in \texttt{DEVIATIONS.md} gives what changed, when, why, who decided and which analyses it touches.
-D-001 to D-013 precede all confirmatory data; D-014 to D-019 were recorded after the Haiku core had been collected and before any review report; D-020, recorded after the review was imported, corrects the record of who made the review decisions; and D-021 to \wtthDesignDeviationsLastHead, recorded after the strict analysis, add post hoc analyses, an author read of transcripts\ifdefstring{\wtthHumanReadStatus}{complete}{ with a blind second reader and an adjudication of their disagreements (D-025; Appendix~\ref{app:authorread})}{ (planned; pending at this writing, so no result of it is reported)} and an exploratory follow-up (Table~\ref{tab:deviations} gives each entry's timing).
+D-001 to D-013 precede all confirmatory data; D-014 to D-019 were recorded after the Haiku core had been collected and before any review report; D-020, recorded after the review was imported, corrects the record of who made the review decisions; and D-021 to \wtthDesignDeviationsLastHead, recorded after the strict analysis, add post hoc analyses, an author read of transcripts\ifdefstring{\wtthHumanReadStatus}{complete}{ with a second reader shown only a blanked sheet and an adjudication of their disagreements (D-025; Appendix~\ref{app:authorread})}{ (planned; pending at this writing, so no result of it is reported)} and an exploratory follow-up, and D-026 records three departures found in review: the three built-in CLI plugins loaded in every init against the pre-registration's ``no plugins'' (the raw-body audit shows they add no system text or tools on audited turns), the pre-registered precision check of P1 that was not done, and the release disclosure that the forged line can be reconstructed from released transcripts (Table~\ref{tab:deviations} gives each entry's timing).
+The pre-registered by-handle-slot breakdown cannot be estimated apart from the by-paraphrase one, because the seed sets paraphrase and handle order together.
 None changes the pre-registered cells, hypotheses, tests or keyword rule, and no confirmatory verdict depends on D-020 to \wtthDesignDeviationsLastHead.
 Three touch text a witness sees in the pre-registered cells, each identically in every cell: the input schemas the pre-registration left open (D-005), rendering formats it left open (D-006), and the server name, which sets the prefix of every tool name (D-012).
 D-024 also records a change of reporting: the pre-registration planned Figure~\ref{fig:one} as P2 and \Ptwop{} by cell beside the safety-versus-alert-load frontier, but P2 is zero in every pre-registered cell except \cell{FORGED}, so panel (a) shows P1 by cell with P2 beside each row, panel (b) is the post hoc timing panel (D-021), and the frontier keeps its pre-registered form as Figure~\ref{fig:frontier} in Appendix~\ref{app:full}.
@@ -63,7 +64,7 @@ Pinned model ids & \wtthDesignModelHaiku, \wtthDesignModelSonnet & configuration
 Pinned CLI version & \wtthDesignCliVersion & D-002 \\
 Step cap & \wtthOpsStepCap & G0, D-006 \\
 Concurrency K & up to \wtthOpsKMax{} processes & D-005 \\
-Post, message and subject caps (characters) & \wtthDesignLenPost, \wtthDesignLenMessage{} and \wtthDesignLenSubject & G0, D-006 \\
+Post, message and subject caps (characters) & \wtthDesignLenPost, \wtthDesignLenMessage{} and \wtthDesignLenSubject{} (subject doubled at G0) & G0, D-006, D-013 \\
 Judge model & \wtthDesignModelJudge & D-007 \\
 Bootstrap resamples & \wtthDesignBootstrapResamples & D-011 \\
 Level for the Sonnet subset & the frozen Haiku level & configuration \\
@@ -131,4 +132,5 @@ Two checks need a word.
 The receipts gap was nominally inside its margin (\cell{NONE-R} $-$ \cell{NO-RECEIPT}: \wtthHaikuHTwoDeltaROne{} points, CI \wtthHaikuHTwoDeltaROneCI, an interval that crosses the margin), but with the log the claim's stand-down grew rather than shrank (H2 opposite to prediction), so the receipts prediction is not supported.
 \cell{POLICY} sat between \cell{CLAIM} and \cell{NONE} only nominally: \cell{POLICY} $-$ \cell{CLAIM} was \wtthHaikuPostHocPredPolicyMinusClaimDelta{} points (CI \wtthHaikuPostHocPredPolicyMinusClaimCI) and \cell{NONE} $-$ \cell{POLICY} \wtthHaikuPostHocPredNoneMinusPolicyDelta{} (CI \wtthHaikuPostHocPredNoneMinusPolicyCI), within noise.
 The power figures use the planning base rate of \wtthHaikuPowerP\%, not the realised ceiling, so they do not describe the realised precision: the effects detectable at \wtthDesignPowerPct\% power are \wtthHaikuPowerHOneMDE, \wtthHaikuPowerHTwoMDE{} and \wtthHaikuPowerHThreeMDE{} points for H1 to H3 (assumed intra-class correlation \wtthHaikuPowerRho), and under a true stand-down of zero the H1 null rule would be met with probability \wtthHaikuPowerHOnePNullDZero\%.
+The realised intervals (Table~\ref{tab:hyp}) are far narrower, because binomial variance is small near the ceiling; this, not the design, is why H1 rejected an effect an order of magnitude below its planned detectable size.
 \clearpage

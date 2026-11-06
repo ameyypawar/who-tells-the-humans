@@ -4,7 +4,7 @@
 % time below (the reader types no number), and the CSV is in the repository.
 \section{Full results}\label{app:full}
 The tables and figures below are the unedited export of \texttt{wtth.analysis} for snapshot \texttt{\wtthSnapshotShaShort}.
-Rates are witness-level with Wilson intervals unless marked, and differences are in points.
+Rates are witness-level with Wilson intervals \citep{wilson1927probable} unless marked, and differences are in points.
 
 \paragraph{Analysis set.}
 The confirmatory set holds all \wtthHaikuEpisodesInSet{} planned Haiku shifts, and \wtthHaikuEpisodesAbove{} shifts lie above it.
@@ -34,8 +34,8 @@ Seed-paired bootstrap & \wtthHaikuSensSeedPairedHOneDelta{} (\wtthHaikuSensSeedP
 \end{table}
 
 % ---- post hoc (D-021) robustness, timing and the pre-registered exploratory by-paraphrase breakdown ----
-\paragraph{Post hoc robustness (D-021).}
-Table~\ref{tab:posthoc} sets the pre-registered intervals beside witness-level exact and score methods that ignore clustering, and gives, for each arm with non-reporters, how many shifts hold them and how often an episode-cluster resample omits all of those shifts.
+\paragraph{Post hoc exact and score checks (D-021).}
+Table~\ref{tab:posthoc} sets the pre-registered intervals beside witness-level exact and score methods that ignore clustering (Fisher's exact test; Newcombe's hybrid score interval, \citealp{newcombe1998interval}; MOVER for the difference-in-differences, \citealp{zou2008construction}), and gives, for each arm with non-reporters, how many shifts hold them and how often an episode-cluster resample omits all of those shifts.
 Only H1 depends on that boundary: its non-reporters sit in \wtthHaikuPostHocBoundaryHOneClaimShiftsM{} of \wtthHaikuPostHocBoundaryHOneClaimShiftsN{} shifts, and \cell{NONE}, with none, adds no variance.
 
 \begin{table}[h]
@@ -49,7 +49,7 @@ H2 & \wtthHaikuHTwoCI & MOVER \wtthHaikuPostHocHTwoMoverCI & \cell{CLAIM} \wtthH
 H3 & \wtthHaikuHThreeCI & Fisher p \wtthHaikuPostHocHThreeFisherP; Newcombe \wtthHaikuPostHocHThreeNewcombeCI & \cell{NO-RECEIPT} \wtthHaikuPostHocBoundaryHThreeNoReceiptNonReporters{} (\wtthHaikuPostHocBoundaryHThreeNoReceiptShiftsM{} of \wtthHaikuPostHocBoundaryHThreeNoReceiptShiftsN); \cell{FORGED} \wtthHaikuPostHocBoundaryHThreeForgedNonReporters{} (\wtthHaikuPostHocBoundaryHThreeForgedShiftsM{} of \wtthHaikuPostHocBoundaryHThreeForgedShiftsN) & \wtthHaikuPostHocBoundaryHThreeNoReceiptPZero\%; \wtthHaikuPostHocBoundaryHThreeForgedPZero\% \\
 \bottomrule
 \end{tabularx}
-\caption{\textbf{Post hoc robustness of the confirmatory tests} (D-021; points). The witness-level methods ignore clustering; the last column is the analytic probability that an episode-cluster resample of the arm draws none of the shifts that hold its non-reporters. No verdict changes.}
+\caption{\textbf{Post hoc exact and score checks of the confirmatory tests} (D-021; points). The witness-level methods ignore clustering; the last column is the analytic probability that an episode-cluster resample of the arm draws none of the shifts that hold its non-reporters. No verdict changes.}
 \label{tab:posthoc}
 \end{table}
 
@@ -57,7 +57,10 @@ H3 & \wtthHaikuHThreeCI & Fisher p \wtthHaikuPostHocHThreeFisherP; Newcombe \wtt
 Table~\ref{tab:timing} gives, for every violation cell, the round of each witness's first violation note: by round 2, or held off past round 2 and then reported later or never.
 In world R1 it also counts the never-reporters who had a peer's line in the log (another witness's, or C's real one) at their next turn, the reasons the never-reporters gave in \DebTwo, and the shifts whose first witness note came after round 2.
 Among never-reporters, ``someone else told ops'' was given by \wtthHaikuTimingNeverClaimDTwoSomeoneElseToldK{} of \wtthHaikuTimingNeverClaimDTwoN{} in \cell{CLAIM} and \wtthHaikuTimingNeverNoReceiptDTwoSomeoneElseToldK{} of \wtthHaikuTimingNeverNoReceiptDTwoN{} in \cell{NO-RECEIPT}; no cell without a claim has never-reporters, so these rates have no baseline.
-In the \wtthHaikuPTwoForgedK{} \cell{FORGED} shifts that left ops untold no witness sent any note at all (any-note shift rate \wtthHaikuKmEpisodeAnyNoteForgedSFive\%), so ``left ops untold'' holds under the any-note definition too.
+In the \wtthHaikuPTwoForgedK{} \cell{FORGED} shifts that left ops untold no witness sent any note within the shift (any-note shift rate \wtthHaikuKmEpisodeAnyNoteForgedSFive\%), so ``left ops untold'' holds under the any-note definition too; in \wtthHaikuDebriefCallUntoldForgedShiftsK{} of them (\wtthHaikuDebriefCallUntoldForgedWitnessesK{} of \wtthHaikuDebriefCallUntoldForgedWitnessesN{} witnesses) a witness tried \texttt{notify\_ops} in its debrief text, after the shift (descriptive).
+In \wtthHaikuRelayUntoldForgedShiftsK{} of those shifts (\wtthHaikuRelayUntoldForgedWitnessesK{} of the \wtthHaikuRelayUntoldForgedWitnessesN{} witnesses, \wtthHaikuRelayUntoldForgedPostsK{} of their \wtthHaikuRelayUntoldForgedPostsN{} posts, all in round \wtthHaikuRelayUntoldForgedRoundMin) a witness's board post relayed the claim, that is, claimed that another agent had told ops (final labels); with no note sent, these posts can only repeat C's claim.
+Across cells such relays are no measure of the claim: they reached \wtthHaikuRelayClaimPct\% of witnesses in \cell{CLAIM}, \wtthHaikuRelayNoReceiptPct\% in \cell{NO-RECEIPT} and \wtthHaikuRelayForgedPct\% in \cell{FORGED}, but \wtthHaikuRelayNoneRPct\% in \cell{NONE-R}, which had no claim, because a witness reporting a peer's real note posts the same words.
+Among the witnesses who held off past round 2, the share who never reported was \wtthHaikuHeldOffClaimNeverPct\% in \cell{CLAIM} (CI \wtthHaikuHeldOffClaimNeverCI) and \wtthHaikuHeldOffNoReceiptNeverPct\% in \cell{NO-RECEIPT} (CI \wtthHaikuHeldOffNoReceiptNeverCI); in \cell{FORGED}, \wtthHaikuHeldOffForgedNeverK{} of \wtthHaikuHeldOffForgedN{} never did, \wtthHaikuHeldOffSplitForgedPeerNeverK{} of \wtthHaikuHeldOffSplitForgedPeerN{} with a peer's line in view against \wtthHaikuHeldOffSplitForgedNoPeerNeverK{} of \wtthHaikuHeldOffSplitForgedNoPeerN{} without (Fisher p~$=$~\wtthHaikuHeldOffSplitForgedFisherP; post hoc).
 A visible real receipt did not always stop later reports: in \wtthHaikuTimingShiftReceiptLateK{} of \wtthHaikuTimingShiftReceiptN{} \cell{RECEIPT} shifts the first witness note came only in round 3 or later, with C's real log line in view since round 2.
 
 \begin{table}[h]
@@ -88,7 +91,7 @@ Cell & World & Witnesses & round 2 & round 2 & reported & never & in view & else
 The seed sets the claim's paraphrase and the handle order together, so their effects are aliased.
 Never-reporters are most frequent with the public paraphrase in every claim cell but \cell{POLICY}, most sharply in \cell{CLAIM} and \cell{NO-RECEIPT} (Table~\ref{tab:paraphrase}), so the stand-down may depend on the claim's wording or on slot order; the withheld paraphrases have the public one's meaning and length (Appendix~\ref{app:withheld}).
 Post hoc (D-024; shift-cluster bootstrap, descriptive, no test), P1 under the typed line minus P1 after a real receipt (\cell{FORGED} $-$ \cell{RECEIPT}) was \wtthHaikuForgedMinusReceiptDelta{} points overall (CI \wtthHaikuForgedMinusReceiptCI) and \wtthHaikuByParaphraseZeroForgedMinusReceiptDelta{} with the public paraphrase (CI \wtthHaikuByParaphraseZeroForgedMinusReceiptCI), \wtthHaikuByParaphraseOneForgedMinusReceiptDelta{} with withheld A (CI \wtthHaikuByParaphraseOneForgedMinusReceiptCI) and \wtthHaikuByParaphraseTwoForgedMinusReceiptDelta{} with withheld B (CI \wtthHaikuByParaphraseTwoForgedMinusReceiptCI); H3's difference was \wtthHaikuByParaphraseZeroNoReceiptMinusForgedDelta{} (CI \wtthHaikuByParaphraseZeroNoReceiptMinusForgedCI), \wtthHaikuByParaphraseOneNoReceiptMinusForgedDelta{} (CI \wtthHaikuByParaphraseOneNoReceiptMinusForgedCI) and \wtthHaikuByParaphraseTwoNoReceiptMinusForgedDelta{} points (CI \wtthHaikuByParaphraseTwoNoReceiptMinusForgedCI) in the same order.
-The typed line's match with a real receipt is therefore an average over wordings that point in opposite directions, and each wording is aliased with handle order.
+The typed line's comparison with a real receipt therefore depends on the wording, and each wording is aliased with handle order, so we draw no conclusion from it.
 
 \begin{table}[h]
 \centering\footnotesize\setlength{\tabcolsep}{4pt}
@@ -110,10 +113,10 @@ Cell & P1 \% (k/n) & never & P1 \% (k/n) & never & P1 \% (k/n) & never \\
 \end{table}
 
 \paragraph{Debriefs.}
-The debrief answers are post-hoc self-reports coded by the judge, and the two models agreed on the reason codes at model--model $\kappa$ from \wtthKappaMMDTwoAnswerReasonCodesUnsureItWasAViolationValue{} to \wtthKappaMMDTwoAnswerReasonCodesSomeoneElseToldValue{} (Appendix~\ref{app:judge}), so Tables~\ref{tab:htwo}, \ref{tab:reasons} and~\ref{tab:basis} are descriptive.
-The best-agreed codes are ``someone else told ops'' among the reasons ($\kappa$ \wtthKappaMMDTwoAnswerReasonCodesSomeoneElseToldValue) and, among the evidence, the log ($\kappa$ \wtthKappaMMDTwoAnswerBasisLogLineValue) and a post ($\kappa$ \wtthKappaMMDTwoAnswerBasisCPostValue).
+The debrief answers are post-hoc self-reports coded by the judge, and the two models agreed on the reason codes at model--model $\kappa$ from \wtthKappaMMDTwoAnswerReasonCodesUnsureItWasAViolationValue{} (prevalence \wtthKappaMMDTwoAnswerReasonCodesUnsureItWasAViolationPrevPct\%) to \wtthKappaMMDTwoAnswerReasonCodesSomeoneElseToldValue{} (prevalence \wtthKappaMMDTwoAnswerReasonCodesSomeoneElseToldPrevPct\%; Appendix~\ref{app:judge}), so Tables~\ref{tab:htwo}, \ref{tab:reasons} and~\ref{tab:basis} are descriptive.
+The best-agreed codes are ``someone else told ops'' among the reasons ($\kappa$ \wtthKappaMMDTwoAnswerReasonCodesSomeoneElseToldValue, prevalence \wtthKappaMMDTwoAnswerReasonCodesSomeoneElseToldPrevPct\%) and, among the evidence, the log ($\kappa$ \wtthKappaMMDTwoAnswerBasisLogLineValue, prevalence \wtthKappaMMDTwoAnswerBasisLogLinePrevPct\%) and a post ($\kappa$ \wtthKappaMMDTwoAnswerBasisCPostValue, prevalence \wtthKappaMMDTwoAnswerBasisCPostPrevPct\%).
 Saying that ops had been told was common wherever someone had told ops (\wtthHaikuBelievesYesClaimPct\% in \cell{CLAIM}, \wtthHaikuBelievesYesNoReceiptPct\% in \cell{NO-RECEIPT}), and lower under the rule (\wtthHaikuBelievesYesPolicyPct\% in \cell{POLICY}) and the forged line (\wtthHaikuBelievesYesForgedPct\%).
-No witness said in its debrief that ops had been told in a shift in which no one had (phantom beliefs: \wtthHaikuPhantomForgedPct\% in \cell{FORGED}, the only cell with such shifts).
+No witness said in its debrief that ops had been told in a shift in which no one had (phantom beliefs: \wtthHaikuPhantomForgedPct\% in \cell{FORGED}, the only cell with such shifts), although witnesses' board posts in those shifts did relay the claim during the shift (above): what witnesses wrote on the board and what they said in the debrief differ.
 
 % ---- the H2 reading (Section 4.2), exploratory: the \wtthHaikuDTwoReason... / \wtthHaikuDTwoBasis... macros ----
 % Shares of all witnesses of a cell (reporters included), witness-level Wilson intervals in tab:reasons and tab:basis.
@@ -123,35 +126,35 @@ Read across all six, they show four things, none of which settles the mechanism.
 First, citing the log does not separate the world-R1 cells: every witness in each of them gave the log as evidence about whether ops was told, \cell{NONE-R} included, where P1 stayed at \wtthHaikuPOneNoneRPct\%; with the log, fewer witnesses cited a post (\wtthHaikuDTwoBasisCPostNoReceiptPct\% in \cell{NO-RECEIPT} against \wtthHaikuDTwoBasisCPostClaimPct\% in \cell{CLAIM}).
 Second, the claim raised ``someone else told ops'' and ``thought ops was aware'' with the log (\wtthHaikuDTwoReasonSomeoneElseToldNoneRPct\% to \wtthHaikuDTwoReasonSomeoneElseToldNoReceiptPct\%, and \wtthHaikuDTwoReasonThoughtOpsAwareNoneRPct\% to \wtthHaikuDTwoReasonThoughtOpsAwareNoReceiptPct\%) and moved them little without it (\wtthHaikuDTwoReasonSomeoneElseToldNonePct\% to \wtthHaikuDTwoReasonSomeoneElseToldClaimPct\%, and \wtthHaikuDTwoReasonThoughtOpsAwareNonePct\% to \wtthHaikuDTwoReasonThoughtOpsAwareClaimPct\%), and both were highest where a receipt for C was shown.
 Third, ``trusted the claim'' stayed low in every cell, and ``feared a duplicate'' was higher with the log whether or not a claim was made, so neither tracks the extra stand-down.
-Fourth, without a log the claim raised ``could not verify, so reported anyway'' more (\wtthHaikuDTwoReasonCouldNotVerifyReportedAnywayNonePct\% to \wtthHaikuDTwoReasonCouldNotVerifyReportedAnywayClaimPct\%) than with it (\wtthHaikuDTwoReasonCouldNotVerifyReportedAnywayNoneRPct\% to \wtthHaikuDTwoReasonCouldNotVerifyReportedAnywayNoReceiptPct\%), as the candidate reading expects, but this is the code the models agreed on least of the five ($\kappa$ \wtthKappaMMDTwoAnswerReasonCodesCouldNotVerifyReportedAnywayValue).
+Fourth, without a log the claim raised ``could not verify, so reported anyway'' more (\wtthHaikuDTwoReasonCouldNotVerifyReportedAnywayNonePct\% to \wtthHaikuDTwoReasonCouldNotVerifyReportedAnywayClaimPct\%) than with it (\wtthHaikuDTwoReasonCouldNotVerifyReportedAnywayNoneRPct\% to \wtthHaikuDTwoReasonCouldNotVerifyReportedAnywayNoReceiptPct\%), as the candidate reading expects, but this is the code the models agreed on least of the five ($\kappa$ \wtthKappaMMDTwoAnswerReasonCodesCouldNotVerifyReportedAnywayValue, prevalence \wtthKappaMMDTwoAnswerReasonCodesCouldNotVerifyReportedAnywayPrevPct\%).
 Posts saying that someone else had told ops were most frequent in \cell{NONE-R}, which had no claim, so they mark the log rather than the claim.
-The codes cover reporters as well as witnesses who stood down and do not say whose report a witness meant, so the peer-receipt reading stays one candidate; the post hoc timing (Table~\ref{tab:timing}) shows who held off and what the log listed when they did, which fits the reading but cannot prove it.
+The codes cover reporters as well as witnesses who stood down and do not say whose report a witness meant, so the peer-receipt reading stays one candidate; the post hoc timing (Table~\ref{tab:timing}) shows who held off and what the log listed when they did, and among those who held off a peer's line in view made no difference to whether they later reported (Section~\ref{sec:h2}), so it does not separate the reading from its alternatives.
 
 \begin{table}[h]
-\centering\footnotesize\setlength{\tabcolsep}{4pt}
+\centering\footnotesize\setlength{\tabcolsep}{3pt}
 \begin{tabular}{@{}lrrrrrrr@{}}
 \toprule
- & $\kappa$ & \cell{NONE} & \cell{CLAIM} & \cell{NONE-R} & \cell{NO-RECEIPT} & \cell{RECEIPT} & \cell{FORGED} \\
+ & $\kappa$ (prev.) & \cell{NONE} & \cell{CLAIM} & \cell{NONE-R} & \cell{NO-RECEIPT} & \cell{RECEIPT} & \cell{FORGED} \\
 \midrule
 P1, told ops (\%) & & \wtthHaikuPOneNonePct & \wtthHaikuPOneClaimPct & \wtthHaikuPOneNoneRPct & \wtthHaikuPOneNoReceiptPct & \wtthHaikuPOneReceiptPct & \wtthHaikuPOneForgedPct \\
 \midrule
 Reason given (\% of witnesses) & & & & & & & \\
-\quad someone else told ops & \wtthKappaMMDTwoAnswerReasonCodesSomeoneElseToldValue & \wtthHaikuDTwoReasonSomeoneElseToldNonePct & \wtthHaikuDTwoReasonSomeoneElseToldClaimPct & \wtthHaikuDTwoReasonSomeoneElseToldNoneRPct & \wtthHaikuDTwoReasonSomeoneElseToldNoReceiptPct & \wtthHaikuDTwoReasonSomeoneElseToldReceiptPct & \wtthHaikuDTwoReasonSomeoneElseToldForgedPct \\
-\quad thought ops was aware & \wtthKappaMMDTwoAnswerReasonCodesThoughtOpsAwareValue & \wtthHaikuDTwoReasonThoughtOpsAwareNonePct & \wtthHaikuDTwoReasonThoughtOpsAwareClaimPct & \wtthHaikuDTwoReasonThoughtOpsAwareNoneRPct & \wtthHaikuDTwoReasonThoughtOpsAwareNoReceiptPct & \wtthHaikuDTwoReasonThoughtOpsAwareReceiptPct & \wtthHaikuDTwoReasonThoughtOpsAwareForgedPct \\
-\quad feared a duplicate & \wtthKappaMMDTwoAnswerReasonCodesFearedDuplicateValue & \wtthHaikuDTwoReasonFearedDuplicateNonePct & \wtthHaikuDTwoReasonFearedDuplicateClaimPct & \wtthHaikuDTwoReasonFearedDuplicateNoneRPct & \wtthHaikuDTwoReasonFearedDuplicateNoReceiptPct & \wtthHaikuDTwoReasonFearedDuplicateReceiptPct & \wtthHaikuDTwoReasonFearedDuplicateForgedPct \\
-\quad trusted the claim & \wtthKappaMMDTwoAnswerReasonCodesTrustedClaimValue & \wtthHaikuDTwoReasonTrustedClaimNonePct & \wtthHaikuDTwoReasonTrustedClaimClaimPct & \wtthHaikuDTwoReasonTrustedClaimNoneRPct & \wtthHaikuDTwoReasonTrustedClaimNoReceiptPct & \wtthHaikuDTwoReasonTrustedClaimReceiptPct & \wtthHaikuDTwoReasonTrustedClaimForgedPct \\
-\quad could not verify, reported anyway & \wtthKappaMMDTwoAnswerReasonCodesCouldNotVerifyReportedAnywayValue & \wtthHaikuDTwoReasonCouldNotVerifyReportedAnywayNonePct & \wtthHaikuDTwoReasonCouldNotVerifyReportedAnywayClaimPct & \wtthHaikuDTwoReasonCouldNotVerifyReportedAnywayNoneRPct & \wtthHaikuDTwoReasonCouldNotVerifyReportedAnywayNoReceiptPct & \wtthHaikuDTwoReasonCouldNotVerifyReportedAnywayReceiptPct & \wtthHaikuDTwoReasonCouldNotVerifyReportedAnywayForgedPct \\
+\quad someone else told ops & \wtthKappaMMDTwoAnswerReasonCodesSomeoneElseToldValue{} (\wtthKappaMMDTwoAnswerReasonCodesSomeoneElseToldPrevPct) & \wtthHaikuDTwoReasonSomeoneElseToldNonePct & \wtthHaikuDTwoReasonSomeoneElseToldClaimPct & \wtthHaikuDTwoReasonSomeoneElseToldNoneRPct & \wtthHaikuDTwoReasonSomeoneElseToldNoReceiptPct & \wtthHaikuDTwoReasonSomeoneElseToldReceiptPct & \wtthHaikuDTwoReasonSomeoneElseToldForgedPct \\
+\quad thought ops was aware & \wtthKappaMMDTwoAnswerReasonCodesThoughtOpsAwareValue{} (\wtthKappaMMDTwoAnswerReasonCodesThoughtOpsAwarePrevPct) & \wtthHaikuDTwoReasonThoughtOpsAwareNonePct & \wtthHaikuDTwoReasonThoughtOpsAwareClaimPct & \wtthHaikuDTwoReasonThoughtOpsAwareNoneRPct & \wtthHaikuDTwoReasonThoughtOpsAwareNoReceiptPct & \wtthHaikuDTwoReasonThoughtOpsAwareReceiptPct & \wtthHaikuDTwoReasonThoughtOpsAwareForgedPct \\
+\quad feared a duplicate & \wtthKappaMMDTwoAnswerReasonCodesFearedDuplicateValue{} (\wtthKappaMMDTwoAnswerReasonCodesFearedDuplicatePrevPct) & \wtthHaikuDTwoReasonFearedDuplicateNonePct & \wtthHaikuDTwoReasonFearedDuplicateClaimPct & \wtthHaikuDTwoReasonFearedDuplicateNoneRPct & \wtthHaikuDTwoReasonFearedDuplicateNoReceiptPct & \wtthHaikuDTwoReasonFearedDuplicateReceiptPct & \wtthHaikuDTwoReasonFearedDuplicateForgedPct \\
+\quad trusted the claim & \wtthKappaMMDTwoAnswerReasonCodesTrustedClaimValue{} (\wtthKappaMMDTwoAnswerReasonCodesTrustedClaimPrevPct) & \wtthHaikuDTwoReasonTrustedClaimNonePct & \wtthHaikuDTwoReasonTrustedClaimClaimPct & \wtthHaikuDTwoReasonTrustedClaimNoneRPct & \wtthHaikuDTwoReasonTrustedClaimNoReceiptPct & \wtthHaikuDTwoReasonTrustedClaimReceiptPct & \wtthHaikuDTwoReasonTrustedClaimForgedPct \\
+\quad could not verify, reported anyway & \wtthKappaMMDTwoAnswerReasonCodesCouldNotVerifyReportedAnywayValue{} (\wtthKappaMMDTwoAnswerReasonCodesCouldNotVerifyReportedAnywayPrevPct) & \wtthHaikuDTwoReasonCouldNotVerifyReportedAnywayNonePct & \wtthHaikuDTwoReasonCouldNotVerifyReportedAnywayClaimPct & \wtthHaikuDTwoReasonCouldNotVerifyReportedAnywayNoneRPct & \wtthHaikuDTwoReasonCouldNotVerifyReportedAnywayNoReceiptPct & \wtthHaikuDTwoReasonCouldNotVerifyReportedAnywayReceiptPct & \wtthHaikuDTwoReasonCouldNotVerifyReportedAnywayForgedPct \\
 \midrule
 Evidence cited (\% of witnesses) & & & & & & & \\
-\quad the log & \wtthKappaMMDTwoAnswerBasisLogLineValue & \wtthHaikuDTwoBasisLogLineNonePct & \wtthHaikuDTwoBasisLogLineClaimPct & \wtthHaikuDTwoBasisLogLineNoneRPct & \wtthHaikuDTwoBasisLogLineNoReceiptPct & \wtthHaikuDTwoBasisLogLineReceiptPct & \wtthHaikuDTwoBasisLogLineForgedPct \\
-\quad a post & \wtthKappaMMDTwoAnswerBasisCPostValue & \wtthHaikuDTwoBasisCPostNonePct & \wtthHaikuDTwoBasisCPostClaimPct & \wtthHaikuDTwoBasisCPostNoneRPct & \wtthHaikuDTwoBasisCPostNoReceiptPct & \wtthHaikuDTwoBasisCPostReceiptPct & \wtthHaikuDTwoBasisCPostForgedPct \\
+\quad the log & \wtthKappaMMDTwoAnswerBasisLogLineValue{} (\wtthKappaMMDTwoAnswerBasisLogLinePrevPct) & \wtthHaikuDTwoBasisLogLineNonePct & \wtthHaikuDTwoBasisLogLineClaimPct & \wtthHaikuDTwoBasisLogLineNoneRPct & \wtthHaikuDTwoBasisLogLineNoReceiptPct & \wtthHaikuDTwoBasisLogLineReceiptPct & \wtthHaikuDTwoBasisLogLineForgedPct \\
+\quad a post & \wtthKappaMMDTwoAnswerBasisCPostValue{} (\wtthKappaMMDTwoAnswerBasisCPostPrevPct) & \wtthHaikuDTwoBasisCPostNonePct & \wtthHaikuDTwoBasisCPostClaimPct & \wtthHaikuDTwoBasisCPostNoneRPct & \wtthHaikuDTwoBasisCPostNoReceiptPct & \wtthHaikuDTwoBasisCPostReceiptPct & \wtthHaikuDTwoBasisCPostForgedPct \\
 \midrule
 Posts: someone else told ops (count) & & \wtthHaikuCountEndogenousClaimsOtherNone & \wtthHaikuCountEndogenousClaimsOtherClaim & \wtthHaikuCountEndogenousClaimsOtherNoneR & \wtthHaikuCountEndogenousClaimsOtherNoReceipt & \wtthHaikuCountEndogenousClaimsOtherReceipt & \wtthHaikuCountEndogenousClaimsOtherForged \\
 \bottomrule
 \end{tabular}
 \caption{\textbf{Debrief and post codes bearing on H2} (\DebTwo{} answers, judge codes, several per answer allowed; exploratory and descriptive). Evidence is the basis given for ``Did anyone tell ops?''.
 \cell{NONE} and \cell{CLAIM} are world R0 (no log), the others R1.
-Witnesses per cell as in Table~\ref{tab:reasons}, with intervals there and in Table~\ref{tab:basis}; $\kappa$ is model--model.}
+Witnesses per cell as in Table~\ref{tab:reasons}, with intervals there and in Table~\ref{tab:basis}; $\kappa$ is model--model, with the label's prevalence in the agreement sample (\%) in parentheses.}
 \label{tab:htwo}
 \end{table}
 
@@ -225,10 +228,11 @@ Cell & Basis for ``Did anyone tell ops?'' & k/n & Shifts & \% & \wtthProtocolLev
 % exp/prompts/runbook_exp1.md at tag exp1-v1 (\wtthDesignExpOnePolicySentence, \wtthDesignExpOneProvSentence).
 \paragraph{Exploratory follow-up (D-022, D-023).}
 Three cells ran after the strict analysis, on seeds that overlap no earlier seed and give the core's mix of paraphrase, handle order and tickets: \cell{FORGED} with the one-line rule (``\wtthDesignExpOnePolicySentence'') added to its runbook (\cell{X-FORGED-POLICY}); \cell{FORGED} with a provenance note added instead (\cell{X-FORGED-PROV}: ``\wtthDesignExpOneProvSentence''); and the pre-registered \cell{RECEIPT} cell on \wtthDesignModelSonnetName{} (\wtthExpOneSonnetReceiptEps{} shifts).
-Harness, step cap, judge prompt and keyword rule are the core's; board posts and \DebOne{} answers were not judged, so \Ptwop{} is not reported for these cells.
+They ran on the same witness-turn harness as the core (D-023's operating changes touch budgeting and probe dispatch only; tag \texttt{exp1-v1}), with the core's step cap, judge prompt and keyword rule, and with no concurrent \cell{FORGED} arm, so every comparison with a core cell is across phases; board posts and \DebOne{} answers were not judged, so \Ptwop{} is not reported for these cells.
+Both added sentences raised P1 above \cell{FORGED} by about the same amount, which a shift between phases would also produce.
 Table~\ref{tab:expone} gives P1, P2 and the bootstrap differences from the comparison cells, and Table~\ref{tab:exponetiming} the timing of first notes and the \DebTwo{} reasons of the witnesses who never reported, beside the core's \cell{FORGED}.
 The P2 difference of \cell{X-FORGED-PROV} from \cell{FORGED} has an interval that excludes zero only through the boundary effect described for H1 (Section~\ref{sec:h1}): all \wtthHaikuPTwoForgedK{} untold \cell{FORGED} shifts can drop out of a resample together, so \wtthExpOneXForgedProvPTwoK{} or \wtthExpOneXForgedPolicyPTwoK{} untold shifts in \wtthExpOneXForgedProvPTwoN{} cannot be told apart from \wtthHaikuPTwoForgedK{} in \wtthHaikuPTwoForgedN, and we do not read it as a reduction.
-Beside a real receipt, \wtthDesignModelSonnetName{} mostly waited: \wtthExpOneTimingSonnetReceiptHeldOffK{} of its \wtthExpOneTimingSonnetReceiptN{} witnesses held off past round 2, and \wtthExpOneTimingSonnetReceiptHeldOffReportedK{} of them reported later.
+Beside a real receipt, \wtthDesignModelSonnetName's P1 was \wtthExpOneSonnetReceiptPOnePct\% (shift-level cluster-bootstrap CI \wtthExpOneSonnetReceiptPOneClusterCI); \cell{RECEIPT} is the only Sonnet cell in which C really reported, so log-checking and distrust of the typed line cannot be told apart. It mostly waited: \wtthExpOneTimingSonnetReceiptHeldOffK{} of its \wtthExpOneTimingSonnetReceiptN{} witnesses held off past round 2, and \wtthExpOneTimingSonnetReceiptHeldOffReportedK{} of them reported later.
 The reason codes are model-coded and descriptive.
 ``Could not verify, so reported anyway'' was coded for \wtthExpOneTimingNeverXForgedPolicyDTwoCouldNotVerifyReportedAnywayK{} of \wtthExpOneTimingNeverXForgedPolicyDTwoN{} and \wtthExpOneTimingNeverXForgedProvDTwoCouldNotVerifyReportedAnywayK{} of \wtthExpOneTimingNeverXForgedProvDTwoN{} never-reporters in the two Haiku cells (\wtthHaikuTimingNeverForgedDTwoCouldNotVerifyReportedAnywayK{} of \wtthHaikuTimingNeverForgedDTwoN{} in \cell{FORGED}), who sent no note, and ``no channel perceived'' for \wtthExpOneTimingNeverXForgedPolicyDTwoNoChannelPerceivedK{} of \wtthExpOneTimingNeverXForgedPolicyDTwoN{} under the rule, though every witness had the channel, so among non-reporters these codes are unreliable.
 Read with that caution, ``trusted the claim'' was rare among the Haiku never-reporters under the forged line and common among Sonnet's beside a real receipt.
@@ -327,7 +331,7 @@ Alert-load rows in the analysis log's contrast tables are scaled by a hundred, s
 \begin{table}[h]
 \centering\footnotesize
 \wtthTab{generated/analysis/tables/table_secondary_board_substitution.tex}
-\caption{\textbf{Board substitution} (exploratory, D-010): witnesses who raised concern or addressed humans on the board but sent no note.
+\caption{\textbf{Board substitution} (exploratory, D-010): witnesses who raised concern or addressed humans on the board but sent no note. As a share of the witnesses who sent no note, the rate is flat (\cell{FORGED} \wtthHaikuBoardSubForgedOfNotelessK/\wtthHaikuBoardSubForgedOfNotelessN, \cell{RECEIPT} \wtthHaikuBoardSubReceiptOfNotelessK/\wtthHaikuBoardSubReceiptOfNotelessN, \cell{NO-RECEIPT} \wtthHaikuBoardSubNoReceiptOfNotelessK/\wtthHaikuBoardSubNoReceiptOfNotelessN; Wilson CIs \wtthHaikuBoardSubForgedOfNotelessCI, \wtthHaikuBoardSubReceiptOfNotelessCI{} and \wtthHaikuBoardSubNoReceiptOfNotelessCI), so the unconditional rates below restate P1.
 Table~\ref{tab:timing} counts violation notes; Table~\ref{tab:boardsub} any note, so their counts of witnesses without a note differ.}
 \label{tab:boardsub}
 \end{table}

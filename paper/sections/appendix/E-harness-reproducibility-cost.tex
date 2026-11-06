@@ -1,6 +1,8 @@
 % appendix E (plan 49 section 2.5; PREREG section 21 names it for the execution settings). Sources: research/41
 % sections 2.3.5 and 2.5, research/35 and 37, configs/env_allowlist.json, expected_init.json, experiment.yaml, README.
-% Text tonight; counts and cost come from generated tables after the data.
+% Counts and cost come from generated tables. Pass 6 (research/62 M1, M2, M3, M7; research/63 rows 1 and 2; research/68
+% A10): the plugins sentence (D-026), the --settings row, the receipt-invariant wording, the empty --setting-sources
+% evidenced by the init assertions, the undocumented refusal-retry variable and the turn-integrity counts.
 \section{Harness card, reproducibility and cost}\label{app:harness}
 
 \subsection{CLI and flags}
@@ -20,7 +22,8 @@ Flag & Value & Purpose \\
 \texttt{--max-budget-usd} & \wtthDesignMaxBudgetHaiku{} (subset: \wtthDesignMaxBudgetSonnet) & per-turn budget \\
 \texttt{--system-prompt-file} & system prompt plus the cell's runbook & \\
 \texttt{--tools ""} & & no built-in tools \\
-\texttt{--disable-slash-commands}, \texttt{--setting-sources ""} & & isolation \\
+\texttt{--disable-slash-commands}, \texttt{--setting-sources ""} & an empty source list, not described in the CLI docs; the init assertions at G0 are the evidence & isolation \\
+\texttt{--settings} & a fixed settings file: \texttt{switchModelsOnFlag} false, hooks, claude.ai connectors and auto-memory off, cross-session inbound refused; its SHA-256 is in the run manifest & isolation \\
 \texttt{--strict-mcp-config}, \texttt{--mcp-config} & one server, with the turn's identity & the three tools \\
 \texttt{--allowedTools} & the three tools under the server prefix & \\
 \texttt{--permission-mode} & \texttt{dontAsk} & \\
@@ -35,6 +38,7 @@ The server refuses to start if an environment variable name looks like a credent
 \subsection{Environment}
 The turn environment is built from scratch and never inherits the parent process's.
 The API key goes only into the experiment's own subprocesses (D-001).
+\texttt{CLAUDE\_CODE\_DISABLE\_REFUSAL\_RETRY} is present in the pinned \wtthDesignCliVersion{} binary but undocumented (the public docs list a refusal-fallback variable instead), so its effect rests on our own checks: with \texttt{switchModelsOnFlag} false set through \texttt{--settings}, every turn's \texttt{modelUsage} was checked, and of \wtthTurnIntegrityOkN{} ok turns \wtthTurnIntegrityOkOtherModelK{} were answered by a model other than the one requested, with \wtthTurnIntegrityRefusalStopK{} refusal stops and \wtthTurnIntegritySafetyStopK{} safety stops.
 \begin{center}\scriptsize
 \input{generated/design/env_allowlist}
 \end{center}
@@ -44,6 +48,7 @@ Each turn's stream must report the pinned CLI version, the requested model, API-
 The result must name only the requested model, with a first-party provider and list-price cost basis, and no permission denials.
 Every tool reply must equal its pre-registered bytes.
 Any mismatch makes the turn a technical failure.
+The init also lists the CLI's three built-in plugins (agents-md, privacy, plugin-authoring), against the pre-registration's ``no plugins'' (D-026); the raw-body audit shows they add no system text, tools, skills or commands on audited turns, which are every G0 turn and a sample of production turns.
 
 \subsection{What the model sees}
 Under \texttt{--bare} with an API key, the system context is a billing header, the SDK's identity line, our system prompt and our tools; it is the same in every cell.
@@ -53,7 +58,7 @@ The raw-body audit checks this on every G0 turn and on a deterministic sample of
 \textbf{Technical}, rerun as a new attempt on the same seed, at most \wtthDesignMaxAttemptsWord{} attempts per shift: rate-limit, server and transport errors, MCP crashes, failed init assertions, server or database faults, process kills and the \wtthDesignTurnTimeout-second turn timeout.
 A debrief call that fails technically is retried in place with identical inputs.
 \textbf{Data}, kept and counted by cell: refusals, empty turns, turns with no tool call, off-task text, test suspicion, tool-argument validation errors, step-cap clips and budget clips.
-\textbf{Stop for a human decision}: integrity failures (exposure, receipt invariant, reply bytes), billing errors, repeated breaker trips and unexplained error results.
+\textbf{Stop for a human decision}: integrity failures (exposure, which also checks that the rendered log equals the channel's log rows, and reply bytes), billing errors, repeated breaker trips and unexplained error results; that only the channel writes receipts holds by construction and is checked by tests (Section~\ref{sec:methods}).
 Counts by cell follow.
 \texttt{turns\_refusal} counts turns that ended with a refusal stop reason, and there were none; \texttt{turns\_refusal\_text} counts turns whose text matched the pinned refusal phrase rule, which are candidates only, kept as ordinary data, and no read of them is reported here.
 \begin{center}
@@ -84,7 +89,7 @@ Python \texttt{3.12.13}, the MCP Python SDK \texttt{1.30.0} (pinned below the ma
 \subsection{Cost}
 All experiment agent calls, judge calls included, go to one API credit (D-001) under one ledger with a hard cap of \wtthDesignCapUsd, of which \wtthDesignJudgeReserveUsd{} was reserved for judging (D-005, D-009).
 A shift launches only if spend plus the worst case of calls in flight fits under the cap.
-After collection, and before any judge label existed, the cap was raised so that the judge could use the rest of the credit (D-015).
+After collection, and before any judge label existed, the cap was raised once so that the judge could use the rest of the credit (D-015).
 The annotation subagents ran on the author's subscription, outside the cap (D-011).
 Experiment calls cost \wtthCostMainUsd{} and judge calls \wtthCostJudgeUsd, \wtthCostTotalUsd{} in all so far, the exploratory follow-up of D-022 included (its budget rules: D-023); the Haiku core ran in \wtthOpsCoreWallHours{} hours, from \wtthOpsCoreStart{} to \wtthOpsCoreEnd.
 \begin{center}

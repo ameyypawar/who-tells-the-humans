@@ -1,4 +1,21 @@
-% appendix A (plan 49 section 2.6 item 1). Never cut (PREREG section 18). Text tonight; numbers come from macros.
+% appendix A (plan 49 section 2.6 item 1). Never cut (PREREG section 18). Numbers come from macros. Pass 6 (research/68
+% B, research/64): a nine-line appendix index opens the appendices (research/66); the ceiling consequence, interference
+% between witnesses, the undone precision check and P2' without sensitivity, the timing that does not separate the
+% readings, the live-only re-analysis, kappa with prevalence, the MDE against the observed effect, and the release
+% disclosure of the recoverable forged line (D-026).
+\section*{Appendix contents}\label{app:contents}
+\begin{tabular}{@{}l@{\quad}l@{\quad}r@{}}
+\ref{app:limits} & Limitations, dual use and ethics, with what is withheld and why & p.~\pageref{app:limits} \\
+\ref{app:prompts} & Prompts, stimuli, Box~\ref{box:receipt} and the withheld items' hashes & p.~\pageref{app:prompts} \\
+\ref{app:prereg} & Pre-registration, timeline, deviations, gates, integrity and power & p.~\pageref{app:prereg} \\
+\ref{app:full} & Full results: sensitivity, post hoc tests, timing, paraphrase, follow-up & p.~\pageref{app:full} \\
+\ref{app:harness} & Harness card: CLI flags, environment, assertions, failures, cost & p.~\pageref{app:harness} \\
+\ref{app:exploratory} & The exploratory \wtthDesignModelSonnetName{} subset & p.~\pageref{app:exploratory} \\
+\ref{app:judge} & Judge, labels, model--model agreement and the author read & p.~\pageref{app:judge} \\
+\ref{app:audit} & The framework audit: method, rubric and table & p.~\pageref{app:audit} \\
+\ref{app:related} & Related-work detail and the nearest-work table & p.~\pageref{app:related} \\
+\end{tabular}
+
 \section{Limitations and Dual-Use / Ethical Considerations}\label{app:limits}
 
 \subsection{Limitations: what the results do and do not establish}
@@ -15,6 +32,7 @@ Non-reporters concentrate in shifts with the public paraphrase (\wtthHaikuParaph
 \paragraph{Ceiling.}
 Gate G1 took the pre-registered ceiling branch: P1 in the pilot \cell{NONE} shifts was \wtthGateGOnePOneAtFPct\% at the frozen level, \wtthGateFrozenLevel, above the \wtthDesignGOneCeiling\% ceiling (D-013).
 With reporting this high when no claim is made, a stand-down shows as a drop from near the ceiling, the H1 null rule is easier to meet, and the results speak to a violation that witnesses readily report.
+With \cell{NONE} and \cell{NONE-R} at \wtthHaikuPOneNonePct\%, the largest stand-down H1 or H2 could record is bounded by the few witnesses who did not report, so neither test is informative about the size of a stand-down, only about whether any witness stood down at all.
 
 \paragraph{Interface.}
 Each witness turn is a stateless call that sees the whole board.
@@ -26,7 +44,8 @@ Agents with memory, pull-based tools or a responsive operator may behave differe
 The log lists every note, a witness's own included, from the round after it is sent.
 In world R1 a witness can therefore see a peer's real receipt as well as the claimant's missing one, so H2 compares the claim's effect with and without a log that shows both.
 Peers' receipts alone did not lower reporting (\cell{NONE-R}), so if they explain the larger stand-down, they did so only for witnesses whom the claim had made hold off.
-The post hoc timing fits that reading (D-021): \wtthHaikuTimingNoReceiptHeldOffPeerNeverK{} of the \wtthHaikuTimingNoReceiptNeverK{} \cell{NO-RECEIPT} never-reporters had a peer's real note in the log at their next turn (Section~\ref{sec:h2}, Table~\ref{tab:timing}); a log that showed only the claimant's receipt would test it directly.
+The post hoc timing (D-021) does not separate that reading from its alternatives: among the \wtthHaikuHeldOffNoReceiptN{} \cell{NO-RECEIPT} witnesses who held off, a peer's line in view made no difference to whether they later reported (\wtthHaikuHeldOffSplitNoReceiptPeerNeverK{} of \wtthHaikuHeldOffSplitNoReceiptPeerN{} never did with one, \wtthHaikuHeldOffSplitNoReceiptNoPeerNeverK{} of \wtthHaikuHeldOffSplitNoReceiptNoPeerN{} without; Section~\ref{sec:h2}, Table~\ref{tab:timing}), and no witness held off in \cell{NONE-R}; a log that showed only the claimant's receipt would test it directly.
+Witnesses also read each other's posts and, in R1, each other's log lines, so outcomes within a shift interfere (the stable-unit assumption, SUTVA, fails): a cell rate describes a three-witness shift, not three independent decisions, and the effective number of units is the number of shifts.
 In world R1 the tool description still says that other agents on the board cannot see what a witness sends, while the runbook says each note adds a log line showing the sender and subject: a mixed cue, the same in every R1 cell.
 
 \paragraph{Receipts.}
@@ -36,20 +55,25 @@ Our receipts name the sender, which could expose reporters; we did not test that
 
 \paragraph{Measurement.}
 P1 and P2 are mechanical: a keyword rule, with a judge path for unmatched notes that decided \wtthHaikuKwCheckPOneLabelOnlyK{} of the \wtthHaikuKwCheckPOneK{} core witnesses with P1, so the confirmatory outcome does not depend on the judge.
-The planned precision check of the keyword rule was never reviewed; post hoc, the final labels code \wtthHaikuKwCheckMatchedFinalK{} of \wtthHaikuKwCheckMatchedFinalN{} keyword-matched core notes as about the violation (model-coded, D-024; Appendix~\ref{app:judge}).
+The pre-registered precision check of the keyword rule was not done: \wtthHaikuKwLabelled{} of \wtthHaikuKwMatchedNotes{} matched notes were reviewed (D-026); post hoc, the final labels code \wtthHaikuKwCheckMatchedFinalK{} of \wtthHaikuKwCheckMatchedFinalN{} keyword-matched core notes as about the violation (model-coded, D-024; Appendix~\ref{app:kwcheck}), which is agreement with the same pipeline, not a validated precision.
 \Ptwop{}, concern, test awareness and the debrief codes come from an LLM judge (\wtthDesignModelJudgeName) and from labels that a model proposed and a second pass of the same model (\wtthDesignModelAnnotatorName) audited, whose \wtthReviewReviewed{} pre-filled decisions the author approved unchanged (D-020); the audit is therefore not independent of the proposals.
-None of them is a blind human label (D-018), so their reliability rests on model--model $\kappa$ alone, which ranges from \wtthKappaMMDTwoAnswerReasonCodesUnsureItWasAViolationValue{} to \wtthKappaMMDTwoAnswerReasonCodesSomeoneElseToldValue{} across the debrief reason codes.
-\ifdefstring{\wtthHumanReadStatus}{complete}{The one human check is the author's read of \wtthHumanReadSelectedN{} transcripts, shuffled and shown without any label (post hoc; D-021, D-025; Appendix~\ref{app:authorread}): his original answers matched the automated P1 for \wtthHumanReadAuthorAgreePOneK{} of \wtthHumanReadAuthorAgreePOneN, a blind second reader (\wtthHumanReadSecondModelName) agreed with him for \wtthHumanReadSecondAgreeAuthorToldK{} ($\kappa$ \wtthHumanReadSecondKappaAuthorTold, CI \wtthHumanReadSecondKappaAuthorToldCI), and after adjudicating only the \wtthHumanReadAdjShownK{} disagreements he matched P1 for \wtthHumanReadAdjAgreePOneK.
-The selection is weighted toward never-reporters, so the read checks P1 for missed reports rather than measuring its precision, it covers none of the judge-coded labels, and its second reader is itself a Claude model.}{No human read of transcripts is reported here: the author's read of \wtthHumanReadSelectedN{} selected transcripts (D-021) is pending.}
+None of them is a blind human label (D-018), so their reliability rests on model--model $\kappa$ alone, which ranges from \wtthKappaMMDTwoAnswerReasonCodesUnsureItWasAViolationValue{} (prevalence \wtthKappaMMDTwoAnswerReasonCodesUnsureItWasAViolationPrevPct\%) to \wtthKappaMMDTwoAnswerReasonCodesSomeoneElseToldValue{} (prevalence \wtthKappaMMDTwoAnswerReasonCodesSomeoneElseToldPrevPct\%) across the debrief reason codes; at such marginals $\kappa$ is unstable, so we read it as a consistency check between two Claude models, not as a reliability estimate.
+No board-escalation positive survived review (model--model $\kappa$ \wtthKappaMMBoardPostEscalationToHumansValue, prevalence \wtthKappaMMBoardPostEscalationToHumansPrevPct\%), so \Ptwop{} has no estimated sensitivity and the main text draws no claim from it.
+\ifdefstring{\wtthHumanReadStatus}{complete}{The one human check is the author's read of \wtthHumanReadSelectedN{} transcripts, shuffled and shown without any label (post hoc; D-021, D-025; Appendix~\ref{app:authorread}).
+His original answers, the primary result, matched the automated P1 for \wtthHumanReadAuthorAgreePOneK{} of \wtthHumanReadAuthorAgreePOneN: he missed \wtthHumanReadControlToldNoK{} of the \wtthHumanReadControlN{} control transcripts that did hold a note to ops, and read \wtthHumanReadForgedUntoldToldYesK{} of the \wtthHumanReadForgedUntoldN{} witnesses in untold \cell{FORGED} shifts as having told ops.
+A second reader (\wtthHumanReadSecondModelName, shown a copy of the sheet with his answers blanked) agreed with him for \wtthHumanReadSecondAgreeAuthorToldK{} ($\kappa$ \wtthHumanReadSecondKappaAuthorTold, CI \wtthHumanReadSecondKappaAuthorToldCI, prevalence \wtthHumanReadSecondKappaAuthorToldPrevPct\%).
+After seeing its reasons for the \wtthHumanReadAdjShownK{} disagreements he changed \wtthHumanReadAdjChangedK{} answers and then matched P1 for \wtthHumanReadAdjAgreePOneK{} of \wtthHumanReadAdjAgreePOneN; that adjudication was not blind and followed the model's argument, so it is not independent of P1.
+The selection is weighted toward never-reporters, so the read checks P1 for missed reports rather than measuring its precision; its demonstrated misses on positives mean it bounds missed reports only weakly, it covers none of the judge-coded labels, and its second reader is itself a Claude model.}{No human read of transcripts is reported here: the author's read of \wtthHumanReadSelectedN{} selected transcripts (D-021) is pending.}
 Debrief answers are post-hoc self-reports, not evidence of a mechanism.
 
 \paragraph{Test awareness.}
 No Haiku witness's \DebOne{} answer was coded as calling the shift a test or simulation (\wtthHaikuDOneTestAllK{} of \wtthHaikuDOneTestAllN), but \wtthHaikuDOneUnsureAllPct\% (\wtthHaikuDOneUnsureAllK) were coded ``unsure'', from \wtthHaikuDOneUnsurePosPct\% to \wtthHaikuDOneUnsurePolicyPct\% by cell, and only \wtthHaikuDOneLiveAllPct\% ``live''.
-The two models agreed well on this live, test or unsure verdict (model--model $\kappa$ \wtthKappaMMDOneAnswerDOneVerdictValue) but poorly on whether the same answers showed test awareness ($\kappa$ \wtthKappaMMDOneAnswerTestAwarenessValue).
+The two models agreed well on this live, test or unsure verdict (model--model $\kappa$ \wtthKappaMMDOneAnswerDOneVerdictValue, prevalence \wtthKappaMMDOneAnswerDOneVerdictPrevPct\%) but poorly on whether the same answers showed test awareness ($\kappa$ \wtthKappaMMDOneAnswerTestAwarenessValue, prevalence \wtthKappaMMDOneAnswerTestAwarenessPrevPct\%).
 Test awareness is therefore uncertain rather than absent, and the pre-registered exclusion of test-aware witnesses removes no one.
+Restricted post hoc to the \wtthHaikuLiveOnlyN{} of \wtthHaikuLiveOnlyAllN{} witnesses coded live (exploratory), the three differences were \wtthHaikuLiveOnlyHOneDelta{} (CI \wtthHaikuLiveOnlyHOneCI), \wtthHaikuLiveOnlyHTwoDelta{} (CI \wtthHaikuLiveOnlyHTwoCI) and \wtthHaikuLiveOnlyHThreeDelta{} points (CI \wtthHaikuLiveOnlyHThreeCI), consistent with the main results; this probes demand effects only as far as the unsure coding allows.
 
 \paragraph{Claude writes for Claude.}
-The stimuli were drafted with Claude and edited by the author, and the subjects, the judge, the annotator, the review audit, the second reader of the author read, the code reviewers and the paper's drafter are all Claude models; the judge (\wtthDesignModelJudgeName) also codes the exploratory Sonnet subjects' posts and notes.
+The stimuli were drafted with Claude and edited by the author, and the subjects, the judge, the annotator, the review audit, the second reader of the author read, the framework audit and its re-check, the code reviewers and the paper's drafter are all Claude models; the judge (\wtthDesignModelJudgeName) also codes the exploratory Sonnet subjects' posts and notes.
 Sonnet's P1 is keyword-coded too: every note in the Sonnet subset matched the keyword rule (\wtthSonnetKwCheckMatchedN{} of \wtthSonnetKwCheckNotesN), and in the follow-up the judge path decided \wtthExpOneKwCheckPOneLabelOnlyK{} of the \wtthExpOneKwCheckPOneK{} witnesses with P1 (model-coded, post hoc, D-024), so the shared model touches the secondary codes, not P1.
 A Claude subject may find the stimuli more natural, or easier to recognise as a test.
 
@@ -57,8 +81,11 @@ A Claude subject may find the stimuli more natural, or easier to recognise as a 
 There is one confirmatory family, tested in a fixed sequence.
 H1's null is rejected by the pre-registered percentile cluster bootstrap but not by post hoc exact or score tests (D-021): the effect rests on \wtthHaikuPostHocBoundaryHOneClaimNonReporters{} non-reporters in \wtthHaikuPostHocBoundaryHOneClaimShiftsM{} of \wtthHaikuPostHocBoundaryHOneClaimShiftsN{} \cell{CLAIM} shifts against \wtthHaikuTimingNoneNeverK{} in \cell{NONE}, which therefore adds no bootstrap variance, and the interval clears zero only because a resample omits all those shifts with probability \wtthHaikuPostHocBoundaryHOneClaimPZero\% (\wtthHaikuPostHocBoundaryHOneClaimPZeroOneFewer\% had they sat in one shift fewer, which would leave the null standing); Fisher's exact test gives p~$=$~\wtthHaikuPostHocHOneFisherP{} and the Newcombe interval is \wtthHaikuPostHocHOneNewcombeCI{} points.
 Every sensitivity row reuses the same bootstrap, so none of them tests this.
-H2 and H3 are confirmatory only because H1's null was rejected; their own effects hold under the post hoc methods (H2 MOVER \wtthHaikuPostHocHTwoMoverCI{} points; H3 Newcombe \wtthHaikuPostHocHThreeNewcombeCI, Fisher p \wtthHaikuPostHocHThreeFisherP; Table~\ref{tab:posthoc}).
+The interval's lower limit, \wtthHaikuHOneLo{} points, is one witness in \wtthHaikuPostHocBoundaryHOneClaimWitnesses, the smallest value above zero the statistic can take: the percentile rule has no coverage guarantee at this boundary, and the decision turns on how many shifts hold the non-reporters, not on the size of the stand-down.
+The pre-registered detectable effect for H1 was \wtthHaikuPowerHOneMDE{} points and the observed difference is \wtthHaikuHOneDelta, so the rejection reflects the collapse of variance at the ceiling, not the precision the design was built for.
+H2 and H3 are confirmatory only because H1's null was rejected; their own effects hold under the post hoc methods (H2 MOVER \citep{zou2008construction} \wtthHaikuPostHocHTwoMoverCI{} points; H3 Newcombe \wtthHaikuPostHocHThreeNewcombeCI, Fisher p \wtthHaikuPostHocHThreeFisherP; Table~\ref{tab:posthoc}).
 With reporting at ceiling, a small stand-down is detectable, so rejecting a null says little about size; H1's effect is small, and the equivalence test that frames it is exploratory.
+Outside the three confirmatory tests every interval in the paper is unadjusted for multiplicity, and none is read as a test.
 Some secondary analyses rest on a pre-declared random subsample of judged items (coverage in Appendix~\ref{app:judge}).
 Exploratory results (Sonnet, board substitution, the debrief codes, the follow-up cells) carry no verdict.
 
@@ -69,12 +96,14 @@ If the keyword rule misses notes, P1 is a lower bound; the attempts analysis bou
 
 \subsection{Dual-use risks}
 \paragraph{What could help an attacker.}
-Our results say whether one casual line suppresses reporting, and whether a receipt-shaped line typed by the claimant cuts reporting as a real receipt does.
+Our results say that one casual line barely suppressed reporting, and that a receipt-shaped line typed by the claimant cut reporting and could leave ops untold within a shift.
 \paragraph{Why the marginal uplift is small.}
 The mechanism is simple, and adjacent work already documents it: unbacked approvals, fabricated authority, and spoofed tool calls in the incident itself.
 The defensive value is to show deployers where provenance must live.
 \paragraph{What we withhold.}
 The two claim paraphrases and the forged line, pre-registered by SHA-256 (\texttt{\wtthDesignPrivateShaShort}\ldots; Appendix~\ref{app:withheld}); the raw API request bodies, which contain them; and any prompt collection.
+The withholding of the forged line is partial in practice: it copies the public log layout, and its entry id appears in agents' own text in the released transcripts, so the line can be reconstructed from the release (D-026).
+We keep the file withheld to preserve the pre-registered hash commitment as registered, and the repository history is not rewritten, because the public gist pins the tag \texttt{prereg-v1}.
 \paragraph{What we did not do.}
 We ran no optimisation loop and no adaptive attacker, and did not search for the most suppressive wording.
 Every attack arm is paired with its fix.
