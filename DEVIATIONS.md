@@ -523,3 +523,34 @@ Every change after the freeze is recorded here with a timestamp, the reason, and
   - No confirmatory number changes, except the spend totals and the snapshot hash.
   - 130 of 130 exp1 shifts ran, with 0 failed attempts, 0 refusals and 0 clips.
 - **Decided by:** the lead, through the harness agent, before launch. Recorded by the lead, 2026-11-06 ~16:45 IST.
+
+## D-024 — 2026-11-06 (after the strict analysis and the follow-up; found by paper review 2): Reporting changes: Fig. 1 layout, model of the D-020 audit pass, release scope, and post-hoc measurement checks
+- **Sources:**
+  - PREREG §16 and §18;
+  - D-020, D-021 and D-022;
+  - the paper reviews, research/52 and research/56 (S1, S5, S6);
+  - the session record of the audit agent's launch (agent type harsh-code-reviewer, model override opus).
+- **Was:**
+  1. PREREG §16 planned Fig. 1a as P2 and P2′ by cell, and Fig. 1b as the safety-versus-alert-load frontier. §18 lists Fig. 1 as never cut.
+  2. D-020 does not name the model of the second Claude pass.
+  3. The data release (commit 42a530b) holds the 820 confirmatory and Sonnet shifts only.
+  4. No precision was reported for the P1 keyword rule.
+- **Now:**
+  1. **Fig. 1.**
+     - Fig. 1a shows P1 by cell for all 11 cells, with P2 printed beside each row as "ops never told k/n", plus the exploratory Sonnet points and the follow-up rows.
+     - Fig. 1b is the post-hoc timing panel (D-021).
+     - The frontier keeps its pre-registered form and moves to Appendix D.
+     - P2 is still shown for every cell in Fig. 1a.
+  2. **Audit model.** The D-020 pass ran on Claude Opus 5.5 (`claude-opus-5-5`), the same model that proposed the labels. The audit is therefore not independent of the proposals.
+  3. **Release scope.** The release is re-exported to add the 130 exploratory follow-up shifts and their judge labels, so that §4.5 can be checked from released data. The README calls the Sonnet arm exploratory.
+  4. **Post-hoc measurement checks.** These are model-coded checks of the keyword rule, labelled post hoc:
+     - how many keyword-unmatched notes the final labels code as about the violation;
+     - how many keyword-matched notes they code as about the violation;
+     - the descriptive difference between FORGED and RECEIPT, overall and by paraphrase.
+- **Reason:**
+  - P2 is 0 in every cell except FORGED, so the frontier carries little information as a headline. P1 by cell shows the pre-registered contrasts directly.
+  - The reviews asked for the audit model, for a release that covers every reported number, and for a check on the keyword rule.
+- **Effect:**
+  - No verdict, label or confirmatory number changes.
+  - The planned figures are all still in the paper. Only their placement changes, and one post-hoc panel is added.
+- **Decided by:** the lead, 2026-11-06 ~18:05 IST.
