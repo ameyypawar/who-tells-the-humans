@@ -22,13 +22,15 @@ Only the \texttt{notify\_ops} handler writes notes, the log is rendered only fro
 The log lists every accepted note, a witness's own included, from the round after it is sent.
 The deployer rule under test: \emph{a receipt is written by the channel, never by the claimant}.
 
-% PREREG sections 10, 11, 13, 16; D-006, D-007, D-010, D-011; research/42 sections 3.1 to 3.4.
+% PREREG sections 10, 11, 13, 16; D-006, D-007, D-010, D-011; research/42 sections 3.1 to 3.4. Review 2 M5: the gate rule
+% of PREREG section 11 (a rejection opposite to the prediction still counts, so the sequence goes on). Review 2 S1: in the
+% core every P1 came from the keyword rule (the judge path decided none), with the model-coded check of D-024.
 \paragraph{Outcomes and analysis.}\label{sec:outcomes}
-P1 (``told ops''): a witness sent a note about the violation by round 5, as decided by a pre-registered keyword rule or, for other notes, by the judge.
+P1 (``told ops''): a witness sent a note about the violation by round 5, as decided by a pre-registered keyword rule or, for other notes, by the judge; in the core the judge path decided \wtthHaikuKwCheckPOneLabelOnlyK{} of the \wtthHaikuKwCheckPOneK{} witnesses with P1, so P1 rests on the keyword rule alone, and the final labels code \wtthHaikuKwCheckMatchedFinalPct\% of its matched notes as about the violation (model-coded, post hoc; D-024).
 P2 (``operator never told''): no witness in the shift has P1, in the \wtthDesignPTwoCellsWord{} cells where C did not really report.
 \Ptwop{} (``never told by any route'') also treats a board post about the violation addressed to ops as telling them.
 Secondary outcomes include alert load (violation notes per shift), false reports and debriefs.
-H1 to H3 are tested in a fixed sequence, two-sided at $\alpha = \wtthDesignAlpha$, stopping at the first whose null is not rejected, on \Done{} $=$ P1(\cell{NONE}) $-$ P1(\cell{CLAIM}), \Dtwo{} $=$ \Done{} $-$ [P1(\cell{NONE-R}) $-$ P1(\cell{NO-RECEIPT})] and \Dthree{} $=$ P1(\cell{NO-RECEIPT}) $-$ P1(\cell{FORGED}), each predicted positive.
+H1 to H3 are tested in a fixed sequence, two-sided at $\alpha = \wtthDesignAlpha$, stopping at the first whose null is not rejected (a rejection opposite to the prediction still counts, so the sequence continues), on \Done{} $=$ P1(\cell{NONE}) $-$ P1(\cell{CLAIM}), \Dtwo{} $=$ \Done{} $-$ [P1(\cell{NONE-R}) $-$ P1(\cell{NO-RECEIPT})] and \Dthree{} $=$ P1(\cell{NO-RECEIPT}) $-$ P1(\cell{FORGED}), each predicted positive.
 A null is rejected only if the \wtthProtocolLevel\% interval of a shift-level cluster bootstrap excludes zero (planning power: Appendix~\ref{app:predictions}).
 
 % Box 1 is defined here so it floats to the page after the Methods heading; Table 1 (cells at a glance) is defined in
@@ -47,7 +49,7 @@ In \cell{FORGED} C's post adds a typed line in the log layout (withheld), and th
 \paragraph{Execution.}\label{sec:execution}
 Each witness turn is one stateless call to \wtthDesignModelHaikuName{} at effort \wtthDesignEffort{} (no temperature control) through a pinned Claude Code CLI (\wtthDesignCliVersion) in \texttt{--bare} mode with no built-in tools (Appendix~\ref{app:harness}); technical failures are rerun on the same seed, and refusals and malformed calls are data.
 Pilot gates, never pooled with the data, checked integrity (G0), froze V's clarity level (G1: pilot P1 in \cell{NONE} was above the \wtthDesignGOneCeiling\% ceiling at every level tried, so the least clear, \wtthGateFrozenLevel, was frozen; D-013) and confirmed that witnesses read the log (G2; Appendix~\ref{app:gates}).
-The judge (\wtthDesignModelJudgeName) is not told the cell, seed, model or purpose.
+The judge (\wtthDesignModelJudgeName, also the exploratory subjects' model) is not told the cell, seed, model or purpose.
 % D-020: the decisions were pre-filled by a second Claude pass and approved unchanged; never say the author reviewed items.
 % The audit pass ran on the proposer's model (Claude Opus 5.5, the annotator macro), so it is not independent of it.
 Review-queue labels are model-proposed (\wtthDesignModelAnnotatorName, without the judge's labels), AI-audited (a second \wtthDesignModelAnnotatorName{} pass, not independent of the proposals, pre-filled all \wtthReviewReviewed{} decisions) and author-approved (unchanged: correction rate \wtthDesignReviewAuthorChanged{} of \wtthReviewReviewed; D-020), not human labels; all agreement is model--model (Appendix~\ref{app:judge}).

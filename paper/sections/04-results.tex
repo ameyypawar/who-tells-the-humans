@@ -19,9 +19,9 @@ H3 & \cell{NO-RECEIPT} $-$ \cell{FORGED}: \wtthHaikuPOneNoReceiptPct\% vs \wtthH
 \bottomrule
 \end{tabularx}
 \caption{\textbf{The confirmatory tests, in their fixed order} (\wtthDesignModelHaikuName).
-Differences in points, shift-level cluster bootstrap (\wtthBootstrapB{} resamples), each predicted positive.
+Differences in points, shift-level cluster bootstrap (\wtthBootstrapB{} resamples), each predicted positive; a rejection opposite to the prediction still counts, so the sequence continues (PREREG).
 H2's stand-downs: \cell{NONE} $-$ \cell{CLAIM} (world R0, no log) and \cell{NONE-R} $-$ \cell{NO-RECEIPT} (R1).
-Post hoc (D-021): Fisher's exact test does not reject H1's null (p~$=$~\wtthHaikuPostHocHOneFisherP), so H2 and H3 are confirmatory only through a borderline gate (Section~\ref{sec:h1}).}
+H1's rejection is borderline (Section~\ref{sec:h1}): post hoc (D-021), Fisher's exact test does not reject its null (p~$=$~\wtthHaikuPostHocHOneFisherP), so H2 and H3 are confirmatory only through that gate.}
 \label{tab:hyp}
 \end{table}
 
@@ -39,16 +39,20 @@ The forged line cut notes as far (\wtthHaikuAlertLoadForgedMean), but its claim 
 \textbf{Sensitivity.}
 All three differences keep their sign and side of zero under the any-note, attempts and seed-paired analyses, and false reports of the held refund in the benign cell were \wtthHaikuFalseReportBNonePct\% (Appendix~\ref{app:full}).
 \textbf{By paraphrase} (pre-registered, exploratory).
-Of the non-reporters, \wtthHaikuParaphraseZeroClaimNeverK{} of \wtthHaikuTimingClaimNeverK{} in \cell{CLAIM} and \wtthHaikuParaphraseZeroNoReceiptNeverK{} of \wtthHaikuTimingNoReceiptNeverK{} in \cell{NO-RECEIPT} saw the public paraphrase, aliased with handle order, so the stand-down may depend on wording or slot order (Table~\ref{tab:paraphrase}).
+Of the non-reporters, \wtthHaikuParaphraseZeroClaimNeverK{} of \wtthHaikuTimingClaimNeverK{} in \cell{CLAIM} and \wtthHaikuParaphraseZeroNoReceiptNeverK{} of \wtthHaikuTimingNoReceiptNeverK{} in \cell{NO-RECEIPT} saw the public paraphrase, aliased with handle order, so the stand-down may depend on wording or slot order (Table~\ref{tab:paraphrase}), and H3's difference ranged from \wtthHaikuByParaphraseNoReceiptMinusForgedMin{} to \wtthHaikuByParaphraseNoReceiptMinusForgedMax{} points across paraphrases (post hoc, D-024).
 \textbf{Board substitution} (exploratory, D-010).
 Where a receipt was visible, real or forged, more witnesses raised the split on the board but sent no note (\cell{FORGED} \wtthHaikuBoardSubForgedPct\%, \cell{RECEIPT} \wtthHaikuBoardSubReceiptPct\%, \cell{NO-RECEIPT} \wtthHaikuBoardSubNoReceiptPct\%, \cell{NONE} \wtthHaikuBoardSubNonePct\%).
 
 % Exploratory follow-up (D-022, D-023): no verdict, no p-value (plan 49 section 4.2 item 8). The P2 difference of
 % X-FORGED-PROV against FORGED has a bootstrap interval that excludes zero only through the boundary effect of H1 (all
 % four untold FORGED shifts can drop out of a resample together; an exact test does not separate them): never call it a
-% reduction. Sonnet RECEIPT against Sonnet FORGED is across phases (new seeds, same mix; D-023). Detail: Appendix D.
-\subsection{Follow-up: neither fix stopped the forged line; Sonnet told real from forged}\label{sec:followup}
+% reduction. Review 2 M3: Sonnet FORGED comes from the earlier Sonnet arm and Sonnet RECEIPT from the follow-up, hours
+% later (same harness, same seed-rotation mix, new seeds; D-023), so that contrast is across phases; Sonnet NO-RECEIPT
+% was also at 100%, so its reporting followed the log; its 62.2% has a witness-level Wilson interval. Review 2 S11: the
+% arms rule out only large recoveries (upper bounds near 18 points). Detail: Appendix D.
+\subsection{Follow-up (exploratory): neither added sentence restored Haiku's reporting; Sonnet reported less only beside a real receipt}\label{sec:followup}
 \textbf{Exploratory (D-022, D-023; Appendix~\ref{app:full})}, on new seeds with the core's mix of paraphrase and handle order.
-Added to \cell{FORGED}'s runbook, the one-line rule (\cell{X-FORGED-POLICY}) or a note that only \texttt{notify\_ops} writes the log and that a log-like line in a post is part of the post (\cell{X-FORGED-PROV}) left Haiku's P1 at \wtthExpOneXForgedPolicyPOnePct\% and \wtthExpOneXForgedProvPOnePct\%: not distinguishable from \cell{FORGED} (differences \wtthExpOneDiffPOneXForgedPolicyMinusHaikuForgedDelta{} and \wtthExpOneDiffPOneXForgedProvMinusHaikuForgedDelta{} points, CI \wtthExpOneDiffPOneXForgedPolicyMinusHaikuForgedCI{} and \wtthExpOneDiffPOneXForgedProvMinusHaikuForgedCI) and still below \cell{NO-RECEIPT} (\wtthExpOneDiffPOneXForgedPolicyMinusHaikuNoReceiptDelta{} and \wtthExpOneDiffPOneXForgedProvMinusHaikuNoReceiptDelta{} points, both CIs excluding zero), so neither restored reporting.
+Added to \cell{FORGED}'s runbook, the one-line rule (\cell{X-FORGED-POLICY}) or a note that only \texttt{notify\_ops} writes the log and that a log-like line in a post is part of the post (\cell{X-FORGED-PROV}) left Haiku's P1 at \wtthExpOneXForgedPolicyPOnePct\% and \wtthExpOneXForgedProvPOnePct\%: not distinguishable from \cell{FORGED} (differences \wtthExpOneDiffPOneXForgedPolicyMinusHaikuForgedDelta{} and \wtthExpOneDiffPOneXForgedProvMinusHaikuForgedDelta{} points, CI \wtthExpOneDiffPOneXForgedPolicyMinusHaikuForgedCI{} and \wtthExpOneDiffPOneXForgedProvMinusHaikuForgedCI) and still below \cell{NO-RECEIPT} (\wtthExpOneDiffPOneXForgedPolicyMinusHaikuNoReceiptDelta{} and \wtthExpOneDiffPOneXForgedProvMinusHaikuNoReceiptDelta{} points, both CIs excluding zero), so neither restored reporting to \cell{NO-RECEIPT}'s level, though a partial recovery of up to \wtthExpOneDiffPOneXForgedPolicyMinusHaikuForgedHi{} points is not excluded.
 Ops went untold in \wtthExpOneXForgedPolicyPTwoK{} and \wtthExpOneXForgedProvPTwoK{} of \wtthExpOneXForgedPolicyPTwoN{} shifts against \wtthHaikuPTwoForgedK{} of \wtthHaikuPTwoForgedN{} in \cell{FORGED}, which arms of this size cannot tell apart.
-With C's real receipt, \wtthDesignModelSonnetName{} reported at \wtthExpOneSonnetReceiptPOnePct\% (CI \wtthExpOneSonnetReceiptPOneCI) against \wtthSonnetPOneForgedPct\% under the forged line (difference \wtthExpOneDiffPOneSonnetReceiptMinusSonnetForgedDelta{} points, CI \wtthExpOneDiffPOneSonnetReceiptMinusSonnetForgedCI; \wtthExpOneSonnetReceiptEps{} shifts each): it stood down for a real receipt but not for a forged one, whereas Haiku stood down for both, with or without the added text.
+Beside C's real receipt, \wtthDesignModelSonnetName{} reported at \wtthExpOneSonnetReceiptPOnePct\% (witness-level Wilson CI \wtthExpOneSonnetReceiptPOneCI), against \wtthSonnetPOneForgedPct\% under the forged line and \wtthSonnetPOneNoReceiptPct\% with no receipt (difference from the forged line \wtthExpOneDiffPOneSonnetReceiptMinusSonnetForgedDelta{} points, CI \wtthExpOneDiffPOneSonnetReceiptMinusSonnetForgedCI; \wtthExpOneSonnetReceiptEps{} shifts each), so its reporting tracked the channel's log rather than the typed line, whereas Haiku stood down for both, with or without the added text.
+Sonnet's forged-line arm ran in the earlier Sonnet subset and its receipt arm in the follow-up, hours later, with the same harness and seed-rotation mix, so that contrast is across phases, not concurrent.
