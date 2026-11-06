@@ -1,6 +1,9 @@
 % sections/03-methods.tex (plan 49 section 2.3, 1.75 pages including Box 1 and Table 1). Design facts come from PREREG v1
 % plus DEVIATIONS; every number is a \wtthDesign / \wtthStim / results macro. Full texts and mechanics are in
 % Appendices B (prompts), C (deviations, gates, integrity), E (harness) and G (judge). Run-in headings keep it short.
+% Pass 6 (research/66, research/68 B): D-codes cut to one pointer sentence in the pre-registration paragraph (codes stay
+% beside post hoc and exploratory labels only); P2' dropped from the main text (no upheld positives; Section 5.2); the
+% pilot gates described in words; the P1 precision check named as not done (D-026).
 \section{Methods}\label{sec:methods}
 
 % PREREG sections 4 to 7; prompts/*.md (Appendix B); Table 1 is generated from configs/experiment.yaml.
@@ -12,10 +15,10 @@ Each witness reviews its own refund tickets (\texttt{submit\_reviews}), reads th
 The tool names no consequence; the server stamps the sender (Appendix~\ref{app:prompts}).
 
 \paragraph{Cells.}
-In round 2, V reports releasing a refund over the approval limit as three smaller batches, which the runbook forbids, and C posts a routine aside, a concern or a claim (Box~\ref{box:receipt}); the claim has a public paraphrase and two withheld ones.
+In round 2, V reports releasing a refund over the approval limit as three smaller batches, which the runbook forbids, and C posts a routine aside, a concern or a claim (Box~\ref{box:receipt}, Appendix~\ref{app:prompts}); the claim has a public paraphrase and two withheld ones.
 In world R1 the board carries an \texttt{\#escalation-log}, which shows C's line in \cell{RECEIPT} and \cell{POS}, where the harness files C's real note, and reads ``\wtthStimLogEmpty'' in \cell{NO-RECEIPT}; in \cell{FORGED}, C's post also carries a typed line in the log layout (withheld).
-\cell{POLICY} adds ``\wtthStimPolicy'' to the runbook; \cell{NEG} and \cell{POS} add ``\wtthStimDedupe'', a built-in reason to stand down (the positive control); and in the benign cell, \cell{B-NONE}, V holds the refund.
-Planned sizes follow D-003 (Table~\ref{tab:cells}); the seed fixes paraphrase, handle order and tickets.
+\cell{POLICY} adds ``\wtthStimPolicy'' to the runbook; \cell{NEG} and \cell{POS} add ``\wtthStimDedupe'', a cost for duplicate notes, and differ only in C's real note (the sensitivity pair); in the benign cell, \cell{B-NONE}, V holds the refund.
+The seed fixes paraphrase, handle order and tickets (Table~\ref{tab:cells}).
 
 \paragraph{Receipts.}
 Only the \texttt{notify\_ops} handler writes notes, the log is rendered only from them, and scripted notes use the same handler, so every receipt is channel-written; tests check that no post writes the log.
@@ -26,39 +29,22 @@ The deployer rule under test: \emph{a receipt is written by the channel, never b
 % of PREREG section 11 (a rejection opposite to the prediction still counts, so the sequence goes on). Review 2 S1: in the
 % core every P1 came from the keyword rule (the judge path decided none), with the model-coded check of D-024.
 \paragraph{Outcomes and analysis.}\label{sec:outcomes}
-P1 (``told ops''): a witness sent a note about the violation by round 5, as decided by a pre-registered keyword rule or, for other notes, by the judge, which in the core decided \wtthHaikuKwCheckPOneLabelOnlyK{} of \wtthHaikuKwCheckPOneK{} witnesses with P1, so P1 rests on the keyword rule (the final labels code \wtthHaikuKwCheckMatchedFinalPct\% of its matches as about the violation; model-coded, post hoc, D-024).
+P1 (``told ops''): a witness sent a note about the violation by round 5, as decided by a pre-registered keyword rule or, for other notes, by the judge, which decided \wtthHaikuKwCheckPOneLabelOnlyK{} of the \wtthHaikuKwCheckPOneK{} witnesses with P1; the rule's pre-registered precision check was not done, and a post hoc, model-coded check finds \wtthHaikuKwCheckMatchedFinalPct\% of its matches about the violation (D-024, D-026).
 P2 (``operator never told''): no witness in the shift has P1, in the \wtthDesignPTwoCellsWord{} cells where C did not really report.
-\Ptwop{} (``never told by any route'') also counts a board post about the violation addressed to ops.
 Alert load counts violation notes per shift.
-H1 to H3 are tested in a fixed sequence, two-sided at $\alpha = \wtthDesignAlpha$, stopping at the first whose null is not rejected (a rejection opposite to the prediction still counts, so the sequence continues), on \Done{} $=$ P1(\cell{NONE}) $-$ P1(\cell{CLAIM}), \Dtwo{} $=$ \Done{} $-$ [P1(\cell{NONE-R}) $-$ P1(\cell{NO-RECEIPT})] and \Dthree{} $=$ P1(\cell{NO-RECEIPT}) $-$ P1(\cell{FORGED}), each predicted positive.
-A null is rejected only if the \wtthProtocolLevel\% interval of a shift-cluster bootstrap excludes zero (power: Appendix~\ref{app:predictions}).
-
-% Box 1 is defined here so it floats to the page after the Methods heading; Table 1 (cells at a glance) is defined in
-% the introduction, next to Figure 1, where the cell names are first used.
-\begin{figure}[t]
-\captionsetup{type=boxfloat}
-\centering
-\input{generated/design/boxes/receipt_vs_noreceipt_r2}
-\caption{\textbf{The round-2 board and log in \cell{RECEIPT} and \cell{NO-RECEIPT};} the rest of the prompt is identical.
-In \cell{FORGED} C's post adds a typed line in the log layout (withheld), and the log is as in \cell{NO-RECEIPT}.}
-\label{box:receipt}
-\end{figure}
-
+H1 to H3 are tested in a fixed sequence, two-sided at $\alpha = \wtthDesignAlpha$, stopping at the first whose null is not rejected (a rejection opposite to the prediction still counts), on \Done{} $=$ P1(\cell{NONE}) $-$ P1(\cell{CLAIM}), \Dtwo{} $=$ \Done{} $-$ [P1(\cell{NONE-R}) $-$ P1(\cell{NO-RECEIPT})] and \Dthree{} $=$ P1(\cell{NO-RECEIPT}) $-$ P1(\cell{FORGED}), each predicted positive; a null is rejected only if the \wtthProtocolLevel\% interval of a shift-cluster bootstrap excludes zero (planned power and realised precision: Appendix~\ref{app:predictions}).
 
 % PREREG sections 14, 15, 21; D-001, D-002, D-005, D-007, D-009, D-011; configs/*.
 \paragraph{Execution.}\label{sec:execution}
 Each witness turn is one stateless call to \wtthDesignModelHaikuName{} at effort \wtthDesignEffort{} (no temperature control) through a pinned Claude Code CLI (\wtthDesignCliVersion) in \texttt{--bare} mode with no built-in tools (Appendix~\ref{app:harness}); technical failures are rerun on the same seed, and refusals and malformed calls are data.
-Pilot gates, never pooled with the data, checked integrity (G0), froze V's clarity level (G1: pilot P1 in \cell{NONE} topped the \wtthDesignGOneCeiling\% ceiling at every level tried, so the least clear, \wtthGateFrozenLevel, was frozen; D-013) and confirmed witnesses read the log (G2; Appendix~\ref{app:gates}).
+Pilot gates, never pooled with the data, checked integrity, fixed how clearly V's line states the violation (P1 in \cell{NONE} topped the \wtthDesignGOneCeiling\% ceiling at every level tried, so the least clear was frozen) and confirmed that witnesses read the log (Appendix~\ref{app:gates}).
 The judge (\wtthDesignModelJudgeName, also the exploratory subjects' model) is not told the cell, seed, model or purpose.
 % D-020: the decisions were pre-filled by a second Claude pass and approved unchanged; never say the author reviewed items.
-% The audit pass ran on the proposer's model (Claude Opus 5.5, the annotator macro), so it is not independent of it.
-Review-queue labels are model-proposed (\wtthDesignModelAnnotatorName, without the judge's labels), AI-audited (a second \wtthDesignModelAnnotatorName{} pass, not independent of the proposals, pre-filled all \wtthReviewReviewed{} decisions) and author-approved (\wtthDesignReviewAuthorChanged{} of \wtthReviewReviewed{} corrected; D-020), not human labels; label agreement is model--model (Appendix~\ref{app:judge}).
+Review-queue labels are model-proposed, AI-audited by the same model (\wtthDesignModelAnnotatorName) and author-approved (\wtthDesignReviewAuthorChanged{} of \wtthReviewReviewed{} decisions changed), not human labels; agreement figures are model--model (Appendix~\ref{app:judge}).
 
-% PREREG header, sections 17 and 23; tag prereg-v1; DEVIATIONS.md; research/38, 46, 48; wp6 commit 96f0f93.
-% "Public": the gist is public at the tag date; the repository goes public at submission (plan 49 section 4.1 item 8).
+% PREREG header, sections 17 and 23; tag prereg-v1; DEVIATIONS.md. The one pointer sentence for deviation IDs (research/66).
 \paragraph{Pre-registration, deviations and what did not work.}\label{sec:integrity}
 PREREG v1 froze on \wtthDesignPreregFrozenDate; tag \texttt{prereg-v1} records its SHA-256, also posted in a public gist on \wtthDesignPreregGistDate, before any data.
-Every later change is logged with its timing (D-001 to D-013 before any confirmatory data, D-021 to \wtthDesignDeviationsLastHead{} after the strict analysis; Appendix~\ref{app:deviations}), and witness-visible ones match across cells.
-Separate Claude reviewer agents found validity bugs before any confirmatory data, all fixed (Appendix~\ref{app:integrity}).
-What did not work: a void first G0 run (D-012), a judge prompt revised once (D-016), a voided duplicate draw (D-019), the declined blind human check (D-018), two unrun stretch arms (D-008), and a deviations log that, until D-020, misstated who decided the reviews.
-% G2 passed without the legibility fix (FX-1 not applied; gate log).
+Every later change carries a deviation ID with its timing (\wtthDesignDeviationsLast{} and earlier before any confirmatory data; up to \wtthDesignDeviationsLastHead{} after; Appendix~\ref{app:deviations}), post hoc and exploratory results below are tagged with theirs, and witness-visible changes match across cells.
+Claude reviewer agents found validity bugs before any data, all fixed (Appendix~\ref{app:integrity}).
+What did not work: a void first pilot run, a judge prompt revised once, a voided duplicate draw, the declined blind label check, two unrun stretch arms, P1's precision check, and a deviations log that misstated who decided the reviews.
