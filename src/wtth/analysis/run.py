@@ -264,6 +264,12 @@ def run_analysis(settings: Any, *, strict: bool, labels: LabelSource | None = No
     book.add("ProtocolLevel", 95, "plain", source="PREREG 16: 95 percent intervals")
     book.add("ProtocolMargin", 15, "plain", source="PREREG 11: null margin in percentage points")
     book.add("BootstrapB", seeds.bootstrap_B, "count", source="configs/analysis.yaml")
+    register.register_snapshot(book, snap.sha256)
+    register.register_gates(book, gate_rows)
+    runs_rows = [dict(r) for r in db.read(lambda c: c.execute("SELECT * FROM runs ORDER BY started_at").fetchall())]
+    hpath = Path(settings.paths.runs_dir) / "health.log"
+    health = hpath.read_text(encoding="utf-8", errors="replace").splitlines() if hpath.exists() else []
+    register.register_ops(book, runs_rows, health, phase="core" if present.get("core") else "mvp")
     book.add("SnapshotEpisodes", sum(present.values()), "count", source=f"snapshot {snap.sha256[:12]}")
     summary: dict[str, Any] = {"status": status, "snapshot": {"path": str(snap.path), "sha256": snap.sha256},
                                "gates": dict(labels.gates()), "phases": {}}

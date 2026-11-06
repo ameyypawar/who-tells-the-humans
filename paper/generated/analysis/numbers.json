@@ -1,5 +1,13 @@
 [
  {
+  "display": "0",
+  "key": "BlindN",
+  "kind": "count",
+  "note": "",
+  "source": "author-blind sample: declined (D-018) or not run, no items labelled",
+  "value": 0
+ },
+ {
   "display": "declined",
   "key": "BlindStatus",
   "kind": "text",
@@ -38,6 +46,38 @@
   "note": "",
   "source": "prior spend + main ledger + judge ledger",
   "value": 80.404092975
+ },
+ {
+  "display": "GO-CEIL",
+  "key": "GateDecision",
+  "kind": "text",
+  "note": "",
+  "source": "gate_log G0/G1/G2 decisions PASS/CEILING/PASS",
+  "value": "GO-CEIL"
+ },
+ {
+  "display": "L3",
+  "key": "GateFrozenLevel",
+  "kind": "text",
+  "note": "",
+  "source": "gate_log G1 frozen_level",
+  "value": "L3"
+ },
+ {
+  "display": "100.0",
+  "key": "GateGOnePOneAtFPct",
+  "kind": "prop",
+  "note": "",
+  "source": "gate_log G1 pilot P1 share at L3",
+  "value": 1.0
+ },
+ {
+  "display": "pass",
+  "key": "GateGTwoResult",
+  "kind": "text",
+  "note": "",
+  "source": "gate_log G2 decision and action",
+  "value": "pass"
  },
  {
   "display": "0.00 to 0.00",
@@ -7641,6 +7681,30 @@
   "value": 0.0
  },
  {
+  "display": "0",
+  "key": "HaikuDOneTestAllK",
+  "kind": "count",
+  "note": "",
+  "source": "D1 test-or-simulation, witnesses pooled over all cells",
+  "value": 0
+ },
+ {
+  "display": "2{,}010",
+  "key": "HaikuDOneTestAllN",
+  "kind": "count",
+  "note": "",
+  "source": "D1 test-or-simulation, witnesses pooled over all cells",
+  "value": 2010
+ },
+ {
+  "display": "0.0",
+  "key": "HaikuDOneTestAllPct",
+  "kind": "prop",
+  "note": "",
+  "source": "D1 test-or-simulation, witnesses pooled over all cells",
+  "value": 0.0
+ },
+ {
   "display": "0.0 to 2.5",
   "key": "HaikuDOneTestBNoneCI",
   "kind": "ci",
@@ -9150,6 +9214,14 @@
   "value": "predicted"
  },
  {
+  "display": "yes",
+  "key": "HaikuDescAlertLoadPolicyMinusReceiptExcl",
+  "kind": "verdict",
+  "note": "",
+  "source": "AL:POLICY-RECEIPT: interval excludes 0",
+  "value": "yes"
+ },
+ {
   "display": "116.0",
   "key": "HaikuDescAlertLoadPolicyMinusReceiptHi",
   "kind": "pp",
@@ -9223,6 +9295,14 @@
   "note": "",
   "source": "AL:RECEIPT-NONE-R stream=descriptive B=10000 level=0.95",
   "value": "opposite"
+ },
+ {
+  "display": "yes",
+  "key": "HaikuDescAlertLoadReceiptMinusNoneRExcl",
+  "kind": "verdict",
+  "note": "",
+  "source": "AL:RECEIPT-NONE-R: interval excludes 0",
+  "value": "yes"
  },
  {
   "display": "\\ensuremath{-}66.5",
@@ -9300,6 +9380,14 @@
   "value": "opposite"
  },
  {
+  "display": "yes",
+  "key": "HaikuDescPOneClaimMinusConcernExcl",
+  "kind": "verdict",
+  "note": "",
+  "source": "P1:CLAIM-CONCERN: interval excludes 0",
+  "value": "yes"
+ },
+ {
   "display": "\\ensuremath{-}0.4",
   "key": "HaikuDescPOneClaimMinusConcernHi",
   "kind": "pp",
@@ -9373,6 +9461,14 @@
   "note": "",
   "source": "P1:CONCERN-NONE stream=descriptive B=10000 level=0.95",
   "value": "zero"
+ },
+ {
+  "display": "no",
+  "key": "HaikuDescPOneConcernMinusNoneExcl",
+  "kind": "verdict",
+  "note": "",
+  "source": "P1:CONCERN-NONE: interval excludes 0",
+  "value": "no"
  },
  {
   "display": "0.0",
@@ -9450,6 +9546,14 @@
   "value": "opposite"
  },
  {
+  "display": "yes",
+  "key": "HaikuDescPOneReceiptMinusNoneRExcl",
+  "kind": "verdict",
+  "note": "",
+  "source": "P1:RECEIPT-NONE-R: interval excludes 0",
+  "value": "yes"
+ },
+ {
   "display": "\\ensuremath{-}24.0",
   "key": "HaikuDescPOneReceiptMinusNoneRHi",
   "kind": "pp",
@@ -9509,6 +9613,14 @@
   "value": 0.0
  },
  {
+  "display": "no",
+  "key": "HaikuDiffPTwoClaimMinusConcernExcl",
+  "kind": "verdict",
+  "note": "",
+  "source": "P2:CLAIM-CONCERN: interval excludes 0",
+  "value": "no"
+ },
+ {
   "display": "4.6",
   "key": "HaikuDiffPTwoClaimMinusConcernHi",
   "kind": "pp",
@@ -9542,6 +9654,14 @@
   "note": "",
   "source": "P2:CONCERN-NONE (newcombe)",
   "value": 0.0
+ },
+ {
+  "display": "no",
+  "key": "HaikuDiffPTwoConcernMinusNoneExcl",
+  "kind": "verdict",
+  "note": "",
+  "source": "P2:CONCERN-NONE: interval excludes 0",
+  "value": "no"
  },
  {
   "display": "7.1",
@@ -9579,6 +9699,14 @@
   "value": -0.08
  },
  {
+  "display": "yes",
+  "key": "HaikuDiffPTwoNoReceiptMinusForgedExcl",
+  "kind": "verdict",
+  "note": "",
+  "source": "p2:NO-RECEIPT-FORGED: interval excludes 0",
+  "value": "yes"
+ },
+ {
   "display": "\\ensuremath{-}1.3",
   "key": "HaikuDiffPTwoNoReceiptMinusForgedHi",
   "kind": "pp",
@@ -9612,6 +9740,14 @@
   "note": "",
   "source": "p2:NONE-CLAIM (newcombe)",
   "value": 0.0
+ },
+ {
+  "display": "no",
+  "key": "HaikuDiffPTwoNoneMinusClaimExcl",
+  "kind": "verdict",
+  "note": "",
+  "source": "p2:NONE-CLAIM: interval excludes 0",
+  "value": "no"
  },
  {
   "display": "4.6",
@@ -9649,6 +9785,14 @@
   "value": 0.0
  },
  {
+  "display": "no",
+  "key": "HaikuDiffPTwoNoneRMinusNoReceiptExcl",
+  "kind": "verdict",
+  "note": "",
+  "source": "p2:NONE-R-NO-RECEIPT: interval excludes 0",
+  "value": "no"
+ },
+ {
   "display": "4.6",
   "key": "HaikuDiffPTwoNoneRMinusNoReceiptHi",
   "kind": "pp",
@@ -9682,6 +9826,14 @@
   "note": "y of the POLICY vs receipts-arm comparison",
   "source": "P2:POLICY-NO-RECEIPT (newcombe)",
   "value": 0.0
+ },
+ {
+  "display": "no",
+  "key": "HaikuDiffPTwoPolicyMinusNoReceiptExcl",
+  "kind": "verdict",
+  "note": "",
+  "source": "P2:POLICY-NO-RECEIPT: interval excludes 0",
+  "value": "no"
  },
  {
   "display": "7.1",
@@ -9719,6 +9871,14 @@
   "value": -0.08
  },
  {
+  "display": "yes",
+  "key": "HaikuDiffPTwoPrimeNoReceiptMinusForgedExcl",
+  "kind": "verdict",
+  "note": "",
+  "source": "p2prime:NO-RECEIPT-FORGED: interval excludes 0",
+  "value": "yes"
+ },
+ {
   "display": "\\ensuremath{-}1.3",
   "key": "HaikuDiffPTwoPrimeNoReceiptMinusForgedHi",
   "kind": "pp",
@@ -9754,6 +9914,14 @@
   "value": 0.0
  },
  {
+  "display": "no",
+  "key": "HaikuDiffPTwoPrimeNoneMinusClaimExcl",
+  "kind": "verdict",
+  "note": "",
+  "source": "p2prime:NONE-CLAIM: interval excludes 0",
+  "value": "no"
+ },
+ {
   "display": "4.6",
   "key": "HaikuDiffPTwoPrimeNoneMinusClaimHi",
   "kind": "pp",
@@ -9787,6 +9955,14 @@
   "note": "",
   "source": "p2prime:NONE-R-NO-RECEIPT (newcombe)",
   "value": 0.0
+ },
+ {
+  "display": "no",
+  "key": "HaikuDiffPTwoPrimeNoneRMinusNoReceiptExcl",
+  "kind": "verdict",
+  "note": "",
+  "source": "p2prime:NONE-R-NO-RECEIPT: interval excludes 0",
+  "value": "no"
  },
  {
   "display": "4.6",
@@ -9894,6 +10070,22 @@
   "note": "",
   "source": "haiku B-NONE false_report (wilson)",
   "value": 0.0
+ },
+ {
+  "display": "yes",
+  "key": "HaikuFrontierCheaperExcl",
+  "kind": "verdict",
+  "note": "",
+  "source": "DescAlertLoadPolicyMinusReceipt (frontier flag)",
+  "value": "yes"
+ },
+ {
+  "display": "no",
+  "key": "HaikuFrontierSaferExcl",
+  "kind": "verdict",
+  "note": "",
+  "source": "DiffPTwoPolicyMinusNoReceipt (frontier flag)",
+  "value": "no"
  },
  {
   "display": "10{,}000",
@@ -19438,6 +19630,46 @@
   "value": null
  },
  {
+  "display": "2026-11-06 01:27 UTC",
+  "key": "OpsCoreEnd",
+  "kind": "text",
+  "note": "",
+  "source": "runs table, live core runs 20261105T234637Z-b147",
+  "value": "2026-11-06 01:27 UTC"
+ },
+ {
+  "display": "2026-11-05 23:46 UTC",
+  "key": "OpsCoreStart",
+  "kind": "text",
+  "note": "",
+  "source": "runs table, live core runs 20261105T234637Z-b147",
+  "value": "2026-11-05 23:46 UTC"
+ },
+ {
+  "display": "1.7",
+  "key": "OpsCoreWallHours",
+  "kind": "pts",
+  "note": "first start to last end",
+  "source": "runs table, live core runs 20261105T234637Z-b147",
+  "value": 1.6778076068560281
+ },
+ {
+  "display": "15",
+  "key": "OpsKMax",
+  "kind": "count",
+  "note": "",
+  "source": "monitor log (health.log), highest K reached in phase core",
+  "value": 15
+ },
+ {
+  "display": "8",
+  "key": "OpsStepCap",
+  "kind": "count",
+  "note": "",
+  "source": "runs table, live core runs 20261105T234637Z-b147: manifest max_turns.witness",
+  "value": 8
+ },
+ {
   "display": "95",
   "key": "ProtocolLevel",
   "kind": "plain",
@@ -19494,6 +19726,14 @@
   "value": 820
  },
  {
+  "display": "aa23978f6012",
+  "key": "SnapshotShaShort",
+  "kind": "text",
+  "note": "",
+  "source": "SHA-256 of the analysis snapshot, first 12 hex",
+  "value": "aa23978f6012"
+ },
+ {
   "display": "yes",
   "key": "SonnetCeiling",
   "kind": "verdict",
@@ -19519,6 +19759,14 @@
   "note": "",
   "source": "p2:NO-RECEIPT-FORGED (newcombe)",
   "value": 0.0
+ },
+ {
+  "display": "no",
+  "key": "SonnetDiffPTwoNoReceiptMinusForgedExcl",
+  "kind": "verdict",
+  "note": "",
+  "source": "p2:NO-RECEIPT-FORGED: interval excludes 0",
+  "value": "no"
  },
  {
   "display": "11.4",
@@ -19556,6 +19804,14 @@
   "value": 0.0
  },
  {
+  "display": "no",
+  "key": "SonnetDiffPTwoNoneMinusClaimExcl",
+  "kind": "verdict",
+  "note": "",
+  "source": "p2:NONE-CLAIM: interval excludes 0",
+  "value": "no"
+ },
+ {
   "display": "11.4",
   "key": "SonnetDiffPTwoNoneMinusClaimHi",
   "kind": "pp",
@@ -19589,6 +19845,14 @@
   "note": "",
   "source": "p2:NONE-R-NO-RECEIPT (newcombe)",
   "value": 0.0
+ },
+ {
+  "display": "no",
+  "key": "SonnetDiffPTwoNoneRMinusNoReceiptExcl",
+  "kind": "verdict",
+  "note": "",
+  "source": "p2:NONE-R-NO-RECEIPT: interval excludes 0",
+  "value": "no"
  },
  {
   "display": "11.4",
@@ -19626,6 +19890,14 @@
   "value": 0.0
  },
  {
+  "display": "no",
+  "key": "SonnetDiffPTwoPrimeNoReceiptMinusForgedExcl",
+  "kind": "verdict",
+  "note": "",
+  "source": "p2prime:NO-RECEIPT-FORGED: interval excludes 0",
+  "value": "no"
+ },
+ {
   "display": "11.4",
   "key": "SonnetDiffPTwoPrimeNoReceiptMinusForgedHi",
   "kind": "pp",
@@ -19661,6 +19933,14 @@
   "value": 0.0
  },
  {
+  "display": "no",
+  "key": "SonnetDiffPTwoPrimeNoneMinusClaimExcl",
+  "kind": "verdict",
+  "note": "",
+  "source": "p2prime:NONE-CLAIM: interval excludes 0",
+  "value": "no"
+ },
+ {
   "display": "11.4",
   "key": "SonnetDiffPTwoPrimeNoneMinusClaimHi",
   "kind": "pp",
@@ -19694,6 +19974,14 @@
   "note": "",
   "source": "p2prime:NONE-R-NO-RECEIPT (newcombe)",
   "value": 0.0
+ },
+ {
+  "display": "no",
+  "key": "SonnetDiffPTwoPrimeNoneRMinusNoReceiptExcl",
+  "kind": "verdict",
+  "note": "",
+  "source": "p2prime:NONE-R-NO-RECEIPT: interval excludes 0",
+  "value": "no"
  },
  {
   "display": "11.4",
