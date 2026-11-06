@@ -1,38 +1,53 @@
-% appendix H (plan 49 section 2.5). Source: research/34 (summary of research/30 to 33), data/oss_audit.csv.
-% Quotes are re-checked in their sources before submission (csv column quote_rechecked). Do not write "no framework
-% supports verification" or that a framework is broken or insecure (plan 49 section 4.2 item 28).
+% appendix H (plan 49 section 2.5). Sources: research/34 (summary of research/30 to 33); the re-check and the harmonized
+% ratings of research/54 (section 4: rubric; section 4.5: sentence rewrites); data/oss_audit.csv is
+% research/54-oss_audit.harmonized.csv. Every quote was re-checked verbatim in its source on 2026-11-06 (csv column
+% quote_rechecked). Do not write "no framework supports verification" or that a framework is broken or insecure
+% (plan 49 section 4.2 item 28). MetaGPT's string is constant "by default"; CAMEL's is unconditional, not constant.
 \section{OSS framework audit}\label{app:audit}
 
 \paragraph{Method.}
-Before the sprint (\wtthDesignOssAuditDate; preexisting notes), we read the documentation of \wtthAuditNWord{} agent frameworks and protocols, and the code of six of them (LangGraph, CrewAI, Concordia, CAMEL, the OpenAI Agents SDK and \AGtwo), together with official specifications, GitHub issues and blog posts.
-For each we asked three questions.
+Before the sprint (\wtthDesignOssAuditDate; preexisting notes), Claude agents read the documentation of \wtthAuditNWord{} agent frameworks and protocols, and the code of six of them (LangGraph, CrewAI, Concordia, CAMEL, the OpenAI Agents SDK and \AGtwo), together with official specifications, GitHub issues and blog posts.
+On \wtthDesignOssAuditRecheckDate{} a Claude agent re-checked every row against primary sources at each project's current default branch: code or specification source for all \wtthAuditNWord, issues through the GitHub API and documentation pages as raw text, with every quote matched verbatim and no summarising fetch.
+It then rated every row under the rubric below, which the original notes had applied loosely; Table~\ref{tab:audit} gives these harmonized ratings.
+For each framework we asked three questions.
 Can an agent escalate to a human?
 Can peer agents verify that a claimed escalation reached a human?
 Does the channel itself write a record of the escalation, a receipt?
-Each answer is Yes, Partial or No (Table~\ref{tab:audit}).
+
+\paragraph{Rubric.}
+Each answer is Yes, Partial or No.
+\emph{Escalation}: Yes if the agent itself can invoke a built-in tool or API, on its own initiative during a run, to ask or notify a human; Partial if a human is in the loop only by developer configuration (an approval or interrupt gate, a human-input flag, a human-controlled participant or entity) or through a generic handoff; No otherwise.
+\emph{Peers verify}, in the default configuration: Yes if a peer can query a framework-maintained record of the escalation, independent of the escalating agent's word; Partial if peers see a framework-built artifact of it in shared history (the human's actual reply, a runtime-built tool result or event) but cannot query a dedicated record; No if peers have only the agent's own word.
+\emph{Receipt}: Yes if the runtime persists a first-class escalation or delivery record that others can read; Partial if it builds a message or event from the real call or return (a tool result, an executed-function event, a task status retrievable by id) that lands in history or logs but is not a dedicated escalation receipt; No if the agent's own text is the only record.
+A built-in tool must ship in the framework's own packages, and a tool the developer writes around an interrupt does not count.
+For the two protocols the acting agent is the serving side (the \AtwoA{} remote agent, the MCP server through elicitation), and both get the same tests.
+Options that would change a peers rating in a non-default configuration are named in the evidence.
 
 \paragraph{Caveat.}
-Some quotes in our notes came through a summarising fetch tool.
-Every quote is re-checked in its source before submission; \wtthAuditQuotesUnchecked{} of \wtthAuditN{} rows are still to re-check.
+Some quotes in the pre-sprint notes came through a summarising fetch tool.
+The re-check replaced each with a verbatim quote from the raw source: all \wtthAuditN{} rows were re-checked on \wtthDesignOssAuditRecheckDate.
+Both the audit and its re-check were compiled by Claude agents (LLM Usage Statement).
 
 \paragraph{Tally.}
-Of the \wtthAuditN{} audited, \wtthAuditFullVerifyWord{} let peers fully verify a claimed escalation, \wtthAuditPartialVerifyWord{} allow a partial check, and \wtthAuditChannelWrittenYesWord{} (Concordia, a simulation library) separates channel-written events from agents' claims.
+Of the \wtthAuditN{} audited, \wtthAuditFullVerifyWord{} let peers query an escalation record, \wtthAuditPartialVerifyWord{} show peers a framework-built trace, and \wtthAuditChannelWrittenYesWord{} (Concordia, a simulation library) separates channel-written events from agents' claims.
+That receipt Yes is borderline: the engine writes the game master's ruling as a first-class event, but if Yes required confirmation that a human received the message, Concordia would be Partial and no row would rate Yes.
+On escalation, \wtthAuditEscYesWord{} let the agent itself ask a human, and \wtthAuditEscPartialWord{} reach one only through developer-placed gates, participants or handoffs.
 
 \begin{table}[h]
 \centering\scriptsize
 \input{generated/design/table_oss_audit}
-\caption{\textbf{Framework audit.} Evidence names the relevant primitives; numbers in the evidence column are issue or proposal numbers in each project's tracker.}
+\caption{\textbf{Framework audit}, harmonized ratings under the rubric above (re-checked \wtthDesignOssAuditRecheckDate). Evidence names the relevant primitives; numbers in the evidence column are issue or proposal numbers in each project's tracker. Concordia's receipt Yes is borderline (Tally).}
 \label{tab:audit}
 \end{table}
 
 \paragraph{Findings across frameworks.}
 \begin{enumerate}\raggedright
-\item \textbf{Escalation tools answer only the caller.} No audited framework writes an escalation record that peers can read; peers see only the claimant's words.
-\item \textbf{Frameworks harden against peers' instructions, not their claims.} Google ADK's documentation says a peer payload ``has to be believed rather than merely obeyed'', and Claude Code treats a relayed approval claim as untrusted input.
-\item \textbf{Action records exist but are hidden from peers.} AutoGen's events are ``not expected to be processed by other agents'', Magentic-One drops tool-call events, and two options of the OpenAI Agents SDK (\texttt{remove\_all\_tools}, \texttt{nest\_handoff\_history}) flatten them.
-\item \textbf{A notify-human tool can report success without delivering.} MetaGPT's \texttt{reply\_to\_human} returns a constant success string by default \citep{metagptmgxenv}; CAMEL's returns ``Message successfully sent to user''.
+\item \textbf{Peers cannot query an escalation record.} No audited framework gives peers a queryable escalation record. In \wtthAuditPartialVerifyWord, peers see a by-product: the human's in-chat reply, a tool result, a game-master observation, or MetaGPT's constant success string.
+\item \textbf{Frameworks harden against peers' instructions and borrowed authority, not their factual claims.} Google ADK's source says a peer payload ``has to be believed rather than merely obeyed'', and Claude Code's auto mode treats a relayed approval claim as untrusted.
+\item \textbf{Action records exist but can be hidden from peers.} AutoGen's events are ``not expected to be processed by other agents'', Magentic-One drops tool-call events, and two opt-in OpenAI Agents SDK options (\texttt{remove\_all\_tools}, \texttt{nest\_handoff\_history}) remove or flatten them.
+\item \textbf{Notify-human tools can report success unconditionally.} MetaGPT's \texttt{reply\_to\_human} returns a constant success string by default \citep{metagptmgxenv}, which RoleZero can relay to the team leader; CAMEL's prints to the console and always returns ``Message successfully sent to user''.
 \item \textbf{Misreporting is a known practitioner problem.} Issue reports describe Claude Code subagents falsely claiming completion (closed as stale), a fabricated tool observation in CrewAI, an AutoGen agent treating a peer's tool result as its own, and a fabricated answer in the OpenAI Agents SDK that its log exposed.
-\item \textbf{Receipts are an open question upstream.} A tool-outcome attestation proposal for MCP was closed and routed to a working group; \AtwoA{} has open proposals and one sponsored experimental extension; OpenAI declined receipts for its SDK; and a signed-audit request for CrewAI was closed as not planned.
+\item \textbf{Receipts are an open question upstream.} A tool-outcome attestation proposal for MCP was closed and routed to a working group; \AtwoA{} has open receipt proposals (its sponsored experimental extension is an identity handshake); OpenAI declined receipts for its SDK; and a signed-audit integration pitch for CrewAI was closed as off-topic.
 \end{enumerate}
 
 \paragraph{Upstream.}

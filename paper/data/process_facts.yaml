@@ -9,6 +9,9 @@ model_names:
 annotator_model:   {value: "claude-opus-5-5", source: "DEVIATIONS.md D-011 F-05"}
 prereg_gist_date:  {value: "3 November 2026", source: "author, relayed in the writer brief of 2026-11-06: the PREREG hash was posted in a public gist on 2026-11-03, before data (gist URL still to be added by the author)"}
 oss_audit_date:    {value: "28 October 2026", source: "research/34-oss-audit-summary.md header (2026-10-28)"}
+oss_audit_recheck_date: {value: "6 November 2026", source: "research/54-framework-audit-recheck.md (all 15 rows re-checked against primary sources, harmonized rubric of its section 4; data/oss_audit.csv = research/54-oss_audit.harmonized.csv)"}
+# D-020: a second Claude pass pre-filled all 212 review decisions; the author approved them unchanged.
+review_author_changed: {value: 0, source: "DEVIATIONS.md D-020 (the author's correction rate is 0 of 212)"}
 # Research notes written after PREREG section 20 was frozen (it lists research/01-34) and last modified before T0.
 # Source: file modification times in the planning repository's research/ folder, read 2026-11-06 with stat (IST);
 # research/49 4.1 item 9. Extending the list to them is the author decision in research/51 item 7.

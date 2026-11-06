@@ -93,6 +93,8 @@ def main() -> None:
     dev = show(ref, "DEVIATIONS.md").decode()
     ids = re.findall(r"^## (D-\d{3})", dev, flags=re.M)
     put("DeviationsLast", ids[-1])
+    # the last entry at HEAD (Appendix C lists every deviation, including those recorded after the freeze)
+    put("DeviationsLastHead", re.findall(r"^## (D-\d{3})", show("HEAD", "DEVIATIONS.md").decode(), flags=re.M)[-1])
     priv = h["files"]["private/claim_paraphrases_and_forged_line.md"]
     put("PrivateSha", priv); put("PrivateShaShort", priv[:12])
     privb = h["files"]["private/backup_scenario_private.md"]
@@ -101,6 +103,8 @@ def main() -> None:
     put("PriorArtThrough", facts["prior_art_through"]["value"])
     put("PreregGistDate", facts["prereg_gist_date"]["value"])
     put("OssAuditDate", facts["oss_audit_date"]["value"])
+    put("OssAuditRecheckDate", facts["oss_audit_recheck_date"]["value"])
+    put("ReviewAuthorChanged", facts["review_author_changed"]["value"])
     put("AuditSampleMod", exp["audit"]["production_sample_mod"])
     # P2 is defined only where C did not really report and there is a violation (PREREG section 10): derived from the cells
     p2 = [c for c in exp["core_cells"] if not exp["cells"][c]["c_note"] and exp["cells"][c]["v_lines"] == "F"]
