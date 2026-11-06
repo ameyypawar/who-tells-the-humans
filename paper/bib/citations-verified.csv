@@ -1,7 +1,7 @@
 key,url_opened,date,by,status
 paglieri2026cheating,https://arxiv.org/abs/2609.04170,2026-11-06,ai-verifier,verified
 paglieri2026essay,,,,pending
-zhang2026troy,https://arxiv.org/abs/2609.15494,2026-11-06,ai-verifier,pending-sentence
+zhang2026troy,https://arxiv.org/abs/2609.15494,2026-11-06,ai-verifier,verified
 dong2025psya,,,,pending
 shehata2026bystander,,,,pending
 agrawal2026whistleblow,https://arxiv.org/abs/2511.17085,2026-11-06,ai-verifier,verified
@@ -10,7 +10,7 @@ gomez2025surveillance,https://arxiv.org/abs/2510.05192,2026-11-06,ai-verifier,ve
 gomez2026escalation,,,,pending
 flint2026groupsize,,,,pending
 idowu2026anticollusion,,,,pending
-fuller2026smoke,https://pys8vc40ox3z7qxp.public.blob.vercel-storage.com/files/3b7bd2c0603544e2-smokefilled.pdf,2026-11-06,ai-verifier,pending-sentence
+fuller2026smoke,https://pys8vc40ox3z7qxp.public.blob.vercel-storage.com/files/3b7bd2c0603544e2-smokefilled.pdf,2026-11-06,ai-verifier,verified
 ye2026norm,,,,pending
 laurmaa2026peer,,,,pending
 paulino2026whistlebench,https://github.com/edpaulino/ai-swarm-dynamics-hackathon,2026-11-06,ai-verifier,verified
@@ -20,13 +20,13 @@ greenblatt2026metr,https://metr.org/hugging-face-incident-report-aug-2026.pdf,20
 anthropic2026multiagent,,,,pending
 cotra2026dwarkesh,,,,pending
 openai2026hftechreport,,,,pending
-sidot2026verify,https://arxiv.org/abs/2607.19267,2026-11-06,ai-verifier,pending-sentence
+sidot2026verify,https://arxiv.org/abs/2607.19267,2026-11-06,ai-verifier,verified
 eldin2026codeofsilence,https://apartresearch.com/sprints/projects/code-of-silence-nondisclosure-of-harm-by-llm-agents-and-how-a-private-place-to-write-delays-it-gx8m,2026-11-06,ai-verifier,verified
 lmmontoya2026peerreporting,https://github.com/lmmontoya-ai/peer-reporting-benchmark,2026-11-06,ai-verifier,verified
 silenceisendorsement2026,https://arxiv.org/abs/2609.20211,2026-11-06,ai-verifier,verified
 falsesuccess2026,,,,pending
-verifiedtoolcalls2026,https://arxiv.org/abs/2608.02645,2026-11-06,ai-verifier,pending-sentence
-reasonlessverifymore2026,https://arxiv.org/abs/2607.07405,2026-11-06,ai-verifier,pending-sentence
+verifiedtoolcalls2026,https://arxiv.org/abs/2608.02645,2026-11-06,ai-verifier,verified
+reasonlessverifymore2026,https://arxiv.org/abs/2607.07405,2026-11-06,ai-verifier,verified
 darley1968bystander,https://api.crossref.org/works/10.1037%2Fh0025589,2026-11-06,ai-verifier,verified
 latane1968group,https://api.crossref.org/works/10.1037%2Fh0026570,2026-11-06,ai-verifier,verified
 latane1969lady,,,,pending
@@ -79,9 +79,9 @@ patel2026fabricated,https://neurips.cc/virtual/2026/168157,2026-11-06,ai-verifie
 mitra2026testimony,https://neurips.cc/virtual/2026/172926,2026-11-06,ai-verifier,verified
 verdogan2026sibling,https://github.com/verdogan/sibling-agents,2026-11-06,ai-verifier,verified
 swarmhandoff2026,https://github.com/KrishanKVerma/swarm-handoff-propagation,2026-11-06,ai-verifier,verified
-swarmreceipts2026,https://github.com/ISWT42/swarm-receipts,2026-11-06,ai-verifier,pending-sentence
+swarmreceipts2026,https://github.com/ISWT42/swarm-receipts,2026-11-06,ai-verifier,verified
 mcp3350,https://github.com/modelcontextprotocol/modelcontextprotocol/issues/3350,2026-11-06,ai-verifier,verified
-a2a2355,https://github.com/a2aproject/A2A/issues/2355,2026-11-06,ai-verifier,pending-sentence
+a2a2355,https://github.com/a2aproject/A2A/issues/2355,2026-11-06,ai-verifier,verified
 claudecode-issues,,,,pending
 metagpt2023,https://arxiv.org/abs/2308.00352,2026-11-06,ai-verifier,pending-sentence
 vezhnevets2023concordia,https://arxiv.org/abs/2312.03664,2026-11-06,ai-verifier,verified
