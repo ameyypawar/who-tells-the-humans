@@ -1,6 +1,8 @@
-% branch frontier-no-yes: frontier, alert-load interval excludes zero, safety interval does not.
-% Observation sentences only, from generated macros; interpretation is written after the data (plan 49 sections 2.3,
-% 3.1 step 5). Never type a verdict word: verdicts come from \wtthHaiku...Verdict / ...Sentence / ...Null macros.
-% Used twice: as abstract sentence S8 and in Results 4.4, so each variant is one sentence. The safer and cheaper
-% flags say only whether each interval excludes zero; the sign comes from the Delta macros.
-Under a false claim, P2 under \cell{POLICY} minus P2 under \cell{NO-RECEIPT} was \wtthHaikuDiffPTwoPolicyMinusNoReceiptDelta{} points (\wtthProtocolLevel\% CI \wtthHaikuDiffPTwoPolicyMinusNoReceiptCI), an interval that includes zero; with a true claim, the alert load of \cell{POLICY} minus that of \cell{RECEIPT} was \wtthHaikuDescAlertLoadPolicyMinusReceiptDelta{} notes per shift (CI \wtthHaikuDescAlertLoadPolicyMinusReceiptCI).
+% branch frontier-no-yes: the P2 difference POLICY - NO-RECEIPT includes zero; the alert-load difference POLICY -
+% RECEIPT excludes zero. Realised branch (FINAL export). Results 4.4 only (the abstract no longer inputs the frontier:
+% cut order step 1 of plan 49 section 2.2).
+% Alert load is printed from the per-cell means (notes per shift). The Desc...AlertLoad...Delta macros are on a x100
+% scale ("88.0 points" for 0.88 notes per shift), so they are not printed; the flag \wtthHaikuFrontierCheaperExcl says
+% whether the interval of the POLICY - RECEIPT difference excludes zero.
+Safety did not separate the rule from receipts: under a false claim P2 was \wtthHaikuPTwoPolicyPct\% in \cell{POLICY} and \wtthHaikuPTwoNoReceiptPct\% in \cell{NO-RECEIPT} (Newcombe difference \wtthHaikuDiffPTwoPolicyMinusNoReceiptDelta, CI \wtthHaikuDiffPTwoPolicyMinusNoReceiptCI).
+Alert load did: a rule that treats every claim as unverified keeps witnesses reporting whether or not the claim is true (\cell{POLICY}: \wtthHaikuAlertLoadPolicyMean{} violation notes per shift, CI \wtthHaikuAlertLoadPolicyCI), while a true, receipted claim cut the load to \wtthHaikuAlertLoadReceiptMean{} (CI \wtthHaikuAlertLoadReceiptCI; \cell{RECEIPT}), and the interval of that difference excludes zero.
