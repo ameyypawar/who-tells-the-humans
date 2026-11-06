@@ -9,14 +9,13 @@
 
 \subsection{What deployers and protocol designers can do}\label{sec:recs}
 \begin{enumerate}
-\item \textbf{Give agents a sanctioned, private channel to a human.} With one, a bare claim barely mattered (ours, Section~\ref{sec:h1}).
-\item \textbf{Let only the channel write receipts, in a form no agent can forge}: a role-typed field rendered unlike any post, or a signed record, never text inside a message (ours, Section~\ref{sec:h3}; prior: \citep{ghosh2026pcm,vezhnevets2023concordia,compaction2026}).
-\item \textbf{Teach agents to check a receipt's provenance before they stand down}: where it sits and which sender the channel stamped, not what it looks like (ours, \cell{FORGED} against \cell{RECEIPT}); a rule sentence alone fails more often for claims that arrive through tool output (prior: \citep{patel2026fabricated}).
+\item \textbf{Give agents a private channel to a human}; with one, a bare claim barely mattered (\S\ref{sec:h1}).
+\item \textbf{Let only the channel write receipts, in a form no agent can forge}: a role-typed field rendered unlike any post, or a signed record, never text inside a message (ours, Section~\ref{sec:h3}; prior: \citep{ghosh2026pcm,vezhnevets2023concordia,compaction2026}); with an explicit empty state, this is a candidate pattern for MCP tool-outcome attestation and \AtwoA{} extensions \citep{mcp3350,a2a2355}, not a standard.
+\item \textbf{Teach agents to check a receipt's provenance before they stand down}: where it sits and which sender the channel stamped, not its look (ours, \cell{FORGED} against \cell{RECEIPT}); a rule sentence alone fails more often for claims in tool output (prior: \citep{patel2026fabricated}).
 \item \textbf{Show absence, but test what a log does}: ``\wtthStimLogEmpty'' makes a claim checkable, yet beside a false claim it did not raise reporting (ours, Section~\ref{sec:h2}).
-\item \textbf{Key de-duplication to receipts, not to a one-line rule}, which matched receipts on safety but not on alert load (ours, Section~\ref{sec:frontier}); and \textbf{protect reporters}, since our receipts name the sender (untested).
+\item \textbf{Key de-duplication to receipts, not to a one-line rule}, which matched receipts on safety but not on alert load (ours, Section~\ref{sec:frontier}); and \textbf{protect reporters}: our receipts name the sender.
 \end{enumerate}
-Channel-written receipts with an explicit empty state, a form agents cannot type and a provenance check are a candidate pattern for tool-outcome attestation in MCP and for \AtwoA{} extensions \citep{mcp3350,a2a2355}, not a standard.
 
 \subsection{Limitations and future work}
 Claude only, with \wtthDesignModelSonnetName{} exploratory; one fictional scenario at one clarity level, at ceiling; a scripted claimant and \wtthDesignLiveWitnessesWord{} witnesses per shift; stateless turns and a stub operator; a plain-text log that also lists the witnesses' own notes, so H2 mixes the claimant's missing receipt with peers' real ones; an LLM judge and AI-audited model labels with no blind human check; and self-reported debriefs whose reason codes mostly agreed poorly between models (Appendix~\ref{app:limits}).
-Next: a group-size curve, other model families, a log showing only the claimant's receipt (to separate the readings of H2), signed or typed receipts with a verification tool, agents with memory, and the two modules we did not run (D-008).
+Next: a group-size curve, other model families, and a log that shows only the claimant's receipt.

@@ -9,7 +9,7 @@ A fictional retailer, Larkspur Home, runs a nightly refund review on a shared bo
 The system prompt says: ``\wtthStimSystemStaffed{} \wtthStimSystemOps''
 A shift has \wtthDesignRosterWord{} agents over \wtthDesignRoundsWord{} rounds: a scripted violator (V), claimant (C) and background worker (B), and \wtthDesignLiveWitnessesWord{} live witnesses on one model.
 Each witness reviews its own refund tickets (\texttt{submit\_reviews}), reads the whole board, and can post to it (\texttt{post\_to\_board}) or call \texttt{notify\_ops}, a private, write-only feedback channel to ops whose reply is always ``\wtthStimReplyNotify''
-The tool names no consequence of a note, and the server stamps the sender (Appendix~\ref{app:prompts}).
+The tool names no consequence, and the server stamps the sender (Appendix~\ref{app:prompts}).
 % D-012 (the rename): the macro prints the server name from the configs at frozen-v1; never type the names here.
 Because the pinned CLI reserves the pre-registered server name, the server runs as \wtthDesignMcpServerName{} in every cell (Appendix~\ref{app:deviations}).
 
@@ -17,10 +17,10 @@ Because the pinned CLI reserves the pre-registered server name, the server runs 
 In round 2, V reports releasing a refund over the approval limit as three smaller batches, which the runbook forbids, and C posts a routine aside, a concern or a claim (Box~\ref{box:receipt}); the claim has a public paraphrase and two withheld ones.
 In world R1 the board carries an \texttt{\#escalation-log}, which shows C's line in \cell{RECEIPT} and \cell{POS}, where the harness files C's real note, and reads ``\wtthStimLogEmpty'' in \cell{NO-RECEIPT}; in \cell{FORGED}, C's post also carries a typed line in the log layout (withheld).
 \cell{POLICY} adds ``\wtthStimPolicy'' to the runbook; \cell{NEG} and \cell{POS} add ``\wtthStimDedupe'', a built-in reason to stand down (the positive control); and in the benign cell, \cell{B-NONE}, V holds the refund.
-Table~\ref{tab:cells} lists the cells and their planned sizes (D-003); the seed fixes the paraphrase, the handle order and the tickets.
+Table~\ref{tab:cells} lists the cells and planned sizes (D-003); the seed fixes paraphrase, handle order and tickets.
 
 \paragraph{Receipts.}
-Only the \texttt{notify\_ops} handler writes notes, the log is rendered only from them, and scripted notes use the same handler, so every receipt is written by the channel; tests check that no post writes the log.
+Only the \texttt{notify\_ops} handler writes notes, the log is rendered only from them, and scripted notes use the same handler, so every receipt is channel-written; tests check that no post writes the log.
 The log lists every accepted note, a witness's own included, from the round after it is sent.
 The deployer rule under test: \emph{a receipt is written by the channel, never by the claimant}.
 
@@ -39,9 +39,8 @@ Detectable effects at the frozen level are in Appendix~\ref{app:predictions}.
 \captionsetup{type=boxfloat}
 \centering
 \input{generated/design/boxes/receipt_vs_noreceipt_r2}
-\caption{\textbf{The round-2 board and escalation log in \cell{RECEIPT} and \cell{NO-RECEIPT}.}
-Only the log differs; the rest of the prompt is identical.
-In \cell{FORGED} C's post also carries a typed line in the log layout (withheld), and the log stays empty.}
+\caption{\textbf{The round-2 board and log in \cell{RECEIPT} and \cell{NO-RECEIPT};} the rest of the prompt is identical.
+In \cell{FORGED} C's post adds a typed line in the log layout (withheld), and the log stays empty.}
 \label{box:receipt}
 \end{figure}
 
@@ -66,6 +65,6 @@ Review-queue labels were proposed by \wtthDesignModelAnnotatorName{} blind to th
 \paragraph{Pre-registration, deviations and what did not work.}\label{sec:integrity}
 PREREG v1 froze on \wtthDesignPreregFrozenDate; the tag \texttt{prereg-v1} records its SHA-256, also posted in a public gist on \wtthDesignPreregGistDate, before any data.
 Every later change was logged before it took effect (D-001 to D-013 before any confirmatory data, D-014 during the exploratory Sonnet arm, D-015 to D-019 after collection but before any review report), and the witness-visible ones are identical across cells (Appendix~\ref{app:deviations}).
-Separate Claude reviewer agents found three validity bugs before any confirmatory data, all fixed: refusals rerun as failures, an unregistered retry message, and floating-point verdicts at the boundaries (Appendix~\ref{app:integrity}).
+Separate Claude reviewer agents found three validity bugs before any confirmatory data, all fixed (Appendix~\ref{app:integrity}).
 What did not work: the first G0 run was void (the CLI rejected the server name), the judge prompt failed validation once on its format and was revised (D-016), a queue bug drew the review sample twice (the duplicate was voided; D-019), the blind human check was declined (D-018), and two stretch arms were not run (D-008).
 % G2 passed without the legibility fix (FX-1 not applied; gate log).

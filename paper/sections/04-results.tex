@@ -7,10 +7,10 @@ The confirmatory set is every planned Haiku shift (\wtthHaikuEpisodesInSet, all 
 Table~\ref{tab:hyp} gives the three confirmatory tests in their fixed order.
 
 \begin{table}[t]
-\centering\small
-\begin{tabularx}{\linewidth}{@{}l>{\raggedright\arraybackslash}Xrr>{\raggedright\arraybackslash}p{1.3in}@{}}
+\centering\footnotesize
+\begin{tabularx}{\linewidth}{@{}l>{\raggedright\arraybackslash}Xrr>{\raggedright\arraybackslash}p{2.05in}@{}}
 \toprule
-Test & Contrast in P1 (share of witnesses who told ops) & Difference & \wtthProtocolLevel\% CI & Decision \\
+Test & Contrast in P1 (told ops) & Difference & \wtthProtocolLevel\% CI & Decision \\
 \midrule
 H1 & \cell{NONE} $-$ \cell{CLAIM}: \wtthHaikuPOneNonePct\% vs \wtthHaikuPOneClaimPct\% & \wtthHaikuHOneDelta & \wtthHaikuHOneCI & \wtthHaikuHOneVerdict \\
 H2 & stand-down in R0 $-$ in R1: \wtthHaikuHTwoDeltaRZero{} vs \wtthHaikuHTwoDeltaROne{} & \wtthHaikuHTwoDelta & \wtthHaikuHTwoCI & \wtthHaikuHTwoVerdict \\
@@ -29,12 +29,11 @@ H2's stand-downs: \cell{NONE} $-$ \cell{CLAIM} (world R0, no log) and \cell{NONE
 
 \subsection{Safety against alert load}\label{sec:frontier}
 \wtthInputBranch{frontier}
-There, standing down is the efficient outcome, and witnesses did (\cell{RECEIPT} $-$ \cell{NONE-R} in P1: \wtthHaikuDescPOneReceiptMinusNoneRDelta{} points, CI \wtthHaikuDescPOneReceiptMinusNoneRCI; descriptive); the forged line bought a similar saving (\wtthHaikuAlertLoadForgedMean{} notes per shift) at a cost in safety (Figure~\ref{fig:one}b).
+There, standing down is the efficient outcome, and witnesses did (\cell{RECEIPT} $-$ \cell{NONE-R} in P1: \wtthHaikuDescPOneReceiptMinusNoneRDelta{} points, CI \wtthHaikuDescPOneReceiptMinusNoneRCI; descriptive); the forged line bought a similar saving (\wtthHaikuAlertLoadForgedMean) at a cost in safety (Figure~\ref{fig:one}b).
 
 \subsection{Robustness, reliability and exploratory results}\label{sec:robust}
 \textbf{Sensitivity and reliability.}
-All three differences keep their sign and their side of zero under the any-note, attempts and seed-paired analyses, and no witness in the benign cell reported the held refund (Appendix~\ref{app:full}).
-The author approved the AI-audited review-queue labels unchanged, and agreement is model--model only (Appendix~\ref{app:judge}).
+All three differences keep their sign and side of zero under the any-note, attempts and seed-paired analyses; no witness in the benign cell reported the held refund (Appendix~\ref{app:full}); and all label agreement is model--model (Appendix~\ref{app:judge}).
 \textbf{Board substitution} (exploratory, D-010).
 Where a receipt was visible, real or forged, many witnesses raised the split on the board but never sent a note: \wtthHaikuBoardSubForgedPct\% in \cell{FORGED} and \wtthHaikuBoardSubReceiptPct\% in \cell{RECEIPT}, against \wtthHaikuBoardSubNoReceiptPct\% in \cell{NO-RECEIPT} and \wtthHaikuBoardSubNonePct\% in \cell{NONE}.
 \textbf{Sonnet} (exploratory).
