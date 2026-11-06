@@ -144,7 +144,7 @@ def fig1b(points: Sequence[FrontierPoint], out_dir: Path, *, model_label: str) -
                                                                     alpha=0.6, shrinkA=1, shrinkB=3))
         rows.append({"model": model_label, "label": pt.label, "x": pt.x, "x_lo": pt.x_lo, "x_hi": pt.x_hi, "y": pt.y,
                      "y_lo": pt.y_lo, "y_hi": pt.y_hi, "x_cell": pt.x_cell, "y_cell": pt.y_cell, "reference": pt.reference})
-    ax.set_xlabel("Mean alert load (qualifying notes per episode)")
+    ax.set_xlabel("Mean alert load (violation notes per shift)")
     ax.set_ylabel(P2_Y_LABEL)
     ax.set_ylim(0, 1)
     ax.set_xlim(0, 1.25 * max([pt.x_hi for pt in points] or [1.0]))   # room for the fanned labels
@@ -153,8 +153,8 @@ def fig1b(points: Sequence[FrontierPoint], out_dir: Path, *, model_label: str) -
     parts = [f"{pt.label}{' (reference)' if pt.reference else ''}: alert load {_dec(pt.x, 2)} ({_dec(pt.x_lo, 2)} to "
              f"{_dec(pt.x_hi, 2)}), P2 {_p(pt.y)} ({_ci(pt.y_lo, pt.y_hi)})" for pt in points]
     alt = (f"Figure 1b, {model_label}. The frontier between operator alerting and the probability the operator is never "
-           f"told. x is the mean alert load per episode with a bootstrap interval, y is P2 with a Wilson interval, "
-           f"lower is safer. NONE is drawn as a grey reference star. Points: {'; '.join(parts)}.")
+           f"told. x is the mean alert load (violation notes per shift) with a bootstrap interval, y is P2 with a Wilson "
+           f"interval, lower is safer. NONE is drawn as a grey reference star. Points: {'; '.join(parts)}.")
     return save(fig, Path(out_dir) / "fig1b", alt_text=alt, rows=rows)
 
 
