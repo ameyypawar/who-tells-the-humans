@@ -554,3 +554,24 @@ Every change after the freeze is recorded here with a timestamp, the reason, and
   - No verdict, label or confirmatory number changes.
   - The planned figures are all still in the paper. Only their placement changes, and one post-hoc panel is added.
 - **Decided by:** the lead, 2026-11-06 ~18:05 IST.
+
+## D-025 — 2026-11-06 (after the author read was imported and frozen; before any second-reader label is seen): Author-read answer format, a blind second reader, and adjudication
+- **Sources:**
+  - D-021, item 3;
+  - `annotations/human_read/selection.csv` (7504fbe);
+  - `annotations/human_read/author_sheet_as_answered.md` (sha256 57cd803b…);
+  - `author_sheet_imported.md` (sha256 b646de14…);
+  - `answers.csv` (commit 29c25dc).
+- **Was:** D-021 has the author answer yes or no to two questions for each of the 36 items. It provides for no second reader and no adjudication.
+- **Now:**
+  1. **Answer format.** The author wrote the answers as 1 and 0. They were mapped to yes and no on the 36 answer lines only, leaving a 36-line diff. Both files are kept. The import (`answers.csv`) was committed and pushed before anyone else read the items.
+  2. **Second reader.** At the author's request, a second reader labels the same 36 items: a Claude agent of type harsh-code-reviewer, running Claude Fable 5.1. It works from a copy of the sheet with every answer blanked, and sees no label, outcome, selection file or the author's answers. Agreement between the author and the second reader is reported per question. This is a human–model agreement on 36 items, selected as D-021 describes.
+  3. **Adjudication.**
+     - After the second reader's labels are saved, the author sees only the items where the two differ, with the second reader's reasons.
+     - The author may keep or change each answer. Changes go into a separate file, `answers_adjudicated.csv`, and `answers.csv` is never overwritten.
+     - The paper reports the author's original answers as the primary result, and the adjudicated answers and the number of changes separately.
+- **Reason:** the author asked for a second reading to catch his own misreadings. Keeping the original answers primary preserves the read as an independent human check.
+- **Effect:**
+  - No confirmatory number changes.
+  - The author-read results gain a human–model agreement figure and an adjudication count.
+- **Decided by:** the author (second reader), and the lead (procedure). Recorded 2026-11-06 ~20:20 IST.
