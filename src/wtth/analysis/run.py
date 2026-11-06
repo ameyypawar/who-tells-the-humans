@@ -387,6 +387,12 @@ def run_analysis(settings: Any, *, strict: bool, labels: LabelSource | None = No
             register.register_timing(book, M, tim)
             register.register_disclosure_d1(book, M, sec.rates)
             register.register_paraphrase_breakdown(book, M, sens.rates)
+            # post hoc (D-024 item 4): FORGED - RECEIPT and H3 by paraphrase; the keyword rule against the labels
+            rc = posthoc.receipt_contrasts(w, seeds=seeds)
+            if rc is not None:
+                register.register_receipt_contrasts(book, M, rc)
+            register.register_keyword_check(book, M, posthoc.keyword_check(w, labels),
+                                            scope=f"{label_h or model_label(aset.model)}, phase {aset.phase}")
             for key, sent_fn in (("PostHocRobustSentence", text.robustness_sentence),
                                  ("TimingSentence", text.timing_sentence)):
                 s_txt = sent_fn(book, M)
@@ -413,6 +419,8 @@ def run_analysis(settings: Any, *, strict: bool, labels: LabelSource | None = No
             book.add("SonnetSentence", text.sonnet_sentence(s, book, model_label=model_label(aset.model),
                                                             episodes_per_cell=n_cell), "latex",
                      source="template for Sonnet (exploratory)")
+            register.register_keyword_check(book, MODEL_TOKENS["sonnet"], posthoc.keyword_check(w, labels),
+                                            scope=f"{son_label}, phase {aset.phase} (exploratory arm)")
         if aset.above:
             above = dataclasses.replace(aset, episodes=aset.above, above=())
             wa = witness_outcomes(db, above, labels, strict=False)
@@ -425,9 +433,13 @@ def run_analysis(settings: Any, *, strict: bool, labels: LabelSource | None = No
                 r = secondary.known_rate(model, c, "p1", ws, lambda x: x.p1)
                 book.add_rate(M + "Above" + rate_prefix(model, "p1", c)[len(M):], r)
     # exploratory follow-up (D-022): its own episode list from phase exp1, never a confirmatory set
-    x1 = exp1.analyse(db, exp1_labels if exp1_labels is not None else exp1.label_source(settings), seeds=seeds,
-                      ref_witnesses=w_by, ref_episodes=e_by)
+    x1_labels = exp1_labels if exp1_labels is not None else exp1.label_source(settings)
+    x1 = exp1.analyse(db, x1_labels, seeds=seeds, ref_witnesses=w_by, ref_episodes=e_by)
     register.register_exp1(book, x1)
+    if x1.status == exp1.COMPLETE and x1.witnesses:
+        register.register_keyword_check(book, "ExpOne", posthoc.keyword_check(x1.witnesses, x1_labels),
+                                        scope="exploratory (D-022) follow-up, phase exp1, all three arms pooled, "
+                                              "labels from the exp1 judge database")
     summary["exp1"] = {"status": x1.status, "n_done": dict(x1.n_done), "n_open": x1.n_open,
                        "n_pending": x1.n_pending, "notes": list(x1.notes)}
     notes.extend(x1.notes)

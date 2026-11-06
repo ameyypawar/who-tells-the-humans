@@ -433,3 +433,116 @@ def prediction_checks(w: Sequence[WitnessOutcome], h: HypothesisResults, desc: D
     status["policy_alert_load_above_receipt"] = positive_status(al.estimate, al.lo) if ok(al) else None
     basis["policy_alert_load_above_receipt"] = "alert load POLICY - RECEIPT > 0 with its 95% interval"
     return PredictionChecks(status, tuple(extra), basis)
+
+
+# ---- D-024 item 4: measurement checks found by paper review 2 ------------------------------------------------------
+#
+# Added after the strict analysis and the follow-up (DEVIATIONS D-024). Nothing here enters a verdict and no
+# confirmatory number changes: each interval runs on the post-hoc stream with a fresh generator, so every earlier
+# stream and interval is untouched.
+
+POSTHOC_D024 = "post hoc (D-024)"
+MODEL_CODED_D024 = "model-coded, post hoc (D-024)"
+PARAPHRASES = (0, 1, 2)          # paraphrase_idx = (seed - 1) mod 3: 0 public, 1 and 2 withheld (PREREG 7)
+
+
+@dataclass(frozen=True, slots=True)
+class SubsetContrast:
+    """p_a - p_b on the witnesses of one claim paraphrase (None: all of them), with the episode-cluster bootstrap
+    interval of the confirmatory tests (episodes resampled within each cell, the witnesses of a shift together)."""
+    paraphrase: int | None
+    cell_a: str
+    cell_b: str
+    k_a: int
+    n_a: int
+    eps_a: int
+    k_b: int
+    n_b: int
+    eps_b: int
+    contrast: Contrast
+
+
+def subset_contrast(w: Sequence[WitnessOutcome], a: str, b: str, *, paraphrase: int | None,
+                    seeds: AnalysisSeeds) -> SubsetContrast:
+    """P1(a) - P1(b), restricted to one paraphrase index when given (the whole shift is in or out: the paraphrase is
+    fixed per seed)."""
+    ws = [x for x in w if x.cell in (a, b) and (paraphrase is None or x.paraphrase_idx == paraphrase)]
+    tag = "all paraphrases" if paraphrase is None else f"paraphrase_idx={paraphrase}"
+    name = f"D024:{a}-{b}" + ("" if paraphrase is None else f"@paraphrase={paraphrase}")
+    c, _ = bootstrap_contrast(name, witness_cells(ws), (a, b), lambda r: r[a] - r[b], stream="posthoc",
+                              master=seeds.bootstrap, B=seeds.bootstrap_B, status="descriptive",
+                              note=f"{POSTHOC_D024}: {a} - {b}, {tag}; episode-cluster bootstrap, no test")
+    c = dataclasses.replace(c, rejected=None)
+
+    def kne(cell: str) -> tuple[int, int, int]:
+        cw = [x for x in ws if x.cell == cell]
+        return sum(1 for x in cw if x.p1), len(cw), len({x.episode_id for x in cw})
+
+    return SubsetContrast(paraphrase, a, b, *kne(a), *kne(b), contrast=c)
+
+
+@dataclass(frozen=True, slots=True)
+class ReceiptContrasts:
+    """FORGED - RECEIPT (the typed receipt-style line against a real receipt), overall and by paraphrase; and H3's
+    contrast NO-RECEIPT - FORGED by paraphrase. Descriptive: neither was pre-registered as a test."""
+    forged_minus_receipt: tuple[SubsetContrast, ...]       # overall first, then paraphrase 0, 1, 2
+    h3_by_paraphrase: tuple[SubsetContrast, ...]           # paraphrase 0, 1, 2
+
+
+def receipt_contrasts(w: Sequence[WitnessOutcome], *, seeds: AnalysisSeeds) -> ReceiptContrasts | None:
+    have = {x.cell for x in w}
+    if not {"FORGED", "RECEIPT", "NO-RECEIPT"} <= have:
+        return None
+    fr = [subset_contrast(w, "FORGED", "RECEIPT", paraphrase=None, seeds=seeds)]
+    fr += [subset_contrast(w, "FORGED", "RECEIPT", paraphrase=v, seeds=seeds) for v in PARAPHRASES]
+    h3 = [subset_contrast(w, "NO-RECEIPT", "FORGED", paraphrase=v, seeds=seeds) for v in PARAPHRASES]
+    return ReceiptContrasts(tuple(fr), tuple(h3))
+
+
+@dataclass(frozen=True, slots=True)
+class KeywordCheck:
+    """The P1 keyword rule against the model-coded refers_to_violation label, over every witness note that P1 reads
+    (tool notes, rounds 1-5, of the analysis set). Final = reviewed label where one exists, else the judge's; judge =
+    the valid judge label alone. *_n counts notes that carry such a label, *_k those coded 1."""
+    n_notes: int
+    n_matched: int
+    n_unmatched: int
+    final_matched_n: int
+    final_matched_k: int
+    final_unmatched_n: int
+    final_unmatched_k: int
+    judge_matched_n: int
+    judge_matched_k: int
+    judge_unmatched_n: int
+    judge_unmatched_k: int
+    p1_witnesses: int
+    p1_label_only: int              # witnesses with P1 and no keyword-matched note: P1 rests on a label alone
+
+
+def keyword_check(w: Sequence[WitnessOutcome], labels: Any) -> KeywordCheck:
+    """`labels`: the LabelSource the outcomes were computed with (FinalLabel.labels and .judge_labels)."""
+    fin: dict[bool, list[int]] = {True: [], False: []}
+    jud: dict[bool, list[int]] = {True: [], False: []}
+    n_notes = 0
+    for x in w:
+        for n in x.notes:
+            n_notes += 1
+            fl = labels.get(("notes", str(n.note_id)))
+            if fl is None:
+                continue
+            v = fl.labels.get("refers_to_violation") if fl.labels is not None else None
+            if v is not None:
+                fin[n.kw_match].append(int(bool(v)))
+            jl = fl.judge_labels
+            jv = jl.get("refers_to_violation") if jl is not None else None
+            if jv is not None:
+                jud[n.kw_match].append(int(bool(jv)))
+    n_matched = sum(1 for x in w for n in x.notes if n.kw_match)
+    return KeywordCheck(
+        n_notes=n_notes, n_matched=n_matched, n_unmatched=n_notes - n_matched,
+        final_matched_n=len(fin[True]), final_matched_k=sum(fin[True]),
+        final_unmatched_n=len(fin[False]), final_unmatched_k=sum(fin[False]),
+        judge_matched_n=len(jud[True]), judge_matched_k=sum(jud[True]),
+        judge_unmatched_n=len(jud[False]), judge_unmatched_k=sum(jud[False]),
+        p1_witnesses=sum(1 for x in w if x.p1),
+        p1_label_only=sum(1 for x in w if x.p1 and not any(n.kw_match for n in x.notes)))

@@ -70,6 +70,7 @@ class Exp1Results:
     p2_diffs: tuple[tuple[str, str, Contrast], ...] = ()
     notes: tuple[str, ...] = ()
     timings: tuple[Any, ...] = ()       # posthoc.TimingResults per model (Haiku arms, Sonnet RECEIPT)
+    witnesses: tuple[WitnessOutcome, ...] = ()      # every arm's witness outcomes (the D-024 keyword check)
 
 
 def label_source(settings: Any) -> Any:
@@ -213,4 +214,5 @@ def analyse(db: Any, labels: Any, *, seeds: AnalysisSeeds,
         es = [x for a in ARMS if a.model == model for x in e_by[a.token]]
         if ws:
             tims.append(timing(ws, es, db))
-    return Exp1Results(COMPLETE, n_done, 0, 0, tuple(arms), tuple(p1d), tuple(p2d), tuple(notes), tuple(tims))
+    return Exp1Results(COMPLETE, n_done, 0, 0, tuple(arms), tuple(p1d), tuple(p2d), tuple(notes), tuple(tims),
+                       tuple(x for a in ARMS for x in w_by[a.token]))

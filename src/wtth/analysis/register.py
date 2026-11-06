@@ -649,3 +649,82 @@ def register_paraphrase_breakdown(book: NumberBook, M: str, rates: Sequence[Any]
                                  ("POneCI", (r.lo, r.hi), "ci")):
                 book.add(pre + k, val, kind, source=src)
             book.add(pre + "NeverK", r.n - r.k, "count", source=src + "; witnesses who never sent a violation note")
+
+
+# ---- D-024 item 4: post-hoc measurement checks (paper review 2) ------------------------------------------------------
+
+def _paraphrase_tag(v: int) -> str:
+    return (f"claim paraphrase P{v + 1} of PREREG §7 ({'public' if v == 0 else 'withheld'}, paraphrase_idx={v}); "
+            f"aliased with handle order (research/45)")
+
+
+def register_receipt_contrasts(book: NumberBook, M: str, r: Any) -> None:
+    """posthoc.ReceiptContrasts: <M>ForgedMinusReceipt... (all paraphrases), <M>ByParaphrase<v>ForgedMinusReceipt...
+    and <M>ByParaphrase<v>NoReceiptMinusForged... (v = Zero, One, Two), and the range of each by-paraphrase family
+    (<M>ByParaphrase<family>Min / Max). Descriptive post-hoc intervals; no test, no verdict. (Not under the PostHoc /
+    Paraphrase prefixes, which hold the D-021 keys and the pre-registered breakdown.)"""
+    from wtth.analysis.posthoc import POSTHOC_D024
+
+    def add(pre: str, s: Any, what: str) -> None:
+        c = s.contrast
+        src = (f"{POSTHOC_D024}: {what}; P1 {s.cell_a} {s.k_a}/{s.n_a} ({s.eps_a} shifts) minus {s.cell_b} "
+               f"{s.k_b}/{s.n_b} ({s.eps_b} shifts); episode-cluster bootstrap, B={c.B}, percentile 95% interval, "
+               f"stream {c.stream}; descriptive, no test")
+        ok = c.estimate == c.estimate
+        book.add(pre + "Delta", c.estimate if ok else None, "pp", source=src)
+        book.add(pre + "DeltaAbs", abs(c.estimate) if ok else None, "pp", source=src + "; absolute value of Delta")
+        book.add(pre + "Lo", c.lo, "pp", source=src)
+        book.add(pre + "Hi", c.hi, "pp", source=src)
+        book.add(pre + "CI", (c.lo, c.hi), "ci", source=src)
+        add_excl(book, pre, c.lo, c.hi, f"{c.name} ({POSTHOC_D024})")
+
+    for s in r.forged_minus_receipt:
+        if s.paraphrase is None:
+            add(M + "ForgedMinusReceipt", s, "FORGED - RECEIPT (typed receipt-style line against a real "
+                                                    "receipt), all paraphrases")
+        else:
+            add(M + "ByParaphrase" + token(str(s.paraphrase)) + "ForgedMinusReceipt", s,
+                "FORGED - RECEIPT within " + _paraphrase_tag(s.paraphrase))
+    for s in r.h3_by_paraphrase:
+        add(M + "ByParaphrase" + token(str(s.paraphrase)) + "NoReceiptMinusForged", s,
+            "H3's contrast NO-RECEIPT - FORGED within " + _paraphrase_tag(s.paraphrase))
+    for fam, rows in (("ForgedMinusReceipt", [s for s in r.forged_minus_receipt if s.paraphrase is not None]),
+                      ("NoReceiptMinusForged", list(r.h3_by_paraphrase))):
+        vals = [s.contrast.estimate for s in rows if s.contrast.estimate == s.contrast.estimate]
+        if not vals:
+            continue
+        src = (f"{POSTHOC_D024}: range over the three claim paraphrases of {fam} (point estimates; paraphrase is "
+               f"aliased with handle order)")
+        book.add(M + "ByParaphrase" + fam + "Min", min(vals), "pp", source=src + "; smallest")
+        book.add(M + "ByParaphrase" + fam + "Max", max(vals), "pp", source=src + "; largest")
+
+
+def register_keyword_check(book: NumberBook, M: str, k: Any, *, scope: str) -> None:
+    """posthoc.KeywordCheck under <M>KwCheck...: how often the model-coded refers_to_violation label agrees with the
+    P1 keyword rule. Final = reviewed label where one exists, else the judge's; Judge = the valid judge label alone.
+    Shares (Wilson 95%, notes as units, clustering ignored) only where a label exists."""
+    from wtth.analysis.intervals import wilson
+    from wtth.analysis.posthoc import MODEL_CODED_D024
+
+    base = (f"{MODEL_CODED_D024}: P1 keyword rule against the refers_to_violation label, {scope}; every witness note "
+            f"P1 reads (tool notes, rounds 1-5)")
+    pre = M + "KwCheck"
+    book.add(pre + "NotesN", k.n_notes, "count", source=base)
+    book.add(pre + "MatchedN", k.n_matched, "count", source=base + "; notes the keyword rule matches (P1 = 1)")
+    book.add(pre + "UnmatchedN", k.n_unmatched, "count", source=base + "; notes the keyword rule does not match")
+    for lab, what in (("Final", "final labels (reviewed where reviewed, else the judge's)"),
+                      ("Judge", "valid judge labels alone")):
+        for part, n, kk in (("Matched", getattr(k, f"{lab.lower()}_matched_n"), getattr(k, f"{lab.lower()}_matched_k")),
+                            ("Unmatched", getattr(k, f"{lab.lower()}_unmatched_n"),
+                             getattr(k, f"{lab.lower()}_unmatched_k"))):
+            src = f"{base}; {part.lower()} notes with {what}"
+            book.add(pre + part + lab + "N", n, "count", source=src + ": notes with a label")
+            book.add(pre + part + lab + "K", kk, "count", source=src + ": coded refers_to_violation = 1")
+            if n:
+                iv = wilson(kk, n)
+                book.add(pre + part + lab + "Pct", kk / n, "prop", source=src + ": share coded 1")
+                book.add(pre + part + lab + "CI", iv, "ci", source=src + ": Wilson 95% interval, notes as units")
+    src = (f"{base}; witnesses with P1 = 1, and those whose P1 rests on a label alone (no keyword-matched note, so the "
+           f"judge path decided it)")
+    book.add(pre + "POneK", k.p1_witnesses, "count", source=src)
+    book.add(pre + "POneLabelOnlyK", k.p1_label_only, "count", source=src)

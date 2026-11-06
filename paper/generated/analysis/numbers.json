@@ -763,6 +763,148 @@
   "value": "exploratory"
  },
  {
+  "display": "0",
+  "key": "ExpOneKwCheckMatchedFinalK",
+  "kind": "count",
+  "note": "",
+  "source": "model-coded, post hoc (D-024): P1 keyword rule against the refers_to_violation label, exploratory (D-022) follow-up, phase exp1, all three arms pooled, labels from the exp1 judge database; every witness note P1 reads (tool notes, rounds 1-5); matched notes with final labels (reviewed where reviewed, else the judge's): coded refers_to_violation = 1",
+  "value": 0
+ },
+ {
+  "display": "0",
+  "key": "ExpOneKwCheckMatchedFinalN",
+  "kind": "count",
+  "note": "",
+  "source": "model-coded, post hoc (D-024): P1 keyword rule against the refers_to_violation label, exploratory (D-022) follow-up, phase exp1, all three arms pooled, labels from the exp1 judge database; every witness note P1 reads (tool notes, rounds 1-5); matched notes with final labels (reviewed where reviewed, else the judge's): notes with a label",
+  "value": 0
+ },
+ {
+  "display": "0",
+  "key": "ExpOneKwCheckMatchedJudgeK",
+  "kind": "count",
+  "note": "",
+  "source": "model-coded, post hoc (D-024): P1 keyword rule against the refers_to_violation label, exploratory (D-022) follow-up, phase exp1, all three arms pooled, labels from the exp1 judge database; every witness note P1 reads (tool notes, rounds 1-5); matched notes with valid judge labels alone: coded refers_to_violation = 1",
+  "value": 0
+ },
+ {
+  "display": "0",
+  "key": "ExpOneKwCheckMatchedJudgeN",
+  "kind": "count",
+  "note": "",
+  "source": "model-coded, post hoc (D-024): P1 keyword rule against the refers_to_violation label, exploratory (D-022) follow-up, phase exp1, all three arms pooled, labels from the exp1 judge database; every witness note P1 reads (tool notes, rounds 1-5); matched notes with valid judge labels alone: notes with a label",
+  "value": 0
+ },
+ {
+  "display": "279",
+  "key": "ExpOneKwCheckMatchedN",
+  "kind": "count",
+  "note": "",
+  "source": "model-coded, post hoc (D-024): P1 keyword rule against the refers_to_violation label, exploratory (D-022) follow-up, phase exp1, all three arms pooled, labels from the exp1 judge database; every witness note P1 reads (tool notes, rounds 1-5); notes the keyword rule matches (P1 = 1)",
+  "value": 279
+ },
+ {
+  "display": "296",
+  "key": "ExpOneKwCheckNotesN",
+  "kind": "count",
+  "note": "",
+  "source": "model-coded, post hoc (D-024): P1 keyword rule against the refers_to_violation label, exploratory (D-022) follow-up, phase exp1, all three arms pooled, labels from the exp1 judge database; every witness note P1 reads (tool notes, rounds 1-5)",
+  "value": 296
+ },
+ {
+  "display": "277",
+  "key": "ExpOneKwCheckPOneK",
+  "kind": "count",
+  "note": "",
+  "source": "model-coded, post hoc (D-024): P1 keyword rule against the refers_to_violation label, exploratory (D-022) follow-up, phase exp1, all three arms pooled, labels from the exp1 judge database; every witness note P1 reads (tool notes, rounds 1-5); witnesses with P1 = 1, and those whose P1 rests on a label alone (no keyword-matched note, so the judge path decided it)",
+  "value": 277
+ },
+ {
+  "display": "0",
+  "key": "ExpOneKwCheckPOneLabelOnlyK",
+  "kind": "count",
+  "note": "",
+  "source": "model-coded, post hoc (D-024): P1 keyword rule against the refers_to_violation label, exploratory (D-022) follow-up, phase exp1, all three arms pooled, labels from the exp1 judge database; every witness note P1 reads (tool notes, rounds 1-5); witnesses with P1 = 1, and those whose P1 rests on a label alone (no keyword-matched note, so the judge path decided it)",
+  "value": 0
+ },
+ {
+  "display": "0.0 to 18.4",
+  "key": "ExpOneKwCheckUnmatchedFinalCI",
+  "kind": "ci",
+  "note": "",
+  "source": "model-coded, post hoc (D-024): P1 keyword rule against the refers_to_violation label, exploratory (D-022) follow-up, phase exp1, all three arms pooled, labels from the exp1 judge database; every witness note P1 reads (tool notes, rounds 1-5); unmatched notes with final labels (reviewed where reviewed, else the judge's): Wilson 95% interval, notes as units",
+  "value": [
+   0.0,
+   0.1843181350088518
+  ]
+ },
+ {
+  "display": "0",
+  "key": "ExpOneKwCheckUnmatchedFinalK",
+  "kind": "count",
+  "note": "",
+  "source": "model-coded, post hoc (D-024): P1 keyword rule against the refers_to_violation label, exploratory (D-022) follow-up, phase exp1, all three arms pooled, labels from the exp1 judge database; every witness note P1 reads (tool notes, rounds 1-5); unmatched notes with final labels (reviewed where reviewed, else the judge's): coded refers_to_violation = 1",
+  "value": 0
+ },
+ {
+  "display": "17",
+  "key": "ExpOneKwCheckUnmatchedFinalN",
+  "kind": "count",
+  "note": "",
+  "source": "model-coded, post hoc (D-024): P1 keyword rule against the refers_to_violation label, exploratory (D-022) follow-up, phase exp1, all three arms pooled, labels from the exp1 judge database; every witness note P1 reads (tool notes, rounds 1-5); unmatched notes with final labels (reviewed where reviewed, else the judge's): notes with a label",
+  "value": 17
+ },
+ {
+  "display": "0.0",
+  "key": "ExpOneKwCheckUnmatchedFinalPct",
+  "kind": "prop",
+  "note": "",
+  "source": "model-coded, post hoc (D-024): P1 keyword rule against the refers_to_violation label, exploratory (D-022) follow-up, phase exp1, all three arms pooled, labels from the exp1 judge database; every witness note P1 reads (tool notes, rounds 1-5); unmatched notes with final labels (reviewed where reviewed, else the judge's): share coded 1",
+  "value": 0.0
+ },
+ {
+  "display": "0.0 to 18.4",
+  "key": "ExpOneKwCheckUnmatchedJudgeCI",
+  "kind": "ci",
+  "note": "",
+  "source": "model-coded, post hoc (D-024): P1 keyword rule against the refers_to_violation label, exploratory (D-022) follow-up, phase exp1, all three arms pooled, labels from the exp1 judge database; every witness note P1 reads (tool notes, rounds 1-5); unmatched notes with valid judge labels alone: Wilson 95% interval, notes as units",
+  "value": [
+   0.0,
+   0.1843181350088518
+  ]
+ },
+ {
+  "display": "0",
+  "key": "ExpOneKwCheckUnmatchedJudgeK",
+  "kind": "count",
+  "note": "",
+  "source": "model-coded, post hoc (D-024): P1 keyword rule against the refers_to_violation label, exploratory (D-022) follow-up, phase exp1, all three arms pooled, labels from the exp1 judge database; every witness note P1 reads (tool notes, rounds 1-5); unmatched notes with valid judge labels alone: coded refers_to_violation = 1",
+  "value": 0
+ },
+ {
+  "display": "17",
+  "key": "ExpOneKwCheckUnmatchedJudgeN",
+  "kind": "count",
+  "note": "",
+  "source": "model-coded, post hoc (D-024): P1 keyword rule against the refers_to_violation label, exploratory (D-022) follow-up, phase exp1, all three arms pooled, labels from the exp1 judge database; every witness note P1 reads (tool notes, rounds 1-5); unmatched notes with valid judge labels alone: notes with a label",
+  "value": 17
+ },
+ {
+  "display": "0.0",
+  "key": "ExpOneKwCheckUnmatchedJudgePct",
+  "kind": "prop",
+  "note": "",
+  "source": "model-coded, post hoc (D-024): P1 keyword rule against the refers_to_violation label, exploratory (D-022) follow-up, phase exp1, all three arms pooled, labels from the exp1 judge database; every witness note P1 reads (tool notes, rounds 1-5); unmatched notes with valid judge labels alone: share coded 1",
+  "value": 0.0
+ },
+ {
+  "display": "17",
+  "key": "ExpOneKwCheckUnmatchedN",
+  "kind": "count",
+  "note": "",
+  "source": "model-coded, post hoc (D-024): P1 keyword rule against the refers_to_violation label, exploratory (D-022) follow-up, phase exp1, all three arms pooled, labels from the exp1 judge database; every witness note P1 reads (tool notes, rounds 1-5); notes the keyword rule does not match",
+  "value": 17
+ },
+ {
   "display": "30",
   "key": "ExpOneSonnetReceiptEps",
   "kind": "count",
@@ -6477,6 +6619,344 @@
   "note": "exploratory (D-010); Wilson interval ignores clustering of witnesses within episodes",
   "source": "D-010 board substitution haiku RECEIPT (judge labels)",
   "value": 0.26
+ },
+ {
+  "display": "25.0",
+  "key": "HaikuByParaphraseForgedMinusReceiptMax",
+  "kind": "pp",
+  "note": "",
+  "source": "post hoc (D-024): range over the three claim paraphrases of ForgedMinusReceipt (point estimates; paraphrase is aliased with handle order); largest",
+  "value": 0.25
+ },
+ {
+  "display": "\\ensuremath{-}23.5",
+  "key": "HaikuByParaphraseForgedMinusReceiptMin",
+  "kind": "pp",
+  "note": "",
+  "source": "post hoc (D-024): range over the three claim paraphrases of ForgedMinusReceipt (point estimates; paraphrase is aliased with handle order); smallest",
+  "value": -0.235294117647
+ },
+ {
+  "display": "34.8",
+  "key": "HaikuByParaphraseNoReceiptMinusForgedMax",
+  "kind": "pp",
+  "note": "",
+  "source": "post hoc (D-024): range over the three claim paraphrases of NoReceiptMinusForged (point estimates; paraphrase is aliased with handle order); largest",
+  "value": 0.347857661583
+ },
+ {
+  "display": "8.3",
+  "key": "HaikuByParaphraseNoReceiptMinusForgedMin",
+  "kind": "pp",
+  "note": "",
+  "source": "post hoc (D-024): range over the three claim paraphrases of NoReceiptMinusForged (point estimates; paraphrase is aliased with handle order); smallest",
+  "value": 0.083333333333
+ },
+ {
+  "display": "\\ensuremath{-}35.3 to \\ensuremath{-}11.8",
+  "key": "HaikuByParaphraseOneForgedMinusReceiptCI",
+  "kind": "ci",
+  "note": "",
+  "source": "post hoc (D-024): FORGED - RECEIPT within claim paraphrase P2 of PREREG §7 (withheld, paraphrase_idx=1); aliased with handle order (research/45); P1 FORGED 32/51 (17 shifts) minus RECEIPT 44/51 (17 shifts); episode-cluster bootstrap, B=10000, percentile 95% interval, stream posthoc; descriptive, no test",
+  "value": [
+   -0.352941176471,
+   -0.117647058824
+  ]
+ },
+ {
+  "display": "\\ensuremath{-}23.5",
+  "key": "HaikuByParaphraseOneForgedMinusReceiptDelta",
+  "kind": "pp",
+  "note": "",
+  "source": "post hoc (D-024): FORGED - RECEIPT within claim paraphrase P2 of PREREG §7 (withheld, paraphrase_idx=1); aliased with handle order (research/45); P1 FORGED 32/51 (17 shifts) minus RECEIPT 44/51 (17 shifts); episode-cluster bootstrap, B=10000, percentile 95% interval, stream posthoc; descriptive, no test",
+  "value": -0.235294117647
+ },
+ {
+  "display": "23.5",
+  "key": "HaikuByParaphraseOneForgedMinusReceiptDeltaAbs",
+  "kind": "pp",
+  "note": "",
+  "source": "post hoc (D-024): FORGED - RECEIPT within claim paraphrase P2 of PREREG §7 (withheld, paraphrase_idx=1); aliased with handle order (research/45); P1 FORGED 32/51 (17 shifts) minus RECEIPT 44/51 (17 shifts); episode-cluster bootstrap, B=10000, percentile 95% interval, stream posthoc; descriptive, no test; absolute value of Delta",
+  "value": 0.235294117647
+ },
+ {
+  "display": "yes",
+  "key": "HaikuByParaphraseOneForgedMinusReceiptExcl",
+  "kind": "verdict",
+  "note": "",
+  "source": "D024:FORGED-RECEIPT@paraphrase=1 (post hoc (D-024)): interval excludes 0",
+  "value": "yes"
+ },
+ {
+  "display": "\\ensuremath{-}11.8",
+  "key": "HaikuByParaphraseOneForgedMinusReceiptHi",
+  "kind": "pp",
+  "note": "",
+  "source": "post hoc (D-024): FORGED - RECEIPT within claim paraphrase P2 of PREREG §7 (withheld, paraphrase_idx=1); aliased with handle order (research/45); P1 FORGED 32/51 (17 shifts) minus RECEIPT 44/51 (17 shifts); episode-cluster bootstrap, B=10000, percentile 95% interval, stream posthoc; descriptive, no test",
+  "value": -0.117647058824
+ },
+ {
+  "display": "\\ensuremath{-}35.3",
+  "key": "HaikuByParaphraseOneForgedMinusReceiptLo",
+  "kind": "pp",
+  "note": "",
+  "source": "post hoc (D-024): FORGED - RECEIPT within claim paraphrase P2 of PREREG §7 (withheld, paraphrase_idx=1); aliased with handle order (research/45); P1 FORGED 32/51 (17 shifts) minus RECEIPT 44/51 (17 shifts); episode-cluster bootstrap, B=10000, percentile 95% interval, stream posthoc; descriptive, no test",
+  "value": -0.352941176471
+ },
+ {
+  "display": "25.2 to 44.6",
+  "key": "HaikuByParaphraseOneNoReceiptMinusForgedCI",
+  "kind": "ci",
+  "note": "",
+  "source": "post hoc (D-024): H3's contrast NO-RECEIPT - FORGED within claim paraphrase P2 of PREREG §7 (withheld, paraphrase_idx=1); aliased with handle order (research/45); P1 NO-RECEIPT 79/81 (27 shifts) minus FORGED 32/51 (17 shifts); episode-cluster bootstrap, B=10000, percentile 95% interval, stream posthoc; descriptive, no test",
+  "value": [
+   0.251997095134,
+   0.445896877269
+  ]
+ },
+ {
+  "display": "34.8",
+  "key": "HaikuByParaphraseOneNoReceiptMinusForgedDelta",
+  "kind": "pp",
+  "note": "",
+  "source": "post hoc (D-024): H3's contrast NO-RECEIPT - FORGED within claim paraphrase P2 of PREREG §7 (withheld, paraphrase_idx=1); aliased with handle order (research/45); P1 NO-RECEIPT 79/81 (27 shifts) minus FORGED 32/51 (17 shifts); episode-cluster bootstrap, B=10000, percentile 95% interval, stream posthoc; descriptive, no test",
+  "value": 0.347857661583
+ },
+ {
+  "display": "34.8",
+  "key": "HaikuByParaphraseOneNoReceiptMinusForgedDeltaAbs",
+  "kind": "pp",
+  "note": "",
+  "source": "post hoc (D-024): H3's contrast NO-RECEIPT - FORGED within claim paraphrase P2 of PREREG §7 (withheld, paraphrase_idx=1); aliased with handle order (research/45); P1 NO-RECEIPT 79/81 (27 shifts) minus FORGED 32/51 (17 shifts); episode-cluster bootstrap, B=10000, percentile 95% interval, stream posthoc; descriptive, no test; absolute value of Delta",
+  "value": 0.347857661583
+ },
+ {
+  "display": "yes",
+  "key": "HaikuByParaphraseOneNoReceiptMinusForgedExcl",
+  "kind": "verdict",
+  "note": "",
+  "source": "D024:NO-RECEIPT-FORGED@paraphrase=1 (post hoc (D-024)): interval excludes 0",
+  "value": "yes"
+ },
+ {
+  "display": "44.6",
+  "key": "HaikuByParaphraseOneNoReceiptMinusForgedHi",
+  "kind": "pp",
+  "note": "",
+  "source": "post hoc (D-024): H3's contrast NO-RECEIPT - FORGED within claim paraphrase P2 of PREREG §7 (withheld, paraphrase_idx=1); aliased with handle order (research/45); P1 NO-RECEIPT 79/81 (27 shifts) minus FORGED 32/51 (17 shifts); episode-cluster bootstrap, B=10000, percentile 95% interval, stream posthoc; descriptive, no test",
+  "value": 0.445896877269
+ },
+ {
+  "display": "25.2",
+  "key": "HaikuByParaphraseOneNoReceiptMinusForgedLo",
+  "kind": "pp",
+  "note": "",
+  "source": "post hoc (D-024): H3's contrast NO-RECEIPT - FORGED within claim paraphrase P2 of PREREG §7 (withheld, paraphrase_idx=1); aliased with handle order (research/45); P1 NO-RECEIPT 79/81 (27 shifts) minus FORGED 32/51 (17 shifts); episode-cluster bootstrap, B=10000, percentile 95% interval, stream posthoc; descriptive, no test",
+  "value": 0.251997095134
+ },
+ {
+  "display": "8.3 to 39.6",
+  "key": "HaikuByParaphraseTwoForgedMinusReceiptCI",
+  "kind": "ci",
+  "note": "",
+  "source": "post hoc (D-024): FORGED - RECEIPT within claim paraphrase P3 of PREREG §7 (withheld, paraphrase_idx=2); aliased with handle order (research/45); P1 FORGED 44/48 (16 shifts) minus RECEIPT 32/48 (16 shifts); episode-cluster bootstrap, B=10000, percentile 95% interval, stream posthoc; descriptive, no test",
+  "value": [
+   0.083333333333,
+   0.395833333333
+  ]
+ },
+ {
+  "display": "25.0",
+  "key": "HaikuByParaphraseTwoForgedMinusReceiptDelta",
+  "kind": "pp",
+  "note": "",
+  "source": "post hoc (D-024): FORGED - RECEIPT within claim paraphrase P3 of PREREG §7 (withheld, paraphrase_idx=2); aliased with handle order (research/45); P1 FORGED 44/48 (16 shifts) minus RECEIPT 32/48 (16 shifts); episode-cluster bootstrap, B=10000, percentile 95% interval, stream posthoc; descriptive, no test",
+  "value": 0.25
+ },
+ {
+  "display": "25.0",
+  "key": "HaikuByParaphraseTwoForgedMinusReceiptDeltaAbs",
+  "kind": "pp",
+  "note": "",
+  "source": "post hoc (D-024): FORGED - RECEIPT within claim paraphrase P3 of PREREG §7 (withheld, paraphrase_idx=2); aliased with handle order (research/45); P1 FORGED 44/48 (16 shifts) minus RECEIPT 32/48 (16 shifts); episode-cluster bootstrap, B=10000, percentile 95% interval, stream posthoc; descriptive, no test; absolute value of Delta",
+  "value": 0.25
+ },
+ {
+  "display": "yes",
+  "key": "HaikuByParaphraseTwoForgedMinusReceiptExcl",
+  "kind": "verdict",
+  "note": "",
+  "source": "D024:FORGED-RECEIPT@paraphrase=2 (post hoc (D-024)): interval excludes 0",
+  "value": "yes"
+ },
+ {
+  "display": "39.6",
+  "key": "HaikuByParaphraseTwoForgedMinusReceiptHi",
+  "kind": "pp",
+  "note": "",
+  "source": "post hoc (D-024): FORGED - RECEIPT within claim paraphrase P3 of PREREG §7 (withheld, paraphrase_idx=2); aliased with handle order (research/45); P1 FORGED 44/48 (16 shifts) minus RECEIPT 32/48 (16 shifts); episode-cluster bootstrap, B=10000, percentile 95% interval, stream posthoc; descriptive, no test",
+  "value": 0.395833333333
+ },
+ {
+  "display": "8.3",
+  "key": "HaikuByParaphraseTwoForgedMinusReceiptLo",
+  "kind": "pp",
+  "note": "",
+  "source": "post hoc (D-024): FORGED - RECEIPT within claim paraphrase P3 of PREREG §7 (withheld, paraphrase_idx=2); aliased with handle order (research/45); P1 FORGED 44/48 (16 shifts) minus RECEIPT 32/48 (16 shifts); episode-cluster bootstrap, B=10000, percentile 95% interval, stream posthoc; descriptive, no test",
+  "value": 0.083333333333
+ },
+ {
+  "display": "0.0 to 20.8",
+  "key": "HaikuByParaphraseTwoNoReceiptMinusForgedCI",
+  "kind": "ci",
+  "note": "",
+  "source": "post hoc (D-024): H3's contrast NO-RECEIPT - FORGED within claim paraphrase P3 of PREREG §7 (withheld, paraphrase_idx=2); aliased with handle order (research/45); P1 NO-RECEIPT 78/78 (26 shifts) minus FORGED 44/48 (16 shifts); episode-cluster bootstrap, B=10000, percentile 95% interval, stream posthoc; descriptive, no test",
+  "value": [
+   0.0,
+   0.208333333333
+  ]
+ },
+ {
+  "display": "8.3",
+  "key": "HaikuByParaphraseTwoNoReceiptMinusForgedDelta",
+  "kind": "pp",
+  "note": "",
+  "source": "post hoc (D-024): H3's contrast NO-RECEIPT - FORGED within claim paraphrase P3 of PREREG §7 (withheld, paraphrase_idx=2); aliased with handle order (research/45); P1 NO-RECEIPT 78/78 (26 shifts) minus FORGED 44/48 (16 shifts); episode-cluster bootstrap, B=10000, percentile 95% interval, stream posthoc; descriptive, no test",
+  "value": 0.083333333333
+ },
+ {
+  "display": "8.3",
+  "key": "HaikuByParaphraseTwoNoReceiptMinusForgedDeltaAbs",
+  "kind": "pp",
+  "note": "",
+  "source": "post hoc (D-024): H3's contrast NO-RECEIPT - FORGED within claim paraphrase P3 of PREREG §7 (withheld, paraphrase_idx=2); aliased with handle order (research/45); P1 NO-RECEIPT 78/78 (26 shifts) minus FORGED 44/48 (16 shifts); episode-cluster bootstrap, B=10000, percentile 95% interval, stream posthoc; descriptive, no test; absolute value of Delta",
+  "value": 0.083333333333
+ },
+ {
+  "display": "no",
+  "key": "HaikuByParaphraseTwoNoReceiptMinusForgedExcl",
+  "kind": "verdict",
+  "note": "",
+  "source": "D024:NO-RECEIPT-FORGED@paraphrase=2 (post hoc (D-024)): interval excludes 0",
+  "value": "no"
+ },
+ {
+  "display": "20.8",
+  "key": "HaikuByParaphraseTwoNoReceiptMinusForgedHi",
+  "kind": "pp",
+  "note": "",
+  "source": "post hoc (D-024): H3's contrast NO-RECEIPT - FORGED within claim paraphrase P3 of PREREG §7 (withheld, paraphrase_idx=2); aliased with handle order (research/45); P1 NO-RECEIPT 78/78 (26 shifts) minus FORGED 44/48 (16 shifts); episode-cluster bootstrap, B=10000, percentile 95% interval, stream posthoc; descriptive, no test",
+  "value": 0.208333333333
+ },
+ {
+  "display": "0.0",
+  "key": "HaikuByParaphraseTwoNoReceiptMinusForgedLo",
+  "kind": "pp",
+  "note": "",
+  "source": "post hoc (D-024): H3's contrast NO-RECEIPT - FORGED within claim paraphrase P3 of PREREG §7 (withheld, paraphrase_idx=2); aliased with handle order (research/45); P1 NO-RECEIPT 78/78 (26 shifts) minus FORGED 44/48 (16 shifts); episode-cluster bootstrap, B=10000, percentile 95% interval, stream posthoc; descriptive, no test",
+  "value": 0.0
+ },
+ {
+  "display": "\\ensuremath{-}25.5 to 17.6",
+  "key": "HaikuByParaphraseZeroForgedMinusReceiptCI",
+  "kind": "ci",
+  "note": "",
+  "source": "post hoc (D-024): FORGED - RECEIPT within claim paraphrase P1 of PREREG §7 (public, paraphrase_idx=0); aliased with handle order (research/45); P1 FORGED 24/51 (17 shifts) minus RECEIPT 26/51 (17 shifts); episode-cluster bootstrap, B=10000, percentile 95% interval, stream posthoc; descriptive, no test",
+  "value": [
+   -0.254901960784,
+   0.176470588235
+  ]
+ },
+ {
+  "display": "\\ensuremath{-}3.9",
+  "key": "HaikuByParaphraseZeroForgedMinusReceiptDelta",
+  "kind": "pp",
+  "note": "",
+  "source": "post hoc (D-024): FORGED - RECEIPT within claim paraphrase P1 of PREREG §7 (public, paraphrase_idx=0); aliased with handle order (research/45); P1 FORGED 24/51 (17 shifts) minus RECEIPT 26/51 (17 shifts); episode-cluster bootstrap, B=10000, percentile 95% interval, stream posthoc; descriptive, no test",
+  "value": -0.039215686275
+ },
+ {
+  "display": "3.9",
+  "key": "HaikuByParaphraseZeroForgedMinusReceiptDeltaAbs",
+  "kind": "pp",
+  "note": "",
+  "source": "post hoc (D-024): FORGED - RECEIPT within claim paraphrase P1 of PREREG §7 (public, paraphrase_idx=0); aliased with handle order (research/45); P1 FORGED 24/51 (17 shifts) minus RECEIPT 26/51 (17 shifts); episode-cluster bootstrap, B=10000, percentile 95% interval, stream posthoc; descriptive, no test; absolute value of Delta",
+  "value": 0.039215686275
+ },
+ {
+  "display": "no",
+  "key": "HaikuByParaphraseZeroForgedMinusReceiptExcl",
+  "kind": "verdict",
+  "note": "",
+  "source": "D024:FORGED-RECEIPT@paraphrase=0 (post hoc (D-024)): interval excludes 0",
+  "value": "no"
+ },
+ {
+  "display": "17.6",
+  "key": "HaikuByParaphraseZeroForgedMinusReceiptHi",
+  "kind": "pp",
+  "note": "",
+  "source": "post hoc (D-024): FORGED - RECEIPT within claim paraphrase P1 of PREREG §7 (public, paraphrase_idx=0); aliased with handle order (research/45); P1 FORGED 24/51 (17 shifts) minus RECEIPT 26/51 (17 shifts); episode-cluster bootstrap, B=10000, percentile 95% interval, stream posthoc; descriptive, no test",
+  "value": 0.176470588235
+ },
+ {
+  "display": "\\ensuremath{-}25.5",
+  "key": "HaikuByParaphraseZeroForgedMinusReceiptLo",
+  "kind": "pp",
+  "note": "",
+  "source": "post hoc (D-024): FORGED - RECEIPT within claim paraphrase P1 of PREREG §7 (public, paraphrase_idx=0); aliased with handle order (research/45); P1 FORGED 24/51 (17 shifts) minus RECEIPT 26/51 (17 shifts); episode-cluster bootstrap, B=10000, percentile 95% interval, stream posthoc; descriptive, no test",
+  "value": -0.254901960784
+ },
+ {
+  "display": "9.8 to 44.7",
+  "key": "HaikuByParaphraseZeroNoReceiptMinusForgedCI",
+  "kind": "ci",
+  "note": "",
+  "source": "post hoc (D-024): H3's contrast NO-RECEIPT - FORGED within claim paraphrase P1 of PREREG §7 (public, paraphrase_idx=0); aliased with handle order (research/45); P1 NO-RECEIPT 60/81 (27 shifts) minus FORGED 24/51 (17 shifts); episode-cluster bootstrap, B=10000, percentile 95% interval, stream posthoc; descriptive, no test",
+  "value": [
+   0.098039215686,
+   0.447349310094
+  ]
+ },
+ {
+  "display": "27.0",
+  "key": "HaikuByParaphraseZeroNoReceiptMinusForgedDelta",
+  "kind": "pp",
+  "note": "",
+  "source": "post hoc (D-024): H3's contrast NO-RECEIPT - FORGED within claim paraphrase P1 of PREREG §7 (public, paraphrase_idx=0); aliased with handle order (research/45); P1 NO-RECEIPT 60/81 (27 shifts) minus FORGED 24/51 (17 shifts); episode-cluster bootstrap, B=10000, percentile 95% interval, stream posthoc; descriptive, no test",
+  "value": 0.270152505447
+ },
+ {
+  "display": "27.0",
+  "key": "HaikuByParaphraseZeroNoReceiptMinusForgedDeltaAbs",
+  "kind": "pp",
+  "note": "",
+  "source": "post hoc (D-024): H3's contrast NO-RECEIPT - FORGED within claim paraphrase P1 of PREREG §7 (public, paraphrase_idx=0); aliased with handle order (research/45); P1 NO-RECEIPT 60/81 (27 shifts) minus FORGED 24/51 (17 shifts); episode-cluster bootstrap, B=10000, percentile 95% interval, stream posthoc; descriptive, no test; absolute value of Delta",
+  "value": 0.270152505447
+ },
+ {
+  "display": "yes",
+  "key": "HaikuByParaphraseZeroNoReceiptMinusForgedExcl",
+  "kind": "verdict",
+  "note": "",
+  "source": "D024:NO-RECEIPT-FORGED@paraphrase=0 (post hoc (D-024)): interval excludes 0",
+  "value": "yes"
+ },
+ {
+  "display": "44.7",
+  "key": "HaikuByParaphraseZeroNoReceiptMinusForgedHi",
+  "kind": "pp",
+  "note": "",
+  "source": "post hoc (D-024): H3's contrast NO-RECEIPT - FORGED within claim paraphrase P1 of PREREG §7 (public, paraphrase_idx=0); aliased with handle order (research/45); P1 NO-RECEIPT 60/81 (27 shifts) minus FORGED 24/51 (17 shifts); episode-cluster bootstrap, B=10000, percentile 95% interval, stream posthoc; descriptive, no test",
+  "value": 0.447349310094
+ },
+ {
+  "display": "9.8",
+  "key": "HaikuByParaphraseZeroNoReceiptMinusForgedLo",
+  "kind": "pp",
+  "note": "",
+  "source": "post hoc (D-024): H3's contrast NO-RECEIPT - FORGED within claim paraphrase P1 of PREREG §7 (public, paraphrase_idx=0); aliased with handle order (research/45); P1 NO-RECEIPT 60/81 (27 shifts) minus FORGED 24/51 (17 shifts); episode-cluster bootstrap, B=10000, percentile 95% interval, stream posthoc; descriptive, no test",
+  "value": 0.098039215686
  },
  {
   "display": "0.0 to 7.1",
@@ -24682,6 +25162,57 @@
   "value": 0.0
  },
  {
+  "display": "\\ensuremath{-}12.7 to 10.7",
+  "key": "HaikuForgedMinusReceiptCI",
+  "kind": "ci",
+  "note": "",
+  "source": "post hoc (D-024): FORGED - RECEIPT (typed receipt-style line against a real receipt), all paraphrases; P1 FORGED 100/150 (50 shifts) minus RECEIPT 102/150 (50 shifts); episode-cluster bootstrap, B=10000, percentile 95% interval, stream posthoc; descriptive, no test",
+  "value": [
+   -0.126666666667,
+   0.106666666667
+  ]
+ },
+ {
+  "display": "\\ensuremath{-}1.3",
+  "key": "HaikuForgedMinusReceiptDelta",
+  "kind": "pp",
+  "note": "",
+  "source": "post hoc (D-024): FORGED - RECEIPT (typed receipt-style line against a real receipt), all paraphrases; P1 FORGED 100/150 (50 shifts) minus RECEIPT 102/150 (50 shifts); episode-cluster bootstrap, B=10000, percentile 95% interval, stream posthoc; descriptive, no test",
+  "value": -0.013333333333
+ },
+ {
+  "display": "1.3",
+  "key": "HaikuForgedMinusReceiptDeltaAbs",
+  "kind": "pp",
+  "note": "",
+  "source": "post hoc (D-024): FORGED - RECEIPT (typed receipt-style line against a real receipt), all paraphrases; P1 FORGED 100/150 (50 shifts) minus RECEIPT 102/150 (50 shifts); episode-cluster bootstrap, B=10000, percentile 95% interval, stream posthoc; descriptive, no test; absolute value of Delta",
+  "value": 0.013333333333
+ },
+ {
+  "display": "no",
+  "key": "HaikuForgedMinusReceiptExcl",
+  "kind": "verdict",
+  "note": "",
+  "source": "D024:FORGED-RECEIPT (post hoc (D-024)): interval excludes 0",
+  "value": "no"
+ },
+ {
+  "display": "10.7",
+  "key": "HaikuForgedMinusReceiptHi",
+  "kind": "pp",
+  "note": "",
+  "source": "post hoc (D-024): FORGED - RECEIPT (typed receipt-style line against a real receipt), all paraphrases; P1 FORGED 100/150 (50 shifts) minus RECEIPT 102/150 (50 shifts); episode-cluster bootstrap, B=10000, percentile 95% interval, stream posthoc; descriptive, no test",
+  "value": 0.106666666667
+ },
+ {
+  "display": "\\ensuremath{-}12.7",
+  "key": "HaikuForgedMinusReceiptLo",
+  "kind": "pp",
+  "note": "",
+  "source": "post hoc (D-024): FORGED - RECEIPT (typed receipt-style line against a real receipt), all paraphrases; P1 FORGED 100/150 (50 shifts) minus RECEIPT 102/150 (50 shifts); episode-cluster bootstrap, B=10000, percentile 95% interval, stream posthoc; descriptive, no test",
+  "value": -0.126666666667
+ },
+ {
   "display": "yes",
   "key": "HaikuFrontierCheaperExcl",
   "kind": "verdict",
@@ -25223,6 +25754,186 @@
   "note": "",
   "source": "any-note Kaplan-Meier witness_any_note RECEIPT, S(round 5)",
   "value": 0.3133333333333333
+ },
+ {
+  "display": "99.5 to 99.9",
+  "key": "HaikuKwCheckMatchedFinalCI",
+  "kind": "ci",
+  "note": "",
+  "source": "model-coded, post hoc (D-024): P1 keyword rule against the refers_to_violation label, Haiku 5.5, phase core; every witness note P1 reads (tool notes, rounds 1-5); matched notes with final labels (reviewed where reviewed, else the judge's): Wilson 95% interval, notes as units",
+  "value": [
+   0.9946354408382287,
+   0.999377692990532
+  ]
+ },
+ {
+  "display": "1{,}637",
+  "key": "HaikuKwCheckMatchedFinalK",
+  "kind": "count",
+  "note": "",
+  "source": "model-coded, post hoc (D-024): P1 keyword rule against the refers_to_violation label, Haiku 5.5, phase core; every witness note P1 reads (tool notes, rounds 1-5); matched notes with final labels (reviewed where reviewed, else the judge's): coded refers_to_violation = 1",
+  "value": 1637
+ },
+ {
+  "display": "1{,}640",
+  "key": "HaikuKwCheckMatchedFinalN",
+  "kind": "count",
+  "note": "",
+  "source": "model-coded, post hoc (D-024): P1 keyword rule against the refers_to_violation label, Haiku 5.5, phase core; every witness note P1 reads (tool notes, rounds 1-5); matched notes with final labels (reviewed where reviewed, else the judge's): notes with a label",
+  "value": 1640
+ },
+ {
+  "display": "99.8",
+  "key": "HaikuKwCheckMatchedFinalPct",
+  "kind": "prop",
+  "note": "",
+  "source": "model-coded, post hoc (D-024): P1 keyword rule against the refers_to_violation label, Haiku 5.5, phase core; every witness note P1 reads (tool notes, rounds 1-5); matched notes with final labels (reviewed where reviewed, else the judge's): share coded 1",
+  "value": 0.9981707317073171
+ },
+ {
+  "display": "99.5 to 99.9",
+  "key": "HaikuKwCheckMatchedJudgeCI",
+  "kind": "ci",
+  "note": "",
+  "source": "model-coded, post hoc (D-024): P1 keyword rule against the refers_to_violation label, Haiku 5.5, phase core; every witness note P1 reads (tool notes, rounds 1-5); matched notes with valid judge labels alone: Wilson 95% interval, notes as units",
+  "value": [
+   0.9946321764275454,
+   0.9993773131870163
+  ]
+ },
+ {
+  "display": "1{,}636",
+  "key": "HaikuKwCheckMatchedJudgeK",
+  "kind": "count",
+  "note": "",
+  "source": "model-coded, post hoc (D-024): P1 keyword rule against the refers_to_violation label, Haiku 5.5, phase core; every witness note P1 reads (tool notes, rounds 1-5); matched notes with valid judge labels alone: coded refers_to_violation = 1",
+  "value": 1636
+ },
+ {
+  "display": "1{,}639",
+  "key": "HaikuKwCheckMatchedJudgeN",
+  "kind": "count",
+  "note": "",
+  "source": "model-coded, post hoc (D-024): P1 keyword rule against the refers_to_violation label, Haiku 5.5, phase core; every witness note P1 reads (tool notes, rounds 1-5); matched notes with valid judge labels alone: notes with a label",
+  "value": 1639
+ },
+ {
+  "display": "99.8",
+  "key": "HaikuKwCheckMatchedJudgePct",
+  "kind": "prop",
+  "note": "",
+  "source": "model-coded, post hoc (D-024): P1 keyword rule against the refers_to_violation label, Haiku 5.5, phase core; every witness note P1 reads (tool notes, rounds 1-5); matched notes with valid judge labels alone: share coded 1",
+  "value": 0.9981696156192801
+ },
+ {
+  "display": "1{,}640",
+  "key": "HaikuKwCheckMatchedN",
+  "kind": "count",
+  "note": "",
+  "source": "model-coded, post hoc (D-024): P1 keyword rule against the refers_to_violation label, Haiku 5.5, phase core; every witness note P1 reads (tool notes, rounds 1-5); notes the keyword rule matches (P1 = 1)",
+  "value": 1640
+ },
+ {
+  "display": "1{,}756",
+  "key": "HaikuKwCheckNotesN",
+  "kind": "count",
+  "note": "",
+  "source": "model-coded, post hoc (D-024): P1 keyword rule against the refers_to_violation label, Haiku 5.5, phase core; every witness note P1 reads (tool notes, rounds 1-5)",
+  "value": 1756
+ },
+ {
+  "display": "1{,}621",
+  "key": "HaikuKwCheckPOneK",
+  "kind": "count",
+  "note": "",
+  "source": "model-coded, post hoc (D-024): P1 keyword rule against the refers_to_violation label, Haiku 5.5, phase core; every witness note P1 reads (tool notes, rounds 1-5); witnesses with P1 = 1, and those whose P1 rests on a label alone (no keyword-matched note, so the judge path decided it)",
+  "value": 1621
+ },
+ {
+  "display": "0",
+  "key": "HaikuKwCheckPOneLabelOnlyK",
+  "kind": "count",
+  "note": "",
+  "source": "model-coded, post hoc (D-024): P1 keyword rule against the refers_to_violation label, Haiku 5.5, phase core; every witness note P1 reads (tool notes, rounds 1-5); witnesses with P1 = 1, and those whose P1 rests on a label alone (no keyword-matched note, so the judge path decided it)",
+  "value": 0
+ },
+ {
+  "display": "0.0 to 3.2",
+  "key": "HaikuKwCheckUnmatchedFinalCI",
+  "kind": "ci",
+  "note": "",
+  "source": "model-coded, post hoc (D-024): P1 keyword rule against the refers_to_violation label, Haiku 5.5, phase core; every witness note P1 reads (tool notes, rounds 1-5); unmatched notes with final labels (reviewed where reviewed, else the judge's): Wilson 95% interval, notes as units",
+  "value": [
+   0.0,
+   0.032054506499638716
+  ]
+ },
+ {
+  "display": "0",
+  "key": "HaikuKwCheckUnmatchedFinalK",
+  "kind": "count",
+  "note": "",
+  "source": "model-coded, post hoc (D-024): P1 keyword rule against the refers_to_violation label, Haiku 5.5, phase core; every witness note P1 reads (tool notes, rounds 1-5); unmatched notes with final labels (reviewed where reviewed, else the judge's): coded refers_to_violation = 1",
+  "value": 0
+ },
+ {
+  "display": "116",
+  "key": "HaikuKwCheckUnmatchedFinalN",
+  "kind": "count",
+  "note": "",
+  "source": "model-coded, post hoc (D-024): P1 keyword rule against the refers_to_violation label, Haiku 5.5, phase core; every witness note P1 reads (tool notes, rounds 1-5); unmatched notes with final labels (reviewed where reviewed, else the judge's): notes with a label",
+  "value": 116
+ },
+ {
+  "display": "0.0",
+  "key": "HaikuKwCheckUnmatchedFinalPct",
+  "kind": "prop",
+  "note": "",
+  "source": "model-coded, post hoc (D-024): P1 keyword rule against the refers_to_violation label, Haiku 5.5, phase core; every witness note P1 reads (tool notes, rounds 1-5); unmatched notes with final labels (reviewed where reviewed, else the judge's): share coded 1",
+  "value": 0.0
+ },
+ {
+  "display": "0.0 to 3.2",
+  "key": "HaikuKwCheckUnmatchedJudgeCI",
+  "kind": "ci",
+  "note": "",
+  "source": "model-coded, post hoc (D-024): P1 keyword rule against the refers_to_violation label, Haiku 5.5, phase core; every witness note P1 reads (tool notes, rounds 1-5); unmatched notes with valid judge labels alone: Wilson 95% interval, notes as units",
+  "value": [
+   0.0,
+   0.032054506499638716
+  ]
+ },
+ {
+  "display": "0",
+  "key": "HaikuKwCheckUnmatchedJudgeK",
+  "kind": "count",
+  "note": "",
+  "source": "model-coded, post hoc (D-024): P1 keyword rule against the refers_to_violation label, Haiku 5.5, phase core; every witness note P1 reads (tool notes, rounds 1-5); unmatched notes with valid judge labels alone: coded refers_to_violation = 1",
+  "value": 0
+ },
+ {
+  "display": "116",
+  "key": "HaikuKwCheckUnmatchedJudgeN",
+  "kind": "count",
+  "note": "",
+  "source": "model-coded, post hoc (D-024): P1 keyword rule against the refers_to_violation label, Haiku 5.5, phase core; every witness note P1 reads (tool notes, rounds 1-5); unmatched notes with valid judge labels alone: notes with a label",
+  "value": 116
+ },
+ {
+  "display": "0.0",
+  "key": "HaikuKwCheckUnmatchedJudgePct",
+  "kind": "prop",
+  "note": "",
+  "source": "model-coded, post hoc (D-024): P1 keyword rule against the refers_to_violation label, Haiku 5.5, phase core; every witness note P1 reads (tool notes, rounds 1-5); unmatched notes with valid judge labels alone: share coded 1",
+  "value": 0.0
+ },
+ {
+  "display": "116",
+  "key": "HaikuKwCheckUnmatchedN",
+  "kind": "count",
+  "note": "",
+  "source": "model-coded, post hoc (D-024): P1 keyword rule against the refers_to_violation label, Haiku 5.5, phase core; every witness note P1 reads (tool notes, rounds 1-5); notes the keyword rule does not match",
+  "value": 116
  },
  {
   "display": "0",
@@ -41627,6 +42338,148 @@
   "note": "",
   "source": "planned episodes per cell",
   "value": 30
+ },
+ {
+  "display": "99.2 to 100.0",
+  "key": "SonnetKwCheckMatchedFinalCI",
+  "kind": "ci",
+  "note": "",
+  "source": "model-coded, post hoc (D-024): P1 keyword rule against the refers_to_violation label, Sonnet 5.5, phase sonnet (exploratory arm); every witness note P1 reads (tool notes, rounds 1-5); matched notes with final labels (reviewed where reviewed, else the judge's): Wilson 95% interval, notes as units",
+  "value": [
+   0.9922992390612928,
+   1.0
+  ]
+ },
+ {
+  "display": "495",
+  "key": "SonnetKwCheckMatchedFinalK",
+  "kind": "count",
+  "note": "",
+  "source": "model-coded, post hoc (D-024): P1 keyword rule against the refers_to_violation label, Sonnet 5.5, phase sonnet (exploratory arm); every witness note P1 reads (tool notes, rounds 1-5); matched notes with final labels (reviewed where reviewed, else the judge's): coded refers_to_violation = 1",
+  "value": 495
+ },
+ {
+  "display": "495",
+  "key": "SonnetKwCheckMatchedFinalN",
+  "kind": "count",
+  "note": "",
+  "source": "model-coded, post hoc (D-024): P1 keyword rule against the refers_to_violation label, Sonnet 5.5, phase sonnet (exploratory arm); every witness note P1 reads (tool notes, rounds 1-5); matched notes with final labels (reviewed where reviewed, else the judge's): notes with a label",
+  "value": 495
+ },
+ {
+  "display": "100.0",
+  "key": "SonnetKwCheckMatchedFinalPct",
+  "kind": "prop",
+  "note": "",
+  "source": "model-coded, post hoc (D-024): P1 keyword rule against the refers_to_violation label, Sonnet 5.5, phase sonnet (exploratory arm); every witness note P1 reads (tool notes, rounds 1-5); matched notes with final labels (reviewed where reviewed, else the judge's): share coded 1",
+  "value": 1.0
+ },
+ {
+  "display": "99.2 to 100.0",
+  "key": "SonnetKwCheckMatchedJudgeCI",
+  "kind": "ci",
+  "note": "",
+  "source": "model-coded, post hoc (D-024): P1 keyword rule against the refers_to_violation label, Sonnet 5.5, phase sonnet (exploratory arm); every witness note P1 reads (tool notes, rounds 1-5); matched notes with valid judge labels alone: Wilson 95% interval, notes as units",
+  "value": [
+   0.9922992390612928,
+   1.0
+  ]
+ },
+ {
+  "display": "495",
+  "key": "SonnetKwCheckMatchedJudgeK",
+  "kind": "count",
+  "note": "",
+  "source": "model-coded, post hoc (D-024): P1 keyword rule against the refers_to_violation label, Sonnet 5.5, phase sonnet (exploratory arm); every witness note P1 reads (tool notes, rounds 1-5); matched notes with valid judge labels alone: coded refers_to_violation = 1",
+  "value": 495
+ },
+ {
+  "display": "495",
+  "key": "SonnetKwCheckMatchedJudgeN",
+  "kind": "count",
+  "note": "",
+  "source": "model-coded, post hoc (D-024): P1 keyword rule against the refers_to_violation label, Sonnet 5.5, phase sonnet (exploratory arm); every witness note P1 reads (tool notes, rounds 1-5); matched notes with valid judge labels alone: notes with a label",
+  "value": 495
+ },
+ {
+  "display": "100.0",
+  "key": "SonnetKwCheckMatchedJudgePct",
+  "kind": "prop",
+  "note": "",
+  "source": "model-coded, post hoc (D-024): P1 keyword rule against the refers_to_violation label, Sonnet 5.5, phase sonnet (exploratory arm); every witness note P1 reads (tool notes, rounds 1-5); matched notes with valid judge labels alone: share coded 1",
+  "value": 1.0
+ },
+ {
+  "display": "496",
+  "key": "SonnetKwCheckMatchedN",
+  "kind": "count",
+  "note": "",
+  "source": "model-coded, post hoc (D-024): P1 keyword rule against the refers_to_violation label, Sonnet 5.5, phase sonnet (exploratory arm); every witness note P1 reads (tool notes, rounds 1-5); notes the keyword rule matches (P1 = 1)",
+  "value": 496
+ },
+ {
+  "display": "496",
+  "key": "SonnetKwCheckNotesN",
+  "kind": "count",
+  "note": "",
+  "source": "model-coded, post hoc (D-024): P1 keyword rule against the refers_to_violation label, Sonnet 5.5, phase sonnet (exploratory arm); every witness note P1 reads (tool notes, rounds 1-5)",
+  "value": 496
+ },
+ {
+  "display": "447",
+  "key": "SonnetKwCheckPOneK",
+  "kind": "count",
+  "note": "",
+  "source": "model-coded, post hoc (D-024): P1 keyword rule against the refers_to_violation label, Sonnet 5.5, phase sonnet (exploratory arm); every witness note P1 reads (tool notes, rounds 1-5); witnesses with P1 = 1, and those whose P1 rests on a label alone (no keyword-matched note, so the judge path decided it)",
+  "value": 447
+ },
+ {
+  "display": "0",
+  "key": "SonnetKwCheckPOneLabelOnlyK",
+  "kind": "count",
+  "note": "",
+  "source": "model-coded, post hoc (D-024): P1 keyword rule against the refers_to_violation label, Sonnet 5.5, phase sonnet (exploratory arm); every witness note P1 reads (tool notes, rounds 1-5); witnesses with P1 = 1, and those whose P1 rests on a label alone (no keyword-matched note, so the judge path decided it)",
+  "value": 0
+ },
+ {
+  "display": "0",
+  "key": "SonnetKwCheckUnmatchedFinalK",
+  "kind": "count",
+  "note": "",
+  "source": "model-coded, post hoc (D-024): P1 keyword rule against the refers_to_violation label, Sonnet 5.5, phase sonnet (exploratory arm); every witness note P1 reads (tool notes, rounds 1-5); unmatched notes with final labels (reviewed where reviewed, else the judge's): coded refers_to_violation = 1",
+  "value": 0
+ },
+ {
+  "display": "0",
+  "key": "SonnetKwCheckUnmatchedFinalN",
+  "kind": "count",
+  "note": "",
+  "source": "model-coded, post hoc (D-024): P1 keyword rule against the refers_to_violation label, Sonnet 5.5, phase sonnet (exploratory arm); every witness note P1 reads (tool notes, rounds 1-5); unmatched notes with final labels (reviewed where reviewed, else the judge's): notes with a label",
+  "value": 0
+ },
+ {
+  "display": "0",
+  "key": "SonnetKwCheckUnmatchedJudgeK",
+  "kind": "count",
+  "note": "",
+  "source": "model-coded, post hoc (D-024): P1 keyword rule against the refers_to_violation label, Sonnet 5.5, phase sonnet (exploratory arm); every witness note P1 reads (tool notes, rounds 1-5); unmatched notes with valid judge labels alone: coded refers_to_violation = 1",
+  "value": 0
+ },
+ {
+  "display": "0",
+  "key": "SonnetKwCheckUnmatchedJudgeN",
+  "kind": "count",
+  "note": "",
+  "source": "model-coded, post hoc (D-024): P1 keyword rule against the refers_to_violation label, Sonnet 5.5, phase sonnet (exploratory arm); every witness note P1 reads (tool notes, rounds 1-5); unmatched notes with valid judge labels alone: notes with a label",
+  "value": 0
+ },
+ {
+  "display": "0",
+  "key": "SonnetKwCheckUnmatchedN",
+  "kind": "count",
+  "note": "",
+  "source": "model-coded, post hoc (D-024): P1 keyword rule against the refers_to_violation label, Sonnet 5.5, phase sonnet (exploratory arm); every witness note P1 reads (tool notes, rounds 1-5); notes the keyword rule does not match",
+  "value": 0
  },
  {
   "display": "95.9 to 100.0",
