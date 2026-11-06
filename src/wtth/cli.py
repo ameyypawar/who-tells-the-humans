@@ -318,7 +318,8 @@ def _parser() -> argparse.ArgumentParser:
     r.set_defaults(fn=_cmd_render)
     u = sub.add_parser("run", parents=[common])
     u.add_argument("--phase", required=True, choices=["g0", "g0b", "g0dry", "g1", "g1b", "g2", "g2fix", "core", "sonnet",
-                                                      "mvp", "pivotA", "pivotB", "backup"])
+                                                      "mvp", "pivotA", "pivotB", "backup",
+                                                      "exp1probe", "exp1"])  # D-022: with --config configs/exp1.yaml
     u.add_argument("--level")
     u.add_argument("--live", action="store_true")
     u.add_argument("--fake", metavar="BEHAVIOR.json")

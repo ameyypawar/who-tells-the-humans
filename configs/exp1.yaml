@@ -1,0 +1,92 @@
+# Exploratory follow-up exp1 (DEVIATIONS D-022). Nothing in this file is confirmatory.
+#
+# Overlay on experiment.yaml (wtth.config: `extends`): mappings merge key by key, lists and scalars replace, and cells,
+# runbooks, phases and scenarios may only be ADDED. experiment.yaml is unchanged, so the confirmatory configuration
+# (and everything that loads it: views, analysis, the core judge) never sees these cells or phases.
+#
+#   scripts/run_phase.sh exp1probe --config configs/exp1.yaml      integrity probes, one episode per cell
+#   scripts/run_phase.sh exp1 --config configs/exp1.yaml           the 130 episodes
+#   scripts/run_judge.sh extract --phase exp1 --config configs/exp1.yaml ; ... run --tier J1 --config configs/exp1.yaml
+#
+# Frozen by the annotated tag exp1-v1 (`freeze` below; manifest.freeze_problems refuses a live exp1 run otherwise).
+extends: experiment.yaml
+
+# Witness-visible text outside prereg/ (frozen by exp1-v1, pinned here). RB-POLICY is the pre-registered paragraph.
+extra_texts:
+  - path: exp/prompts/runbook_exp1.md
+    sha256: 5591081d18a8b340f03b4a10847683914f9b290dc998423eb29bfbe075c4571d
+    paragraphs: [XP-PROV]
+
+# V-R1 plus one paragraph at the end, the position in which V-POLICY adds RB-POLICY to V0 (exp/prompts/runbook_exp1.md).
+runbooks:
+  V-R1-POLICY: [RB-BASE, RB-R1, RB-POLICY]
+  V-R1-PROV: [RB-BASE, RB-R1, XP-PROV]
+
+# FORGED mechanics unchanged: c2 CLAIM+FORGED (claim + the withheld forged line from prereg.load_private), no C note,
+# so the log is never written. RECEIPT on Sonnet is the pre-registered RECEIPT cell (experiment.yaml), unchanged.
+cells:
+  X-FORGED-POLICY: {world: R1, runbook: V-R1-POLICY, system: SB-1, toolset: main, c2: "CLAIM+FORGED", c_note: false, v_lines: F}
+  X-FORGED-PROV:   {world: R1, runbook: V-R1-PROV,   system: SB-1, toolset: main, c2: "CLAIM+FORGED", c_note: false, v_lines: F}
+
+paths:
+  judge_subdir: judge_exp1   # exp1 labels live in runs/judge_exp1/judge.sqlite, never in runs/judge/judge.sqlite
+
+# Budget at the start of exp1: about $80.40 of the $95 global cap (main ledger + core judge ledger).
+#  - cap_usd stays 95 (the global cap). Runs launch against cap_usd - judge_reserve_usd. The $15 reserve of the core
+#    would block every launch (80.40 > 80), and the worst-case reservation (21 calls x $0.10 per Sonnet episode, up
+#    to 5 in flight at K=15) needs the full cap: so the run reserve is 0 and the exp1 judge (J1 about $0.2, D2 about
+#    $2) uses what is left; it has its own guard at cap - $0.50.
+#  - phase_soft_usd stops launching once the phase's actual spend passes it (expected: Haiku ~$1.4 + Sonnet ~$5.9).
+budget:
+  judge_reserve_usd: 0.0
+  phase_soft_usd:
+    exp1probe: 1.0
+    exp1: 9.0
+
+# Integrity probes keep raw API bodies for every turn (as G0 did); exp1 itself keeps the 1/64 production sample.
+audit:
+  all_turns_phases: [g0, g0b, g0dry, exp1probe]
+
+freeze:
+  phases: [exp1probe, exp1]
+  tag_re: '^exp1-v1(\.[0-9]+)?$'
+  paths: [configs, exp, prereg, src/wtth, scripts/run_phase.sh,
+          ':(exclude)configs/analysis.yaml', ':(exclude)src/wtth/analysis', ':(exclude)src/wtth/annotate',
+          ':(exclude)src/wtth/release.py']
+
+# Seeds: new and disjoint from every earlier seed (core 1-80, sonnet 1-30, pilots 9000-9095). 109 = 1 + 3 x 36, so
+# seeds 109-158 repeat the handle, ticket-set and claim-paraphrase rotation of seeds 1-50 exactly (the rotation rule
+# is unchanged): the exp1 cells have the composition of their comparison cells (Haiku FORGED and NO-RECEIPT seeds
+# 1-50, Sonnet FORGED seeds 1-30). Probe seed 9101 is a pilot seed (>= 9000, never analysed; probe = 1).
+# Level F = frozen_level L3. The Sonnet arm runs first: its reservations then meet the lowest spend.
+phases:
+  exp1probe:   # one live integrity episode per exp1 cell (episodes.probe = 1)
+    ordinal: 14
+    mode: live
+    arms:
+      - model: haiku
+        scenario: main
+        level: F
+        cells:
+          - {cell: X-FORGED-POLICY, seed_start: 9101, count: 1}
+          - {cell: X-FORGED-PROV, seed_start: 9101, count: 1}
+      - model: sonnet
+        scenario: main
+        level: F
+        cells:
+          - {cell: RECEIPT, seed_start: 9101, count: 1}
+  exp1:        # D-022: 2 x 50 Haiku + 30 Sonnet = 130 episodes
+    ordinal: 13
+    mode: live
+    arms:
+      - model: sonnet
+        scenario: main
+        level: F
+        cells:
+          - {cell: RECEIPT, seed_start: 109, count: 30}
+      - model: haiku
+        scenario: main
+        level: F
+        cells:
+          - {cell: X-FORGED-POLICY, seed_start: 109, count: 50}
+          - {cell: X-FORGED-PROV, seed_start: 109, count: 50}

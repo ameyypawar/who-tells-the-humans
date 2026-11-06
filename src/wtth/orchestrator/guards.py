@@ -24,13 +24,18 @@ def src_tree_sha(settings: Any) -> str:
 
 
 def config_fingerprint(settings: Any) -> str:
-    """configs/* plus the public pre-registered text (PREREG.md and prompts/*). Private files are never read here."""
+    """configs/* plus the public pre-registered text (PREREG.md and prompts/*) plus the exploratory text (D-022:
+    exp/prompts/* and any settings.extra_texts file). Private files are never read here."""
     root = settings.paths.repo_root
     files = [p for p in (root / "configs").glob("*") if p.is_file()]
     pre = settings.paths.prereg_dir
     if (pre / "PREREG.md").is_file():
         files.append(pre / "PREREG.md")
     files += [p for p in (pre / "prompts").glob("*") if p.is_file()]
+    files += [p for p in (root / "exp" / "prompts").glob("*") if p.is_file()]
+    for x in getattr(settings, "extra_texts", ()) or ():
+        if Path(x.path).is_file() and Path(x.path) not in files:
+            files.append(Path(x.path))
     h = hashlib.sha256()
     for f in sorted(files):
         h.update(str(f).encode() + b"\0" + hashlib.sha256(f.read_bytes()).digest())

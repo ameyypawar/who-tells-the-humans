@@ -41,7 +41,15 @@ class JudgeBudget:
         return float(row[0])
 
     def judge_spent(self) -> float:
-        return float(self.jdb.read(lambda c: c.execute("SELECT usd FROM v_judge_spend").fetchone())[0])
+        """This judge database's ledger plus every other judge database under runs_dir (D-022: the follow-up has its
+        own judge database; both count against the one global cap)."""
+        from wtth.judge.db import judge_spent as other_judge_spent
+
+        own = float(self.jdb.read(lambda c: c.execute("SELECT usd FROM v_judge_spend").fetchone())[0])
+        path = getattr(self.jdb, "path", None)
+        if path is None:      # no file to tell apart from the others: this database alone (pre-D-022 behaviour)
+            return own
+        return own + other_judge_spent(self.settings, exclude=path)
 
     def global_spent(self) -> float:
         return self.settings.budget.prior_spend_usd + self.main_spent() + self.judge_spent()

@@ -319,6 +319,116 @@ def extract(settings: Any, main_db: Any, jdb: Any, aset: Any, *, seeds: Any, sna
     return ExtractionReport(ext_id, n_new, counts, n_empty)
 
 
+# ---- D-022 exploratory follow-up ---------------------------------------------------------------------------------
+
+EXPLORATORY_PHASES: tuple[str, ...] = ("exp1",)
+EXPLORATORY_SUBTIERS: tuple[str, ...] = ("J1a", "J1b", "J2c", "J2f")   # non-keyword notes; D2 answers
+
+
+@dataclass(frozen=True, slots=True)
+class EpisodeKey:
+    """The fields of an analysis-set EpisodeRef that _episode_cands reads."""
+    episode_id: int
+    attempt: int
+    phase: str
+    scenario: str
+    model: str
+    cell: str
+    level: str
+    seed: int
+    world: str
+
+
+def exploratory_refs(main_db: Any, phase: str) -> list[EpisodeKey]:
+    """Done, non-probe episodes of an exploratory phase, final attempts, by episode id."""
+    if phase not in EXPLORATORY_PHASES:
+        raise ExtractionError(f"{phase!r} is not an exploratory phase")
+    rows = main_db.read(lambda c: c.execute(
+        "SELECT episode_id, final_attempt, phase, scenario, model, cell, level, seed, world FROM episodes "
+        "WHERE phase=? AND probe=0 AND status='done' AND final_attempt IS NOT NULL ORDER BY episode_id",
+        (phase,)).fetchall())
+    return [EpisodeKey(int(r[0]), int(r[1]), r[2], r[3], r[4], r[5], r[6], int(r[7]), r[8]) for r in rows]
+
+
+def inherit_validation(settings: Any, jdb: Any) -> dict[str, Any]:
+    """Copy the passed held-out validation of the confirmatory judge database (read only) into an exploratory one:
+    same judge model, same prompt version and system text, same context level. Idempotent; refuses when the core
+    validation has not passed or the prompt text differs."""
+    from wtth.judge.db import core_judge_db_path
+
+    core = core_judge_db_path(settings)
+    if Path(jdb.path).resolve() == core.resolve():
+        raise ExtractionError("exploratory items never go to the confirmatory judge database")
+    if not core.is_file():
+        raise ExtractionError(f"no confirmatory judge database at {core}")
+    conn = sqlite3.connect(f"file:{core}?mode=ro", uri=True)
+    try:
+        meta = dict(conn.execute("SELECT key, value FROM jmeta").fetchall())
+        ver = meta.get("active_prompt_version") or "v1"
+        val = conn.execute(
+            "SELECT v.validation_id, v.ts, v.n_pass, v.n_items, v.context_level FROM validations v JOIN batches b "
+            "ON b.batch_id=v.batch_id WHERE b.kind='first' AND v.prompt_version=? AND v.passed=1 ORDER BY v.ts DESC "
+            "LIMIT 1", (ver,)).fetchone()
+        pv = conn.execute("SELECT system_sha256 FROM prompt_versions WHERE prompt_version=?", (ver,)).fetchone()
+    finally:
+        conn.close()
+    if meta.get("validation_passed") != "1" or val is None:
+        raise ExtractionError("the confirmatory judge validation has not passed: nothing to inherit")
+    want = prompt_mod.load_revision(settings, ver).system_sha256
+    if pv is None or pv[0] != want:
+        raise ExtractionError(f"prompt {ver}: the confirmatory system text differs from this build's")
+    detail = {"from": str(core), "validation_id": val[0], "validation_ts": val[1], "n_pass": val[2],
+              "n_items": val[3], "prompt_version": ver, "system_sha256": want,
+              "level": meta.get("validation_level") or val[4]}
+    ensure_meta(jdb)
+    if get_meta(jdb, "validation_inherited_from"):
+        prev = json.loads(get_meta(jdb, "validation_inherited_from") or "{}")
+        if prev.get("validation_id") != detail["validation_id"] or prev.get("prompt_version") != ver:
+            raise ExtractionError("this judge database inherited a different validation")
+        return prev
+    set_meta(jdb, "active_prompt_version", ver)
+    set_meta(jdb, "validation_level", str(detail["level"]))
+    set_meta(jdb, "validation_passed", "1")
+    set_meta(jdb, "validation_inherited_from", json.dumps(detail, sort_keys=True))
+    log_event(jdb, "validation_inherited", detail=detail)
+    return detail
+
+
+def extract_exploratory(settings: Any, main_db: Any, jdb: Any, phase: str, *, seeds: Any, snapshot: Any) -> ExtractionReport:
+    """D-022 items of an exploratory phase, into its own judge database: the notes the keyword rule does not match
+    (J1a Haiku, J1b Sonnet: the P1 and P2 judge path, as in the core) and the D2 answers (J2c Haiku, J2f Sonnet).
+    Keyword-matched notes need no judge for P1; board posts and D1 answers are not exp1 outcomes. Idempotent."""
+    from wtth.judge.db import core_judge_db_path
+
+    if Path(jdb.path).resolve() == core_judge_db_path(settings).resolve():
+        raise ExtractionError("exploratory items never go to the confirmatory judge database (set paths.judge_subdir)")
+    ensure_meta(jdb)
+    refs = exploratory_refs(main_db, phase)
+    if not refs:
+        raise ExtractionError(f"phase {phase!r} has no done episodes")
+    cands: list[_Cand] = []
+    n_empty = 0
+    for ref in refs:
+        cs, ne = _episode_cands(settings, main_db, ref, True)
+        n_empty += ne
+        for c in cs:
+            keep = ((c.item_type == ItemType.NOTE and c.kw_match is False) or c.item_type == ItemType.D2_ANSWER)
+            if keep:
+                if c.subtier not in EXPLORATORY_SUBTIERS:
+                    raise ExtractionError(f"unexpected sub-tier {c.subtier} for an exploratory item")
+                c.reasons = list(c.reasons) + ["exploratory"]
+                cands.append(c)
+    fp = sha256_text(json.dumps([[r.episode_id, r.attempt, r.model, r.cell, r.seed] for r in refs]))
+    ext_id = uuid.uuid4().hex
+    row = (ext_id, time.time(), phase, str(snapshot.path), snapshot.sha256, None, fp)
+    n_new, counts = _insert_cands(jdb, cands, extraction_row=row, order_seed=seeds.judge_order,
+                                  cell_order=_cell_order(settings),
+                                  extra_detail={"n_empty_answers": n_empty, "n_episodes": len(refs)})
+    log_event(jdb, "extraction", detail={"extraction_id": ext_id, "phase": phase, "n_new": n_new,
+                                         "by_subtier": counts, "n_empty_answers": n_empty})
+    return ExtractionReport(ext_id, n_new, counts, n_empty)
+
+
 def extract_g1(settings: Any, main_db: Any, jdb: Any, level: str, *, seeds: Any) -> ExtractionReport:
     """Pilot (G1) notes with no keyword hit, final attempts, for the gate P1 rule (D-006, D-007 A-44)."""
     from wtth import gates

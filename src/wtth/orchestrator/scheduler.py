@@ -561,7 +561,9 @@ class Scheduler:
             if ensure is not None:
                 ctx._ensure_run = None
                 ensure()
-            fn = episode_mod.run_probe if cand["phase"].endswith("probe") else episode_mod.run_attempt
+            # the G0 deny probe is the only episode under '<phase>probe' of the running phase; a phase whose own
+            # name ends in 'probe' (D-022 exp1probe: integrity probes) runs full episodes
+            fn = episode_mod.run_probe if cand["phase"] == self.phase + "probe" else episode_mod.run_attempt
             self.running[cand["episode_id"]] = asyncio.ensure_future(fn(ctx, spec, cand["episode_id"]))
 
     def _reap(self) -> None:
@@ -594,7 +596,23 @@ class Scheduler:
                 self._checkpoint()
             self._projection_check()
 
+    def _model_counts(self) -> dict[str, dict[str, int]]:
+        """_counts() split by model: {model: {status: n}} over the episodes of the current queue."""
+        rows = self.ctx.db.read(lambda c: c.execute(
+            "SELECT episode_key, model, status FROM episodes WHERE phase IN (?,?)",
+            (self.phase, self.phase + "probe")).fetchall())
+        d: dict[str, dict[str, int]] = {}
+        for r in rows:
+            if r["episode_key"] in self.specs:
+                m = d.setdefault(r["model"], {})
+                m[r["status"]] = m.get(r["status"], 0) + 1
+        return d
+
     def _projection_check(self) -> None:
+        """spent + per model (phase cost of the model / its done episodes) x its remaining episodes, once.
+        For a one-model phase this is exactly spent + phase_cost / done x remaining. D-022: a mixed-model phase is
+        projected per model, and the check waits until every model with episodes left has a finished one (a phase
+        average would price the cheap model's episodes at the dear model's cost, or the reverse)."""
         ctx, s = self.ctx, self.ctx.settings
         if self.drain_reason or self.finished < s.budget.projection_after_episodes or self._max_probed:
             return
@@ -602,10 +620,21 @@ class Scheduler:
         done = counts.get("done", 0)
         if done < s.budget.projection_after_episodes:
             return
+        by_model = self._model_counts()
+        cost_rows = ctx.db.read(lambda c: c.execute(
+            "SELECT model, COALESCE(SUM(cost_usd),0) FROM cost_ledger WHERE phase=? GROUP BY model",
+            (self.phase,)).fetchall())
+        cost_of = {r[0]: float(r[1]) for r in cost_rows}
+        extra = 0.0
+        for model, c in by_model.items():
+            rem = c.get("queued", 0) + c.get("running", 0)
+            if rem == 0:
+                continue
+            if c.get("done", 0) == 0:
+                return   # no finished episode of this model yet: project later
+            extra += cost_of.get(model, 0.0) / c["done"] * rem
         self._max_probed = True
-        phase_cost = ctx.cost.phase_spent(self.phase)
-        remaining = counts.get("queued", 0) + counts.get("running", 0)
-        projected = ctx.cost.spent() + phase_cost / max(1, done) * remaining
+        projected = ctx.cost.spent() + extra
         if projected > s.budget.cap_usd:
             self._stop("cost_projection", {"projected_usd": projected, "cap_usd": s.budget.cap_usd}, EXIT_CAP, kill=False)
 

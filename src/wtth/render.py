@@ -35,11 +35,11 @@ _LOG_BLOCK_FINAL_GAP = "{log_block_final}\n\n"
 # ---- system prompt --------------------------------------------------------------------------------------
 
 def system_prompt(texts: "ScenarioTexts", cell: CellSpec) -> str:
-    """SB-1 (BK-1 / BO-1) + blank line + base runbook + one blank-line-separated paragraph per variant extra."""
-    try:
-        ids = RUNBOOK_VARIANTS[cell.runbook]
-    except KeyError:
-        raise ValueError(f"unknown runbook variant {cell.runbook!r}") from None
+    """SB-1 (BK-1 / BO-1) + blank line + base runbook + one blank-line-separated paragraph per variant extra.
+    Pre-registered variants come from RUNBOOK_VARIANTS; exploratory ones (D-022) from texts.runbook_variants."""
+    ids = RUNBOOK_VARIANTS.get(cell.runbook) or getattr(texts, "runbook_variants", {}).get(cell.runbook)
+    if ids is None:
+        raise ValueError(f"unknown runbook variant {cell.runbook!r}")
     parts = [texts.system[cell.system], texts.runbook_base[ids[0]]]
     parts.extend(texts.runbook_paras[p] for p in ids[1:])
     return "\n\n".join(parts)

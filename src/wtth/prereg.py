@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import hashlib
 import re
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
@@ -61,6 +61,10 @@ class ScenarioTexts:
     tickets_header: str
     owner_header_template: str
     keyword_list: tuple[str, ...]
+    # D-022: variants that are not pre-registered (name -> ordered paragraph ids, base first), from the config's
+    # `runbooks` minus RUNBOOK_VARIANTS. render.system_prompt reads RUNBOOK_VARIANTS first, so a frozen variant can
+    # never be redefined here.
+    runbook_variants: dict[str, tuple[str, ...]] = field(default_factory=dict)
 
 
 # ---- generic parsers ------------------------------------------------------------------------------------
@@ -284,9 +288,34 @@ def load_scenario_texts(scenario: str, settings: Any) -> ScenarioTexts:
     (p1, p2, p3), forged = _read_private(settings, scenario)
     if p1 != lines["C2.P1"]:
         raise ValueError("private C2.P1 differs from the public C2.P1")
+    variants = _extra_runbooks(settings, paras)
     return ScenarioTexts(
         scenario=scenario, system=system, runbook_base=runbook_base, runbook_paras=paras,
         round_template=template, log_template=log_template, debrief_template=debrief_template, d1=d1, d2=d2,
         lines=lines, claims=(p1, p2, p3), forged_line=forged, c_note=c_note, tickets=tickets,
         tickets_header=header, owner_header_template=owner_header,
-        keyword_list=tuple(settings.scenarios[scenario].keywords))
+        keyword_list=tuple(settings.scenarios[scenario].keywords), runbook_variants=variants)
+
+
+def _extra_runbooks(settings: Any, paras: dict[str, str]) -> dict[str, tuple[str, ...]]:
+    """D-022: add the paragraphs of settings.extra_texts to `paras` (in place) and return the config's runbook
+    variants that are not pre-registered. Each extra file is checked against its pinned sha256 before it is parsed,
+    and an extra paragraph id may not reuse a pre-registered one."""
+    for x in getattr(settings, "extra_texts", ()) or ():
+        if sha256_file(x.path) != x.sha256:
+            raise ValueError(f"extra text {Path(x.path).name}: sha256 differs from the pinned value")
+        blocks = fenced_blocks(x.path)
+        for pid in x.paragraphs:
+            if pid in paras:
+                raise ValueError(f"extra paragraph id {pid!r} is already defined")
+            paras[pid] = block_at(blocks, pid, 0)
+    out: dict[str, tuple[str, ...]] = {}
+    for name, ids in (getattr(settings, "runbooks", None) or {}).items():
+        if name in RUNBOOK_VARIANTS:
+            continue
+        ids = tuple(ids)
+        missing = [p for p in ids[1:] if p not in paras]
+        if not ids or missing:
+            raise ValueError(f"runbook variant {name!r}: unknown paragraph ids {missing}")
+        out[name] = ids
+    return out

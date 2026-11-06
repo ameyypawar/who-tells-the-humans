@@ -27,7 +27,7 @@ def _parser() -> argparse.ArgumentParser:
     ap = argparse.ArgumentParser(prog="wtth.judge", description="Who Tells the Humans? LLM judge")
     sub = ap.add_subparsers(dest="cmd", required=True)
     e = sub.add_parser("extract", parents=[common])
-    e.add_argument("--phase", required=True, choices=["core", "sonnet", "mvp"])
+    e.add_argument("--phase", required=True, choices=["core", "sonnet", "mvp", "exp1"])  # exp1: --config configs/exp1.yaml
     e.add_argument("--prefer", choices=["core", "mvp"])
     sub.add_parser("plan", parents=[common])
     v = sub.add_parser("validate", parents=[common])
@@ -106,6 +106,18 @@ def _cmd_extract(args: argparse.Namespace) -> int:
         seeds = seeds_mod.load_analysis_seeds(s)
         snap = sets.snapshot_main_db(s)
         db = Db(snap.path)
+        if args.phase in items_mod.EXPLORATORY_PHASES:      # D-022: own judge database, inherited validation
+            jdb = open_judge_db(s, create=True)
+            inh = items_mod.inherit_validation(s, jdb)
+            rep = items_mod.extract_exploratory(s, db, jdb, args.phase, seeds=seeds, snapshot=snap)
+            print(f"extraction {rep.extraction_id}: {rep.n_new} new items in {jdb.path}; validation inherited "
+                  f"({inh['prompt_version']}, {inh['n_pass']}/{inh['n_items']}); empty D answers={rep.n_empty_answers}")
+            for sub, n in sorted(rep.by_subtier.items()):
+                print(f"  {sub}: {n}")
+            return 0
+        from wtth.judge.db import core_judge_db_path, judge_db_path
+        if judge_db_path(s) != core_judge_db_path(s):
+            raise ExtractionError(f"phase {args.phase} items belong in the confirmatory judge database, not {judge_db_path(s)}")
         aset = sets.analysis_set(s, db, args.phase, prefer=args.prefer)
         jdb = open_judge_db(s, create=True)
         rep = items_mod.extract(s, db, jdb, aset, seeds=seeds, snapshot=snap)

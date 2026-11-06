@@ -94,7 +94,7 @@ def make_context(settings: Any, *, run_id: str, prompt_version: str, k: int, com
 
     jdb.write(reg)
     return JudgeContext(settings, jdb, main_db, run_id, pr, spath, exp, allow, slots, KGate(k), launch, breaker,
-                        budget, Path(settings.paths.runs_dir) / "judge" / "calls", model,
+                        budget, judge_db_path(settings).parent / "calls", model,
                         float(settings.models.budget_for(model)), _api_key=key)
 
 

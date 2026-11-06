@@ -4,11 +4,16 @@
 `settings.budget.cap_usd`, `settings.scheduler.k_init`, ...). Relative paths in `paths` resolve against the
 repo root (the parent of configs/). Private text is never read here; `paths.private_dir` and `paths.key_file`
 are paths only.
+
+Overlay files (D-022): a config with a top-level `extends: <file>` is merged onto that file (same directory). Mappings
+merge key by key, lists and scalars replace. An overlay may ADD cells, runbook variants and phases but never change
+one the base defines, so the confirmatory definitions in experiment.yaml stay as they are.
 """
 from __future__ import annotations
 
 import copy
 import json
+import re
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
@@ -65,10 +70,15 @@ class Paths:
     rehearsal_dir: Path
     probe_dir: Path
     tools_yaml: Path
+    judge_subdir: str = "judge"   # D-022: the judge database is <runs_dir>/<judge_subdir>/judge.sqlite
 
     @property
     def db_path(self) -> Path:
         return self.runs_dir / "wtth.sqlite"
+
+    @property
+    def judge_dir(self) -> Path:
+        return self.runs_dir / self.judge_subdir
 
     @property
     def stimuli_dir(self) -> Path:
@@ -254,6 +264,24 @@ class Phase:
 
 
 @dataclass(frozen=True, slots=True)
+class ExtraText:
+    """D-022: witness-visible text kept outside prereg/ (frozen by its own tag), pinned by sha256. `paragraphs` are
+    runbook paragraph ids, each read from the first fenced block under the heading that starts with the id."""
+    path: Path
+    sha256: str
+    paragraphs: tuple[str, ...]
+
+
+@dataclass(frozen=True, slots=True)
+class Freeze:
+    """D-022: live runs of `phases` start only when an annotated tag matching `tag_re` exists and the files under
+    `paths` (git pathspecs) are committed and identical to that tag."""
+    phases: tuple[str, ...]
+    tag_re: str
+    paths: tuple[str, ...]
+
+
+@dataclass(frozen=True, slots=True)
 class Settings:
     config_path: Path
     repo_root: Path
@@ -277,6 +305,8 @@ class Settings:
     mcp_env_guard: str = "refuse"  # WP2-ADD: "refuse" | "scrub" (server behaviour on credential-like env names)
     mcp_server_name: str = "workspace"  # WP4-ADD: the MCP server key; derives tool prefix, init checks, deny probe
     allowed_tools_separate: bool = False  # WP3-ADD: --allowedTools as separate argv elements (research/41 4.3 item 3)
+    extra_texts: tuple[ExtraText, ...] = ()   # D-022: exploratory text outside prereg/
+    freeze: Freeze | None = None              # D-022: tag-and-tree freeze for exploratory live phases
 
     def keywords(self, scenario: str) -> tuple[str, ...]:
         return self.scenarios[scenario].keywords
@@ -377,13 +407,65 @@ def _mcp_env_guard(v: Any) -> str:  # WP2-ADD
     return v
 
 
-def load_settings(path: Path | None = None, overrides: dict | None = None) -> Settings:
-    """Load and validate configs/experiment.yaml. `overrides` merges into the raw mapping; keys may be dotted
-    ("paths.runs_dir") or nested dicts."""
-    cfg_path = Path(path) if path is not None else CONFIGS_DIR / "experiment.yaml"
-    root = cfg_path.resolve().parent.parent
+# Sections in which an overlay may add entries but never change an entry of its base (D-022).
+ADD_ONLY_SECTIONS = ("cells", "runbooks", "phases", "scenarios")
+JUDGE_SUBDIR_RE = re.compile(r"judge[A-Za-z0-9_-]*")   # every judge database is <runs>/judge*/judge.sqlite
+
+
+def _read_raw(cfg_path: Path, depth: int = 0) -> dict:
+    """The raw mapping of `cfg_path`, with `extends` resolved (base first, this file merged on top)."""
     with open(cfg_path, "r", encoding="utf-8") as fh:
         raw = yaml.safe_load(fh)
+    if not isinstance(raw, dict):
+        raise ConfigError(f"{cfg_path.name}: not a mapping")
+    base_name = raw.pop("extends", None)
+    if base_name is None:
+        return raw
+    if depth >= 3:
+        raise ConfigError(f"{cfg_path.name}: extends chain is too deep")
+    base_path = cfg_path.parent / str(base_name)
+    if base_path.resolve().parent != cfg_path.resolve().parent:
+        raise ConfigError(f"{cfg_path.name}: extends must name a file in the same directory")
+    base = _read_raw(base_path, depth + 1)
+    for sec in ADD_ONLY_SECTIONS:
+        for key, val in (raw.get(sec) or {}).items():
+            if key in (base.get(sec) or {}) and base[sec][key] != val:
+                raise ConfigError(f"{cfg_path.name}: {sec}.{key} is defined in {base_path.name}; an overlay may add "
+                                  f"{sec}, never change one")
+    return _deep_merge(base, raw)
+
+
+def _extra_texts(root: Path, raw: Any) -> tuple[ExtraText, ...]:
+    out = []
+    for i, x in enumerate(raw or []):
+        try:
+            out.append(ExtraText(_path(root, x["path"]), str(x["sha256"]), tuple(str(p) for p in x["paragraphs"])))
+        except (KeyError, TypeError) as exc:
+            raise ConfigError(f"extra_texts[{i}]: {exc}") from exc
+        if not re.fullmatch(r"[0-9a-f]{64}", out[-1].sha256):
+            raise ConfigError(f"extra_texts[{i}]: sha256 is not 64 hex digits")
+    return tuple(out)
+
+
+def _freeze(raw: Any) -> Freeze | None:
+    if not raw:
+        return None
+    try:
+        fz = Freeze(tuple(raw["phases"]), str(raw["tag_re"]), tuple(str(p) for p in raw["paths"]))
+        re.compile(fz.tag_re)
+    except (KeyError, TypeError, re.error) as exc:
+        raise ConfigError(f"freeze: {exc}") from exc
+    if not fz.phases or not fz.paths:
+        raise ConfigError("freeze: phases and paths are both needed")
+    return fz
+
+
+def load_settings(path: Path | None = None, overrides: dict | None = None) -> Settings:
+    """Load and validate configs/experiment.yaml (or an overlay that `extends` it). `overrides` merges into the raw
+    mapping; keys may be dotted ("paths.runs_dir") or nested dicts."""
+    cfg_path = Path(path) if path is not None else CONFIGS_DIR / "experiment.yaml"
+    root = cfg_path.resolve().parent.parent
+    raw = _read_raw(cfg_path)
     if overrides:
         _apply_overrides(raw, overrides)
 
@@ -394,7 +476,11 @@ def load_settings(path: Path | None = None, overrides: dict | None = None) -> Se
         binary_sha256_file=_path(root, rp["binary_sha256_file"]), cc_settings=_path(root, rp["cc_settings"]),
         cwd=_path(root, rp["cwd"]), slots_root=_path(root, rp["slots_root"]), python=_path(root, rp["python"]),
         key_file=_path(root, rp["key_file"]), rehearsal_dir=_path(root, rp["rehearsal_dir"]),
-        probe_dir=_path(root, rp["probe_dir"]), tools_yaml=_path(root, rp["tools_yaml"]))
+        probe_dir=_path(root, rp["probe_dir"]), tools_yaml=_path(root, rp["tools_yaml"]),
+        judge_subdir=str(rp.get("judge_subdir", "judge")))
+    if not JUDGE_SUBDIR_RE.fullmatch(paths.judge_subdir):
+        raise ConfigError(f"paths.judge_subdir {paths.judge_subdir!r} must match judge[A-Za-z0-9_-]* (the global "
+                          f"ledger sums every <runs>/judge*/judge.sqlite)")
 
     rm = raw["models"]
     models = Models(rm["haiku"], rm["sonnet"], rm["judge"], rm["effort"],
@@ -441,7 +527,8 @@ def load_settings(path: Path | None = None, overrides: dict | None = None) -> Se
         core_cells=core_cells, cells=cells, phases=phases,
         mcp_server_name=str(raw.get("mcp_server_name", "workspace")),  # WP4-ADD
         allowed_tools_separate=bool(raw.get("allowed_tools_separate", False)),  # WP3-ADD
-        mcp_env_guard=_mcp_env_guard(raw.get("mcp_env_guard", "refuse")))  # WP2-ADD
+        mcp_env_guard=_mcp_env_guard(raw.get("mcp_env_guard", "refuse")),  # WP2-ADD
+        extra_texts=_extra_texts(root, raw.get("extra_texts")), freeze=_freeze(raw.get("freeze")))
 
 
 # ---- tools.yaml -------------------------------------------------------------------------------------

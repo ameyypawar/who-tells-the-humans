@@ -106,6 +106,46 @@ def _check_tools(settings: Any, problems: list[str]) -> None:
 FROZEN_TAG_RE = re.compile(r"^frozen-v1(\.\d+)?$")
 
 
+def extra_text_problems(settings: Any) -> list[str]:
+    """D-022: every settings.extra_texts file exists and matches its pinned sha256 (names only, never content)."""
+    out = []
+    for x in getattr(settings, "extra_texts", ()) or ():
+        got = _sha_file(Path(x.path))
+        if got is None:
+            out.append(f"extra text missing: {Path(x.path).name}")
+        elif got != x.sha256:
+            out.append(f"extra text {Path(x.path).name}: sha256 {got} != pinned {x.sha256}")
+    return out
+
+
+def freeze_problems(settings: Any, phase: str) -> list[str]:
+    """D-022: for a phase listed in settings.freeze, an ANNOTATED tag matching freeze.tag_re exists, the frozen
+    paths have no uncommitted or untracked change, and HEAD equals one such tag on those paths. Commits elsewhere
+    (paper, analysis) after the tag do not matter."""
+    fz = getattr(settings, "freeze", None)
+    if fz is None or phase not in fz.phases:
+        return []
+    root = str(settings.paths.repo_root)
+
+    def g(*a: str) -> subprocess.CompletedProcess:
+        return subprocess.run(["git", "-C", root, *a], capture_output=True, text=True, timeout=60)
+
+    tags = [t for t in g("tag", "--list").stdout.split() if re.fullmatch(fz.tag_re, t)]
+    annotated = [t for t in tags if g("cat-file", "-t", t).stdout.strip() == "tag"]
+    if not annotated:
+        return [f"no annotated git tag matches {fz.tag_re!r} (phase {phase} is frozen by such a tag)"]
+    st = g("status", "--porcelain", "--untracked-files=all", "--", *fz.paths)
+    if st.returncode != 0:
+        return [f"git status failed: {st.stderr.strip()[:200]}"]
+    if st.stdout.strip():
+        n = len(st.stdout.strip().splitlines())
+        return [f"{n} frozen path(s) have uncommitted or untracked changes (phase {phase})"]
+    for t in annotated:
+        if g("diff", "--quiet", t, "HEAD", "--", *fz.paths).returncode == 0:
+            return []
+    return [f"frozen paths at HEAD differ from every tag matching {fz.tag_re!r}: {sorted(annotated)}"]
+
+
 def verify_startup(settings: Any, mode: str, phase: str) -> list[str]:
     """Every problem found (empty list = ready). Live mode adds environment, key and freeze guards."""
     p: list[str] = []
@@ -128,6 +168,7 @@ def verify_startup(settings: Any, mode: str, phase: str) -> list[str]:
         p.append("configs/prereg_hashes.json differs from the PREREG section 23 table")
     from wtth import prereg
     p.extend(prereg.verify_hashes(paths.prereg_dir, paths.private_dir, files))
+    p.extend(extra_text_problems(settings))
     from wtth.orchestrator import guards
     bad = guards.wtth_import_problem(settings)
     if bad:
@@ -205,7 +246,21 @@ def verify_startup(settings: Any, mode: str, phase: str) -> list[str]:
                 p.append("frozen_level is not set")
             if not settings.max_turns.frozen:
                 p.append("max_turns.frozen is false")
+        fz = getattr(settings, "freeze", None)
+        if fz is not None and phase in fz.phases:
+            p.extend(freeze_problems(settings, phase))
+            if settings.frozen_level is None:
+                p.append("frozen_level is not set")
+            if not settings.max_turns.frozen:
+                p.append("max_turns.frozen is false")
     return p
+
+
+def _rel(path: Any, root: Path) -> str:
+    try:
+        return str(Path(path).resolve().relative_to(Path(root).resolve()))
+    except ValueError:
+        return str(path)
 
 
 def _git(settings: Any, *args: str) -> str:
@@ -263,6 +318,11 @@ def build_manifest(settings: Any, run_id: str, phase: str, mode: str) -> dict:
         "tools_yaml_sha": _sha_file(paths.tools_yaml),
         "system_prompt_shas": sys_files,
         "prereg_hashes": pins["files"],
+        "config_file": _rel(settings.config_path, paths.repo_root),
+        "config_file_sha": _sha_file(Path(settings.config_path)),
+        "extra_text_hashes": {_rel(x.path, paths.repo_root): _sha_file(Path(x.path))
+                              for x in getattr(settings, "extra_texts", ()) or ()},
+        "judge_db": _rel(paths.judge_dir / "judge.sqlite", paths.repo_root),
         "permutation": {"seed": settings.permutation_seed, "order": permutation(settings)},
         "frozen_level": settings.frozen_level,
         "scheduler": {k: getattr(sch, k) for k in sch.__slots__},

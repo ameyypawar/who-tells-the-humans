@@ -14,7 +14,41 @@ FREE_TABLES = ("jmeta",)
 
 
 def judge_db_path(settings: Any) -> Path:
+    """<runs_dir>/<paths.judge_subdir>/judge.sqlite: runs/judge/judge.sqlite for the core and the Sonnet arm,
+    runs/judge_exp1/judge.sqlite for the D-022 follow-up (configs/exp1.yaml), so exploratory labels never enter the
+    database the confirmatory analysis reads."""
+    sub = getattr(settings.paths, "judge_subdir", "judge") or "judge"
+    return Path(settings.paths.runs_dir) / sub / "judge.sqlite"
+
+
+def core_judge_db_path(settings: Any) -> Path:
+    """The confirmatory judge database (runs/judge/judge.sqlite), whatever paths.judge_subdir says."""
     return Path(settings.paths.runs_dir) / "judge" / "judge.sqlite"
+
+
+def judge_db_paths(settings: Any) -> list[Path]:
+    """Every judge database under runs_dir (<runs>/judge*/judge.sqlite, the configured one included). They all
+    count against the one global ledger (B5)."""
+    runs = Path(settings.paths.runs_dir)
+    found = {p for p in runs.glob("judge*/judge.sqlite") if p.is_file()}
+    own = judge_db_path(settings)
+    if own.is_file():
+        found.add(own)
+    return sorted(found)
+
+
+def _ledger_usd(path: Path) -> float:
+    try:
+        conn = sqlite3.connect(f"file:{path}?mode=ro", uri=True, timeout=5.0)
+    except sqlite3.Error:
+        return 0.0
+    try:
+        row = conn.execute("SELECT COALESCE(SUM(cost_usd),0.0) FROM judge_ledger").fetchone()
+        return float(row[0])
+    except sqlite3.Error:
+        return 0.0
+    finally:
+        conn.close()
 
 
 def _triggers(conn: sqlite3.Connection) -> list[str]:
@@ -79,22 +113,11 @@ def open_judge_db(settings: Any, *, create: bool = False):
     return Db(path)
 
 
-def judge_spent(settings: Any) -> float:
-    """SUM(judge_ledger.cost_usd); 0.0 if the file does not exist."""
-    path = judge_db_path(settings)
-    if not path.exists():
-        return 0.0
-    try:
-        conn = sqlite3.connect(f"file:{path}?mode=ro", uri=True, timeout=5.0)
-    except sqlite3.Error:
-        return 0.0
-    try:
-        row = conn.execute("SELECT COALESCE(SUM(cost_usd),0.0) FROM judge_ledger").fetchone()
-        return float(row[0])
-    except sqlite3.Error:
-        return 0.0
-    finally:
-        conn.close()
+def judge_spent(settings: Any, *, exclude: Path | None = None) -> float:
+    """SUM(judge_ledger.cost_usd) over every judge database under runs_dir (judge_db_paths); 0.0 if there is none.
+    `exclude`: one database left out (the caller adds its own ledger itself)."""
+    ex = Path(exclude).resolve() if exclude is not None else None
+    return sum(_ledger_usd(p) for p in judge_db_paths(settings) if ex is None or p.resolve() != ex)
 
 
 # ---- jmeta helpers (the table is free to update) -------------------------------------------------------------
