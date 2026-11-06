@@ -469,7 +469,7 @@ def extract_g1(settings: Any, main_db: Any, jdb: Any, level: str, *, seeds: Any)
 
 def ensure_held_out(settings: Any, jdb: Any, level: str, *, gate: bool = False) -> list[Item]:
     """The 12 held-out items (tier HO). With gate=True: separate G1-tier copies at `level` (pilot fallback).
-    # LEAD-REVIEW: gate copies use source_id 'G1:H<n>@<level>' so a pilot-level board never fixes the context of the
+    Gate copies use source_id 'G1:H<n>@<level>' so a pilot-level board never fixes the context of the
     # core's HO items (plan 2.1 lists plain 'H1'..'H12' for the core items; those are unchanged)."""
     ensure_meta(jdb)
     board = prompt_mod.held_out_board(settings, level)

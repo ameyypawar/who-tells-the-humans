@@ -247,7 +247,7 @@ def _unknown_tool(db: "Db", ident: Identity, name: str, args: dict) -> None:
 def dispatch(db: "Db", ident: Identity, toolset: Toolset, name: str, args: dict, fault: FaultSink,
              caps: Caps | None = None) -> str:
     """Never raises; always returns the toolset's fixed reply. Owner: WP2."""
-    # LEAD-REVIEW: an unknown tool name has no reply of its own; the first tool's reply is returned.
+    # Note: an unknown tool name has no reply of its own; the first tool's reply is returned.
     reply = toolset.tools[0].reply if toolset.tools else ""
     try:
         if not isinstance(args, dict):

@@ -19,7 +19,7 @@ from wtth.types import RefusalFlags, StreamRecord, Toolset, TurnRequest, TurnTyp
 _DEBRIEF = (TurnType.D1, TurnType.D2)
 
 # Refusal text rule, pinned in research/41 section 2.6 (and logged in the manifest, A11).
-# LEAD-REVIEW: the plan's literal regex wrote `I (?:...|'m not able to)`, which can never match "I'm not able to"
+# Note: the plan's literal regex wrote `I (?:...|'m not able to)`, which can never match "I'm not able to"
 # (it demands a space before the apostrophe); the pattern below matches the clear intent and also accepts the
 # curly apostrophe Claude often emits.
 REFUSAL_TEXT_PATTERNS: tuple[str, ...] = (

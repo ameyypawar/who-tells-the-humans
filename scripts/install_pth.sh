@@ -1,7 +1,7 @@
 #!/bin/sh
 # Writes wtth.pth into the wtth venv's site-packages. Idempotent, no network.
 # Line 1: <repo>/src   (so `import wtth` works under `python -I`, research/41 D8)
-# Line 2: <repo>       # LEAD-REVIEW: not in 41 ("one line"). Needed so `from tests.util import ...` works under
+# Line 2: <repo>       # Not in 41 ("one line"). Needed so `from tests.util import ...` works under
 #                      `python -I -m unittest discover -s tests` (discover puts tests/ itself, not the repo root,
 #                      on sys.path, and -I drops the cwd).
 set -eu

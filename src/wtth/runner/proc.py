@@ -93,7 +93,7 @@ async def run_process(argv: Sequence[str], env: Mapping[str, str], cwd: str | Pa
                       stderr_path: Path, timeout_s: float, grace_int_s: float = 10.0,
                       grace_term_s: float = 5.0, rss_sampler: bool = False,
                       cancel: asyncio.Event | None = None) -> ProcResult:
-    """Run one child to completion, to the timeout, or until `cancel` is set (LEAD-REVIEW: `cancel` is an
+    """Run one child to completion, to the timeout, or until `cancel` is set (`cancel` is an
     extra keyword-only-by-use argument with a default; the frozen positional signature is unchanged).
 
     kill_stage: None for a normal exit; 'sigint'|'sigterm'|'sigkill' when the timeout or cancel ladder ran;

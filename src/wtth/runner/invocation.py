@@ -47,7 +47,7 @@ def build_argv(settings: Any, req: TurnRequest, mcp_config_json: str | None) -> 
         names = [prefix + t.name for t in req.toolset.tools]
         argv += ["--mcp-config", mcp_config_json]
         if getattr(settings, "allowed_tools_separate", False):
-            # LEAD-REVIEW: fallback form if CC rejects the comma-joined single element (research/41 4.3 item 3).
+            # Fallback form if CC rejects the comma-joined single element (research/41 4.3 item 3).
             argv += ["--allowedTools", *names]
         else:
             argv += ["--allowedTools", ",".join(names)]

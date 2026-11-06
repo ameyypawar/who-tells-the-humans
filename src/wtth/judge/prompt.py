@@ -90,7 +90,7 @@ def _rubric_sha_ok(settings: Any, path: Path) -> str:
 
 
 def build_system_prompt(settings: Any, *, scenario: str = "main") -> JudgePrompt:
-    """The v1 prompt. Two builds are byte-identical. # LEAD-REVIEW: the pinned signature is (settings); `scenario` is an
+    """The v1 prompt. Two builds are byte-identical. The pinned signature is (settings); `scenario` is an
     added keyword (default main) so the S-05 NotImplementedError for backup is reachable."""
     if scenario == "backup":
         raise NotImplementedError("S-05: the rubric needs adapting before it can judge the backup scenario")

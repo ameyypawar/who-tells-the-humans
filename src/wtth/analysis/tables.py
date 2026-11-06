@@ -5,7 +5,7 @@ Plain text is LaTeX-escaped; numbers are formatted by the helpers below (ROUND_H
 decimal; differences in percentage points; \\ensuremath{-} for negatives; {,} thousands separators; kappa with two
 decimals; USD as \\$x.xx). CSV files carry the same cells as plain text.
 
-LEAD-REVIEW: the `book` argument of the table functions is accepted for the pinned signature but the formatting is
+Note: the `book` argument of the table functions is accepted for the pinned signature but the formatting is
 done here (NumberBook did not exist when this was written); the helpers follow plan 47 section 2.16 exactly.
 """
 from __future__ import annotations
