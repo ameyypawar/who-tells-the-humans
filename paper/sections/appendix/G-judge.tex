@@ -1,6 +1,8 @@
-% appendix G (plan 49 section 2.5). Sources: prompts/judge_rubric.md, D-006, D-007, D-011, research/47 sections 2.3 to
-% 2.11. Wording rule: labels are model-proposed and author-reviewed; agreement is always "model--model" (plan 49 4.2
-% items 12 and 13). Text tonight; numbers come from macros and the generated tables.
+% appendix G (plan 49 section 2.5). Sources: prompts/judge_rubric.md, D-006, D-007, D-011, D-016 to D-019,
+% research/47 sections 2.3 to 2.11. Wording rule: labels are model-proposed, AI-audited and author-approved; never
+% "blind", "hand", "human-labelled" or "inter-rater"; agreement is always "model--model" (plan 49 4.2 items 12, 13).
+% The 212 review decisions were written by a second Claude pass (the audit) and approved by the author unchanged; the
+% generated tables call that step "author review". There is no human-judge kappa (D-018).
 \section{Judge rubric, validation and agreement}\label{app:judge}
 
 \subsection{What the judge codes}
@@ -20,7 +22,7 @@ Five analyst-facing passages of the rubric that would reveal the design are left
 \subsection{Held-out validation}
 Twelve synthetic posts with known labels, kept out of the prompt, are mixed blind into the first batch.
 The judge passes if it gets escalation, concern and test awareness right on at least eleven; one prompt revision is allowed, and a second failure stops the run.
-Result: \wtthJudgeValidationPass{} of \wtthJudgeValidationItems{} items.
+The first prompt failed on format alone (every answer omitted required keys), so its format line was revised once to list each item type's keys (D-016); the revised prompt passed with \wtthJudgeValidationPass{} of \wtthJudgeValidationItems.
 
 \subsection{Coverage}
 The first tier (the P1-path notes, all notes in the benign cell, and every post in shifts where no witness sent a keyword-matched note) runs first.
@@ -28,34 +30,97 @@ The second tier (debrief answers, the remaining posts and the matched notes) run
 Analyses on a partly judged sub-tier report their coverage and are estimated on the subsample.
 Coverage was \wtthSubtierCovJOneaPct\% for the P1-path notes of the first tier and \wtthSubtierCovJTwoaPct\% for the first sub-tier of the second (debrief answers in \cell{NONE} and \cell{CLAIM}); Table~\ref{tab:judge} gives the rest.
 
-\subsection{Agreement}
-A separate \wtthDesignModelAnnotatorName{} instance proposed labels for the review queues without seeing the judge's labels.
-Agreement between judge and proposer is a model--model Cohen's $\kappa$ per label, with a bootstrap interval: \wtthKappaMMBoardPostEscalationToHumansValue{} on escalation (\wtthKappaMMBoardPostEscalationToHumansCI) and \wtthKappaMMNoteRefersToViolationValue{} on whether a note refers to the violation (\wtthKappaMMNoteRefersToViolationCI).
+\subsection{Labels in the review queues}
+A fresh \wtthDesignModelAnnotatorName{} subagent per masked batch proposed a label, with a one-line rationale, for each queued item without seeing the judge's label (D-011).
+It labelled every item with a gate role and the full random agreement sample; the stage-two items queued only because the judge was unsure keep their judge labels (D-017).
+A queue bug drew the random sample twice; the duplicate draw was voided before any review, so the analysed sample is the first draw (D-019).
+A second Claude pass then audited the queued items and recorded a decision for each: approve the proposal, correct it, or take the judge's label where the two models disagreed.
+It changed \wtthReviewCorrectionRate\% of the \wtthReviewReviewed{} decisions, which cover \wtthReviewShare\% of judged items, including every judge-coded item that P1 and \Ptwop{} depend on.
+The author approved the audited review as it stood and changed none of its decisions.
+Final labels are these reviewed labels where a review exists and valid judge labels otherwise; unreviewed proposals never become final labels.
+The judge's reviewed escalation positives were not upheld (precision \wtthReviewPrecisionEscalation\%; Table~\ref{tab:judge} gives their number).
+
+\subsection{No blind human labels}
+The planned author-blind sample was drawn but declined before any review report was opened (D-018; blind labels: \wtthBlindN).
+No label in this study was produced by a human who had not seen a model's label, so there is no human--judge $\kappa$ and no human reliability estimate; every agreement figure below is model--model.
+
+\subsection{Model--model agreement}
+Agreement between the judge and the proposer, before review, is Cohen's $\kappa$ per label with a bootstrap interval (Table~\ref{tab:judge}).
+It was high where the primary outcomes depend on the judge: whether a note refers to the violation ($\kappa$ \wtthKappaMMNoteRefersToViolationValue), whether a post is about it (\wtthKappaMMBoardPostAboutViolationValue), and claims of having told ops (\wtthKappaMMBoardPostClaimPresentValue).
+It was high for the \DebOne{} verdict (\wtthKappaMMDOneAnswerDOneVerdictValue), the belief that ops was told (\wtthKappaMMDTwoAnswerBelievesOpsToldValue) and citing the log (\wtthKappaMMDTwoAnswerBasisLogLineValue), and low for most debrief reason codes (from \wtthKappaMMDTwoAnswerReasonCodesUnsureItWasAViolationValue{} to \wtthKappaMMDTwoAnswerReasonCodesSomeoneElseToldValue).
+Escalation to humans on the board was too rare for $\kappa$ to mean much: the models agreed on \wtthKappaMMBoardPostEscalationToHumansAgree\% of posts, never on a positive ($\kappa$ \wtthKappaMMBoardPostEscalationToHumansValue).
 The rubric's threshold of \wtthDesignKappaThreshold{} is kept only as a flag: below it on escalation, more \Ptwop{} posts are queued for review and any left unreviewed are bracketed (D-011).
-\begin{table}[h]
-\centering\footnotesize
-\wtthTab{generated/analysis/tables/table_judge.tex}
-\caption{\textbf{Judge validation, coverage and model--model agreement.}}
+
+\begin{table}[p]
+\centering\fontsize{7pt}{8pt}\selectfont
+\adjustbox{max width=\linewidth,max totalheight=8.3in}{\input{generated/analysis/tables/table_judge.tex}}
+\caption{\textbf{Judge validation, the audited review and model--model agreement.}
+``All pairs'' are every item both models labelled; \texttt{H-5} is the pre-registered random sample.
+The ``Author review'' rows count the decisions of the second Claude pass, which the author approved unchanged; ``--'' marks a $\kappa$ that is undefined because both models gave one value throughout.}
 \label{tab:judge}
 \end{table}
-\begin{table}[h]
-\centering\footnotesize
-\wtthTab{generated/analysis/tables/table_confusion.tex}
-\caption{\textbf{Model--model confusion tables} (judge against the model proposer, before review).}
+
+% ---- the confusion table is too long for one page: its rows are split by item type at build time (no number typed) ----
+% Left: board posts and notes. Right: the debrief answers. Parameterless, for the bare-digit lint of sections/**.
+\makeatletter
+\newread\cfIn
+\newif\ifcfLeft
+\def\cfRowsA{}
+\def\cfRowsB{}
+\def\cfTPost{\in@{|board\_post &}}
+\def\cfTNote{\in@{|note &}}
+\def\cfTRow{\in@{&}}
+\def\cfTHead{\in@{Item type &}}
+\openin\cfIn=generated/analysis/tables/table_confusion.tex
+\loop
+  \read\cfIn to \cfLine
+  \unless\ifeof\cfIn
+  \expandafter\cfTRow\expandafter{\cfLine}%
+  \ifin@
+    \expandafter\cfTHead\expandafter{\cfLine}%
+    \ifin@\else
+      \cfLeftfalse
+      \expandafter\cfTPost\expandafter{\expandafter|\cfLine}\ifin@\cfLefttrue\fi
+      \expandafter\cfTNote\expandafter{\expandafter|\cfLine}\ifin@\cfLefttrue\fi
+      \ifcfLeft\expandafter\g@addto@macro\expandafter\cfRowsA\expandafter{\cfLine}%
+      \else\expandafter\g@addto@macro\expandafter\cfRowsB\expandafter{\cfLine}\fi
+    \fi
+  \fi
+\repeat
+\closein\cfIn
+\makeatother
+
+\begin{table}[p]
+\centering\fontsize{7pt}{8pt}\selectfont
+\begin{tabular}{@{}llllr@{}}
+\toprule
+Item type & Label & Judge & Claude proposer & Count \\
+\midrule
+\cfRowsA
+\bottomrule
+\end{tabular}
+\caption{\textbf{Model--model confusion tables, board posts and notes} (judge against the model proposer, before review).}
 \label{tab:confusion}
 \end{table}
 
-\subsection{Author review}
-The author reviewed the queued items, seeing the model's proposal and, where the two models disagreed, the judge's label, and approved or corrected each.
-Final labels are reviewed labels where a review exists and valid judge labels otherwise; unreviewed proposals never become final labels.
-Share of judged items reviewed: \wtthReviewShare\%; correction rate: \wtthReviewCorrectionRate\%; precision of the judge's escalation positives: \wtthReviewPrecisionEscalation\%.
-
-\subsection{Blind sample}
-\wtthBlindStatus.
+\begin{table}[p]
+\centering\fontsize{7pt}{8pt}\selectfont
+\begin{tabular}{@{}llllr@{}}
+\toprule
+Item type & Label & Judge & Claude proposer & Count \\
+\midrule
+\cfRowsB
+\bottomrule
+\end{tabular}
+\caption{\textbf{Model--model confusion tables, debrief answers} (judge against the model proposer, before review).}
+\label{tab:confusiond}
+\end{table}
 
 \subsection{Keyword-rule quality check}
-A random sample of keyword-matched notes was reviewed for precision: \wtthHaikuKwPrecision\% (\wtthHaikuKwLabelled{} reviewed of \wtthHaikuKwMatchedNotes{} matched notes).
+The pre-registered precision check of the keyword rule drew a random sample of keyword-matched notes, which the model annotator labelled, but the audit did not review them, so no precision is reported (\wtthHaikuKwLabelled{} of \wtthHaikuKwMatchedNotes{} matched notes reviewed).
+Model--model agreement on whether a note refers to the violation was \wtthKappaMMNoteRefersToViolationValue{} on every note both models labelled.
 
 \subsection{Judge mechanics}
 Answers are parsed strictly; an invalid answer is re-asked once with the identical prompt, and refusals are never re-asked (D-011).
 Invalid: \wtthJudgeInvalid; refused: \wtthJudgeRefused; re-asked: \wtthJudgeReasked; recomputed escalation differing from the judge's own value: \wtthJudgeEscMismatch.
+\clearpage
