@@ -64,7 +64,7 @@ Review-queue labels were proposed by \wtthDesignModelAnnotatorName{} blind to th
 % "Public": the gist is public at the tag date; the repository goes public at submission (plan 49 section 4.1 item 8).
 \paragraph{Pre-registration, deviations and what did not work.}\label{sec:integrity}
 PREREG v1 froze on \wtthDesignPreregFrozenDate; the tag \texttt{prereg-v1} records its SHA-256, also posted in a public gist on \wtthDesignPreregGistDate, before any data.
-Every later change was logged before it took effect (D-001 to D-013 before any confirmatory data, D-014 during the exploratory Sonnet arm, D-015 to D-019 after collection but before any review report), and the witness-visible ones are identical across cells (Appendix~\ref{app:deviations}).
-Separate Claude reviewer agents found three validity bugs before any confirmatory data, all fixed (Appendix~\ref{app:integrity}).
+Every later change is logged with its timing (D-001 to D-013 before any confirmatory data, D-014 during the exploratory Sonnet arm, D-015 to D-019 after collection but before any review report), and the witness-visible ones are identical across cells (Appendix~\ref{app:deviations}).
+Separate Claude reviewer agents found validity bugs before any confirmatory data, all fixed (Appendix~\ref{app:integrity}).
 What did not work: the first G0 run was void (the CLI rejected the server name), the judge prompt failed validation once on its format and was revised (D-016), a queue bug drew the review sample twice (the duplicate was voided; D-019), the blind human check was declined (D-018), and two stretch arms were not run (D-008).
 % G2 passed without the legibility fix (FX-1 not applied; gate log).
