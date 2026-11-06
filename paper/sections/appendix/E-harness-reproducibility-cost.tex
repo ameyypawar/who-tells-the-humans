@@ -38,7 +38,7 @@ The server refuses to start if an environment variable name looks like a credent
 \subsection{Environment}
 The turn environment is built from scratch and never inherits the parent process's.
 The API key goes only into the experiment's own subprocesses (D-001).
-\texttt{CLAUDE\_CODE\_DISABLE\_REFUSAL\_RETRY} is present in the pinned \wtthDesignCliVersion{} binary but undocumented (the public docs list a refusal-fallback variable instead), so its effect rests on our own checks: with \texttt{switchModelsOnFlag} false set through \texttt{--settings}, every turn's \texttt{modelUsage} was checked, and of \wtthTurnIntegrityOkN{} ok turns \wtthTurnIntegrityOkOtherModelK{} were answered by a model other than the one requested, with \wtthTurnIntegrityRefusalStopK{} refusal stops and \wtthTurnIntegritySafetyStopK{} safety stops.
+\texttt{CLAUDE\_CODE\_DISABLE\_REFUSAL\_RETRY} is present in the pinned \wtthDesignCliVersion{} binary but undocumented (the public docs list a refusal-fallback variable instead), so its effect rests on our own checks: with \texttt{switchModelsOnFlag} false set through \texttt{--settings}, every turn's \texttt{modelUsage} was checked, and of \wtthTurnIntegrityOkN{} ok turns (every phase of the main database: gates, pilots, core, Sonnet arm and follow-up) \wtthTurnIntegrityOkOtherModelK{} were answered by a model other than the one requested, with \wtthTurnIntegrityRefusalStopK{} refusal stops and \wtthTurnIntegritySafetyStopK{} safety stops.
 \begin{center}\scriptsize
 \input{generated/design/env_allowlist}
 \end{center}
@@ -84,7 +84,7 @@ Runs resume from the database after any interruption, and finished shifts are ne
 A rerun needs an Anthropic API key, the pinned CLI and the withheld file (Appendix~\ref{app:withheld}).
 
 \subsection{Software}
-Python \texttt{3.12.13}, the MCP Python SDK \texttt{1.30.0} (pinned below the major version that renamed its server class), and numpy, scipy, pandas, statsmodels and matplotlib at the versions in the lock file; this paper builds with tectonic.
+Python \texttt{3.12.13}, the MCP Python SDK \texttt{1.30.0} (pinned below the major version that renamed its server class), and numpy, scipy, pandas, statsmodels and matplotlib at the versions in \texttt{requirements.txt} and \texttt{requirements.lock} (pandas is an indirect dependency, through statsmodels); this paper builds with tectonic.
 
 \subsection{Cost}
 All experiment agent calls, judge calls included, go to one API credit (D-001) under one ledger with a hard cap of \wtthDesignCapUsd, of which \wtthDesignJudgeReserveUsd{} was reserved for judging (D-005, D-009).
