@@ -155,7 +155,9 @@ class CostTracker:
 
     def spent(self) -> float:
         row = self.db.read(lambda c: c.execute("SELECT COALESCE(SUM(cost_usd),0) FROM cost_ledger").fetchone())
-        return self.settings.budget.prior_spend_usd + float(row[0])
+        from wtth.judge.db import judge_spent  # WP6: the judge ledger counts against the same cap (0.0 if no file)
+
+        return self.settings.budget.prior_spend_usd + float(row[0]) + judge_spent(self.settings)
 
     def phase_spent(self, phase: str) -> float:
         row = self.db.read(lambda c: c.execute(
