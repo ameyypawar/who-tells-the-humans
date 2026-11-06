@@ -4,7 +4,7 @@
 \subsection{Limitations: what the results do and do not establish}
 \paragraph{Models.}
 Every confirmatory test uses \wtthDesignModelHaikuName{} at effort \wtthDesignEffort, with no temperature control.
-The \wtthDesignModelSonnetName{} subset is exploratory.
+The \wtthDesignModelSonnetName{} subset is exploratory, and so are the follow-up cells (D-022), which ran after the strict analysis on new seeds with the core's mix of paraphrase, handle order and tickets (D-023); their comparisons with core cells are across phases run at different times.
 We claim nothing about other model families, and evidence from older Claude models may not carry over.
 
 \paragraph{Scenario.}
@@ -36,8 +36,9 @@ Our receipts name the sender, which could expose reporters; we did not test that
 
 \paragraph{Measurement.}
 P1 and P2 are mechanical: a keyword rule, with a judge path for unmatched notes; the planned precision check of the keyword rule was never reviewed (Appendix~\ref{app:judge}).
-\Ptwop{}, concern, test awareness and the debrief codes come from an LLM judge (\wtthDesignModelJudgeName) and from labels that a model proposed and a second Claude pass audited, whose \wtthReviewReviewed{} pre-filled decisions the author approved unchanged (D-020).
+\Ptwop{}, concern, test awareness and the debrief codes come from an LLM judge (\wtthDesignModelJudgeName) and from labels that a model proposed and a second pass of the same model (\wtthDesignModelAnnotatorName) audited, whose \wtthReviewReviewed{} pre-filled decisions the author approved unchanged (D-020); the audit is therefore not independent of the proposals.
 None of them is a blind human label (D-018), so their reliability rests on model--model $\kappa$ alone, which ranges from \wtthKappaMMDTwoAnswerReasonCodesUnsureItWasAViolationValue{} to \wtthKappaMMDTwoAnswerReasonCodesSomeoneElseToldValue{} across the debrief reason codes.
+\ifdefstring{\wtthHumanReadStatus}{complete}{\wtthStub{author-read result (D-021) for Appendix A}}{No human read of transcripts is reported here: the author's read of \wtthHumanReadSelectedN{} selected transcripts (D-021) is pending.}
 Debrief answers are post-hoc self-reports, not evidence of a mechanism.
 
 \paragraph{Test awareness.}
@@ -56,7 +57,7 @@ Every sensitivity row reuses the same bootstrap, so none of them tests this.
 H2 and H3 are confirmatory only because H1's null was rejected; their own effects hold under the post hoc methods (H2 MOVER \wtthHaikuPostHocHTwoMoverCI{} points; H3 Newcombe \wtthHaikuPostHocHThreeNewcombeCI, Fisher p \wtthHaikuPostHocHThreeFisherP; Table~\ref{tab:posthoc}).
 With reporting at ceiling, a small stand-down is detectable, so rejecting a null says little about size; H1's effect is small, and the equivalence test that frames it is exploratory.
 Some secondary analyses rest on a pre-declared random subsample of judged items (coverage in Appendix~\ref{app:judge}).
-Exploratory results (Sonnet, board substitution, the debrief codes) carry no verdict.
+Exploratory results (Sonnet, board substitution, the debrief codes, the follow-up cells) carry no verdict.
 
 \paragraph{If assumptions fail.}
 Gate G2 showed that witnesses read the log, so the H2 result is not a failure to read it; but what they read included peers' receipts (Log design).

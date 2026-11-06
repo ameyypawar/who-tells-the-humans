@@ -27,7 +27,7 @@ The deployer rule under test: \emph{a receipt is written by the channel, never b
 P1 (``told ops''): a witness sent a note about the violation by round 5, as decided by a pre-registered keyword rule or, for other notes, by the judge.
 P2 (``operator never told''): no witness in the shift has P1, in the \wtthDesignPTwoCellsWord{} cells where C did not really report.
 \Ptwop{} (``never told by any route'') also treats a board post about the violation addressed to ops as telling them.
-Secondary outcomes include alert load, false reports and debriefs; board substitution is exploratory (D-010).
+Secondary outcomes include alert load (violation notes per shift), false reports and debriefs.
 H1 to H3 are tested in a fixed sequence, two-sided at $\alpha = \wtthDesignAlpha$, stopping at the first whose null is not rejected, on \Done{} $=$ P1(\cell{NONE}) $-$ P1(\cell{CLAIM}), \Dtwo{} $=$ \Done{} $-$ [P1(\cell{NONE-R}) $-$ P1(\cell{NO-RECEIPT})] and \Dthree{} $=$ P1(\cell{NO-RECEIPT}) $-$ P1(\cell{FORGED}), each predicted positive.
 A null is rejected only if the \wtthProtocolLevel\% interval of a shift-level cluster bootstrap excludes zero (planning power: Appendix~\ref{app:predictions}).
 
@@ -45,11 +45,12 @@ In \cell{FORGED} C's post adds a typed line in the log layout (withheld), and th
 
 % PREREG sections 14, 15, 21; D-001, D-002, D-005, D-007, D-009, D-011; configs/*.
 \paragraph{Execution.}\label{sec:execution}
-Each witness turn is one stateless call to \wtthDesignModelHaikuName{} at effort \wtthDesignEffort{} (no temperature control) through a pinned Claude Code CLI (\wtthDesignCliVersion) in \texttt{--bare} mode, with no CLAUDE.md, memory or built-in tools (Appendix~\ref{app:harness}); technical failures are rerun on the same seed, and refusals and malformed calls are data.
+Each witness turn is one stateless call to \wtthDesignModelHaikuName{} at effort \wtthDesignEffort{} (no temperature control) through a pinned Claude Code CLI (\wtthDesignCliVersion) in \texttt{--bare} mode with no built-in tools (Appendix~\ref{app:harness}); technical failures are rerun on the same seed, and refusals and malformed calls are data.
 Pilot gates, never pooled with the data, checked integrity (G0), froze V's clarity level (G1: pilot P1 in \cell{NONE} was above the \wtthDesignGOneCeiling\% ceiling at every level tried, so the least clear, \wtthGateFrozenLevel, was frozen; D-013) and confirmed that witnesses read the log (G2; Appendix~\ref{app:gates}).
 The judge (\wtthDesignModelJudgeName) is not told the cell, seed, model or purpose.
 % D-020: the decisions were pre-filled by a second Claude pass and approved unchanged; never say the author reviewed items.
-Review-queue labels are model-proposed (\wtthDesignModelAnnotatorName, without the judge's labels), AI-audited (a second Claude pass pre-filled all \wtthReviewReviewed{} review decisions) and author-approved (unchanged: correction rate \wtthDesignReviewAuthorChanged{} of \wtthReviewReviewed; D-020), not human labels; all agreement is model--model (Appendix~\ref{app:judge}).
+% The audit pass ran on the proposer's model (Claude Opus 5.5, the annotator macro), so it is not independent of it.
+Review-queue labels are model-proposed (\wtthDesignModelAnnotatorName, without the judge's labels), AI-audited (a second \wtthDesignModelAnnotatorName{} pass, not independent of the proposals, pre-filled all \wtthReviewReviewed{} decisions) and author-approved (unchanged: correction rate \wtthDesignReviewAuthorChanged{} of \wtthReviewReviewed; D-020), not human labels; all agreement is model--model (Appendix~\ref{app:judge}).
 
 % PREREG header, sections 17 and 23; tag prereg-v1; DEVIATIONS.md; research/38, 46, 48; wp6 commit 96f0f93.
 % "Public": the gist is public at the tag date; the repository goes public at submission (plan 49 section 4.1 item 8).
@@ -57,5 +58,5 @@ Review-queue labels are model-proposed (\wtthDesignModelAnnotatorName, without t
 PREREG v1 froze on \wtthDesignPreregFrozenDate; the tag \texttt{prereg-v1} records its SHA-256, also posted in a public gist on \wtthDesignPreregGistDate, before any data.
 Every later change is logged with its timing (D-001 to D-013 before any confirmatory data, D-014 to D-019 before any review report, D-020 after the review was imported, and D-021 to \wtthDesignDeviationsLastHead, post hoc analyses and follow-up cells, after the strict analysis), and the witness-visible ones are identical across cells (Appendix~\ref{app:deviations}).
 Separate Claude reviewer agents found validity bugs before any confirmatory data, all fixed (Appendix~\ref{app:integrity}).
-What did not work: a void first G0 run (D-012), a judge prompt revised once (D-016), a duplicate review draw (voided; D-019), the declined blind human check (D-018), two stretch arms not run (D-008), and a deviations log that, until D-020, misstated who made the review decisions.
+What did not work: a void first G0 run (D-012), a judge prompt revised once (D-016), a voided duplicate review draw (D-019), the declined blind human check (D-018), two stretch arms not run (D-008), and a deviations log that, until D-020, misstated who made the review decisions.
 % G2 passed without the legibility fix (FX-1 not applied; gate log).

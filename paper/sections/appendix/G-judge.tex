@@ -4,6 +4,8 @@
 % The 212 review decisions were pre-filled by a second Claude pass (the audit) and approved by the author unchanged
 % (D-020; correction rate 0 of 212); never say the author decided or reviewed items one by one. The generated tables
 % label that step "AI-audited, author-approved review". There is no human-judge kappa (D-018).
+% The audit pass ran on Claude Opus 5.5, the proposer's model (\wtthDesignModelAnnotatorName). The author read (D-021) is
+% conditional on \wtthHumanReadStatus: until it is complete, say it is pending and give no result.
 \section{Judge rubric, validation and agreement}\label{app:judge}
 
 \subsection{What the judge codes}
@@ -36,7 +38,7 @@ A fresh \wtthDesignModelAnnotatorName{} subagent per masked batch proposed a lab
 It labelled every item with a gate role and the full random agreement sample; the stage-two items queued only because the judge was unsure keep their judge labels (D-017).
 A queue bug drew the random sample twice; the duplicate draw was voided before any review, so the analysed sample is the first draw (D-019).
 D-018 planned that the author would decide each queued item.
-Instead (D-020), at the author's request, a second Claude pass in a fresh context, given the review instructions and the label definitions, read all \wtthReviewReviewed{} review blocks and pre-filled a decision for each: approve the proposal, correct it, or take the judge's label.
+Instead (D-020), at the author's request, a second Claude pass in a fresh context, given the review instructions and the label definitions, read all \wtthReviewReviewed{} review blocks and pre-filled a decision for each: approve the proposal, correct it, or take the judge's label. That pass ran on \wtthDesignModelAnnotatorName, the proposer's model, so the audit is not independent of the proposals.
 It changed \wtthReviewCorrectionRate\% of them, all \DebOne{} verdicts, and approved the rest; the decisions cover \wtthReviewShare\% of judged items, including every judge-coded item that P1 and \Ptwop{} depend on.
 The author read the pre-filled file and approved it as it stood, changing none of the decisions: his correction rate is \wtthDesignReviewAuthorChanged{} of \wtthReviewReviewed.
 Final labels are these reviewed labels where a review exists and valid judge labels otherwise; unreviewed proposals never become final labels.
@@ -45,6 +47,7 @@ The judge's reviewed escalation positives were not upheld (precision \wtthReview
 \subsection{No human labels}
 The planned author-blind sample was drawn but declined before any review report was opened (D-018; blind labels: \wtthBlindN), and the author changed none of the audited decisions (D-020).
 No label used here was produced or corrected by a human, so there is no human--judge $\kappa$ and no human reliability estimate; every agreement figure below is model--model.
+\ifdefstring{\wtthHumanReadStatus}{complete}{\wtthStub{author-read result (D-021) for Appendix G}}{The author's read of \wtthHumanReadSelectedN{} selected transcripts (D-021) is pending, and no result of it is reported.}
 
 \subsection{Model--model agreement}
 Agreement between the judge and the proposer, before review, is Cohen's $\kappa$ per label with a bootstrap interval (Table~\ref{tab:judge}).

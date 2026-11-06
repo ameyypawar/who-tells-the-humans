@@ -4,6 +4,8 @@
 % (d) follows D-017 to D-020 and the review as it happened: fresh Opus annotators proposed labels without the judge's
 % labels, a second Claude pass pre-filled all 212 review decisions, and the author approved them unchanged (D-020;
 % correction rate 0 of 212). Never say the author decided or reviewed items one by one.
+% The audit pass ran on Claude Opus 5.5, the proposer's model. The author read (D-021) is pending until
+% \wtthHumanReadStatus is complete: no result, and no claim that a human read anything.
 \section*{LLM Usage Statement}
 \addcontentsline{toc}{section}{LLM Usage Statement}
 The author designed and directed this study and made or approved every decision recorded in the pre-registration and the deviations log.
@@ -26,15 +28,16 @@ Anything outside the playbook stopped the run for the author's decision.
 \paragraph{(d) Measurement.}
 \wtthDesignModelHaikuName{} and \wtthDesignModelSonnetName{} are the subjects, and \wtthDesignModelJudgeName{} is the LLM judge.
 Fresh \wtthDesignModelAnnotatorName{} subagents proposed a label, with a one-line rationale, for each item in the review queues without seeing the judge's labels.
-At the author's request, a second Claude pass in a fresh context, given the review instructions and the label definitions, read all \wtthReviewReviewed{} review blocks and pre-filled a decision for each: approve the proposal, correct it, or take the judge's label (D-020).
+At the author's request, a second \wtthDesignModelAnnotatorName{} pass in a fresh context, given the review instructions and the label definitions, read all \wtthReviewReviewed{} review blocks and pre-filled a decision for each: approve the proposal, correct it, or take the judge's label (D-020); it ran on the proposer's model, so it is not independent of the proposals.
 The author read the pre-filled file and approved it as it stood, changing none of the \wtthReviewReviewed{} decisions; his correction rate is \wtthDesignReviewAuthorChanged{} of \wtthReviewReviewed.
 We therefore report model-proposed, AI-audited, author-approved labels.
 They are not blind or independent human labels.
 No blind human reliability check was done (the planned blind sample was declined, D-018), so there is no human--judge $\kappa$, and every agreement figure in this paper is model--model.
+\ifdefstring{\wtthHumanReadStatus}{complete}{\wtthStub{author-read result (D-021) for the LLM Usage Statement}}{The author's read of \wtthHumanReadSelectedN{} selected transcripts (D-021) is pending, and no result of it is reported.}
 
 \paragraph{(e) Writing.}
 Claude drafted the text of this paper from the author's outline and the generated results; the author reviewed and approved it.
 % Hook (research/51 item 3): once the author has rewritten parts at review, replace "reviewed and approved it" with
 % "reviewed all of it and rewrote <the sections he changed>", naming each section. Until then the sentence stays as is.
-A separate Claude agent checked each cited work, and each number taken from other work, against its primary source; the author did not check them personally.
+A separate Claude agent checked each cited work, and each number taken from other work, against its primary source; the prompt-injection works added at revision were checked against their arXiv pages by the drafting agent; the author did not check them personally.
 No result number was typed by hand: results come from generated macros.
