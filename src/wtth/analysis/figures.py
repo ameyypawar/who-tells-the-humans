@@ -175,10 +175,11 @@ def fig1a(haiku_p1: Sequence[CellRate], haiku_p2: Sequence[EpisodeRate], out_dir
         groups.append((FOLLOWUP_GROUP, FOLLOWUP_DISPLAY, g))
     rows_all = [r for _, _, g in groups for r in g]
     n_rows = len(rows_all)
-    # the follow-up group adds three rows: tighter rows and group gaps keep Fig. 1 near its budget
+    # the follow-up group adds three rows and the header a third line: tighter rows, gaps and header lines keep
+    # Fig. 1a at the height it had before research/68 (the main text has no line to spare)
     gap = 0.55 if not followup else 0.40
-    pitch_in = 0.152 if not followup else 0.130
-    top_in, bottom_in = 0.47, 0.36
+    pitch_in = 0.148 if not followup else 0.126
+    top_in, bottom_in = 0.42, 0.36
     height = top_in + bottom_in + pitch_in * (n_rows + gap * (len(groups) - 1) + 0.4)
     width = FIG1A_WIDTH_IN
     has_s = bool(s1) or any(fr.model == "sonnet" for fr in followup)
@@ -260,7 +261,7 @@ def fig1a(haiku_p1: Sequence[CellRate], haiku_p2: Sequence[EpisodeRate], out_dir
                         fontweight="bold" if bold else "normal", clip_on=False)
     # the header band, three lines above the plot (never over the data)
     ax_h = height - top_in - bottom_in
-    hy = [1.0 + (top_in - 0.085 - 0.128 * i) / ax_h for i in range(3)]
+    hy = [1.0 + (top_in - 0.075 - 0.115 * i) / ax_h for i in range(3)]
     figa = blended_transform_factory(fig.transFigure, ax.transAxes)
     ax.text(x_group / width, hy[0], "(a)", transform=figa, ha="left", va="center", fontsize=PANEL_PT,
             fontweight="bold", clip_on=False)
