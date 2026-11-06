@@ -1,15 +1,17 @@
-% branch h2-O: H2 rejected in the opposite direction (code O): the log enlarged the stand-down. Results 4.2.
-% Realised branch (FINAL export). Must say: report it as such; label any reading of why as speculative (plan 49).
-% Evidence for the reading is descriptive: model-coded debrief self-reports and judge-coded posts. Never "witnesses
-% checked the log" or "believed" as fact (plan 49 section 4.2 item 10). Per-cell D2 reason-code rates are not macros;
-% they are described in words only, from generated/analysis/tables/table_secondary_rates.csv (rows reason:*, basis:*).
-% Kappa macros: someone_else_told 0.71 and basis:log_line 0.98 are the reliable codes; most others agree poorly.
-\subsection{An empty log did not protect (H2 \wtthHaikuHTwoVerdict)}\label{sec:h2}
+% branch h2-O: H2 rejected in the opposite direction (code O): the claim's stand-down was larger with the log. Results 4.2.
+% Realised branch (FINAL export). Review research/52 M3 and M4: never "an empty log did not protect" (P2 = 0 in CLAIM and
+% NO-RECEIPT, and the log listed peers' notes from round 3); the mechanism is unresolved, post hoc and exploratory, and
+% the peer-receipt reading is one candidate, never a fact. The debrief and post codes do not discriminate: citing the
+% log is at ceiling in every R1 cell, NONE-R included, and "someone else told ops" posts rise with the log with or
+% without a claim. The reason code is computed over all witnesses, not the non-reporters. Detail: Appendix D (tab:htwo).
+% Never "witnesses checked the log" or "believed" as fact (plan 49 section 4.2 item 10).
+\subsection{A channel-written log did not raise reporting (H2 \wtthHaikuHTwoVerdict)}\label{sec:h2}
 \wtthHaikuHTwoSentence{}
-The claim's stand-down was \wtthHaikuHTwoDeltaRZero{} points without the log (CI \wtthHaikuHTwoDeltaRZeroCI) and \wtthHaikuHTwoDeltaROne{} with it (CI \wtthHaikuHTwoDeltaROneCI): the log alone left P1 at \wtthHaikuPOneNoneRPct\% (\cell{NONE-R}), but beside the false claim and its empty log P1 fell to \wtthHaikuPOneNoReceiptPct\% (\cell{NO-RECEIPT}).
-The difference holds when P1 counts any note or attempted notes (Appendix~\ref{app:full}) and cost no safety: ops was told in every \cell{CLAIM} and \cell{NO-RECEIPT} shift.
+The log was associated with more per-witness stand-down, not less: the claim's stand-down was \wtthHaikuHTwoDeltaRZero{} points without it (CI \wtthHaikuHTwoDeltaRZeroCI) and \wtthHaikuHTwoDeltaROne{} with it (CI \wtthHaikuHTwoDeltaROneCI), as P1 fell from \wtthHaikuPOneNoneRPct\% (\cell{NONE-R}) to \wtthHaikuPOneNoReceiptPct\% (\cell{NO-RECEIPT}).
+The difference holds when P1 counts any note or attempted notes (Appendix~\ref{app:full}), and it cost no safety (P2 \wtthHaikuPTwoClaimPct\% in \cell{CLAIM} and \wtthHaikuPTwoNoReceiptPct\% in \cell{NO-RECEIPT}); the log was empty only until peers' notes reached it a round later.
 
-\paragraph{A reading, not a finding.}
-The log lists every note, a witness's own included, so in world R1 a witness that held back when the claim appeared could see a peer's real receipt a round later; in R0 peers' notes stay private.
-The debriefs and posts fit witnesses taking the log, not the claim, as the record of who had told ops: every world-R1 witness's answer to ``Did anyone tell ops? How do you know?'' was coded as citing the log (model--model $\kappa$ \wtthKappaMMDTwoAnswerBasisLogLineValue); posts saying that someone else had told ops were more frequent with the log (\wtthHaikuCountEndogenousClaimsOtherNoReceipt{} in \cell{NO-RECEIPT} against \wtthHaikuCountEndogenousClaimsOtherClaim{} in \cell{CLAIM}); and so was the debrief reason ``someone else told ops'', the best-agreed reason code ($\kappa$ \wtthKappaMMDTwoAnswerReasonCodesSomeoneElseToldValue; Appendix~\ref{app:full}).
-On this reading the extra stand-down is deference to a peer's real receipt, but the data also fit a log that lent the claim weight; either way, an empty log did not raise reporting.
+\paragraph{Why: post hoc, exploratory and unresolved.}
+The extra stand-down needed the claim and the log together; peers' receipts alone did not lower reporting (\cell{NONE-R}).
+The debriefs and posts do not say why: every world-R1 witness cited the log as evidence, \cell{NONE-R} included (\wtthHaikuDTwoBasisLogLineNoneRPct\%), and posts saying someone else had told ops rose with the log with or without a claim (\wtthHaikuCountEndogenousClaimsOtherNone{} to \wtthHaikuCountEndogenousClaimsOtherNoneR{} without, \wtthHaikuCountEndogenousClaimsOtherClaim{} to \wtthHaikuCountEndogenousClaimsOtherNoReceipt{} with).
+The reason ``someone else told ops'' rose a little more with the claim when the log was there (\wtthHaikuDTwoReasonSomeoneElseToldNoneRPct\% to \wtthHaikuDTwoReasonSomeoneElseToldNoReceiptPct\%, against \wtthHaikuDTwoReasonSomeoneElseToldNonePct\% to \wtthHaikuDTwoReasonSomeoneElseToldClaimPct\%), but over all witnesses, not the non-reporters it would have to explain.
+One candidate: the claim made some witnesses hold off, and the log then showed them peers' real notes, so they took ops to have been told, as it had been; the witness-level timing that would test this is not analysed here (Appendix~\ref{app:full}).

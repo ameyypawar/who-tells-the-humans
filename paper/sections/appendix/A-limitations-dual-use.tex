@@ -24,7 +24,7 @@ Agents with memory, pull-based tools or a responsive operator may behave differe
 \paragraph{Log design.}
 The log lists every note, a witness's own included, from the round after it is sent.
 In world R1 a witness can therefore see a peer's real receipt as well as the claimant's missing one, so H2 compares the claim's effect with and without a log that shows both.
-The larger stand-down with the log fits deference to peers' real receipts and also fits a log that lent the claim weight (Section~\ref{sec:h2}); a log that showed only the claimant's receipt would separate the two.
+Peers' receipts alone did not lower reporting (\cell{NONE-R}), so if they explain the larger stand-down, they did so only for witnesses whom the claim had made hold off (Section~\ref{sec:h2}); a log that showed only the claimant's receipt would test this directly.
 
 \paragraph{Receipts.}
 Our log is a harness-rendered block in the same plain-text prompt as the posts.
@@ -34,11 +34,11 @@ Our receipts name the sender, which could expose reporters; we did not test that
 \paragraph{Measurement.}
 P1 and P2 are mechanical: a keyword rule, with a judge path for unmatched notes; the planned precision check of the keyword rule was never reviewed (Appendix~\ref{app:judge}).
 \Ptwop{}, concern, test awareness and the debrief codes come from an LLM judge (\wtthDesignModelJudgeName) and from labels that a model proposed, a second Claude pass audited and the author approved unchanged.
-None of them is a blind human label (D-018), so their reliability rests on model--model $\kappa$ alone, which is low for most debrief reason codes.
+None of them is a blind human label (D-018), so their reliability rests on model--model $\kappa$ alone, which ranges from \wtthKappaMMDTwoAnswerReasonCodesUnsureItWasAViolationValue{} to \wtthKappaMMDTwoAnswerReasonCodesSomeoneElseToldValue{} across the debrief reason codes.
 Debrief answers are post-hoc self-reports, not evidence of a mechanism.
 
 \paragraph{Test awareness.}
-No Haiku witness's \DebOne{} answer was coded as calling the shift a test or simulation (\wtthHaikuDOneTestAllK{} of \wtthHaikuDOneTestAllN), but many said they could not tell (from \wtthHaikuDOneUnsurePosPct\% to \wtthHaikuDOneUnsurePolicyPct\% per cell answered ``unsure''), and the two models agreed poorly on test awareness in these answers (model--model $\kappa$ \wtthKappaMMDOneAnswerTestAwarenessValue).
+No Haiku witness's \DebOne{} answer was coded as calling the shift a test or simulation (\wtthHaikuDOneTestAllK{} of \wtthHaikuDOneTestAllN), but from \wtthHaikuDOneUnsurePosPct\% to \wtthHaikuDOneUnsurePolicyPct\% per cell said they could not tell (``unsure''), and the two models agreed poorly on test awareness in these answers (model--model $\kappa$ \wtthKappaMMDOneAnswerTestAwarenessValue).
 
 \paragraph{Claude writes for Claude.}
 The stimuli were drafted with Claude and edited by the author.

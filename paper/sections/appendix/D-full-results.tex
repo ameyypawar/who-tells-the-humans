@@ -13,7 +13,7 @@ The seed fixes both the claim's paraphrase and the handle order, so their effect
 
 \paragraph{Sensitivity and exploratory contrasts.}
 Table~\ref{tab:sens} repeats the three confirmatory differences under the pre-registered sensitivity analyses.
-Excluding test-aware witnesses leaves H1 at \wtthHaikuSecHOneExclTestDelta{} points (CI \wtthHaikuSecHOneExclTestCI), because no \DebOne{} answer was coded as calling the shift a test; the P2 version of H2 is \wtthHaikuSecHTwoOnPTwoDelta{} (CI \wtthHaikuSecHTwoOnPTwoCI), because the operator was told in every shift of all four H2 cells.
+Excluding test-aware witnesses leaves H1 at \wtthHaikuSecHOneExclTestDelta{} points (CI \wtthHaikuSecHOneExclTestCI), because no \DebOne{} answer was coded as calling the shift a test; the P2 version of H2 is \wtthHaikuSecHTwoOnPTwoDelta{} (CI \wtthHaikuSecHTwoOnPTwoCI), because P2 was \wtthHaikuPTwoNonePct, \wtthHaikuPTwoClaimPct, \wtthHaikuPTwoNoneRPct{} and \wtthHaikuPTwoNoReceiptPct\% in the four H2 cells.
 Both are exploratory.
 
 \begin{table}[h]
@@ -34,10 +34,50 @@ Seed-paired bootstrap & \wtthHaikuSensSeedPairedHOneDelta{} (\wtthHaikuSensSeedP
 \end{table}
 
 \paragraph{Debriefs.}
-The debrief answers are post-hoc self-reports coded by the judge, and most reason codes agreed poorly between the two models (model--model $\kappa$ from \wtthKappaMMDTwoAnswerReasonCodesUnsureItWasAViolationValue{} to \wtthKappaMMDTwoAnswerReasonCodesSomeoneElseToldValue; Appendix~\ref{app:judge}), so Tables~\ref{tab:reasons} and~\ref{tab:basis} are descriptive.
-``Someone else told ops'' ($\kappa$ \wtthKappaMMDTwoAnswerReasonCodesSomeoneElseToldValue) and citing the log as evidence ($\kappa$ \wtthKappaMMDTwoAnswerBasisLogLineValue) are the codes the models agreed on.
+The debrief answers are post-hoc self-reports coded by the judge, and the two models agreed on the reason codes at model--model $\kappa$ from \wtthKappaMMDTwoAnswerReasonCodesUnsureItWasAViolationValue{} to \wtthKappaMMDTwoAnswerReasonCodesSomeoneElseToldValue{} (Appendix~\ref{app:judge}), so Tables~\ref{tab:htwo}, \ref{tab:reasons} and~\ref{tab:basis} are descriptive.
+The best-agreed codes are ``someone else told ops'' among the reasons ($\kappa$ \wtthKappaMMDTwoAnswerReasonCodesSomeoneElseToldValue) and, among the evidence, the log ($\kappa$ \wtthKappaMMDTwoAnswerBasisLogLineValue) and a post ($\kappa$ \wtthKappaMMDTwoAnswerBasisCPostValue).
 Saying that ops had been told was common wherever someone had told ops (\wtthHaikuBelievesYesClaimPct\% in \cell{CLAIM}, \wtthHaikuBelievesYesNoReceiptPct\% in \cell{NO-RECEIPT}), and lower under the rule (\wtthHaikuBelievesYesPolicyPct\% in \cell{POLICY}) and the forged line (\wtthHaikuBelievesYesForgedPct\%).
 No witness said in its debrief that ops had been told in a shift in which no one had (phantom beliefs: \wtthHaikuPhantomForgedPct\% in \cell{FORGED}, the only cell with such shifts).
+
+% ---- the H2 reading (Section 4.2), exploratory: the \wtthHaikuDTwoReason... / \wtthHaikuDTwoBasis... macros ----
+% Shares of all witnesses of a cell (reporters included), witness-level Wilson intervals in tab:reasons and tab:basis.
+\paragraph{Why H2 went the other way (post hoc, exploratory).}
+Table~\ref{tab:htwo} collects the codes bearing on Section~\ref{sec:h2}, for the four H2 cells and the two cells that showed a receipt for C, real or typed.
+Read across all six, they show four things, none of which settles the mechanism.
+First, citing the log does not separate the world-R1 cells: every witness in each of them gave the log as evidence about whether ops was told, \cell{NONE-R} included, where P1 stayed at \wtthHaikuPOneNoneRPct\%; with the log, fewer witnesses cited a post (\wtthHaikuDTwoBasisCPostNoReceiptPct\% in \cell{NO-RECEIPT} against \wtthHaikuDTwoBasisCPostClaimPct\% in \cell{CLAIM}).
+Second, the claim raised ``someone else told ops'' and ``thought ops was aware'' with the log (\wtthHaikuDTwoReasonSomeoneElseToldNoneRPct\% to \wtthHaikuDTwoReasonSomeoneElseToldNoReceiptPct\%, and \wtthHaikuDTwoReasonThoughtOpsAwareNoneRPct\% to \wtthHaikuDTwoReasonThoughtOpsAwareNoReceiptPct\%) and moved them little without it (\wtthHaikuDTwoReasonSomeoneElseToldNonePct\% to \wtthHaikuDTwoReasonSomeoneElseToldClaimPct\%, and \wtthHaikuDTwoReasonThoughtOpsAwareNonePct\% to \wtthHaikuDTwoReasonThoughtOpsAwareClaimPct\%), and both were highest where a receipt for C was shown.
+Third, ``trusted the claim'' stayed low in every cell, and ``feared a duplicate'' was higher with the log whether or not a claim was made, so neither tracks the extra stand-down.
+Fourth, without a log the claim raised ``could not verify, so reported anyway'' more (\wtthHaikuDTwoReasonCouldNotVerifyReportedAnywayNonePct\% to \wtthHaikuDTwoReasonCouldNotVerifyReportedAnywayClaimPct\%) than with it (\wtthHaikuDTwoReasonCouldNotVerifyReportedAnywayNoneRPct\% to \wtthHaikuDTwoReasonCouldNotVerifyReportedAnywayNoReceiptPct\%), as the candidate reading expects, but this is the code the models agreed on least of the five ($\kappa$ \wtthKappaMMDTwoAnswerReasonCodesCouldNotVerifyReportedAnywayValue).
+Posts saying that someone else had told ops were most frequent in \cell{NONE-R}, which had no claim, so they mark the log rather than the claim.
+The codes cover reporters as well as witnesses who stood down and do not say whose report a witness meant, so the peer-receipt reading stays one candidate; the released per-witness table gives each witness's first-note round, which would show who held off and what the log listed when they did.
+
+\begin{table}[h]
+\centering\footnotesize\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}lrrrrrrr@{}}
+\toprule
+ & $\kappa$ & \cell{NONE} & \cell{CLAIM} & \cell{NONE-R} & \cell{NO-RECEIPT} & \cell{RECEIPT} & \cell{FORGED} \\
+\midrule
+P1, told ops (\%) & & \wtthHaikuPOneNonePct & \wtthHaikuPOneClaimPct & \wtthHaikuPOneNoneRPct & \wtthHaikuPOneNoReceiptPct & \wtthHaikuPOneReceiptPct & \wtthHaikuPOneForgedPct \\
+\midrule
+Reason given (\% of witnesses) & & & & & & & \\
+\quad someone else told ops & \wtthKappaMMDTwoAnswerReasonCodesSomeoneElseToldValue & \wtthHaikuDTwoReasonSomeoneElseToldNonePct & \wtthHaikuDTwoReasonSomeoneElseToldClaimPct & \wtthHaikuDTwoReasonSomeoneElseToldNoneRPct & \wtthHaikuDTwoReasonSomeoneElseToldNoReceiptPct & \wtthHaikuDTwoReasonSomeoneElseToldReceiptPct & \wtthHaikuDTwoReasonSomeoneElseToldForgedPct \\
+\quad thought ops was aware & \wtthKappaMMDTwoAnswerReasonCodesThoughtOpsAwareValue & \wtthHaikuDTwoReasonThoughtOpsAwareNonePct & \wtthHaikuDTwoReasonThoughtOpsAwareClaimPct & \wtthHaikuDTwoReasonThoughtOpsAwareNoneRPct & \wtthHaikuDTwoReasonThoughtOpsAwareNoReceiptPct & \wtthHaikuDTwoReasonThoughtOpsAwareReceiptPct & \wtthHaikuDTwoReasonThoughtOpsAwareForgedPct \\
+\quad feared a duplicate & \wtthKappaMMDTwoAnswerReasonCodesFearedDuplicateValue & \wtthHaikuDTwoReasonFearedDuplicateNonePct & \wtthHaikuDTwoReasonFearedDuplicateClaimPct & \wtthHaikuDTwoReasonFearedDuplicateNoneRPct & \wtthHaikuDTwoReasonFearedDuplicateNoReceiptPct & \wtthHaikuDTwoReasonFearedDuplicateReceiptPct & \wtthHaikuDTwoReasonFearedDuplicateForgedPct \\
+\quad trusted the claim & \wtthKappaMMDTwoAnswerReasonCodesTrustedClaimValue & \wtthHaikuDTwoReasonTrustedClaimNonePct & \wtthHaikuDTwoReasonTrustedClaimClaimPct & \wtthHaikuDTwoReasonTrustedClaimNoneRPct & \wtthHaikuDTwoReasonTrustedClaimNoReceiptPct & \wtthHaikuDTwoReasonTrustedClaimReceiptPct & \wtthHaikuDTwoReasonTrustedClaimForgedPct \\
+\quad could not verify, reported anyway & \wtthKappaMMDTwoAnswerReasonCodesCouldNotVerifyReportedAnywayValue & \wtthHaikuDTwoReasonCouldNotVerifyReportedAnywayNonePct & \wtthHaikuDTwoReasonCouldNotVerifyReportedAnywayClaimPct & \wtthHaikuDTwoReasonCouldNotVerifyReportedAnywayNoneRPct & \wtthHaikuDTwoReasonCouldNotVerifyReportedAnywayNoReceiptPct & \wtthHaikuDTwoReasonCouldNotVerifyReportedAnywayReceiptPct & \wtthHaikuDTwoReasonCouldNotVerifyReportedAnywayForgedPct \\
+\midrule
+Evidence cited (\% of witnesses) & & & & & & & \\
+\quad the log & \wtthKappaMMDTwoAnswerBasisLogLineValue & \wtthHaikuDTwoBasisLogLineNonePct & \wtthHaikuDTwoBasisLogLineClaimPct & \wtthHaikuDTwoBasisLogLineNoneRPct & \wtthHaikuDTwoBasisLogLineNoReceiptPct & \wtthHaikuDTwoBasisLogLineReceiptPct & \wtthHaikuDTwoBasisLogLineForgedPct \\
+\quad a post & \wtthKappaMMDTwoAnswerBasisCPostValue & \wtthHaikuDTwoBasisCPostNonePct & \wtthHaikuDTwoBasisCPostClaimPct & \wtthHaikuDTwoBasisCPostNoneRPct & \wtthHaikuDTwoBasisCPostNoReceiptPct & \wtthHaikuDTwoBasisCPostReceiptPct & \wtthHaikuDTwoBasisCPostForgedPct \\
+\midrule
+Posts: someone else told ops (count) & & \wtthHaikuCountEndogenousClaimsOtherNone & \wtthHaikuCountEndogenousClaimsOtherClaim & \wtthHaikuCountEndogenousClaimsOtherNoneR & \wtthHaikuCountEndogenousClaimsOtherNoReceipt & \wtthHaikuCountEndogenousClaimsOtherReceipt & \wtthHaikuCountEndogenousClaimsOtherForged \\
+\bottomrule
+\end{tabular}
+\caption{\textbf{Debrief and post codes bearing on H2} (\DebTwo{} answers, judge codes, several per answer allowed; exploratory and descriptive). Evidence is the basis given for ``Did anyone tell ops?''.
+\cell{NONE} and \cell{CLAIM} are world R0 (no log), the others R1.
+Witnesses per cell as in Table~\ref{tab:reasons}, with intervals there and in Table~\ref{tab:basis}; $\kappa$ is model--model.}
+\label{tab:htwo}
+\end{table}
 
 % ---- debrief reason and basis rows, filtered from the generated table at build time (no number typed here) ----
 % Keeps rows whose cell is one of six and whose outcome starts with reason: or basis:, and drops the "@d1=" strata.
@@ -87,7 +127,7 @@ Cell & Debrief reason & k/n & Shifts & \% & \wtthProtocolLevel\% CI & Method & C
 \srRowsReason
 \bottomrule
 \end{tabular}
-\caption{\textbf{Reasons witnesses gave in \DebTwo{} for sending or not sending a note} (judge codes; several per answer allowed), in the cells that bear on H1 to H3. Descriptive; model--model agreement is low for most codes (Appendix~\ref{app:judge}).}
+\caption{\textbf{Reasons witnesses gave in \DebTwo{} for sending or not sending a note} (judge codes; several per answer allowed), in the cells that bear on H1 to H3. Descriptive; model--model agreement differs by code (Appendix~\ref{app:judge}).}
 \label{tab:reasons}
 \end{table}
 
