@@ -175,8 +175,16 @@ def _judge_counts(settings: Any) -> dict[str, Any] | None:
             "reasks": int(reasks), "esc_mismatch": int(mism[0]), "esc_returned": int(mism[1]), "subtiers": cov}
 
 
+def _wilson_p1(model: str, w: Sequence[Any]) -> list[Any]:
+    """P1 per cell with witness-level Wilson intervals (Fig. 1a)."""
+    return [secondary.wilson_rate(model, c, "p1", sum(1 for x in ws if x.p1), len(ws), len({x.episode_id for x in ws}))
+            for c, ws in secondary._group(w).items()]
+
+
 def _write_figures_tables(out_dir: Path, book: NumberBook, *, label: str, hyp: Any, sec: Any, desc: Any, p1r: Any,
-                          gate_rows: Any, cost: Any, judge_pack: Any, strict: bool, notes: list[str]) -> tuple[list, list]:
+                          gate_rows: Any, cost: Any, judge_pack: Any, strict: bool, notes: list[str],
+                          haiku_w: Sequence[Any] = (), timing: Any = None, son: Any = None, son_label: str = "",
+                          x1: Any = None) -> tuple[list, list]:
     try:
         from wtth.analysis import figures as F
         from wtth.analysis import tables as T
@@ -186,8 +194,16 @@ def _write_figures_tables(out_dir: Path, book: NumberBook, *, label: str, hyp: A
     fdir, tdir = out_dir / "figures", out_dir / "tables"
     fdir.mkdir(parents=True, exist_ok=True)
     tdir.mkdir(parents=True, exist_ok=True)
-    figs = [F.fig1a(sec.p2, sec.p2prime, fdir, model_label=label), F.fig1b(desc.frontier, fdir, model_label=label),
-            F.fig_p1_by_cell(p1r, hyp, fdir), F.fig_km(list(sec.km), fdir)]
+    follow = []
+    if x1 is not None and x1.status == exp1.COMPLETE:
+        follow = [F.FigRow(a.arm.label, a.arm.model, a.p1, a.p2) for a in x1.arms]
+    figs = [F.fig1a(_wilson_p1("haiku", haiku_w), sec.p2, fdir, model_label=label,
+                    sonnet_p1=list(son.p1) if son is not None else (), sonnet_p2=list(son.p2) if son is not None else (),
+                    sonnet_label=son_label or "Sonnet", followup=follow)]
+    if timing is not None:
+        figs.append(F.fig1b(timing, fdir, model_label=label))
+    figs += [F.fig_frontier(desc.frontier, fdir, model_label=label), F.fig_p1_by_cell(p1r, hyp, fdir),
+             F.fig_km(list(sec.km), fdir)]
     tabs: list[Any] = [T.table_hypotheses(hyp, p1r, book, tdir), T.table_p2(sec.p2, sec.p2prime, sec.diffs, book, tdir),
                        T.table_counts(sec.counts, book, tdir)]
     tabs += list(T.table_secondary(sec, book, tdir))
@@ -279,7 +295,8 @@ def run_analysis(settings: Any, *, strict: bool, labels: LabelSource | None = No
                                "gates": dict(labels.gates()), "phases": {}}
     hyp = sec = desc = sens = p1r = None
     label_h = ""
-    tim = None
+    tim = son = None
+    son_label = ""
     w_by: dict[str, list[Any]] = {}
     e_by: dict[str, list[Any]] = {}
     for aset in asets:
@@ -353,6 +370,7 @@ def run_analysis(settings: Any, *, strict: bool, labels: LabelSource | None = No
                 "stopped_at": hyp.stopped_at, "null_rule": hyp.null_rule, "tost": list(hyp.tost)}
         else:
             s = secondary.sonnet(w, e, seeds=seeds)
+            son, son_label = s, model_label(aset.model)
             n_cell = max((len(v) for v in aset.planned.values()), default=0)
             register.register_sonnet(book, s, aset=aset, episodes_per_cell=n_cell)
             book.add("SonnetSentence", text.sonnet_sentence(s, book, model_label=model_label(aset.model),
@@ -406,7 +424,8 @@ def run_analysis(settings: Any, *, strict: bool, labels: LabelSource | None = No
     if hyp is not None:
         figs, tabs = _write_figures_tables(out_dir, book, label=label_h, hyp=hyp, sec=sec, desc=desc, p1r=p1r,
                                            gate_rows=gate_rows, cost=cost, judge_pack=judge_pack, strict=strict,
-                                           notes=notes)
+                                           notes=notes, haiku_w=w_by.get("haiku", ()), timing=tim, son=son,
+                                           son_label=son_label, x1=x1)
     numbers_json = out_dir / "numbers.json"
     macros = out_dir / ("macros.tex" if strict else "macros.provisional.tex")
     book.write_json(numbers_json)

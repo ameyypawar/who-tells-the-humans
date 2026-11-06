@@ -12,6 +12,8 @@ _MPL.mkdir(parents=True, exist_ok=True)
 os.environ.setdefault("MPLCONFIGDIR", str(_MPL))
 
 from wtth.analysis import figures, style, tables  # noqa: E402
+from wtth.analysis.intervals import wilson  # noqa: E402
+from wtth.analysis.posthoc import CellTiming, TimingResults  # noqa: E402
 from wtth.analysis.results import (BoardSubRate, CellRate, Contrast, CountRow, Diff, EpisodeRate,  # noqa: E402
                                    FrontierPoint, HypothesisResults, KMCurve, MeanRate, SecondaryResults)
 from tests.util import tmp_dir  # noqa: E402
@@ -65,6 +67,61 @@ def frontier():
             FrontierPoint("NONE", 1.6, 1.4, 1.8, 0.15, 0.08, 0.22, "NONE", "NONE", True)]
 
 
+CELLS11 = ("NONE", "CONCERN", "CLAIM", "POLICY", "NONE-R", "NO-RECEIPT", "RECEIPT", "FORGED", "NEG", "POS", "B-NONE")
+P1_KN = {"NONE": (240, 240), "CONCERN": (150, 150), "CLAIM": (236, 240), "POLICY": (148, 150), "NONE-R": (240, 240),
+         "NO-RECEIPT": (217, 240), "RECEIPT": (102, 150), "FORGED": (100, 150), "NEG": (150, 150), "POS": (38, 150),
+         "B-NONE": (0, 150)}
+SONNET_KN = {"NONE": (90, 90), "CLAIM": (90, 90), "NONE-R": (90, 90), "NO-RECEIPT": (90, 90), "FORGED": (87, 90)}
+
+
+def wilson_rates(model, spec):
+    out = []
+    for c, (k, n) in spec.items():
+        lo, hi = wilson(k, n)
+        out.append(CellRate(model, c, "p1", k, n, n // 3, k / n, lo, hi, "wilson"))
+    return out
+
+
+def p2_shifts(model, spec):
+    out = []
+    for c, (k, n) in spec.items():
+        lo, hi = wilson(k, n)
+        out.append(EpisodeRate(model, c, "p2", k, n, k / n, lo, hi, k / n, k / n))
+    return out
+
+
+HAIKU_P2 = {"NONE": (0, 80), "CONCERN": (0, 50), "CLAIM": (0, 80), "POLICY": (0, 50), "NONE-R": (0, 80),
+            "NO-RECEIPT": (0, 80), "FORGED": (4, 50), "NEG": (0, 50)}
+
+
+def timing_fixture(cells=("NONE", "CLAIM", "NONE-R", "NO-RECEIPT")):
+    spec = {  # cell: (log, n, round2, later, never, peer_never)
+        "NONE": (False, 240, 240, 0, 0, 0), "CLAIM": (False, 240, 193, 43, 4, 0),
+        "NONE-R": (True, 240, 240, 0, 0, 0), "NO-RECEIPT": (True, 240, 205, 12, 23, 21)}
+    rows = []
+    for c in cells:
+        log, n, r2, later, never, pn = spec[c]
+        rows.append(CellTiming(c, log, n, {1: 0, 2: r2, 3: later, 4: 0, 5: 0}, never, r2, later + never, later,
+                               pn + (11 if c == "NO-RECEIPT" else 0), 11 if c == "NO-RECEIPT" else 0, pn,
+                               1 if c == "NO-RECEIPT" else (later if not log else 0), never - pn, 0, 0, never, {}))
+    return TimingResults("haiku", tuple(rows), (), ())
+
+
+def followup_rows():
+    r = wilson_rates("haiku", {"X-FORGED-POLICY": (120, 150), "X-FORGED-PROV": (90, 150)})
+    s = wilson_rates("sonnet", {"RECEIPT": (60, 90)})
+    p = p2_shifts("haiku", {"X-FORGED-POLICY": (1, 50), "X-FORGED-PROV": (6, 50)})
+    return [figures.FigRow("X-FORGED-POLICY", "haiku", r[0], p[0]), figures.FigRow("X-FORGED-PROV", "haiku", r[1], p[1]),
+            figures.FigRow("RECEIPT (Sonnet)", "sonnet", s[0], None)]
+
+
+def fig1a_full(d, followup=()):
+    return figures.fig1a(wilson_rates("haiku", P1_KN), p2_shifts("haiku", HAIKU_P2), d, model_label="Haiku 5.5",
+                         sonnet_p1=wilson_rates("sonnet", SONNET_KN),
+                         sonnet_p2=p2_shifts("sonnet", {c: (0, 30) for c in SONNET_KN}), sonnet_label="Sonnet 5.5",
+                         followup=followup)
+
+
 class Capture:
     """Wraps style.save so a test can inspect the figure's colours before it is closed."""
 
@@ -72,14 +129,31 @@ class Capture:
         self.colours: set[str] = set()
         self.orig = figures.save
 
+        self.texts: dict[str, list] = {}
+
         def wrapper(fig, stem, **kw):
             self.colours |= style.used_colours(fig)
+            self.texts[Path(stem).name] = text_boxes(fig)
             return self.orig(fig, stem, **kw)
         figures.save = wrapper
         return self
 
     def __exit__(self, *a):
         figures.save = self.orig
+
+
+def text_boxes(fig):
+    """(text, Bbox in pixels) of every visible, non-empty text of a drawn figure, plus the figure's own box."""
+    from matplotlib.text import Text
+
+    fig.canvas.draw()
+    r = fig.canvas.get_renderer()
+    out = []
+    for t in fig.findobj(Text):
+        if not t.get_visible() or not t.get_text().strip():
+            continue
+        out.append((t.get_text(), t.get_window_extent(r)))
+    return out, fig.bbox
 
 
 def read_csv(path):
@@ -89,9 +163,8 @@ def read_csv(path):
 
 class TestFigures(unittest.TestCase):
     def build(self, d: Path):
-        p2, p2p = p2_rates()
-        return {"fig1a": figures.fig1a(p2, p2p, d, model_label="Haiku"),
-                "fig1b": figures.fig1b(frontier(), d, model_label="Haiku"),
+        return {"fig1a": fig1a_full(d), "fig1b": figures.fig1b(timing_fixture(), d, model_label="Haiku 5.5"),
+                "fig_frontier": figures.fig_frontier(frontier(), d, model_label="Haiku"),
                 "fig_p1_by_cell": figures.fig_p1_by_cell(p1_rates(), hyp(), d),
                 "fig_km": figures.fig_km(km(), d)}
 
@@ -104,12 +177,19 @@ class TestFigures(unittest.TestCase):
             self.assertTrue(f.pdf.read_bytes().startswith(b"%PDF"))
             self.assertTrue(f.png.read_bytes().startswith(b"\x89PNG"))
         alt = res["fig1a"].alt_txt.read_text()
-        self.assertIn("lower is safer", alt)
-        for c in CELLS8:
-            self.assertIn(c + " ", alt)
-        self.assertIn("bracketed 20.0% to 45.0%", alt)
-        self.assertIn("CLAIM", res["fig1b"].alt_txt.read_text())
-        self.assertIn("grey reference star", res["fig1b"].alt_txt.read_text())
+        self.assertIn("Wilson 95% intervals at witness level", alt)
+        for c in CELLS11:
+            self.assertIn(c + " haiku: P1 ", alt)
+        self.assertIn("FORGED haiku: P1 66.7% (58.8 to 73.7), ops never told 4/50", alt)
+        self.assertIn("FORGED sonnet: P1 96.7%", alt)
+        self.assertIn("RECEIPT haiku: P1 68.0% (60.2 to 74.9), ops never told C told ops", alt)
+        self.assertNotIn("follow-up", alt)
+        alt_b = res["fig1b"].alt_txt.read_text()
+        self.assertIn("NO-RECEIPT (log): 205 of 240 reported in round 2, 12 held off and reported later, 23 never "
+                      "reported, 21 of whom had a peer's line in the log at their next turn", alt_b)
+        self.assertIn("CLAIM (no log): 193 of 240 reported in round 2, 43 held off and reported later, 4 never reported",
+                      alt_b)
+        self.assertIn("grey reference star", res["fig_frontier"].alt_txt.read_text())
 
     def test_pdf_byte_identical_across_runs(self):
         a, b = tmp_dir("wp6_fig_det_a"), tmp_dir("wp6_fig_det_b")
@@ -124,24 +204,64 @@ class TestFigures(unittest.TestCase):
         d = tmp_dir("wp6_fig_colours")
         with Capture() as cap:
             self.build(d)
+            fig1a_full(d, followup_rows())
         self.assertTrue(cap.colours)
         bad = cap.colours - style.ALLOWED_COLOURS
         self.assertEqual(bad, set())
         self.assertNotIn("#F0E442", cap.colours)
 
+    def test_fig1_text_never_overlaps_and_stays_on_the_page(self):
+        """Fig. 1 at its printed size: no two texts overlap and none is clipped by the figure edge, with and without
+        the D-022 follow-up group."""
+        d = tmp_dir("wp6_fig_overlap")
+        for variant in ("main", "followup"):
+            with Capture() as cap:
+                fig1a_full(d, followup_rows() if variant == "followup" else ())
+                figures.fig1b(timing_fixture(), d, model_label="Haiku 5.5")
+            for stem in ("fig1a", "fig1b"):
+                boxes, page = cap.texts[stem]
+                self.assertGreater(len(boxes), 10, stem)
+                for txt, bb in boxes:
+                    self.assertTrue(bb.x0 >= page.x0 - 0.5 and bb.x1 <= page.x1 + 0.5 and bb.y0 >= page.y0 - 0.5
+                                    and bb.y1 <= page.y1 + 0.5, (variant, stem, txt))
+                for i, (ta, ba) in enumerate(boxes):
+                    for tb, bb in boxes[i + 1:]:
+                        w = min(ba.x1, bb.x1) - max(ba.x0, bb.x0)
+                        h = min(ba.y1, bb.y1) - max(ba.y0, bb.y0)
+                        self.assertFalse(w > 0.5 and h > 0.5, (variant, stem, ta, tb))
+
+    def test_fig1_printed_widths(self):
+        from PIL import Image
+
+        d = tmp_dir("wp6_fig_width")
+        a, b = fig1a_full(d), figures.fig1b(timing_fixture(), d, model_label="Haiku 5.5")
+        for f, width in ((a, figures.FIG1A_WIDTH_IN), (b, figures.FIG1B_WIDTH_IN)):
+            with Image.open(f.png) as im:
+                self.assertEqual(im.size[0], round(width * 300))
+
     def test_csv_equals_input(self):
         d = tmp_dir("wp6_fig_csv")
         res = self.build(d)
-        p2, p2p = p2_rates()
         rows = read_csv(res["fig1a"].data_csv)
-        self.assertEqual(len(rows), 16)
-        got = {(r["cell"], r["outcome"]): r for r in rows}
-        for r in p2:
-            g = got[(r.cell, "P2")]
-            self.assertEqual((int(g["k"]), int(g["n"]), float(g["p"]), float(g["lo"]), float(g["hi"])), (r.k, r.n, r.p, r.lo, r.hi))
-        claim = got[("CLAIM", "P2prime")]
-        self.assertEqual((claim["p"], float(claim["bound_lo"]), float(claim["bound_hi"])), ("", 0.2, 0.45))
-        fr = read_csv(res["fig1b"].data_csv)
+        self.assertEqual(len(rows), 11 + 5)
+        got = {(r["cell"], r["model"]): r for r in rows}
+        for model, spec in (("haiku", P1_KN), ("sonnet", SONNET_KN)):
+            for r in wilson_rates(model, spec):
+                g = got[(r.cell, model)]
+                self.assertEqual((int(g["k"]), int(g["n"]), float(g["p"]), float(g["lo"]), float(g["hi"])),
+                                 (r.k, r.n, r.p, r.lo, r.hi))
+        self.assertEqual(got[("FORGED", "haiku")]["ops_never_told"], "4/50")
+        self.assertEqual(got[("RECEIPT", "haiku")]["ops_never_told"], "C told ops")
+        self.assertEqual(got[("POS", "haiku")]["ops_never_told"], "C told ops")
+        self.assertEqual(got[("B-NONE", "haiku")]["ops_never_told"], "no violation")
+        self.assertEqual(got[("NO-RECEIPT", "sonnet")]["ops_never_told"], "0/30")
+        self.assertEqual({r["group"] for r in rows}, {"no log (R0)", "log (R1)", "controls"})
+        tb = {r["cell"]: r for r in read_csv(res["fig1b"].data_csv)}
+        self.assertEqual(list(tb), ["NONE", "CLAIM", "NONE-R", "NO-RECEIPT"])
+        self.assertEqual((tb["NO-RECEIPT"]["by_round2"], tb["NO-RECEIPT"]["held_off_reported_later"],
+                          tb["NO-RECEIPT"]["never"], tb["NO-RECEIPT"]["never_peer_line_in_log"]), ("205", "12", "23", "21"))
+        self.assertEqual((tb["CLAIM"]["never"], tb["CLAIM"]["never_peer_line_in_log"]), ("4", ""))
+        fr = read_csv(res["fig_frontier"].data_csv)
         self.assertEqual([r["label"] for r in fr], [p.label for p in frontier()])
         self.assertEqual([float(r["x"]) for r in fr], [p.x for p in frontier()])
         self.assertEqual([r["reference"] for r in fr], ["False"] * 4 + ["True"])
@@ -154,6 +274,16 @@ class TestFigures(unittest.TestCase):
         self.assertEqual({r["panel"] for r in k if r["cell"] == "CONCERN"}, {"R0"})
         self.assertEqual({r["panel"] for r in k if r["cell"] == "FORGED"}, {"R1"})
 
+    def test_followup_group_only_when_given(self):
+        d = tmp_dir("wp6_fig_followup")
+        f = fig1a_full(d, followup_rows())
+        rows = read_csv(f.data_csv)
+        fu = [r for r in rows if r["group"].startswith("follow-up")]
+        self.assertEqual([(r["label"], r["model"], r["ops_never_told"]) for r in fu],
+                         [("X-FORGED-POLICY", "haiku", "1/50"), ("X-FORGED-PROV", "haiku", "6/50"),
+                          ("RECEIPT (Sonnet)", "sonnet", "C told ops")])
+        self.assertIn("follow-up (exploratory, D-022)", f.alt_txt.read_text())
+
     def test_series_are_distinguishable_without_colour(self):
         pairs = list(style.CELL_STYLE.values())
         self.assertEqual(len({(c, m) for c, m, _ in pairs}), len(pairs))
@@ -164,10 +294,14 @@ class TestFigures(unittest.TestCase):
 
     def test_missing_cells_do_not_crash(self):
         d = tmp_dir("wp6_fig_sparse")
-        p2, p2p = p2_rates()
-        f = figures.fig1a(p2[:3], [], d, model_label="Sonnet")
-        self.assertEqual(len(read_csv(f.data_csv)), 3)
-        f = figures.fig1b(frontier()[:1], d, model_label="Sonnet")
+        f = figures.fig1a(wilson_rates("haiku", {c: P1_KN[c] for c in ("NONE", "CLAIM", "FORGED")}),
+                          p2_shifts("haiku", {"NONE": (0, 80)}), d, model_label="Haiku 5.5")
+        rows = read_csv(f.data_csv)
+        self.assertEqual(len(rows), 3)
+        self.assertEqual({r["model"] for r in rows}, {"haiku"})
+        f = figures.fig1b(timing_fixture(("CLAIM",)), d, model_label="Haiku 5.5")
+        self.assertEqual(len(read_csv(f.data_csv)), 1)
+        f = figures.fig_frontier(frontier()[:1], d, model_label="Sonnet")
         self.assertTrue(f.pdf.exists())
 
 

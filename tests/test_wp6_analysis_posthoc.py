@@ -485,6 +485,12 @@ class SynthRunTest(unittest.TestCase):
         self.assertEqual(set(a), set(b))
         self.assertEqual({k for k in a if a[k] != b[k]}, {"SnapshotShaShort"})
         self.assertGreater(len(a), 1000)
+        figs = {p.name: p.read_bytes() for p in (self.out["a_dir"] / "figures").glob("*.csv")}
+        figs_b = {p.name: p.read_bytes() for p in (self.out["b_dir"] / "figures").glob("*.csv")}
+        self.assertEqual({n for n in figs if figs[n] != figs_b[n]}, {"fig1a.csv"})     # the follow-up group only
+        rows = list(csv.DictReader((self.out["b_dir"] / "figures" / "fig1a.csv").read_text().splitlines()))
+        self.assertEqual([r["label"] for r in rows if r["group"].startswith("follow-up")],
+                         ["X-FORGED-POLICY", "X-FORGED-PROV", "RECEIPT (Sonnet)"])
 
     def test_exp1_partial_when_short_or_unlabelled(self) -> None:
         from wtth.analysis import exp1
