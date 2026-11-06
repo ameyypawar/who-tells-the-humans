@@ -2,15 +2,20 @@
 
 Source: prereg/prompts/*.md at frozen-v1 (fallback main, PROVISIONAL). Each file's SHA-256 is checked against
 configs/prereg_hashes.json at the same ref; a mismatch stops the build. Only public files are read (never prereg/private).
-LEAD-REVIEW: the frozen clarity level F is not set yet (frozen_level: null); until it is, V's lines use L2 (the level
-of tests/golden and of the gate episodes) and \\wtthStimLevelUsed says so.
+V's lines use the frozen clarity level F (frozen_level; L2, the level of tests/golden, while it is unset).
+
+SB-3 (the rendered example, round 2 of a RECEIPT shift) was written into system_base.md at L2, before G1 froze F = L3.
+Appendix B prints witness-visible text as sent, so the block is shown at F: V's round-2 line V2.L2 is replaced by
+V2.<F> from the hash-checked scripted_lines.md (in this digest only V's round-2 line depends on the level), and, where
+runs/wtth.sqlite exists, the result must equal a stored core RECEIPT round-2 prompt byte for byte or the build stops
+(paper review 2, M7).
 """
 import re
 import sys
 
 import yaml
 
-from _common import PAPER, hashes, resolve_ref, sha256, show, tex_escape, write_generated
+from _common import PAPER, hashes, resolve_ref, sha256, show, stored_prompt_matches, tex_escape, write_generated
 
 FILES = ["system_base", "runbook", "tools", "scripted_lines", "debrief", "judge_rubric"]
 
@@ -62,6 +67,7 @@ def main() -> None:
     level = exp.get("frozen_level") or "L2"
     B = {f: blocks(src[f]) for f in FILES}
     sl = lines_dict(B["scripted_lines"])
+    sb3_note = sb3_at_level(B, sl, level)
     sb1 = next(t for hd, t in B["system_base"] if hd.startswith("SB-1"))
     rb = {hd.split(":")[0].split(" ")[0]: t for hd, t in B["runbook"]}
     notify = next(t for hd, t in B["tools"] if hd.startswith("3 notify_ops"))
@@ -102,10 +108,39 @@ def main() -> None:
             assert "\\end{wtthverb}" not in t
             head = rf"\paragraph{{{tex_escape(hd)}}}" + "\n" if hd != prev else ""   # one heading per run of blocks
             prev = hd
-            parts.append(head + "\\begin{wtthverb}\n" + t + "\n\\end{wtthverb}")
+            note = sb3_note + "\n" if (f == "system_base" and hd.startswith("SB-3") and sb3_note) else ""
+            parts.append(head + note + "\\begin{wtthverb}\n" + t + "\n\\end{wtthverb}")
         write_generated(PAPER / f"generated/design/prompts/{f}.tex", "\n".join(parts) + "\n")
     write_preexisting(ref)
     print(f"extract_stimuli: {len(S)} macros, {len(FILES)} prompt files from {ref}, level {level}")
+
+
+SB3_LEVEL = "L2"     # the level SB-3 was written at (system_base.md, before G1)
+
+
+def sb3_at_level(B: dict, sl: dict, level: str) -> str:
+    """Re-render SB-3 in B["system_base"] (in place) at `level` and return the note printed above it ("" at L2)."""
+    i = next(k for k, (hd, _) in enumerate(B["system_base"]) if hd.startswith("SB-3"))
+    hd, t = B["system_base"][i]
+    if level == SB3_LEVEL:
+        return ""
+    old, new = sl[f"V2.{SB3_LEVEL}"], sl[f"V2.{level}"]
+    if t.count(old) != 1:
+        sys.exit(f"extract_stimuli: V2.{SB3_LEVEL} is not in SB-3 exactly once")
+    t = t.replace(old, new)
+    hits = stored_prompt_matches(t, "RECEIPT", level)
+    if hits is None:
+        print("extract_stimuli: SB-3 not checked against stored prompts (runs/wtth.sqlite absent)")
+    elif not hits:
+        sys.exit(f"extract_stimuli: SB-3 at {level} equals no stored core RECEIPT round-2 prompt")
+    else:
+        print(f"extract_stimuli: SB-3 at {level} is byte-identical to {len(hits)} stored core RECEIPT round-2 prompts "
+              f"(seed, slot): {hits}")
+    B["system_base"][i] = (hd, t)
+    return (rf"\noindent\textit{{Shown at the frozen level {level}, as sent. The pre-registered example was rendered at "
+            rf"{SB3_LEVEL} before G1 froze the level; in this digest only V's round-2 line depends on the level, and it "
+            rf"is set to V2.{level}. The text equals, byte for byte, the round-2 prompt the core sent to a "
+            rf"\textup{{\cell{{RECEIPT}}}} witness.}}\par")
 
 
 def write_preexisting(ref: str) -> None:

@@ -1,14 +1,16 @@
 """Write generated/design/boxes/receipt_vs_noreceipt_r2.tex: round-2 board and log excerpt, RECEIPT beside NO-RECEIPT.
 
 Source: tests/golden/{RECEIPT,NO-RECEIPT}_r2.txt at frozen-v1 (fallback main, PROVISIONAL). The golden files are rendered at
-level L2 with the public paraphrase. LEAD-REVIEW: if the frozen level F is not L2, re-render with `wtth render` after the freeze.
+level L2 with the public paraphrase; at a frozen level F other than L2, V's round-2 line is replaced by V2.<F> (below),
+and where runs/wtth.sqlite exists each full render must equal a stored core round-2 prompt of its cell byte for byte
+(`wtth render` renders an empty state, without the board, so the stored prompts are the reference).
 FORGED is never rendered here: it is described by mechanism only.
 """
 import sys
 
 import yaml
 
-from _common import PAPER, hashes, resolve_ref, sha256, show, write_generated
+from _common import PAPER, hashes, resolve_ref, sha256, show, stored_prompt_matches, write_generated
 
 
 def split(text: str):
@@ -46,6 +48,12 @@ def main() -> None:
             g[c] = g[c].replace(v_l2, v_f)
         (b1, l1), (b2, l2) = split(g["RECEIPT"]), split(g["NO-RECEIPT"])
         tag = f"level {level}: golden L2 renders with V's round-2 line replaced by V2.{level} from prompts/scripted_lines.md"
+        for c in g:
+            hits = stored_prompt_matches(g[c].rstrip("\n"), c, level)
+            if hits == []:
+                sys.exit(f"render_boxes: the {c} render at {level} equals no stored core round-2 prompt")
+            if hits:
+                print(f"render_boxes: {c} at {level} is byte-identical to {len(hits)} stored core round-2 prompts")
     v = lambda ls: "\\begin{Verbatim}[fontsize=\\scriptsize,breaklines=true,breakanywhere=true]\n" + "\n".join(ls).rstrip() + "\n\\end{Verbatim}"
     # Excerpt: the board header, a marker for the routine round-1 posts, and the round-2 posts (V's split and C's line).
     # The full digests are in Appendix B; the box only has to show what differs between cells and what sits next to it.

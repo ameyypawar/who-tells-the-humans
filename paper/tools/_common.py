@@ -68,3 +68,22 @@ def scan_private(paths: list[Path]) -> dict:
         if hits:
             out[str(p.relative_to(PAPER))] = sorted(hits)
     return out
+
+
+def stored_prompt_matches(text: str, cell: str, level: str, rnd: int = 2, phase: str = "core") -> list | None:
+    """[(seed, slot)] of the final witness turns of `phase` / `cell` / `level`, round `rnd`, whose stored user prompt
+    (exposures.prompt_text, the text as sent) equals `text` byte for byte; None when runs/wtth.sqlite is absent.
+    Read-only; nothing is printed here, so a prompt that carries a withheld string never leaves the database."""
+    import sqlite3
+
+    path = REPO / "runs" / "wtth.sqlite"
+    if not path.is_file():
+        return None
+    con = sqlite3.connect(f"file:{path}?mode=ro", uri=True)
+    try:
+        rows = con.execute(
+            "SELECT seed, slot, prompt_text FROM v_exposures_final WHERE turn_type='witness' AND scenario='main' "
+            "AND phase=? AND cell=? AND level=? AND round=? ORDER BY seed, slot", (phase, cell, level, rnd)).fetchall()
+    finally:
+        con.close()
+    return [(seed, slot) for seed, slot, t in rows if t == text]
