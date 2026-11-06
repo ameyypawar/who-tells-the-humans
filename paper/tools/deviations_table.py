@@ -1,11 +1,12 @@
-"""Write generated/design/table_deviations.tex from the D-0nn headings of DEVIATIONS.md at frozen-v1 (fallback main)."""
+"""Write generated/design/table_deviations.tex from the D-0nn headings of DEVIATIONS.md at HEAD (the table lists every
+deviation, including those recorded after the freeze; the design macros stay at frozen-v1)."""
 import re
 
-from _common import PAPER, resolve_ref, show, tex_escape, write_generated
+from _common import PAPER, show, tex_escape, write_generated
 
 
 def main() -> None:
-    ref, _ = resolve_ref()
+    ref = "HEAD"
     md = show(ref, "DEVIATIONS.md").decode("utf-8")
     rows = []
     for m in re.finditer(r"^## (D-\d{3}) [\u2014-]+ (\d{4}-\d{2}-\d{2}) \(([^)]*)\): (.*)$", md, flags=re.M):

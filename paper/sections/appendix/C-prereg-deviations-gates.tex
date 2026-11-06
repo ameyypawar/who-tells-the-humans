@@ -11,7 +11,7 @@ Event & When & Record \\
 \midrule
 Pre-registration content frozen (PREREG v1) & \wtthDesignPreregFrozenDate & PREREG.md header \\
 Tag \texttt{prereg-v1} (commit \texttt{\wtthDesignPreregTagCommit}), message holds the SHA-256 of PREREG.md & \wtthDesignPreregTagDate & git tag \\
-The same SHA-256 posted in a public gist & \wtthDesignPreregGistDate & [A: gist URL] \\
+The same SHA-256 posted in a public gist & \wtthDesignPreregGistDate & \url{https://gist.github.com/ameyypawar/7018f1eb8050c65be82bb606068d1282} \\
 Sprint start & \wtthDesignTZero & README; D-004 \\
 Deviations D-001 to \wtthDesignDeviationsLast & before the core & Table~\ref{tab:deviations} \\
 Void G0 run, its rerun on fresh pilot seeds, G1 and G2 & Table~\ref{tab:gatelog} & gate log; D-012 \\
@@ -31,23 +31,15 @@ Six later research notes (a setup check, the final prior-art sweep, the toolchai
 
 \subsection{Deviations}\label{app:deviations}
 Each entry in \texttt{DEVIATIONS.md} gives what changed, when, why, who decided and which analyses it touches.
-D-001 to D-013 precede all confirmatory data (Table~\ref{tab:deviations}, generated from the log at the freeze tag); D-014 to D-019 came later and are listed after the table.
+D-001 to D-013 precede all confirmatory data; D-014 to D-019 were recorded after the Haiku core had been collected (Table~\ref{tab:deviations} gives each entry's timing).
 None changes the cells, hypotheses, tests or the keyword rule.
 Three touch text a witness sees, each identically in every cell: the input schemas the pre-registration left open (D-005), rendering formats it left open (D-006), and the server name, which sets the prefix of every tool name (D-012).
 \begin{table}[h]
 \centering\footnotesize
 \input{generated/design/table_deviations}
-\caption{\textbf{Deviations from PREREG v1 up to the freeze.} Timing as recorded in each entry's heading.}
+\caption{\textbf{Deviations D-001 to D-019.} Timing as recorded in each entry's heading.}
 \label{tab:deviations}
 \end{table}
-\begin{itemize}
-\item \textbf{D-014} (during the exploratory Sonnet arm, after the Haiku core). The production raw-body check stopped the Sonnet arm on a false positive: a Sonnet witness had mentioned another agent's handle in a post, which came back quoted in its debrief prompt. The check now skips the harness's own prompt, after confirming it byte for byte; the shifts in flight were rerun from scratch. Nothing a witness sees changed, and the Haiku core was unaffected.
-\item \textbf{D-015} (after collection, before any judge label existed). The API cap was raised so that the judge could use the rest of the credit, and the blind human sample was approved; D-018 later reversed the second decision.
-\item \textbf{D-016} (after the first held-out validation failed, before any judge label was used). The one revision of the judge prompt that the rubric allows: its format line now lists each item type's label keys, because every first-version answer had omitted required keys.
-\item \textbf{D-017} (before any review report). The model annotator labelled every item with a gate role and the full random agreement sample; the stage-two items queued only because the judge was unsure keep their judge labels.
-\item \textbf{D-018} (before any review report). The blind human sample was declined. The human check became the author's approval of model-proposed labels, audited by a second Claude pass, so no human--judge $\kappa$ exists.
-\item \textbf{D-019} (before any review report). Rebuilding the queues drew the random review sample a second time; the duplicate draw was voided before any review, so the analysed sample is the first draw.
-\end{itemize}
 
 \subsection{Pre-registered open items, as resolved}\label{app:tbd}
 The pre-registration listed the values still open at freeze and where each would be set.
