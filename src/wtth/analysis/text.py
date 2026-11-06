@@ -8,7 +8,7 @@ from __future__ import annotations
 from collections.abc import Mapping
 from typing import Any
 
-from wtth.analysis.numbers import MINUS, NumberBook, fmt_value, latex_escape, token
+from wtth.analysis.numbers import MINUS, NumberBook, fmt_value, is_count_mean_contrast, latex_escape, token
 from wtth.analysis.results import Contrast, HypothesisResults, SonnetResults
 
 PCT = r"\%"
@@ -142,5 +142,9 @@ def sonnet_sentence(s: SonnetResults, book: NumberBook, *, model_label: str, epi
 
 def descriptive_sentence(c: Contrast, book: NumberBook, *, label: str) -> str:
     _ensure_constants(book)
+    if is_count_mean_contrast(c.name):
+        est, lo, hi = (fmt_value(x, "mean") for x in (c.estimate, c.lo, c.hi))
+        return (f"{latex_escape(label)}: {est} notes per shift ({book.fmt('ProtocolLevel')}{PCT} CI {lo} to {hi}), "
+                f"reported without a test.")
     est, lo, hi = _ci(c)
     return f"{latex_escape(label)}: {est} points ({book.fmt('ProtocolLevel')}{PCT} CI {lo} to {hi}), reported without a test."

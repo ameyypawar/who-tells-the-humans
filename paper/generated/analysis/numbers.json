@@ -9187,9 +9187,9 @@
   "value": 10000
  },
  {
-  "display": "62.0 to 116.0",
+  "display": "0.62 to 1.16",
   "key": "HaikuDescAlertLoadPolicyMinusReceiptCI",
-  "kind": "ci",
+  "kind": "meanci",
   "note": "",
   "source": "AL:POLICY-RECEIPT stream=descriptive B=10000 level=0.95",
   "value": [
@@ -9198,11 +9198,11 @@
   ]
  },
  {
-  "display": "88.0",
+  "display": "0.88",
   "key": "HaikuDescAlertLoadPolicyMinusReceiptDelta",
-  "kind": "pp",
+  "kind": "mean",
   "note": "",
-  "source": "AL:POLICY-RECEIPT stream=descriptive B=10000 level=0.95",
+  "source": "AL:POLICY-RECEIPT stream=descriptive B=10000 level=0.95 (notes per shift)",
   "value": 0.88
  },
  {
@@ -9222,28 +9222,28 @@
   "value": "yes"
  },
  {
-  "display": "116.0",
+  "display": "1.16",
   "key": "HaikuDescAlertLoadPolicyMinusReceiptHi",
-  "kind": "pp",
+  "kind": "mean",
   "note": "",
   "source": "AL:POLICY-RECEIPT stream=descriptive B=10000 level=0.95",
   "value": 1.16
  },
  {
-  "display": "62.0",
+  "display": "0.62",
   "key": "HaikuDescAlertLoadPolicyMinusReceiptLo",
-  "kind": "pp",
+  "kind": "mean",
   "note": "",
   "source": "AL:POLICY-RECEIPT stream=descriptive B=10000 level=0.95",
   "value": 0.62
  },
  {
-  "display": "AL:POLICY-RECEIPT: 88.0 points (95\\% CI 62.0 to 116.0), reported without a test.",
+  "display": "AL:POLICY-RECEIPT: 0.88 notes per shift (95\\% CI 0.62 to 1.16), reported without a test.",
   "key": "HaikuDescAlertLoadPolicyMinusReceiptSentence",
   "kind": "latex",
   "note": "",
   "source": "descriptive AL:POLICY-RECEIPT",
-  "value": "AL:POLICY-RECEIPT: 88.0 points (95\\% CI 62.0 to 116.0), reported without a test."
+  "value": "AL:POLICY-RECEIPT: 0.88 notes per shift (95\\% CI 0.62 to 1.16), reported without a test."
  },
  {
   "display": "descriptive",
@@ -9270,9 +9270,9 @@
   "value": 10000
  },
  {
-  "display": "\\ensuremath{-}119.3 to \\ensuremath{-}66.5",
+  "display": "\\ensuremath{-}1.19 to \\ensuremath{-}0.67",
   "key": "HaikuDescAlertLoadReceiptMinusNoneRCI",
-  "kind": "ci",
+  "kind": "meanci",
   "note": "",
   "source": "AL:RECEIPT-NONE-R stream=descriptive B=10000 level=0.95",
   "value": [
@@ -9281,11 +9281,11 @@
   ]
  },
  {
-  "display": "\\ensuremath{-}92.5",
+  "display": "\\ensuremath{-}0.93",
   "key": "HaikuDescAlertLoadReceiptMinusNoneRDelta",
-  "kind": "pp",
+  "kind": "mean",
   "note": "",
-  "source": "AL:RECEIPT-NONE-R stream=descriptive B=10000 level=0.95",
+  "source": "AL:RECEIPT-NONE-R stream=descriptive B=10000 level=0.95 (notes per shift)",
   "value": -0.925
  },
  {
@@ -9305,28 +9305,28 @@
   "value": "yes"
  },
  {
-  "display": "\\ensuremath{-}66.5",
+  "display": "\\ensuremath{-}0.67",
   "key": "HaikuDescAlertLoadReceiptMinusNoneRHi",
-  "kind": "pp",
+  "kind": "mean",
   "note": "",
   "source": "AL:RECEIPT-NONE-R stream=descriptive B=10000 level=0.95",
   "value": -0.665
  },
  {
-  "display": "\\ensuremath{-}119.3",
+  "display": "\\ensuremath{-}1.19",
   "key": "HaikuDescAlertLoadReceiptMinusNoneRLo",
-  "kind": "pp",
+  "kind": "mean",
   "note": "",
   "source": "AL:RECEIPT-NONE-R stream=descriptive B=10000 level=0.95",
   "value": -1.1925
  },
  {
-  "display": "AL:RECEIPT-NONE-R: \\ensuremath{-}92.5 points (95\\% CI \\ensuremath{-}119.3 to \\ensuremath{-}66.5), reported without a test.",
+  "display": "AL:RECEIPT-NONE-R: \\ensuremath{-}0.93 notes per shift (95\\% CI \\ensuremath{-}1.19 to \\ensuremath{-}0.67), reported without a test.",
   "key": "HaikuDescAlertLoadReceiptMinusNoneRSentence",
   "kind": "latex",
   "note": "",
   "source": "descriptive AL:RECEIPT-NONE-R",
-  "value": "AL:RECEIPT-NONE-R: \\ensuremath{-}92.5 points (95\\% CI \\ensuremath{-}119.3 to \\ensuremath{-}66.5), reported without a test."
+  "value": "AL:RECEIPT-NONE-R: \\ensuremath{-}0.93 notes per shift (95\\% CI \\ensuremath{-}1.19 to \\ensuremath{-}0.67), reported without a test."
  },
  {
   "display": "descriptive",

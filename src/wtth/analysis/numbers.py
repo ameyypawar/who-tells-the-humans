@@ -41,6 +41,11 @@ VERDICTS = ("rejected", "not rejected", "rejected in the opposite direction", "d
 MINUS = r"\ensuremath{-}"
 
 
+def is_count_mean_contrast(name: str) -> bool:
+    """Contrast names 'AL:...' are differences of mean alert load (notes per shift), not of proportions."""
+    return name.startswith("AL:")
+
+
 def spell_digits(s: str) -> str:
     return "".join(DIGIT_WORDS.get(ch, ch) for ch in s)
 
@@ -214,10 +219,16 @@ class NumberBook:
 
     def add_contrast(self, prefix: str, c: Contrast) -> None:
         src = f"{c.name} stream={c.stream} B={c.B} level={c.level}"
-        self.add(prefix + "Delta", c.estimate, "pp", source=src)
-        self.add(prefix + "Lo", c.lo, "pp", source=src)
-        self.add(prefix + "Hi", c.hi, "pp", source=src)
-        self.add(prefix + "CI", (c.lo, c.hi), "ci", source=src)
+        if is_count_mean_contrast(c.name):      # difference of mean notes per shift: not a proportion, no x100
+            self.add(prefix + "Delta", c.estimate, "mean", source=src + " (notes per shift)")
+            self.add(prefix + "Lo", c.lo, "mean", source=src)
+            self.add(prefix + "Hi", c.hi, "mean", source=src)
+            self.add(prefix + "CI", (c.lo, c.hi), "meanci", source=src)
+        else:
+            self.add(prefix + "Delta", c.estimate, "pp", source=src)
+            self.add(prefix + "Lo", c.lo, "pp", source=src)
+            self.add(prefix + "Hi", c.hi, "pp", source=src)
+            self.add(prefix + "CI", (c.lo, c.hi), "ci", source=src)
         self.add(prefix + "B", c.B, "count", source=src)
         self.add(prefix + "Status", c.status if c.status in VERDICTS else "unavailable", "verdict", source=src)
         self.add(prefix + "Direction", c.direction, "verdict", source=src)

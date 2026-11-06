@@ -80,6 +80,26 @@ class BookTest(unittest.TestCase):
         self.assertEqual(b2.fmt("XVerdict"), "rejected in the opposite direction")
         self.assertEqual(b2.fmt("XDelta"), "\\ensuremath{-}25.0")
 
+    def test_count_mean_contrast_is_notes_per_shift(self) -> None:
+        al = Contrast("AL:POLICY-RECEIPT", 0.88, 0.62, 1.16, 0.95, 10000, "descriptive", None, "predicted",
+                      "descriptive", {})
+        b = NumberBook()
+        b.add_contrast("HaikuDescAlertLoadPolicyMinusReceipt", al)
+        self.assertEqual(b.fmt("HaikuDescAlertLoadPolicyMinusReceiptDelta"), "0.88")
+        self.assertEqual(b.fmt("HaikuDescAlertLoadPolicyMinusReceiptCI"), "0.62 to 1.16")
+        self.assertEqual(b.fmt("HaikuDescAlertLoadPolicyMinusReceiptLo"), "0.62")
+        self.assertEqual(b._e["HaikuDescAlertLoadPolicyMinusReceiptDelta"].kind, "mean")
+        s = text.descriptive_sentence(al, b, label=al.name)
+        self.assertIn("0.88 notes per shift", s)
+        self.assertNotIn("points", s)
+        neg = Contrast("AL:RECEIPT-NONE-R", -0.925, -1.193, -0.665, 0.95, 10000, "d", None, "opposite", "descriptive", {})
+        b.add_contrast("N", neg)
+        self.assertEqual(b.fmt("NDelta"), "\\ensuremath{-}0.93")     # proportions keep x100 / pp
+        p1 = Contrast("P1:CLAIM-CONCERN", -0.1, -0.2, 0.0, 0.95, 10000, "d", None, "opposite", "descriptive", {})
+        b.add_contrast("P", p1)
+        self.assertEqual(b.fmt("PDelta"), "\\ensuremath{-}10.0")
+        self.assertIn("points", text.descriptive_sentence(p1, b, label=p1.name))
+
     def test_macro_files(self) -> None:
         d = tmp_dir("wp6_macros")
         b = NumberBook()
