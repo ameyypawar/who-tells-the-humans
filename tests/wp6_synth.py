@@ -16,6 +16,7 @@ answer carry one; matched notes carry secondary labels too (keyword hit decides 
 """
 from __future__ import annotations
 
+import dataclasses
 import json
 import random
 import time
@@ -77,6 +78,11 @@ class SynthSpec:
     extra_done: dict[str, tuple[int, ...]] = field(default_factory=dict)  # done but unplanned (above the cut)
     attempts_every: int = 9
     gate_rows: bool = True
+    # D-021 / D-022 additions, both off by default so every earlier test sees the same database
+    log_rows: bool = False                      # write the escalation_log row of every R1 note (as the handler does)
+    exp1: dict[tuple[str, str], int] = field(default_factory=dict)   # (model_short, cell) -> done exp1 episodes
+    exp1_p1_k: dict[tuple[str, str], int] | None = None
+    exp1_seed_start: int = 109
 
     @staticmethod
     def small(n: int = 8, **kw: Any) -> "SynthSpec":
@@ -263,6 +269,16 @@ def build_synth(path: Path, spec: SynthSpec | None = None) -> GroundTruth:
                                                     900_000 + len(extra_specs), "rd"))
     if extra_specs:
         scheduler.enqueue(db, extra_specs)
+    # D-022 follow-up episodes (phase exp1): X-* cells are FORGED with another name, Sonnet RECEIPT is RECEIPT
+    exp1_specs = []
+    for (short, cell), n in sorted(spec.exp1.items()):
+        base = settings_core.cells["FORGED" if cell.startswith("X-") else cell]
+        cs = dataclasses.replace(base, name=cell)
+        for sd in range(spec.exp1_seed_start, spec.exp1_seed_start + n):
+            exp1_specs.append(stimuli.episode_spec("exp1", "main", HAIKU if short == "haiku" else SONNET, cs,
+                                                   spec.level, sd, 950_000 + len(exp1_specs), "rd"))
+    if exp1_specs:
+        scheduler.enqueue(db, exp1_specs)
 
     ep_rows = db.read(lambda c: c.execute("SELECT * FROM episodes ORDER BY episode_id").fetchall())
     rng = random.Random(spec.seed)
@@ -283,6 +299,11 @@ def build_synth(path: Path, spec: SynthSpec | None = None) -> GroundTruth:
                 k = round(rates[cell] * 3 * n)
             y_plan[(short, cell)] = _place(n, k, random.Random(f"{spec.seed}:{short}:{cell}"))
 
+    for (short, cell), n in spec.exp1.items():
+        k = (spec.exp1_p1_k or {}).get((short, cell))
+        if k is None:
+            k = round(0.5 * 3 * n)
+        y_plan[(short, cell)] = [0] * (spec.exp1_seed_start - 1) + _place(n, k, random.Random(f"{spec.seed}:x:{cell}"))
     queued_set = {(c, s) for c, s in spec.queued_at}
     failed_set = {(c, s) for c, s in spec.failed_permanent_at}
     decoy_set = {(c, s) for c, s in spec.decoy_at}
@@ -359,6 +380,11 @@ def build_synth(path: Path, spec: SynthSpec | None = None) -> GroundTruth:
                     "VALUES (?,?,2,'rd-11',NULL,'21:24',1284,?,?,?,?,'script',2,?,?)",
                     (eid, final, MATCHED_TEXT[0], MATCHED_TEXT[1], MATCHED_TEXT[0], MATCHED_TEXT[1], now,
                      canon_json(_kw_hits(*MATCHED_TEXT))))
+                if spec.log_rows and r["world"] == "R1":
+                    nid = conn.execute("SELECT last_insert_rowid()").fetchone()[0]
+                    conn.execute("INSERT INTO escalation_log(note_id, episode_id, attempt, sender, clock, clock_min, "
+                                 "subject_display, visible_from_round, created_at) VALUES (?,?,?,'rd-11','21:24',1284,"
+                                 "?,2,?)", (nid, eid, final, MATCHED_TEXT[0], now))
                 c_real_any = True
             # turns for FK and counts
             d1t, d2t = f"d1-{eid}", f"d2-{eid}"
@@ -427,12 +453,19 @@ def build_synth(path: Path, spec: SynthSpec | None = None) -> GroundTruth:
                         (eid, final, rnd, handle, slot, _clock(rnd, slot), stimuli.clock_min(_clock(rnd, slot)),
                          subj, msg, subj, msg, rnd + 1, now, canon_json(_kw_hits(subj, msg))))
                     nid = cur.lastrowid
+                    if spec.log_rows and r["world"] == "R1":
+                        conn.execute("INSERT INTO escalation_log(note_id, episode_id, attempt, sender, clock, "
+                                     "clock_min, subject_display, visible_from_round, created_at) "
+                                     "VALUES (?,?,?,?,?,?,?,?,?)",
+                                     (nid, eid, final, handle, _clock(rnd, slot), stimuli.clock_min(_clock(rnd, slot)),
+                                      subj, rnd + 1, now))
                     key: ItemKey = ("notes", str(nid))
                     if not matched:   # judge path: unmatched notes carry labels
                         gt.labels[key] = FinalLabel(key, ItemType.NOTE, lab, "judge", 0, lab, None, False)
                     else:
                         gt.labels[key] = FinalLabel(key, ItemType.NOTE, lab, "judge", 0, lab, None, False)
                 w["n_notes"] = len(note_specs)
+                w["note_rounds"] = [rnd for rnd, _t, _m, _l in note_specs]
                 any_note = any_note or bool(note_specs)
                 truth_any = truth_any or bool(note_specs)
                 truth_viol = truth_viol or is_p1

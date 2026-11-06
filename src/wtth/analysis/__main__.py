@@ -60,7 +60,8 @@ def cmd_run(args: argparse.Namespace) -> int:
     try:
         out = run_analysis(settings, strict=bool(args.strict), out_root=Path(args.out) if args.out else None,
                            export_paper=Path(args.export_paper) if args.export_paper else None, seeds=seeds,
-                           prefer=args.prefer, phases=args.phase or None)
+                           prefer=args.prefer, phases=args.phase or None,
+                           human_read_dir=Path(args.human_read_dir) if args.human_read_dir else None)
     except (LabelsIncomplete, AnalysisSetError, PrivateLeakError) as exc:
         print(f"STOP: {type(exc).__name__}: {exc}", file=sys.stderr)
         return EXIT_STOP
@@ -115,6 +116,8 @@ def main(argv: list[str] | None = None) -> int:
     r.add_argument("--out", help="output root (default runs/analysis/out)")
     r.add_argument("--export-paper", help="copy the outputs here after the residual scan, e.g. paper/generated")
     r.add_argument("--analysis-yaml", help="path to analysis.yaml (default configs/analysis.yaml)")
+    r.add_argument("--human-read-dir", help="the author read (D-021): selection.csv / answers.csv "
+                                            "(default <runs-dir>/../annotations/human_read)")
     p = sub.add_parser("power", parents=[common], help="recompute the power table at F")
     p.add_argument("--phase", default="core", choices=["core", "mvp"])
     args = ap.parse_args(argv)

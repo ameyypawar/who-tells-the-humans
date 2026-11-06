@@ -16,7 +16,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-from wtth.analysis import hypotheses, register, secondary, text
+from wtth.analysis import exp1, humanread, hypotheses, posthoc, register, secondary, text
 from wtth.analysis.numbers import MODEL_TOKENS, NumberBook, cell_token, rate_prefix
 from wtth.analysis.outcomes import LabelsIncomplete, episode_outcomes, witness_outcomes
 from wtth.analysis.power import icc1, pilot_p1, power_table
@@ -238,7 +238,11 @@ def _scan_and_copy(files: Sequence[Path], dest: Path, private: Mapping[str, str]
 def run_analysis(settings: Any, *, strict: bool, labels: LabelSource | None = None, out_root: Path | None = None,
                  export_paper: Path | None = None, seeds: AnalysisSeeds | None = None,
                  private: Mapping[str, str] | None = None, prefer: str | None = None,
-                 phases: Sequence[str] | None = None) -> RunOutputs:
+                 phases: Sequence[str] | None = None, human_read_dir: Path | None = None,
+                 exp1_labels: LabelSource | None = None) -> RunOutputs:
+    """human_read_dir: the author read (D-021 item 3), default annotations/human_read next to the runs directory
+    (the repository root for the default runs directory). exp1_labels: labels of the D-022 follow-up, default the
+    exp1 judge database (exp1.label_source)."""
     seeds = seeds or load_analysis_seeds(settings)
     status = "FINAL" if strict else "PROVISIONAL"
     notes: list[str] = []
@@ -275,7 +279,9 @@ def run_analysis(settings: Any, *, strict: bool, labels: LabelSource | None = No
                                "gates": dict(labels.gates()), "phases": {}}
     hyp = sec = desc = sens = p1r = None
     label_h = ""
-    sonnet_sentence = None
+    tim = None
+    w_by: dict[str, list[Any]] = {}
+    e_by: dict[str, list[Any]] = {}
     for aset in asets:
         w = witness_outcomes(db, aset, labels, strict=strict)
         e = episode_outcomes(w, db, aset, labels, strict=strict)
@@ -290,6 +296,8 @@ def run_analysis(settings: Any, *, strict: bool, labels: LabelSource | None = No
         if pending or unresolved:
             notes.append(f"{aset.phase}: {pending} witness(es) with an unresolved note and {unresolved} unresolved "
                          f"post(s) in P2 episodes; provisional values treat them as no qualifying note / bounds")
+        w_by.setdefault(model, list(w))
+        e_by.setdefault(model, list(e))
         if model == "haiku":
             gate_for_h = gate_rows
             hyp = hypotheses.run_hypotheses(w, e, seeds=seeds, gate_log=gate_for_h)
@@ -314,8 +322,27 @@ def run_analysis(settings: Any, *, strict: bool, labels: LabelSource | None = No
                 if pooled == pooled and pooled >= 0:
                     summary["power_rho_observed"] = dict(power_table(p_use, pooled, n_by_cell))
                     summary["power_rho_observed"]["rho_observed"] = pooled
+            pred = posthoc.prediction_checks(w, hyp, desc, seeds=seeds)
             register.register_model(book, "haiku", aset=aset, w=w, e=e, p1r=p1r, hyp=hyp, sec=sec, desc=desc, sens=sens,
-                                    power=power)
+                                    power=power, pred=pred)
+            # post hoc (D-021): robustness, timing, disclosure; none of it enters a verdict
+            M = MODEL_TOKENS["haiku"]
+            rob = posthoc.robustness(w, seeds=seeds)
+            register.register_robustness(book, M, rob)
+            tim = posthoc.timing(w, e, db)
+            register.register_timing(book, M, tim)
+            register.register_disclosure_d1(book, M, sec.rates)
+            register.register_paraphrase_breakdown(book, M, sens.rates)
+            for key, sent_fn in (("PostHocRobustSentence", text.robustness_sentence),
+                                 ("TimingSentence", text.timing_sentence)):
+                s_txt = sent_fn(book, M)
+                if s_txt is not None:
+                    book.add(M + key, s_txt, "latex", source=f"{posthoc.POSTHOC}: template")
+            summary["phases"][aset.phase]["posthoc"] = {
+                "fisher_p": {x.name: x.fisher_p for x in rob.exact},
+                "boundary": [[b.contrast, b.arm, b.m_shifts, b.n_shifts, b.p_analytic, b.p_boot] for b in rob.boundary],
+                "timing_recorded_agree": {c.cell: [c.recorded_agree, c.recorded_checked] for c in tim.cells
+                                          if c.has_log}}
             sent = text.sentences(hyp, book, model_label=label_h)
             for k, v in sent.items():
                 book.add(MODEL_TOKENS["haiku"] + k + "Sentence", v, "latex", source=f"template for {k}")
@@ -342,6 +369,19 @@ def run_analysis(settings: Any, *, strict: bool, labels: LabelSource | None = No
             for c, ws in by.items():
                 r = secondary.known_rate(model, c, "p1", ws, lambda x: x.p1)
                 book.add_rate(M + "Above" + rate_prefix(model, "p1", c)[len(M):], r)
+    # exploratory follow-up (D-022): its own episode list from phase exp1, never a confirmatory set
+    x1 = exp1.analyse(db, exp1_labels if exp1_labels is not None else exp1.label_source(settings), seeds=seeds,
+                      ref_witnesses=w_by, ref_episodes=e_by)
+    register.register_exp1(book, x1)
+    summary["exp1"] = {"status": x1.status, "n_done": dict(x1.n_done), "n_open": x1.n_open,
+                       "n_pending": x1.n_pending, "notes": list(x1.notes)}
+    notes.extend(x1.notes)
+    # the author read (D-021 item 3)
+    hr_dir = Path(human_read_dir) if human_read_dir is not None else \
+        Path(settings.paths.runs_dir).parent / "annotations" / "human_read"
+    hr = humanread.read_human_read(hr_dir, [x for ws in w_by.values() for x in ws])
+    register.register_human_read(book, hr)
+    summary["human_read"] = humanread.summary_note(hr)
     cost = _cost(settings, db)
     book.add("CostMainUsd", cost["main_usd"], "usd", source="cost_ledger of the main database")
     book.add("CostJudgeUsd", cost["judge_usd"], "usd", source="judge_ledger")
@@ -352,6 +392,7 @@ def run_analysis(settings: Any, *, strict: bool, labels: LabelSource | None = No
         register.register_judge_counts(book, jc)
     if judge_pack is not None:
         register.register_judge(book, judge_pack[0], judge_pack[1])
+        register.register_judge_prevalence(book, judge_pack[1])
 
     stamp = datetime.fromtimestamp(time.time(), timezone.utc).strftime("%Y%m%dT%H%M%S")
     root = Path(out_root) if out_root is not None else Path(settings.paths.runs_dir) / "analysis" / "out"

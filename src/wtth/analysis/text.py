@@ -148,3 +148,58 @@ def descriptive_sentence(c: Contrast, book: NumberBook, *, label: str) -> str:
                 f"reported without a test.")
     est, lo, hi = _ci(c)
     return f"{latex_escape(label)}: {est} points ({book.fmt('ProtocolLevel')}{PCT} CI {lo} to {hi}), reported without a test."
+
+
+# ---- post hoc (D-021) --------------------------------------------------------------------------------------------
+
+def _p_clause(book: NumberBook, key: str) -> str:
+    d = book.fmt(key)
+    return ("p " + d) if d.startswith(r"\ensuremath{<}") else ("p = " + d)
+
+
+def robustness_sentence(book: NumberBook, M: str = "Haiku") -> str | None:
+    """Post-hoc robustness of H1-H3 (D-021 item 1), from the registered PostHoc keys only."""
+    need = [M + "PostHocHOneFisherP", M + "PostHocHThreeFisherP", M + "PostHocHOneNewcombeCI",
+            M + "PostHocHThreeNewcombeCI", M + "PostHocHTwoMoverCI"]
+    if any(k not in book for k in need):
+        return None
+    s = (f"Post hoc (D-021), at witness level and ignoring clustering, Fisher's exact test gives "
+         f"{_p_clause(book, M + 'PostHocHOneFisherP')} for H1 and {_p_clause(book, M + 'PostHocHThreeFisherP')} for "
+         f"H3, with Newcombe intervals of {book.fmt(M + 'PostHocHOneNewcombeCI')} and "
+         f"{book.fmt(M + 'PostHocHThreeNewcombeCI')} points; the MOVER interval of the H2 difference-in-differences "
+         f"is {book.fmt(M + 'PostHocHTwoMoverCI')} points.")
+    pre = M + "PostHocBoundaryHOneClaim"
+    if pre + "PZero" in book:
+        s += (f" CLAIM's {book.fmt(pre + 'NonReporters')} non-reporters sit in {book.fmt(pre + 'ShiftsM')} of its "
+              f"{book.fmt(pre + 'ShiftsN')} shifts, so an episode-cluster resample draws none of them with probability "
+              f"{book.fmt(pre + 'PZero')}{PCT} ({book.fmt(pre + 'PZeroBoot')}{PCT} of the "
+              f"{book.fmt(pre + 'PZeroBootB')} H1 replicates).")
+    return s
+
+
+def timing_sentence(book: NumberBook, M: str = "Haiku") -> str | None:
+    """Post-hoc timing (D-021 item 2): held-off witnesses in CLAIM and NO-RECEIPT, the log at their next turn."""
+    c, r = M + "TimingClaim", M + "TimingNoReceipt"
+    if any(k not in book for k in (c + "HeldOffK", r + "HeldOffK", r + "HeldOffPeerNeverK")):
+        return None
+    base = []
+    for cell, tok in (("NONE", "None"), ("NONE-R", "NoneR")):
+        k = M + "Timing" + tok + "HeldOffK"
+        if k in book:
+            base.append((cell, book.value(k), book.fmt(k)))
+    base_txt = ""
+    if base and all(v == 0 for _, v, _ in base):
+        base_txt = " (none in " + " and ".join(latex_escape(b[0]) for b in base) + ")"
+    elif base:
+        base_txt = " (" + "; ".join(f"{latex_escape(b[0])} {b[2]}" for b in base) + ")"
+    s = (f"Post hoc (D-021): by the end of round 2, {book.fmt(c + 'HeldOffK')} of {book.fmt(c + 'N')} CLAIM witnesses "
+         f"and {book.fmt(r + 'HeldOffK')} of {book.fmt(r + 'N')} NO-RECEIPT witnesses had sent no violation note"
+         f"{base_txt}. Of these, {book.fmt(c + 'HeldOffReportedK')} and {book.fmt(r + 'HeldOffReportedK')} reported "
+         f"later and {book.fmt(c + 'NeverK')} and {book.fmt(r + 'NeverK')} never did; "
+         f"{book.fmt(r + 'HeldOffPeerNeverK')} of the {book.fmt(r + 'NeverK')} NO-RECEIPT never-reporters had a peer's "
+         f"line in the log at their next turn.")
+    sh = M + "TimingShiftReceipt"
+    if sh + "LateAfterReceiptK" in book:
+        s += (f" In {book.fmt(sh + 'LateAfterReceiptK')} of {book.fmt(sh + 'N')} RECEIPT shifts the first witness note "
+              f"came in round 3 or later, after C's real log line had been in view since round 2.")
+    return s
