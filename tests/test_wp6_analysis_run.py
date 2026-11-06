@@ -175,7 +175,8 @@ class RunTest(unittest.TestCase):
 
         buf = io.StringIO()
         with contextlib.redirect_stdout(buf):
-            rc = cli.main(["set", "--phase", "core", "--phase", "sonnet", "--runs-dir", str(Path(self.gt.path).parent)])
+            rc = cli.main(["set", "--phase", "core", "--phase", "sonnet", "--runs-dir", str(Path(self.gt.path).parent),
+                           "--set", "frozen_level=null", "--set", "max_turns.frozen=false"])
         self.assertEqual(rc, 0)
         txt = buf.getvalue()
         self.assertIn("[core] model=claude-haiku-5-5 s_c=80 episodes=670 above=0", txt)
@@ -186,7 +187,8 @@ class RunTest(unittest.TestCase):
         err = io.StringIO()
         with contextlib.redirect_stdout(buf), contextlib.redirect_stderr(err):
             rc = cli.main(["run", "--provisional", "--runs-dir", str(Path(self.gt.path).parent),
-                           "--analysis-yaml", str(Path(self.gt.path).parent / "nope.yaml")])
+                           "--analysis-yaml", str(Path(self.gt.path).parent / "nope.yaml"),
+                           "--set", "frozen_level=null", "--set", "max_turns.frozen=false"])
         self.assertEqual(rc, 2)
         self.assertIn("freeze commit", err.getvalue())
 

@@ -67,7 +67,7 @@ def judge_cli(rig: Rig, *argv: str) -> tuple[int, str]:
     common = ["--fake", str(rig.behavior_path), "--runs-dir", str(s.paths.runs_dir),
               "--set", f"paths.slots_root={s.paths.slots_root}", "--set", f"paths.cwd={s.paths.cwd}"]
     for k, v in FAST.items():
-        common += ["--set", f"{k}={v}"]
+        common += ["--set", f"{k}={__import__('json').dumps(v)}"]
     buf, err = io.StringIO(), io.StringIO()
     with contextlib.redirect_stdout(buf), contextlib.redirect_stderr(err):
         code = M.main(list(argv) + common)
@@ -95,7 +95,7 @@ class EndToEnd(unittest.TestCase):
                 "sys.exit(main(sys.argv[1:]))" % (str(REPO / "src"), str(REPO)))
         cmd = [PYTHON, "-I", "-c", code, "run", "--phase", "core", "--level", "L2", "--fake", str(beh),
                "--runs-dir", str(s.paths.runs_dir), "--set", f"paths.slots_root={s.paths.slots_root}",
-               "--set", f"paths.cwd={s.paths.cwd}"]
+               "--set", f"paths.cwd={s.paths.cwd}", "--set", "frozen_level=null", "--set", "max_turns.frozen=false"]
         for c in CELLS:
             cmd += ["--max-seed", f"{c}=2"]
         proc = subprocess.run(cmd, capture_output=True, text=True, timeout=1800)

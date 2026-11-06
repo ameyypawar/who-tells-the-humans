@@ -13,7 +13,10 @@ from wtth.runner import invocation as inv
 from wtth.textnorm import sha256_text
 from wtth.types import TurnType
 
+from wtth.config import tool_prefix  # noqa: E402
+
 BIN = str(SETTINGS.paths.binary)
+PFX = tool_prefix(SETTINGS)
 
 
 class ArgvTest(unittest.TestCase):
@@ -27,7 +30,7 @@ class ArgvTest(unittest.TestCase):
 
     def test_witness_argv_exact(self):
         req, mcp, argv = self.witness()
-        names = ",".join("mcp__workspace__" + t for t in ("submit_reviews", "post_to_board", "notify_ops"))
+        names = ",".join(PFX + t for t in ("submit_reviews", "post_to_board", "notify_ops"))
         want = [BIN, "-p", req.prompt.text, "--bare", "--model", "claude-haiku-5-5", "--effort", "low",
                 "--max-turns", "8", "--max-budget-usd", "0.02", "--system-prompt-file", str(req.system_path),
                 "--tools", "", "--disable-slash-commands", "--setting-sources", "",
@@ -50,7 +53,7 @@ class ArgvTest(unittest.TestCase):
     def test_board_only_has_two_names(self):
         _, _, argv = self.witness(toolset="board_only")
         self.assertEqual(argv[argv.index("--allowedTools") + 1],
-                         "mcp__workspace__submit_reviews,mcp__workspace__post_to_board")
+                         PFX + "submit_reviews," + PFX + "post_to_board")
 
     def test_debrief_argv_exact(self):
         for tt in (TurnType.D1, TurnType.D2):
@@ -76,8 +79,8 @@ class ArgvTest(unittest.TestCase):
         req = make_req(self.d)
         argv = inv.build_argv(s2, req, inv.build_mcp_config(s2, req.identity, req.toolset))
         i = argv.index("--allowedTools")
-        self.assertEqual(argv[i + 1:i + 4], ["mcp__workspace__submit_reviews", "mcp__workspace__post_to_board",
-                                             "mcp__workspace__notify_ops"])
+        self.assertEqual(argv[i + 1:i + 4], [PFX + "submit_reviews", PFX + "post_to_board",
+                                             PFX + "notify_ops"])
         self.assertEqual(argv[i + 4], "--permission-mode")
 
     def test_no_key_in_argv(self):
@@ -90,7 +93,7 @@ class McpConfigTest(unittest.TestCase):
         ident = make_identity()
         s = inv.build_mcp_config(SETTINGS, ident, TOOLSETS["main"])
         self.assertEqual(s, json.dumps(json.loads(s), separators=(",", ":"), sort_keys=True))
-        srv = json.loads(s)["mcpServers"]["workspace"]
+        srv = json.loads(s)["mcpServers"][SETTINGS.mcp_server_name]
         self.assertEqual(srv["type"], "stdio")
         self.assertEqual(srv["command"], str(SETTINGS.paths.python))
         self.assertEqual(srv["args"], ["-I", "-m", "wtth.mcp_server", "--runs-root", str(SETTINGS.paths.runs_dir)])

@@ -26,6 +26,7 @@ SEEDS = SimpleNamespace(
     j2_order=("J2a", "J2b", "J2c", "J2d", "J2e", "J2f", "J2g", "J2h", "J2i"))
 
 FAST = {
+    "frozen_level": None, "max_turns.frozen": False, "budget.cap_usd": 80.0,   # state-agnostic: tests build their own levels
     "scheduler.debrief_backoff_s": [0, 0], "scheduler.api_backoff_base_s": 0, "scheduler.api_backoff_cap_s": 0,
     "scheduler.breaker_pause_s": 0, "scheduler.requeue_delay_s": 0, "scheduler.launch_gap_ms": 0, "timeouts.grace_int_s": 1,
     "timeouts.grace_term_s": 1,

@@ -222,7 +222,8 @@ def build_synth(path: Path, spec: SynthSpec | None = None) -> GroundTruth:
 
     def settings_for(phase_n: dict[str, int]) -> Any:
         mx = {c: phase_n.get(c, 0) for c in D003_HAIKU}
-        return load_settings(overrides={"cuts": {"max_seed_by_cell": mx}, "paths.runs_dir": str(path.parent)})
+        return load_settings(overrides={"cuts": {"max_seed_by_cell": mx}, "paths.runs_dir": str(path.parent),
+                                        "frozen_level": None, "max_turns.frozen": False})
 
     settings_core = settings_for(spec.haiku_n)
     gt.settings = settings_core

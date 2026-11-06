@@ -31,7 +31,7 @@ def put_ledger(jdb_path, rows):
 
 class Spend(unittest.TestCase):
     def setUp(self):
-        self.rig = Rig(self.id().split(".")[-1][:36], {"budget.prior_spend_usd": 1.25})
+        self.rig = Rig(self.id().split(".")[-1][:36], {"budget.prior_spend_usd": 1.25, "budget.cap_usd": 80.0})
         self.s = self.rig.settings
         dbmod.create_db(self.s.paths.db_path)
         self.main = dbmod.Db(self.s.paths.db_path)

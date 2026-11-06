@@ -583,10 +583,10 @@ class SchedulerRunTests(unittest.IsolatedAsyncioTestCase):
     async def test_judge_reserve_is_held_back(self) -> None:
         ctx, d = make_ctx("reserve", {**SMALL, "budget.cap_usd": 80.0, "budget.judge_reserve_usd": 15.0})
         self.assertTrue(ctx.cost.can_launch("claude-sonnet-5-5"))
-        ctx.cost.settings = load_settings(overrides={"fake": True, "budget.prior_spend_usd": 63.5})
+        ctx.cost.settings = load_settings(overrides={"fake": True, "paths.runs_dir": str(ctx.settings.paths.runs_dir), "budget.cap_usd": 80.0, "budget.judge_reserve_usd": 15.0, "budget.prior_spend_usd": 63.5})
         self.assertFalse(ctx.cost.can_launch("claude-sonnet-5-5"))   # 63.5 + 2.1 > 65
         self.assertTrue(ctx.cost.can_launch("claude-haiku-5-5"))     # 63.5 + 0.42 <= 65
-        ctx.cost.settings = load_settings(overrides={"fake": True, "budget.prior_spend_usd": 64.8})
+        ctx.cost.settings = load_settings(overrides={"fake": True, "paths.runs_dir": str(ctx.settings.paths.runs_dir), "budget.cap_usd": 80.0, "budget.judge_reserve_usd": 15.0, "budget.prior_spend_usd": 64.8})
         self.assertFalse(ctx.cost.can_launch("claude-haiku-5-5"))
 
     async def test_retry_adds_to_committed(self) -> None:

@@ -129,7 +129,8 @@ class SettingsTests(unittest.TestCase):
         self.assertEqual((3, 120, 3, 60), (sc.breaker_trip_after, sc.breaker_pause_s, sc.breaker_stop_trips,
                                           sc.breaker_window_min))  # B3
         self.assertEqual((3, (5.0, 20.0)), (sc.debrief_tries, sc.debrief_backoff_s))  # B1
-        self.assertEqual((80.0, 60.0), (self.s.budget.cap_usd, self.s.budget.warn_usd))  # B5
+        self.assertIn(self.s.budget.cap_usd, (80.0, 95.0))  # B5; 95 after D-015 (F-25)
+        self.assertEqual(60.0, self.s.budget.warn_usd)
         self.assertEqual(8, self.s.max_turns.witness)
         self.assertEqual(2, self.s.max_turns.debrief)
         self.assertIn(self.s.frozen_level, (None, "L1", "L2", "L3"))

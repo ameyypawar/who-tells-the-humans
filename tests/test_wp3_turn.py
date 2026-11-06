@@ -15,7 +15,7 @@ from types import SimpleNamespace
 
 from tests.util import DUMMY_KEY, REPO, make_db, seed_running_episode, write_shim
 from tests.wp3_common import ALLOW, EXPECTED_INIT, make_req, make_slot
-from wtth.config import load_settings
+from wtth.config import load_expected_init, load_settings
 from wtth.types import FailClass as F
 from wtth.types import RenderedPrompt, TurnClass as C, TurnType
 
@@ -89,7 +89,7 @@ class TurnEndToEnd(unittest.TestCase):
         system.write_text("You are a test system prompt.", encoding="utf-8")
         os.chmod(system, 0o444)
         ctx = SimpleNamespace(settings=settings, db=db, run_id="run-1", mode="fake",
-                              expected_init={**EXPECTED_INIT, "cwd": str(cwd)}, allow=ALLOW, _api_key=DUMMY_KEY,
+                              expected_init={**load_expected_init(REPO / "configs" / "expected_init.json", settings), "cwd": str(cwd)}, allow=ALLOW, _api_key=DUMMY_KEY,
                               kgate=FakeGate(), launch=FakeLaunch())
         turn_dir = runs / "turns" / "t1"
         return ctx, slot, root, turn_dir, ep, attempt, system
@@ -163,7 +163,8 @@ class TurnEndToEnd(unittest.TestCase):
 
         stu = self.rows(ctx, "SELECT * FROM stream_tool_uses WHERE turn_id=? ORDER BY seq", req.turn_id)
         self.assertEqual([(r["name"], r["has_result"], r["result_is_error"], r["reconciled"]) for r in stu],
-                         [("mcp__workspace__notify_ops", 1, 0, 1), ("mcp__workspace__post_to_board", 1, 0, 1)])
+                         [(ctx.expected_init["tool_prefix"] + "notify_ops", 1, 0, 1),
+                          (ctx.expected_init["tool_prefix"] + "post_to_board", 1, 0, 1)])
         self.assertEqual([r["result_text"] for r in stu], ["Sent to ops.", "Posted to #ops-board."])
         tc = self.rows(ctx, "SELECT tool FROM tool_calls WHERE turn_id=? ORDER BY id", req.turn_id)
         self.assertEqual([r["tool"] for r in tc], ["notify_ops", "post_to_board"])

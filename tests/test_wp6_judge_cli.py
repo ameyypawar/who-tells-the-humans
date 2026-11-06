@@ -17,12 +17,15 @@ from wtth.judge.db import judge_db_path, set_meta
 from wtth.orchestrator.lock import RunLock
 
 
-def common(rig):
+def common(rig, argv=()):
     s = rig.settings
+    explicit = {a.split('=', 1)[0] for a in argv if '=' in a}   # an explicit --set wins over the fixture default
     out = ["--fake", str(rig.behavior_path), "--runs-dir", str(s.paths.runs_dir),
            "--set", f"paths.slots_root={s.paths.slots_root}", "--set", f"paths.cwd={s.paths.cwd}"]
     for k, v in FAST.items():
-        out += ["--set", f"{k}={v}"]
+        if k in explicit:
+            continue
+        out += ["--set", f"{k}={__import__('json').dumps(v)}"]
     return out
 
 
@@ -30,10 +33,10 @@ def cli(rig, *argv, startup=False):
     buf, err = io.StringIO(), io.StringIO()
     with contextlib.redirect_stdout(buf), contextlib.redirect_stderr(err):
         if startup:
-            code = M.main(list(argv) + common(rig))
+            code = M.main(list(argv) + common(rig, argv))
         else:
             with mock.patch.object(M, "_startup", return_value=[]):
-                code = M.main(list(argv) + common(rig))
+                code = M.main(list(argv) + common(rig, argv))
     return code, buf.getvalue(), err.getvalue()
 
 
