@@ -8,7 +8,7 @@ The pinned Claude Code CLI is version \wtthDesignCliVersion, a copy kept outside
 Its version is asserted on every call.
 Each witness turn is one call with the flags below; debrief turns use the same call without the MCP flags and with a step cap of two.
 \begin{center}\footnotesize
-\begin{tabular}{@{}>{\raggedright\arraybackslash}p{2.6in}>{\raggedright\arraybackslash}p{2.3in}>{\raggedright\arraybackslash}p{1.3in}@{}}
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{2.55in}>{\raggedright\arraybackslash}p{2.3in}>{\raggedright\arraybackslash}p{1.3in}@{}}
 \toprule
 Flag & Value & Purpose \\
 \midrule
@@ -65,23 +65,26 @@ Shifts above $s_c$ (\wtthHaikuEpisodesAbove) and shifts completed but not planne
 
 \subsection{Reproduction}
 The repository README gives the commands; the main ones are:
-\begin{itemize}
+\begin{itemize}\raggedright
 \item \texttt{wtth manifest --phase core --verify}: start-up checks;
-\item \texttt{wtth run --phase <phase> --live}: one phase (the gates, then \texttt{core} and \texttt{sonnet});
+\item \texttt{wtth run --phase <phase> --live}: one phase (the gates, \texttt{core}, \texttt{sonnet});
 \item \texttt{wtth render --cell <cell> --seed <seed> --round <round> --slot <slot>}: print a prompt (withheld seeds need an explicit flag);
-\item \texttt{wtth audit}, \texttt{wtth gate} and \texttt{wtth status}: gate checks and progress.
+\item \texttt{wtth audit}, \texttt{wtth gate} and \texttt{wtth status}: gate checks and progress;
+\item \texttt{python -I -m wtth.judge} with \texttt{extract}, \texttt{validate} and \texttt{run --tier <tier>}: the judge;
+\item \texttt{python -I -m wtth.annotate} with \texttt{queues}, \texttt{export}, \texttt{import-labels}, \texttt{report} and \texttt{import-review}: the review queues;
+\item \texttt{python -I -m wtth.analysis run --strict}, with \texttt{--export-paper <dir>}: every number, table and figure of this paper.
 \end{itemize}
 Runs resume from the database after any interruption, and finished shifts are never touched.
-[A: add the judge, annotation and analysis-export commands once the analysis branch is merged.]
 
 \subsection{Software}
 Python \texttt{3.12.13}, the MCP Python SDK \texttt{1.30.0} (pinned below the major version that renamed its server class), and numpy, scipy, pandas, statsmodels and matplotlib at the versions in the lock file; this paper builds with tectonic.
 
 \subsection{Cost}
-All experiment agent calls, judge calls included, go to one API credit (D-001) under one ledger with a hard cap of \wtthDesignCapUsd, of which \wtthDesignJudgeReserveUsd{} is reserved for judging (D-005, D-009).
+All experiment agent calls, judge calls included, go to one API credit (D-001) under one ledger with a hard cap of \wtthDesignCapUsd, of which \wtthDesignJudgeReserveUsd{} was reserved for judging (D-005, D-009).
 A shift launches only if spend plus the worst case of calls in flight fits under the cap.
+After collection, and before any judge label existed, the cap was raised so that the judge could use the rest of the credit (D-015).
 The annotation subagents ran on the author's subscription, outside the cap (D-011).
-Total spend: \wtthCostTotalUsd.
+Experiment calls cost \wtthCostMainUsd{} and judge calls \wtthCostJudgeUsd, \wtthCostTotalUsd{} in all; the Haiku core ran in \wtthOpsCoreWallHours{} hours, from \wtthOpsCoreStart{} to \wtthOpsCoreEnd.
 \begin{center}
 \wtthTab{generated/analysis/tables/table_cost.tex}
 \end{center}

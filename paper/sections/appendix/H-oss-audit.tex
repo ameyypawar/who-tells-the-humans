@@ -26,7 +26,7 @@ Of the \wtthAuditN{} audited, \wtthAuditFullVerifyWord{} let peers fully verify 
 \end{table}
 
 \paragraph{Findings across frameworks.}
-\begin{enumerate}
+\begin{enumerate}\raggedright
 \item \textbf{Escalation tools answer only the caller.} No audited framework writes an escalation record that peers can read; peers see only the claimant's words.
 \item \textbf{Frameworks harden against peers' instructions, not their claims.} Google ADK's documentation says a peer payload ``has to be believed rather than merely obeyed'', and Claude Code treats a relayed approval claim as untrusted input.
 \item \textbf{Action records exist but are hidden from peers.} AutoGen's events are ``not expected to be processed by other agents'', Magentic-One drops tool-call events, and two options of the OpenAI Agents SDK (\texttt{remove\_all\_tools}, \texttt{nest\_handoff\_history}) flatten them.

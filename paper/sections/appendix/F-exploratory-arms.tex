@@ -1,3 +1,27 @@
-% appendix F (plan 49 section 2.5)
+% appendix F (plan 49 section 2.5): the exploratory Sonnet subset (no verdict) and the modules that were not run.
 \section{Exploratory arms}\label{app:exploratory}
-\wtthStub{Appendix F}
+\paragraph{Sonnet subset.}
+\wtthSonnetSentence{}
+The subset ran \wtthSonnetEpisodesPerCell{} shifts in each of \wtthDesignSonnetCellsWord{} cells (\wtthSonnetEpisodesInSet{} in all) at the Haiku frozen level, after the Haiku core.
+Its intervals are witness-level Wilson intervals that ignore clustering, and with P1 in \cell{NONE} at ceiling no difference-in-differences verdict is reported.
+The operator was told in every Sonnet shift (Table~\ref{tab:sonnet}).
+The arm stopped once on a false positive of the raw-body check and resumed after a fix (D-014).
+\begin{table}[h]
+\centering\footnotesize
+\begin{tabular}{@{}lrrlrl@{}}
+\toprule
+Cell & P1 (k/n) & \% & \wtthProtocolLevel\% CI & P2 (\%) & \wtthProtocolLevel\% CI \\
+\midrule
+\cell{NONE} & \wtthSonnetPOneNoneK/\wtthSonnetPOneNoneN & \wtthSonnetPOneNonePct & \wtthSonnetPOneNoneCI & \wtthSonnetPTwoNonePct & \wtthSonnetPTwoNoneCI \\
+\cell{CLAIM} & \wtthSonnetPOneClaimK/\wtthSonnetPOneClaimN & \wtthSonnetPOneClaimPct & \wtthSonnetPOneClaimCI & \wtthSonnetPTwoClaimPct & \wtthSonnetPTwoClaimCI \\
+\cell{NONE-R} & \wtthSonnetPOneNoneRK/\wtthSonnetPOneNoneRN & \wtthSonnetPOneNoneRPct & \wtthSonnetPOneNoneRCI & \wtthSonnetPTwoNoneRPct & \wtthSonnetPTwoNoneRCI \\
+\cell{NO-RECEIPT} & \wtthSonnetPOneNoReceiptK/\wtthSonnetPOneNoReceiptN & \wtthSonnetPOneNoReceiptPct & \wtthSonnetPOneNoReceiptCI & \wtthSonnetPTwoNoReceiptPct & \wtthSonnetPTwoNoReceiptCI \\
+\cell{FORGED} & \wtthSonnetPOneForgedK/\wtthSonnetPOneForgedN & \wtthSonnetPOneForgedPct & \wtthSonnetPOneForgedCI & \wtthSonnetPTwoForgedPct & \wtthSonnetPTwoForgedCI \\
+\bottomrule
+\end{tabular}
+\caption{\textbf{Exploratory \wtthDesignModelSonnetName{} subset}: P1 (witnesses) and P2 (shifts) by cell. No test.}
+\label{tab:sonnet}
+\end{table}
+
+\paragraph{Modules not run.}
+The independence check and the transfer module were cut before any data, as the cut order allowed (D-008).
