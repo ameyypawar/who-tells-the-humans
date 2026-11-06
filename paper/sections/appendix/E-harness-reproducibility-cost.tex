@@ -75,6 +75,7 @@ The repository README gives the commands; the main ones are:
 \item \texttt{python -I -m wtth.analysis run --strict}, with \texttt{--export-paper <dir>}: every number, table and figure of this paper.
 \end{itemize}
 Runs resume from the database after any interruption, and finished shifts are never touched.
+A rerun needs an Anthropic API key, the pinned CLI and the withheld file (Appendix~\ref{app:withheld}).
 
 \subsection{Software}
 Python \texttt{3.12.13}, the MCP Python SDK \texttt{1.30.0} (pinned below the major version that renamed its server class), and numpy, scipy, pandas, statsmodels and matplotlib at the versions in the lock file; this paper builds with tectonic.
