@@ -26,12 +26,12 @@ The deployer rule under test: \emph{a receipt is written by the channel, never b
 % of PREREG section 11 (a rejection opposite to the prediction still counts, so the sequence goes on). Review 2 S1: in the
 % core every P1 came from the keyword rule (the judge path decided none), with the model-coded check of D-024.
 \paragraph{Outcomes and analysis.}\label{sec:outcomes}
-P1 (``told ops''): a witness sent a note about the violation by round 5, as decided by a pre-registered keyword rule or, for other notes, by the judge; in the core the judge path decided \wtthHaikuKwCheckPOneLabelOnlyK{} of the \wtthHaikuKwCheckPOneK{} witnesses with P1, so P1 rests on the keyword rule alone, and the final labels code \wtthHaikuKwCheckMatchedFinalPct\% of its matched notes as about the violation (model-coded, post hoc; D-024).
+P1 (``told ops''): a witness sent a note about the violation by round 5, as decided by a pre-registered keyword rule or, for other notes, by the judge, which in the core decided \wtthHaikuKwCheckPOneLabelOnlyK{} of \wtthHaikuKwCheckPOneK{} witnesses with P1, so P1 rests on the keyword rule (the final labels code \wtthHaikuKwCheckMatchedFinalPct\% of its matches as about the violation; model-coded, post hoc, D-024).
 P2 (``operator never told''): no witness in the shift has P1, in the \wtthDesignPTwoCellsWord{} cells where C did not really report.
-\Ptwop{} (``never told by any route'') also treats a board post about the violation addressed to ops as telling them.
-Secondary outcomes include alert load (violation notes per shift), false reports and debriefs.
+\Ptwop{} (``never told by any route'') also counts a board post about the violation addressed to ops.
+Alert load counts violation notes per shift.
 H1 to H3 are tested in a fixed sequence, two-sided at $\alpha = \wtthDesignAlpha$, stopping at the first whose null is not rejected (a rejection opposite to the prediction still counts, so the sequence continues), on \Done{} $=$ P1(\cell{NONE}) $-$ P1(\cell{CLAIM}), \Dtwo{} $=$ \Done{} $-$ [P1(\cell{NONE-R}) $-$ P1(\cell{NO-RECEIPT})] and \Dthree{} $=$ P1(\cell{NO-RECEIPT}) $-$ P1(\cell{FORGED}), each predicted positive.
-A null is rejected only if the \wtthProtocolLevel\% interval of a shift-level cluster bootstrap excludes zero (planning power: Appendix~\ref{app:predictions}).
+A null is rejected only if the \wtthProtocolLevel\% interval of a shift-cluster bootstrap excludes zero (power: Appendix~\ref{app:predictions}).
 
 % Box 1 is defined here so it floats to the page after the Methods heading; Table 1 (cells at a glance) is defined in
 % the introduction, next to Figure 1, where the cell names are first used.
@@ -48,17 +48,17 @@ In \cell{FORGED} C's post adds a typed line in the log layout (withheld), and th
 % PREREG sections 14, 15, 21; D-001, D-002, D-005, D-007, D-009, D-011; configs/*.
 \paragraph{Execution.}\label{sec:execution}
 Each witness turn is one stateless call to \wtthDesignModelHaikuName{} at effort \wtthDesignEffort{} (no temperature control) through a pinned Claude Code CLI (\wtthDesignCliVersion) in \texttt{--bare} mode with no built-in tools (Appendix~\ref{app:harness}); technical failures are rerun on the same seed, and refusals and malformed calls are data.
-Pilot gates, never pooled with the data, checked integrity (G0), froze V's clarity level (G1: pilot P1 in \cell{NONE} was above the \wtthDesignGOneCeiling\% ceiling at every level tried, so the least clear, \wtthGateFrozenLevel, was frozen; D-013) and confirmed that witnesses read the log (G2; Appendix~\ref{app:gates}).
+Pilot gates, never pooled with the data, checked integrity (G0), froze V's clarity level (G1: pilot P1 in \cell{NONE} topped the \wtthDesignGOneCeiling\% ceiling at every level tried, so the least clear, \wtthGateFrozenLevel, was frozen; D-013) and confirmed witnesses read the log (G2; Appendix~\ref{app:gates}).
 The judge (\wtthDesignModelJudgeName, also the exploratory subjects' model) is not told the cell, seed, model or purpose.
 % D-020: the decisions were pre-filled by a second Claude pass and approved unchanged; never say the author reviewed items.
 % The audit pass ran on the proposer's model (Claude Opus 5.5, the annotator macro), so it is not independent of it.
-Review-queue labels are model-proposed (\wtthDesignModelAnnotatorName, without the judge's labels), AI-audited (a second \wtthDesignModelAnnotatorName{} pass, not independent of the proposals, pre-filled all \wtthReviewReviewed{} decisions) and author-approved (unchanged: correction rate \wtthDesignReviewAuthorChanged{} of \wtthReviewReviewed; D-020), not human labels; all agreement is model--model (Appendix~\ref{app:judge}).
+Review-queue labels are model-proposed (\wtthDesignModelAnnotatorName, without the judge's labels), AI-audited (a second \wtthDesignModelAnnotatorName{} pass, not independent of the proposals, pre-filled all \wtthReviewReviewed{} decisions) and author-approved (\wtthDesignReviewAuthorChanged{} of \wtthReviewReviewed{} corrected; D-020), not human labels; all agreement is model--model (Appendix~\ref{app:judge}).
 
 % PREREG header, sections 17 and 23; tag prereg-v1; DEVIATIONS.md; research/38, 46, 48; wp6 commit 96f0f93.
 % "Public": the gist is public at the tag date; the repository goes public at submission (plan 49 section 4.1 item 8).
 \paragraph{Pre-registration, deviations and what did not work.}\label{sec:integrity}
-PREREG v1 froze on \wtthDesignPreregFrozenDate; the tag \texttt{prereg-v1} records its SHA-256, also posted in a public gist on \wtthDesignPreregGistDate, before any data.
-Every later change is logged with its timing (D-001 to D-013 before any confirmatory data, D-014 to D-019 before any review report, D-020 after the review was imported, and D-021 to \wtthDesignDeviationsLastHead, post hoc analyses and follow-up cells, after the strict analysis), and the witness-visible ones are identical across cells (Appendix~\ref{app:deviations}).
+PREREG v1 froze on \wtthDesignPreregFrozenDate; tag \texttt{prereg-v1} records its SHA-256, also posted in a public gist on \wtthDesignPreregGistDate, before any data.
+Every later change is logged with its timing (D-001 to D-013 before any confirmatory data, D-021 to \wtthDesignDeviationsLastHead{} after the strict analysis; Appendix~\ref{app:deviations}), and witness-visible ones match across cells.
 Separate Claude reviewer agents found validity bugs before any confirmatory data, all fixed (Appendix~\ref{app:integrity}).
-What did not work: a void first G0 run (D-012), a judge prompt revised once (D-016), a voided duplicate review draw (D-019), the declined blind human check (D-018), two stretch arms not run (D-008), and a deviations log that, until D-020, misstated who made the review decisions.
+What did not work: a void first G0 run (D-012), a judge prompt revised once (D-016), a voided duplicate draw (D-019), the declined blind human check (D-018), two unrun stretch arms (D-008), and a deviations log that, until D-020, misstated who decided the reviews.
 % G2 passed without the legibility fix (FX-1 not applied; gate log).

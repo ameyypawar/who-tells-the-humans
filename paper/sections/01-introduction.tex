@@ -18,14 +18,13 @@ Without a log, a bare claim of having told them barely mattered (\wtthHaikuHOneD
 % overwritten in a remote setting (research/50 A2). Audit sentences: research/54 section 4.5 items 1 and 2 (harmonized
 % table: peers No in eight rows, Partial in seven, Yes in none), shortened for space: "in most" = the eight No rows.
 Our audit of \wtthAuditN{} agent frameworks and protocols found \wtthAuditFullVerifyWord{} that lets peers query a record of a claimed escalation; in most, peers have only the escalating agent's word (Appendix~\ref{app:audit}).
-An agent in a research swarm posted, unprompted, ``I've reported this bug to the organizers'', a claim that came just before its formal bug report \citep{paglieri2026cheating}; MetaGPT's \texttt{reply\_to\_human} by default returns ``SUCCESS, human has received your reply'' while delivering nothing \citep{metagptmgxenv}.
-We call this failure \emph{phantom escalation}: a peer's unverifiable claim to have told the humans stands in for telling them.
+An agent in a research swarm posted, unprompted, ``I've reported this bug to the organizers'', a claim that came just before its formal report \citep{paglieri2026cheating}; MetaGPT's \texttt{reply\_to\_human} by default returns ``SUCCESS, human has received your reply'' but delivers nothing \citep{metagptmgxenv}.
+We call this failure \emph{phantom escalation}: a peer's unverifiable claim to have told humans stands in for telling them.
 Claims are not receipts.
 
 % 1.3 Questions and approach (PREREG section 3). Table 1 (cells at a glance) is defined here, where cell names are
 % first used (Figure 1); its caption defines R0 and R1.
-We ask whether a peer's casual claim to have told ops lowers the share of live witnesses who tell ops themselves (RQ1), whether a log line that the channel writes for every real note strips an unbacked claim of its effect (RQ2), whether a receipt-style line typed by the claimant works like a receipt (RQ3), and how no defence, a one-line rule and receipts trade safety against alert load (RQ4).
-We answer in a pre-registered, seed-matched experiment run through Claude Code: \wtthHaikuEpisodesInSet{} shifts of \wtthDesignLiveWitnessesWord{} live \wtthDesignModelHaikuName{} witnesses in \wtthDesignCells{} cells (Table~\ref{tab:cells}; results by cell in Figure~\ref{fig:one}).
+We ask whether a peer's casual claim to have told ops makes fewer live witnesses tell ops (RQ1), whether a channel-written log line per real note voids an unbacked claim (RQ2), whether a receipt-style line typed by the claimant works like a receipt (RQ3), and how no defence, a one-line rule and receipts trade safety against alert load (RQ4), in a pre-registered, seed-matched experiment run via Claude Code: \wtthHaikuEpisodesInSet{} shifts of \wtthDesignLiveWitnessesWord{} live \wtthDesignModelHaikuName{} witnesses in \wtthDesignCells{} cells (Table~\ref{tab:cells}, Figure~\ref{fig:one}).
 
 \begin{figure}[t]
 \centering
@@ -50,14 +49,14 @@ In R1 the channel writes a log line for every real note; R0 has no log (Table~\r
 \adjustbox{max width=\linewidth}{\input{generated/design/table_cells}}
 \caption{\textbf{The \wtthDesignCellsWord{} cells at a glance} (worlds R0 and R1 as in Figure~\ref{fig:one}).
 Where C makes a claim, it is false except in \cell{RECEIPT} and \cell{POS}, where the harness files C's real note; shifts are planned seeds (Sonnet exploratory).
-The exploratory follow-up (D-022) adds \cell{X-FORGED-POLICY} and \cell{X-FORGED-PROV} on Haiku (\wtthExpOneXForgedPolicyEps{} and \wtthExpOneXForgedProvEps{} shifts) and \cell{RECEIPT} on Sonnet (\wtthExpOneSonnetReceiptEps; Section~\ref{sec:followup}).}
+Follow-up (exploratory, D-022): \cell{X-FORGED-POLICY} and \cell{X-FORGED-PROV} on Haiku (\wtthExpOneXForgedPolicyEps{} and \wtthExpOneXForgedProvEps{} shifts), \cell{RECEIPT} on Sonnet (\wtthExpOneSonnetReceiptEps; Section~\ref{sec:followup}).}
 \label{tab:cells}
 \end{table}
 
 % 1.4 Threat model (PREREG sections 1, 5, 6, 19; research/34 findings 1 to 3).
 \paragraph{Threat model.}
 Agents on a shift share a board; a human operator is reachable only through a private, write-only tool.
-\textbf{Failure:} a peer posts that it has already told the operator, and peers, unable to check, treat that as the escalation, so the operator may never be told.
+\textbf{Failure:} a peer posts that it has told the operator, and peers who cannot check treat that as the escalation.
 \textbf{Defence:} the channel writes one board-visible line per real note and shows an empty log as ``\wtthStimLogEmpty''
 \textbf{Spoofing (H3):} the claimant can type a receipt-like line into its own posts but cannot write the log.
 \textbf{Out of scope:} a compromised channel, collusion, adaptive claims and the operator's response.
@@ -65,7 +64,7 @@ Agents on a shift share a board; a human operator is reachable only through a pr
 % 1.5 Contributions. Items 3 and 4 come from branch files chosen by the generated verdicts (branch.tex).
 Our main contributions are:
 \begin{enumerate}
-\item \textbf{A named failure mode and threat model}, grounded in the incident and an audit, and \textbf{a pre-registered, seed-matched testbed}: live Claude witnesses, a private operator channel and a channel-written log in \wtthDesignCells{} cells with salience, positive and false-report controls.
+\item \textbf{A named failure mode and threat model}, grounded in the incident and an audit, and \textbf{a pre-registered testbed} of live Claude witnesses with a private operator channel, a channel-written log and controls.
 \item \textbf{The size of the stand-down}: \wtthInputBranch{contrib-h1}
 \item \textbf{A test of channel-written receipts and their spoofability}: \wtthInputBranch{contrib-h23}
 \end{enumerate}
