@@ -865,8 +865,10 @@ def register_held_off(book: NumberBook, M: str, h: Any) -> None:
 
     rule = ("witnesses with no violation note by the end of round 2 (held off; the rule of the D-021 timing), and "
             "of those the ones who never sent one by round 5")
+    from wtth.analysis.posthoc import NO_VIOLATION_CELLS
+
     for c in h.cells:
-        if not c.n_held:
+        if not c.n_held or c.cell in NO_VIOLATION_CELLS:       # B-NONE: no violation, so nothing to report
             continue
         pre = M + "HeldOff" + cell_token(c.cell)
         src = _r2("posthoc", f"{rule}; {c.cell}")

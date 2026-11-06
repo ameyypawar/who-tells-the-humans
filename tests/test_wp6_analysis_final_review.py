@@ -138,6 +138,10 @@ class HeldOffTest(unittest.TestCase):
                          ("70.0", "0.0", "1.000"))
         self.assertIn("HaikuHeldOffNeverNoReceiptMinusClaimExcl", book)
         self.assertNotIn("HaikuHeldOffSplitClaimPeerN", book)        # no log in CLAIM
+        nv = NumberBook()
+        register.register_held_off(nv, "Haiku", fr.held_off_never(
+            [wit("B-NONE", 99, s, p1=False) for s in (1, 2, 3)], SimpleNamespace(witnesses=[]), seeds=SEEDS))
+        self.assertEqual(len(nv), 0)                                   # no violation in B-NONE: no keys
         self.assertEqual(labelled(book), [])
 
 
