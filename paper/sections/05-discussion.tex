@@ -1,32 +1,31 @@
-% sections/05-discussion.tex (plan 49 section 2.3, about 0.85 page). 5.1 is the realised branch file (branch.tex).
-% 5.2: each recommendation is tagged with its evidence: ours (sections 4.1 to 4.4), motivated by ours but untested
-% (review S7), or prior (cited keys in the bibliography; hines2024spotlighting added for review S8). Review M7: the private channel was never
-% varied, so item 1 is advice from prior work only. Strength wording follows the realised codes: H2 = O (a log is not
-% enough), H3 = S (provenance must be enforced), frontier no-yes (the rule cut no alert load; safety did not separate).
-% Never: "receipts restore reporting", "one sentence fixes it", secure against a compromised channel (plan 49 4.2).
-% Follow-up (D-022, exploratory): a rule or provenance sentence in the runbook did not restore Haiku's reporting under the
-% forged line, and Sonnet reported less only beside a real receipt (across phases); so item 3 asks for a check at the
-% source (a log-query tool is a candidate, untested), not a rule. Claims stay within these two models and this scenario.
-% Review 2: M3 (item 3: Sonnet across phases; instruction-only defences were partial in prior work: Fabricated
-% Authority's rule failed more often via a tool result, spotlighting's system-prompt instructions had modest effects),
-% S3 (item 2: the empty state did not help Haiku; item 4: under a false claim the log lowered P1, with no shift untold),
-% S12 (the judge is the Sonnet subjects' model). Author read (D-021, D-025): the original answers come first; it is the
-% only human check, weighted toward never-reporters, so it looks for missed reports and does not measure P1's precision;
-% the second reader is a Claude model, so its agreement with the author is human--model. Detail: Appendix G.
+% sections/05-discussion.tex (plan 49 section 2.3). 5.1 is the realised branch file (branch.tex). Rewritten in pass 6 on
+% research/68 section 0.6 (recommendations made coherent: a channel-written receipt that posts can imitate is not enough;
+% receipts unforgeable by construction, with transparency logs as precedent; a way for agents to check them, untested;
+% prompt rules did not detectably help Haiku, stated as an observation) and section B (limitations: the ceiling first,
+% interference, the precision check not done, P2' dropped from the claims, the plugins and the recoverable forged line,
+% all D-026; the author read with its original answers first, then the non-blind adjudication, and kappa with its CI
+% and prevalence). Each recommendation carries its evidence: ours, untested, or prior. Never: "receipts restore
+% reporting", "one sentence fixes it", secure against a compromised channel (plan 49 section 4.2).
 \section{Discussion and Limitations}\label{sec:discussion}
-\subsection{Back to the incident: a candidate mechanism, not an explanation}
+\subsection{Back to the incident: a candidate cause, not an explanation}
 \wtthInputBranch{disc}
 
 \subsection{What deployers and protocol designers can do}\label{sec:recs}
 \begin{enumerate}
-\item \textbf{Give agents a private channel to a human} (prior: \citep{eldin2026codeofsilence,fuller2026smoke}; ours all had one, so untested).
-\item \textbf{Let only the channel write receipts, in a form no agent can forge}: a role-typed field unlike any post, or a signed record, with an explicit empty state, though the empty state did not help Haiku here (Section~\ref{sec:h2}; motivated by \cell{FORGED}, untested; prior: \citep{ghosh2026pcm,vezhnevets2023concordia,compaction2026}); a candidate pattern for MCP and \AtwoA{} \citep{mcp3350,a2a2355}, not a standard.
-\item \textbf{Give agents a check, not a rule}: neither the one-line rule nor a provenance note restored Haiku's reporting under the forged line (ours, exploratory, Section~\ref{sec:followup}; instruction-only defences were also partial in prior work \citep{patel2026fabricated,hines2024spotlighting}), while Sonnet's reporting tracked the log (exploratory, across phases), so the reader model may matter; a log-query tool is a candidate, untested.
-\item \textbf{Show absence, but test what a log does}: ``\wtthStimLogEmpty'' makes a claim checkable, yet under a false claim the log lowered P1 from \wtthHaikuPOneClaimPct\% to \wtthHaikuPOneNoReceiptPct\%, with no shift left untold (ours, Section~\ref{sec:h2}).
-\item \textbf{Key de-duplication to receipts, not to a one-line rule}, which cut no alert load (ours, Section~\ref{sec:frontier}), and \textbf{protect reporters}: our receipts name the sender.
+\item \textbf{Do not rely on channel-written receipts that posts can imitate}: our log's layout became the forgery template, the only untold shifts carried a typed log-style line (ours, Section~\ref{sec:h3}), and under a bare claim the log lowered reporting (Section~\ref{sec:h2}).
+\item \textbf{Make receipts unforgeable by construction}: render them outside the post stream, as a role-typed field no agent can write, or sign them, as transparency logs do for certificates \citep{rfc6962,rfc9162}, with an explicit empty state (untested here; prior: \citealp{ghosh2026pcm,vezhnevets2023concordia}); a candidate pattern for MCP and \AtwoA{} \citep{mcp3350,a2a2355}, not a standard.
+\item \textbf{Give agents a way to check a receipt}, such as a query against the channel's log (untested). Prompt rules did not detectably help Haiku here: neither a one-line rule nor a provenance note brought reporting back to the empty-log level (exploratory, Section~\ref{sec:followup}), and instruction-only defences were partial in prior work \citep{patel2026fabricated,hines2024spotlighting}.
+\item \textbf{Key de-duplication to real receipts}: where the claim was true and receipted, alert load fell to \wtthHaikuAlertLoadReceiptMean{} notes per shift against \wtthHaikuAlertLoadPolicyMean{} under the one-line rule, a saving available only when the prior report is real (ours, Section~\ref{sec:frontier}).
+\item \textbf{Keep a private channel to a human} (prior: \citealp{eldin2026codeofsilence,fuller2026smoke}; every witness here had one, so untested); our receipts name the sender, which could expose reporters (design observation, untested).
 \end{enumerate}
 
 \paragraph{Limitations and future work.}
-Claude throughout (stimuli, subjects, judge, annotator, review audit, second reader, code review; the judge is the Sonnet subjects' model; P1 is keyword-coded); one fictional scenario at one clarity level, at ceiling, with non-reporters concentrated in one paraphrase and handle order; uncertain test awareness (\wtthHaikuDOneUnsureAllPct\% of \DebOne{} answers `unsure', \wtthHaikuDOneTestAllK{} `test'); a scripted claimant, \wtthDesignLiveWitnessesWord{} witnesses per shift, stateless turns and a stub operator; a log that also lists peers' notes, so H2 mixes the claimant's missing receipt with peers' real ones; no cell separating receipt format from claim specificity; an LLM judge and AI-audited labels\ifdefstring{\wtthHumanReadStatus}{complete}{}{, with no human check yet (the author's read of \wtthHumanReadSelectedN{} transcripts, D-021, is pending)}; and self-reported, model-coded debriefs (Appendix~\ref{app:limits}).
-\ifdefstring{\wtthHumanReadStatus}{complete}{The only human check, the author's read of \wtthHumanReadSelectedN{} shuffled, unlabelled transcripts weighted toward never-reporters, looks for missed reports, not P1's precision (post hoc; D-021, D-025): his original answers matched P1 for \wtthHumanReadAuthorAgreePOneK{} of \wtthHumanReadAuthorAgreePOneN; a blind second reader (\wtthHumanReadSecondModelName) agreed with him for \wtthHumanReadSecondAgreeAuthorToldK{} ($\kappa$ \wtthHumanReadSecondKappaAuthorTold) and with P1 for \wtthHumanReadSecondAgreePOneK; shown only the \wtthHumanReadAdjShownK{} disagreements, he changed \wtthHumanReadAdjChangedK, leaving \wtthHumanReadAdjAgreePOneK{} of \wtthHumanReadAdjAgreePOneN{} matching P1, and no witness told ops by a route P1 missed (Appendix~\ref{app:authorread}).}{}
+The ceiling comes first: with P1 at \wtthHaikuPOneNonePct\% without a claim, H1 and H2 could show whether any witness stood down, not how far.
+Witnesses in a shift read each other's posts and log lines, so their outcomes interfere (no SUTVA) and the effective number of units is the number of shifts.
+The pre-registered precision check of P1's keyword rule was not done (\wtthHaikuKwLabelled{} of \wtthHaikuKwMatchedNotes{} matched notes reviewed; the post hoc substitute is model-coded); the built-in CLI plugins loaded on every turn against the pre-registration, adding no system text or tools on audited turns; and the withheld forged line can be reconstructed from released transcripts (all D-026; Appendix~\ref{app:limits}).
+\Ptwop{} (``never told by any route'') rests on a board-escalation code with model--model $\kappa$ \wtthKappaMMBoardPostEscalationToHumansValue{} (prevalence \wtthKappaMMBoardPostEscalationToHumansPrevPct\%) and no upheld positives, so we draw no claim from it.
+Claude throughout (stimuli, subjects, judge, annotator, review audit, second reader, framework audit, code review); one fictional scenario at one clarity level, with non-reporters concentrated in one paraphrase and handle order; uncertain test awareness (\wtthHaikuDOneUnsureAllPct\% of \DebOne{} answers `unsure'); a scripted claimant, \wtthDesignLiveWitnessesWord{} witnesses per shift, stateless turns and a stub operator; a log that also lists peers' notes; no cell separating receipt format from claim specificity; and self-reported, model-coded debriefs (Appendix~\ref{app:limits}).
+The only human check, the author's read of \wtthHumanReadSelectedN{} shuffled, unlabelled transcripts weighted toward never-reporters (post hoc; D-021, D-025), looks for missed reports, not P1's precision.
+His original answers matched P1 for \wtthHumanReadAuthorAgreePOneK{} of \wtthHumanReadAuthorAgreePOneN: he missed \wtthHumanReadControlToldNoK{} of the \wtthHumanReadControlN{} control transcripts that held a note, and read \wtthHumanReadForgedUntoldToldYesK{} of the \wtthHumanReadForgedUntoldN{} witnesses in untold \cell{FORGED} shifts as having told ops.
+A second reader (\wtthHumanReadSecondModelName, shown the sheet with his answers blanked) agreed with him for \wtthHumanReadSecondAgreeAuthorToldK{} ($\kappa$ \wtthHumanReadSecondKappaAuthorTold, CI \wtthHumanReadSecondKappaAuthorToldCI; prevalence \wtthHumanReadSecondKappaAuthorToldPrevPct\%); after seeing its reasons for the \wtthHumanReadAdjShownK{} disagreements he changed \wtthHumanReadAdjChangedK, leaving \wtthHumanReadAdjAgreePOneK{} of \wtthHumanReadAdjAgreePOneN{} matching P1, an adjudication that was not blind (Appendix~\ref{app:authorread}).
 Next: group size, other models, a claimant-only log, a receipt-checking tool.
