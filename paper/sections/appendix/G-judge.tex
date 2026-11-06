@@ -1,8 +1,9 @@
 % appendix G (plan 49 section 2.5). Sources: prompts/judge_rubric.md, D-006, D-007, D-011, D-016 to D-019,
 % research/47 sections 2.3 to 2.11. Wording rule: labels are model-proposed, AI-audited and author-approved; never
 % "blind", "hand", "human-labelled" or "inter-rater"; agreement is always "model--model" (plan 49 4.2 items 12, 13).
-% The 212 review decisions were written by a second Claude pass (the audit) and approved by the author unchanged;
-% the generated tables label that step "AI-audited, author-approved review". There is no human-judge kappa (D-018).
+% The 212 review decisions were pre-filled by a second Claude pass (the audit) and approved by the author unchanged
+% (D-020; correction rate 0 of 212); never say the author decided or reviewed items one by one. The generated tables
+% label that step "AI-audited, author-approved review". There is no human-judge kappa (D-018).
 \section{Judge rubric, validation and agreement}\label{app:judge}
 
 \subsection{What the judge codes}
@@ -34,21 +35,23 @@ Coverage was \wtthSubtierCovJOneaPct\% for the P1-path notes of the first tier a
 A fresh \wtthDesignModelAnnotatorName{} subagent per masked batch proposed a label, with a one-line rationale, for each queued item without seeing the judge's label (D-011).
 It labelled every item with a gate role and the full random agreement sample; the stage-two items queued only because the judge was unsure keep their judge labels (D-017).
 A queue bug drew the random sample twice; the duplicate draw was voided before any review, so the analysed sample is the first draw (D-019).
-A second Claude pass then audited the queued items and recorded a decision for each: approve the proposal, correct it, or take the judge's label where the two models disagreed.
-It changed \wtthReviewCorrectionRate\% of the \wtthReviewReviewed{} decisions, which cover \wtthReviewShare\% of judged items, including every judge-coded item that P1 and \Ptwop{} depend on.
-The author approved the audited review as it stood and changed none of its decisions.
+D-018 planned that the author would decide each queued item.
+Instead (D-020), at the author's request, a second Claude pass in a fresh context, given the review instructions and the label definitions, read all \wtthReviewReviewed{} review blocks and pre-filled a decision for each: approve the proposal, correct it, or take the judge's label.
+It changed \wtthReviewCorrectionRate\% of them, all \DebOne{} verdicts, and approved the rest; the decisions cover \wtthReviewShare\% of judged items, including every judge-coded item that P1 and \Ptwop{} depend on.
+The author read the pre-filled file and approved it as it stood, changing none of the decisions: his correction rate is \wtthDesignReviewAuthorChanged{} of \wtthReviewReviewed.
 Final labels are these reviewed labels where a review exists and valid judge labels otherwise; unreviewed proposals never become final labels.
 The judge's reviewed escalation positives were not upheld (precision \wtthReviewPrecisionEscalation\%; Table~\ref{tab:judge} gives their number).
 
-\subsection{No blind human labels}
-The planned author-blind sample was drawn but declined before any review report was opened (D-018; blind labels: \wtthBlindN).
-No label in this study was produced by a human who had not seen a model's label, so there is no human--judge $\kappa$ and no human reliability estimate; every agreement figure below is model--model.
+\subsection{No human labels}
+The planned author-blind sample was drawn but declined before any review report was opened (D-018; blind labels: \wtthBlindN), and the author changed none of the audited decisions (D-020).
+No label used here was produced or corrected by a human, so there is no human--judge $\kappa$ and no human reliability estimate; every agreement figure below is model--model.
 
 \subsection{Model--model agreement}
 Agreement between the judge and the proposer, before review, is Cohen's $\kappa$ per label with a bootstrap interval (Table~\ref{tab:judge}).
 It was high where the primary outcomes depend on the judge: whether a note refers to the violation ($\kappa$ \wtthKappaMMNoteRefersToViolationValue), whether a post is about it (\wtthKappaMMBoardPostAboutViolationValue), and claims of having told ops (\wtthKappaMMBoardPostClaimPresentValue).
 It was high for the \DebOne{} verdict (\wtthKappaMMDOneAnswerDOneVerdictValue), the belief that ops was told (\wtthKappaMMDTwoAnswerBelievesOpsToldValue) and citing the log (\wtthKappaMMDTwoAnswerBasisLogLineValue); across the debrief reason codes it ranged from \wtthKappaMMDTwoAnswerReasonCodesUnsureItWasAViolationValue{} to \wtthKappaMMDTwoAnswerReasonCodesSomeoneElseToldValue.
-Escalation to humans on the board was too rare for $\kappa$ to mean much: the models agreed on \wtthKappaMMBoardPostEscalationToHumansAgree\% of posts, never on a positive ($\kappa$ \wtthKappaMMBoardPostEscalationToHumansValue).
+Escalation to humans on the board was too rare for $\kappa$ to mean much: of \wtthKappaMMBoardPostEscalationToHumansN{} posts in the agreement sample, the judge marked \wtthKappaMMBoardPostEscalationToHumansJudgePosK{} and the proposer \wtthKappaMMBoardPostEscalationToHumansClaudePosK{} as escalations, with \wtthKappaMMBoardPostEscalationToHumansBothPosK{} in common (agreement \wtthKappaMMBoardPostEscalationToHumansAgree\%, $\kappa$ \wtthKappaMMBoardPostEscalationToHumansValue).
+With the reviewed escalation positives not upheld, \Ptwop{} equals P2 in every cell (Table~\ref{tab:ptwo}), so it adds no evidence independent of P2 here.
 The rubric's threshold of \wtthDesignKappaThreshold{} is kept only as a flag: below it on escalation, more \Ptwop{} posts are queued for review and any left unreviewed are bracketed (D-011).
 
 \begin{table}[p]

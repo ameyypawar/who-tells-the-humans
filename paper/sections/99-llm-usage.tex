@@ -1,8 +1,9 @@
 % sections/99-llm-usage.tex (plan 49 section 2.6 item 4; template order: last, after the appendices).
 % Author decision: research/51 item 3 (who writes). Do not soften the wording of (d). This is the one public
 % artifact where AI use must be disclosed in full (plan 49 section 4.1 item 3). Never say the author wrote the text.
-% (d) follows D-017 to D-019 and the review as it happened: fresh Opus annotators proposed labels blind to the judge, a
-% second Claude pass audited every queued decision, and the author approved the audited review unchanged (0 of 212).
+% (d) follows D-017 to D-020 and the review as it happened: fresh Opus annotators proposed labels without the judge's
+% labels, a second Claude pass pre-filled all 212 review decisions, and the author approved them unchanged (D-020;
+% correction rate 0 of 212). Never say the author decided or reviewed items one by one.
 \section*{LLM Usage Statement}
 \addcontentsline{toc}{section}{LLM Usage Statement}
 The author designed and directed this study and made or approved every decision recorded in the pre-registration and the deviations log.
@@ -25,8 +26,8 @@ Anything outside the playbook stopped the run for the author's decision.
 \paragraph{(d) Measurement.}
 \wtthDesignModelHaikuName{} and \wtthDesignModelSonnetName{} are the subjects, and \wtthDesignModelJudgeName{} is the LLM judge.
 Fresh \wtthDesignModelAnnotatorName{} subagents proposed a label, with a one-line rationale, for each item in the review queues without seeing the judge's labels.
-A second Claude pass audited these proposals and recorded a decision for each item: approve it, correct it, or take the judge's label where the two models disagreed.
-The author approved that audited review as it stood and changed none of its decisions.
+At the author's request, a second Claude pass in a fresh context, given the review instructions and the label definitions, read all \wtthReviewReviewed{} review blocks and pre-filled a decision for each: approve the proposal, correct it, or take the judge's label (D-020).
+The author read the pre-filled file and approved it as it stood, changing none of the \wtthReviewReviewed{} decisions; his correction rate is \wtthDesignReviewAuthorChanged{} of \wtthReviewReviewed.
 We therefore report model-proposed, AI-audited, author-approved labels.
 They are not blind or independent human labels.
 No blind human reliability check was done (the planned blind sample was declined, D-018), so there is no human--judge $\kappa$, and every agreement figure in this paper is model--model.

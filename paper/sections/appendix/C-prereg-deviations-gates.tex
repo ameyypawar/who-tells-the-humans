@@ -18,6 +18,8 @@ Void G0 run, its rerun on fresh pilot seeds, G1 and G2 & Table~\ref{tab:gatelog}
 Tag \texttt{frozen-v1} (commit \texttt{\wtthDesignFrozenTagCommit}) & before the core & git tag \\
 Haiku core & \wtthOpsCoreStart{} to \wtthOpsCoreEnd & run manifest \\
 Deviations D-014 to D-019 & after the core, before any review report & Appendix~\ref{app:deviations} \\
+Deviation D-020 (who made the review decisions) & after the review was imported & Appendix~\ref{app:deviations} \\
+Deviations D-021 and D-022 (post hoc analyses, author read, follow-up cells) & after the strict analysis & Appendix~\ref{app:deviations} \\
 Analysis snapshot & \texttt{\wtthSnapshotShaShort} & \texttt{numbers.json} \\
 \bottomrule
 \end{tabular}
@@ -35,13 +37,13 @@ We extend that list, here and in the README, to the research notes written after
 
 \subsection{Deviations}\label{app:deviations}
 Each entry in \texttt{DEVIATIONS.md} gives what changed, when, why, who decided and which analyses it touches.
-D-001 to D-013 precede all confirmatory data; D-014 to D-019 were recorded after the Haiku core had been collected (Table~\ref{tab:deviations} gives each entry's timing).
-None changes the cells, hypotheses, tests or the keyword rule.
-Three touch text a witness sees, each identically in every cell: the input schemas the pre-registration left open (D-005), rendering formats it left open (D-006), and the server name, which sets the prefix of every tool name (D-012).
+D-001 to D-013 precede all confirmatory data; D-014 to D-019 were recorded after the Haiku core had been collected and before any review report; D-020, recorded after the review was imported, corrects the record of who made the review decisions; and D-021 and D-022, recorded after the strict analysis, add post hoc analyses, an author read of transcripts and exploratory follow-up cells (Table~\ref{tab:deviations} gives each entry's timing).
+None changes the pre-registered cells, hypotheses, tests or keyword rule, and no confirmatory verdict depends on D-020 to D-022.
+Three touch text a witness sees in the pre-registered cells, each identically in every cell: the input schemas the pre-registration left open (D-005), rendering formats it left open (D-006), and the server name, which sets the prefix of every tool name (D-012).
 \begin{table}[h]
 \centering\footnotesize
 \input{generated/design/table_deviations}
-\caption{\textbf{Deviations D-001 to D-019.} Timing as recorded in each entry's heading.}
+\caption{\textbf{Deviations D-001 to \wtthDesignDeviationsLastHead.} Timing as recorded in each entry's heading.}
 \label{tab:deviations}
 \end{table}
 
@@ -100,14 +102,15 @@ They found these validity bugs, all fixed before any confirmatory data.
 \item \textbf{Refusals rerun.} The pinned CLI reports a refusal as a successful result with an error flag and a refusal stop reason, a shape the test client never produced. Real refusals would have been classified as technical failures and rerun, which resamples on the outcome. They are now data and never rerun (D-009).
 \item \textbf{An injected message.} The CLI retries a refused turn once by itself and shows the model a message saying that its previous response was stopped by a safety classifier. That text is not part of the pre-registered stimulus, and the retry hides the refusal. The retry is disabled in every turn (D-009).
 \item \textbf{False stops from model text.} Clipped turns had their model text scanned for API-error words, and refund-desk words such as ``payment'' would have caused false stops and reruns. Clips are now classified from the result record alone (D-009).
-\item \textbf{Floating-point verdicts.} Rates are ratios of integers, and floating-point subtraction left mathematically zero difference-in-differences slightly above or below zero. This could have rejected H2 at an interval endpoint of exactly zero, and it licensed the null claim at an upper bound of exactly \wtthProtocolMargin{} points, which the pre-registration forbids. The decision layer now uses exact arithmetic.
+\item \textbf{Floating-point verdicts.} Rates are ratios of integers, and floating-point subtraction left mathematically zero difference-in-differences slightly above or below zero. This could have rejected H2's null at an interval endpoint of exactly zero, and it licensed the null claim at an upper bound of exactly \wtthProtocolMargin{} points, which the pre-registration forbids. The decision layer now uses exact arithmetic.
 \item \textbf{Wrapped replies.} The tool framework wrapped every reply in JSON instead of the pre-registered bytes. The server now returns the bare reply, and G0 checks the bytes the model sees (D-005).
 \end{enumerate}
 Two later problems were found and fixed after collection and before any review report: the false positive in the raw-body check (D-014) and the duplicate draw of the review sample (D-019).
+A third was in the record, not the data: the paper review found that the deviations log did not say who made the review decisions, which D-020 now records.
 
 \subsection{Recorded predictions and power}\label{app:predictions}
 The pre-registration recorded these predictions before any run, from evidence on an earlier Claude generation (\texttt{claude-haiku-4-5}) that may not carry over.
-Each check is descriptive.
+Each check is descriptive, from the point estimate and its interval against the predicted region (post hoc rule, D-021).
 \begin{center}\footnotesize
 \begin{tabular}{@{}p{4.1in}l@{}}
 \toprule
@@ -120,6 +123,8 @@ Receipts: P1 in \cell{NO-RECEIPT} within \wtthDesignPredReceiptsWithin{} points 
 \bottomrule
 \end{tabular}
 \end{center}
-Recomputed at the frozen level, the effects detectable at \wtthDesignPowerPct\% power are \wtthHaikuPowerHOneMDE, \wtthHaikuPowerHTwoMDE{} and \wtthHaikuPowerHThreeMDE{} points for H1 to H3 (assumed intra-class correlation \wtthHaikuPowerRho, base rate \wtthHaikuPowerP).
-Under a true stand-down of zero, the H1 null rule is met with probability \wtthHaikuPowerHOnePNullDZero.
+Two checks need a word.
+The receipts gap was nominally inside its margin (\cell{NONE-R} $-$ \cell{NO-RECEIPT}: \wtthHaikuHTwoDeltaROne{} points, CI \wtthHaikuHTwoDeltaROneCI, an interval that crosses the margin), but with the log the claim's stand-down grew rather than shrank (H2 opposite to prediction), so the receipts prediction is not supported.
+\cell{POLICY} sat between \cell{CLAIM} and \cell{NONE} only nominally: \cell{POLICY} $-$ \cell{CLAIM} was \wtthHaikuPostHocPredPolicyMinusClaimDelta{} points (CI \wtthHaikuPostHocPredPolicyMinusClaimCI) and \cell{NONE} $-$ \cell{POLICY} \wtthHaikuPostHocPredNoneMinusPolicyDelta{} (CI \wtthHaikuPostHocPredNoneMinusPolicyCI), within noise.
+The power figures use the planning base rate of \wtthHaikuPowerP\%, not the realised ceiling, so they do not describe the realised precision: the effects detectable at \wtthDesignPowerPct\% power are \wtthHaikuPowerHOneMDE, \wtthHaikuPowerHTwoMDE{} and \wtthHaikuPowerHThreeMDE{} points for H1 to H3 (assumed intra-class correlation \wtthHaikuPowerRho), and under a true stand-down of zero the H1 null rule would be met with probability \wtthHaikuPowerHOnePNullDZero\%.
 \clearpage

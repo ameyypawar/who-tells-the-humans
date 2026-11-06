@@ -33,7 +33,7 @@ Our receipts name the sender, which could expose reporters; we did not test that
 
 \paragraph{Measurement.}
 P1 and P2 are mechanical: a keyword rule, with a judge path for unmatched notes; the planned precision check of the keyword rule was never reviewed (Appendix~\ref{app:judge}).
-\Ptwop{}, concern, test awareness and the debrief codes come from an LLM judge (\wtthDesignModelJudgeName) and from labels that a model proposed, a second Claude pass audited and the author approved unchanged.
+\Ptwop{}, concern, test awareness and the debrief codes come from an LLM judge (\wtthDesignModelJudgeName) and from labels that a model proposed and a second Claude pass audited, whose \wtthReviewReviewed{} pre-filled decisions the author approved unchanged (D-020).
 None of them is a blind human label (D-018), so their reliability rests on model--model $\kappa$ alone, which ranges from \wtthKappaMMDTwoAnswerReasonCodesUnsureItWasAViolationValue{} to \wtthKappaMMDTwoAnswerReasonCodesSomeoneElseToldValue{} across the debrief reason codes.
 Debrief answers are post-hoc self-reports, not evidence of a mechanism.
 

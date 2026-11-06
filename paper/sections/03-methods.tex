@@ -54,17 +54,18 @@ Shifts are planned seeds per cell; the Sonnet subset is exploratory.}
 
 % PREREG sections 14, 15, 21; D-001, D-002, D-005, D-007, D-009, D-011; configs/*.
 \paragraph{Execution.}\label{sec:execution}
-Each witness turn is one stateless call to \wtthDesignModelHaikuName{} at effort \wtthDesignEffort{} (no temperature control) through a pinned Claude Code CLI (\wtthDesignCliVersion) in \texttt{--bare} mode, with no CLAUDE.md, memory or built-in tools and the CLI's retry of refused turns off (Appendix~\ref{app:harness}).
-Technical failures are rerun on the same seed; refusals and malformed calls are data.
+Each witness turn is one stateless call to \wtthDesignModelHaikuName{} at effort \wtthDesignEffort{} (no temperature control) through a pinned Claude Code CLI (\wtthDesignCliVersion) in \texttt{--bare} mode, with no CLAUDE.md, memory or built-in tools (Appendix~\ref{app:harness}); technical failures are rerun on the same seed, and refusals and malformed calls are data.
 Pilot gates, never pooled with the data, checked integrity (G0), froze V's clarity level (G1: pilot P1 in \cell{NONE} was above the \wtthDesignGOneCeiling\% ceiling at every level tried, so the least clear, \wtthGateFrozenLevel, was frozen; D-013) and confirmed that witnesses read the log (G2; Appendix~\ref{app:gates}).
-The judge (\wtthDesignModelJudgeName) is blind to cell, seed, model and purpose.
-Review-queue labels were proposed by \wtthDesignModelAnnotatorName{} blind to the judge's labels, audited by a second Claude pass and approved by the author: they are not blind human labels, and all agreement is model--model (Appendix~\ref{app:judge}).
+The judge (\wtthDesignModelJudgeName) is not told the cell, seed, model or purpose.
+% D-020: the decisions were pre-filled by a second Claude pass and approved unchanged; never say the author reviewed items.
+Review-queue labels were proposed by \wtthDesignModelAnnotatorName{} without the judge's labels; a second Claude pass pre-filled all \wtthReviewReviewed{} review decisions, and the author approved them unchanged (correction rate \wtthDesignReviewAuthorChanged{} of \wtthReviewReviewed; D-020).
+The labels are therefore model-proposed, AI-audited and author-approved, not human labels, and all agreement is model--model (Appendix~\ref{app:judge}).
 
 % PREREG header, sections 17 and 23; tag prereg-v1; DEVIATIONS.md; research/38, 46, 48; wp6 commit 96f0f93.
 % "Public": the gist is public at the tag date; the repository goes public at submission (plan 49 section 4.1 item 8).
 \paragraph{Pre-registration, deviations and what did not work.}\label{sec:integrity}
 PREREG v1 froze on \wtthDesignPreregFrozenDate; the tag \texttt{prereg-v1} records its SHA-256, also posted in a public gist on \wtthDesignPreregGistDate, before any data.
-Every later change is logged with its timing (D-001 to D-013 before any confirmatory data, D-014 during the exploratory Sonnet arm, D-015 to D-019 after collection but before any review report), and the witness-visible ones are identical across cells (Appendix~\ref{app:deviations}).
+Every later change is logged with its timing (D-001 to D-013 before any confirmatory data; D-014 to D-019 during the Sonnet arm or after collection, before any review report; D-020 after the review was imported; D-021 and D-022, post hoc analyses and exploratory follow-up cells, after the strict analysis), and the witness-visible ones are identical across cells (Appendix~\ref{app:deviations}).
 Separate Claude reviewer agents found validity bugs before any confirmatory data, all fixed (Appendix~\ref{app:integrity}).
-What did not work: the first G0 run was void (the CLI rejected the server name), the judge prompt failed validation once on its format and was revised (D-016), a queue bug drew the review sample twice (the duplicate was voided; D-019), the blind human check was declined (D-018), and two stretch arms were not run (D-008).
+What did not work: a void first G0 run (D-012), a judge prompt revised once (D-016), a duplicate review draw (voided; D-019), the declined blind human check (D-018), two stretch arms not run (D-008), and a deviations log that, until D-020, misstated who made the review decisions.
 % G2 passed without the legibility fix (FX-1 not applied; gate log).
