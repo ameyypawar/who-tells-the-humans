@@ -72,7 +72,12 @@ class StreamsTest(unittest.TestCase):
     def test_streams_distinct_and_unknown_name(self) -> None:
         draws = {n: tuple(rngmod.stream(5, n).integers(0, 10 ** 9, size=3)) for n in rngmod.STREAMS}
         self.assertEqual(len(set(draws.values())), len(rngmod.STREAMS))
-        self.assertEqual(sorted(rngmod.STREAMS.values()), list(range(14)))
+        self.assertEqual(sorted(rngmod.STREAMS.values()), list(range(16)))
+        # the post-hoc (D-021) and exp1 (D-022) streams were appended; the 14 streams of the strict analysis keep theirs
+        frozen = ("h1", "h2", "h3", "h2_p2", "alert_load", "concern", "descriptive", "p1_any", "attempts", "test_aware",
+                  "kappa", "seed_paired", "sonnet", "misc")
+        self.assertEqual([rngmod.STREAMS[n] for n in frozen], list(range(14)))
+        self.assertEqual((rngmod.STREAMS["posthoc"], rngmod.STREAMS["exp1"]), (14, 15))
         with self.assertRaises(KeyError):
             rngmod.stream(1, "nope")
 

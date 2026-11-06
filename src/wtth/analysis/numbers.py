@@ -3,7 +3,9 @@
 Keys are letters only (digits spelled out) so `\\wtth<Key>` is a valid LaTeX control word. Formatting is fixed:
 decimals use ROUND_HALF_UP on the shortest decimal representation, proportions are percent with one decimal,
 differences are percentage points with one decimal, negatives are `\\ensuremath{-}x`, intervals read `lo to hi`,
-counts use `{,}` thousands separators, kappa has two decimals, USD is `\\$x.xx`.
+counts use `{,}` thousands separators, kappa has two decimals, USD is `\\$x.xx`. Added after the strict analysis
+(D-021): `prop2` is a percent with two decimals (small probabilities), `pval` a p-value with three decimals or
+`\\ensuremath{<}0.001`.
 """
 from __future__ import annotations
 
@@ -33,11 +35,14 @@ OUTCOME_TOKENS = {
     "phantom_any": "Phantom", "phantom_viol": "PhantomViol", "board_sub": "BoardSub"}
 STAT_TOKENS = ("K", "N", "Eps", "Pct", "Lo", "Hi", "CI", "Mean", "Delta", "Verdict", "Direction", "Status", "Sentence")
 KINDS = ("count", "plain", "prop", "pp", "ci", "kappa", "kappaci", "mean", "meanci", "pts", "usd", "verdict", "text",
-         "latex")
+         "latex", "prop2", "pval")
 VERDICTS = ("rejected", "not rejected", "rejected in the opposite direction", "descriptive", "unavailable",
             "no meaningful stand-down", "inconclusive", "equivalent", "not equivalent", "met", "not met",
             "not available", "predicted", "opposite", "zero", "confirmatory", "exploratory", "pass", "fail",
-            "yes", "no")
+            "yes", "no",
+            # recorded-prediction statuses (review M8; posthoc.prediction_checks)
+            "met nominally (within CI)", "not met (within CI)", "not supported (H2 opposite)",
+            "met nominally (H2 not rejected)")
 MINUS = r"\ensuremath{-}"
 
 
@@ -120,6 +125,12 @@ def fmt_value(value: Any, kind: str) -> str:
         return str(int(value)) if isinstance(value, (int, float)) and float(value) == int(value) else str(value)
     if kind == "prop":
         return _fixed(value, 1, 100)
+    if kind == "prop2":
+        return _fixed(value, 2, 100)
+    if kind == "pval":
+        if not 0 <= float(value) <= 1:
+            raise ValueError(f"p-value must be in [0, 1], got {value!r}")
+        return r"\ensuremath{<}0.001" if float(value) < 0.001 else _fixed(value, 3)
     if kind == "pp":
         return _pp(value)
     if kind == "ci":
@@ -217,8 +228,8 @@ class NumberBook:
         self.add(prefix + "CI", (r.lo, r.hi), "ci", source=src)
         self.add(prefix + "Cov", r.coverage, "prop", source=src, note="share of units with a known label")
 
-    def add_contrast(self, prefix: str, c: Contrast) -> None:
-        src = f"{c.name} stream={c.stream} B={c.B} level={c.level}"
+    def add_contrast(self, prefix: str, c: Contrast, *, source_suffix: str = "") -> None:
+        src = f"{c.name} stream={c.stream} B={c.B} level={c.level}" + source_suffix
         if is_count_mean_contrast(c.name):      # difference of mean notes per shift: not a proportion, no x100
             self.add(prefix + "Delta", c.estimate, "mean", source=src + " (notes per shift)")
             self.add(prefix + "Lo", c.lo, "mean", source=src)
