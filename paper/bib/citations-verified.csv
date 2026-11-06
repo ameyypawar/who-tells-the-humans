@@ -89,3 +89,7 @@ diekmann1985volunteer,https://api.crossref.org/works?query.bibliographic=Diekman
 metagptmgxenv,https://github.com/FoundationAgents/MetaGPT/blob/1fa0abf6e867221209bb279d9fac3a461389861e/metagpt/environment/mgx/mgx_env.py,2026-11-06,ai-verifier,verified
 a2a1769,https://github.com/a2aproject/A2A/issues/1769,2026-11-06,ai-verifier,verified
 phantomconsensus2026,https://neurips.cc/virtual/2026/176547,2026-11-06,ai-verifier,verified
+greshake2023indirect,https://arxiv.org/abs/2302.12173,2026-11-06,ai-writer,verified
+wallace2024hierarchy,https://arxiv.org/abs/2404.13208,2026-11-06,ai-writer,verified
+hines2024spotlighting,https://arxiv.org/abs/2403.14720,2026-11-06,ai-writer,verified
+debenedetti2025camel,https://arxiv.org/abs/2503.18813,2026-11-06,ai-writer,verified
