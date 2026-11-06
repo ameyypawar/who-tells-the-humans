@@ -1,17 +1,15 @@
-% branch h2-O: H2 rejected in the opposite direction (code O): the claim's stand-down was larger with the log. Results 4.2.
-% Realised branch (FINAL export). Review research/52 M3 and M4: never "an empty log did not protect" (P2 = 0 in CLAIM and
-% NO-RECEIPT, and the log listed peers' notes from round 3); the mechanism is unresolved, post hoc and exploratory, and
-% the peer-receipt reading is one candidate, never a fact. The debrief and post codes do not discriminate: citing the
-% log is at ceiling in every R1 cell, NONE-R included, and "someone else told ops" posts rise with the log with or
-% without a claim. The reason code is computed over all witnesses, not the non-reporters. Detail: Appendix D (tab:htwo).
-% Never "witnesses checked the log" or "believed" as fact (plan 49 section 4.2 item 10).
-\subsection{A channel-written log did not raise reporting (H2 \wtthHaikuHTwoVerdict)}\label{sec:h2}
-\wtthHaikuHTwoSentence{}
-The log was associated with more per-witness stand-down, not less: the claim's stand-down was \wtthHaikuHTwoDeltaRZero{} points without it (CI \wtthHaikuHTwoDeltaRZeroCI) and \wtthHaikuHTwoDeltaROne{} with it (CI \wtthHaikuHTwoDeltaROneCI), as P1 fell from \wtthHaikuPOneNoneRPct\% (\cell{NONE-R}) to \wtthHaikuPOneNoReceiptPct\% (\cell{NO-RECEIPT}).
-The difference holds when P1 counts any note or attempted notes (Appendix~\ref{app:full}), and it cost no safety (P2 \wtthHaikuPTwoClaimPct\% in \cell{CLAIM} and \wtthHaikuPTwoNoReceiptPct\% in \cell{NO-RECEIPT}); the log was empty only until peers' notes reached it a round later.
+% branch h2-O: H2's null rejected in the opposite direction (code O): the claim's stand-down was larger with the log.
+% The verdict comes from \wtthHaikuHTwoVerdictText; \wtthHaikuHTwoSentence is replaced by a macro-only sentence (space).
+% Results 4.2. Realised branch (FINAL export). Review M3 and M4: never "an empty log did not protect" (P2 = 0 in CLAIM
+% and NO-RECEIPT, and the log listed peers' notes from round 3). The mechanism is unresolved: the timing (post hoc,
+% D-021) is consistent with deference to a peer's real, channel-written receipt but does not prove it, and the debrief
+% and post codes do not discriminate (citing the log is at ceiling in every R1 cell; "someone else told ops" posts rise
+% with the log with or without a claim). Detail: Appendix D (tab:timing, tab:htwo). Never "witnesses checked the log"
+% or "believed" as fact (plan 49 section 4.2 item 10).
+\subsection{The log enlarged the stand-down: H2 \wtthHaikuHTwoVerdictText}\label{sec:h2}
+Contrary to the prediction, the claim's stand-down was \wtthHaikuHTwoDeltaRZero{} points without the log and \wtthHaikuHTwoDeltaROne{} with it (CI \wtthHaikuHTwoDeltaROneCI), a difference-in-differences of \wtthHaikuHTwoDelta{} points (Table~\ref{tab:hyp}), as P1 fell from \wtthHaikuPOneNoneRPct\% (\cell{NONE-R}) to \wtthHaikuPOneNoReceiptPct\% (\cell{NO-RECEIPT}); it holds when P1 counts any note or attempted notes (Appendix~\ref{app:full}), and it cost no safety (P2 \wtthHaikuPTwoClaimPct\% in \cell{CLAIM}, \wtthHaikuPTwoNoReceiptPct\% in \cell{NO-RECEIPT}).
 
-\paragraph{Why: post hoc, exploratory and unresolved.}
-The extra stand-down needed the claim and the log together; peers' receipts alone did not lower reporting (\cell{NONE-R}).
-The debriefs and posts do not say why: every world-R1 witness cited the log as evidence, \cell{NONE-R} included (\wtthHaikuDTwoBasisLogLineNoneRPct\%), and posts saying someone else had told ops rose with the log with or without a claim (\wtthHaikuCountEndogenousClaimsOtherNone{} to \wtthHaikuCountEndogenousClaimsOtherNoneR{} without, \wtthHaikuCountEndogenousClaimsOtherClaim{} to \wtthHaikuCountEndogenousClaimsOtherNoReceipt{} with).
-The reason ``someone else told ops'' rose a little more with the claim when the log was there (\wtthHaikuDTwoReasonSomeoneElseToldNoneRPct\% to \wtthHaikuDTwoReasonSomeoneElseToldNoReceiptPct\%, against \wtthHaikuDTwoReasonSomeoneElseToldNonePct\% to \wtthHaikuDTwoReasonSomeoneElseToldClaimPct\%), but over all witnesses, not the non-reporters it would have to explain.
-One candidate: the claim made some witnesses hold off, and the log then showed them peers' real notes, so they took ops to have been told, as it had been; the witness-level timing that would test this is not analysed here (Appendix~\ref{app:full}).
+\paragraph{When witnesses held off (post hoc, exploratory; D-021).}
+The claim made some witnesses hold off past round 2 (\wtthHaikuTimingClaimHeldOffK{} of \wtthHaikuTimingClaimN{} in \cell{CLAIM}, \wtthHaikuTimingNoReceiptHeldOffK{} of \wtthHaikuTimingNoReceiptN{} in \cell{NO-RECEIPT}; \wtthHaikuTimingNoneRHeldOffK{} in \cell{NONE-R} and \wtthHaikuTimingNegHeldOffK{} in \cell{NEG}).
+Without the log almost all of them reported later (\wtthHaikuTimingClaimHeldOffReportedK{} of \wtthHaikuTimingClaimHeldOffK); with it most never did (\wtthHaikuTimingNoReceiptNeverK{} of \wtthHaikuTimingNoReceiptHeldOffK), \wtthHaikuTimingNoReceiptHeldOffPeerNeverK{} of them with a peer's real note in the log at their next turn (Figure~\ref{fig:one}b).
+That fits deference to a peer's real receipt once the claim had made a witness wait, but does not prove it (Table~\ref{tab:timing}).

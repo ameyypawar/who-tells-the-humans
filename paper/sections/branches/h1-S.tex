@@ -1,16 +1,19 @@
-% branch h1-S: H1 rejected in the predicted direction (code S), Results 4.1. Realised branch (FINAL export).
-% Verdict words come only from generated macros (\wtthHaikuHOneVerdict, \wtthHaikuHOneSentence). The effect is small:
-% say so with the exploratory TOST interval and the prediction check, never "no effect", "robust" or "equivalent"
-% (plan 49 section 4.2 item 6). Debriefs are self-reports; never "believed" or "diffusion of responsibility" as fact.
-% The phantom-belief sentence of the skeleton is dropped: every CLAIM shift had a witness note (P2 = 0), so a phantom
-% belief (ops told when no witness told them) cannot occur there and its 0% carries no information.
-\subsection{A bare claim barely lowers reporting (H1 \wtthHaikuHOneVerdict)}\label{sec:h1}
-\wtthHaikuHOneSentence{}
-The operator was told in every shift of both cells (P2 \wtthHaikuPTwoNonePct\% and \wtthHaikuPTwoClaimPct\%, \Ptwop{} the same).
-The small effect is not salience: a remark on the split without a claim (\cell{CONCERN}) left P1 at \wtthHaikuPOneConcernPct\%.
-The testbed detects a stand-down when one is warranted. \wtthHaikuPositiveControlSentence{}
-No \DebOne{} answer was coded as calling the shift a test (\wtthHaikuDOneTestAllK{} of \wtthHaikuDOneTestAllN), so excluding test-aware witnesses changes nothing.
+% branch h1-S: H1's null rejected in the predicted direction (code S), Results 4.1. Realised branch (FINAL export).
+% Verdict words come only from the generated \wtthHaikuHOneVerdictText (the long \wtthHaikuHOneSentence is replaced by a
+% shorter macro-only sentence, for space; Table 2 carries the test). The effect is small
+% and its rejection fragile (review M2; post hoc D-021): say so, with the exact and score tests and the boundary facts;
+% never "no effect", "robust" or "equivalent" (plan 49 section 4.2 item 6). Review M7: every witness had a private
+% channel, which was never varied, so it gets no causal credit. Review M11: 'unsure' was common and the test-awareness
+% kappa low. The phantom-belief sentence of the skeleton is dropped: every CLAIM shift had a witness note (P2 = 0).
+\subsection{A bare claim barely lowered reporting: H1 \wtthHaikuHOneVerdictText}\label{sec:h1}
+A peer's false claim lowered P1 from \wtthHaikuPOneNonePct\% (\wtthHaikuPOneNoneK/\wtthHaikuPOneNoneN) to \wtthHaikuPOneClaimPct\% (\wtthHaikuPOneClaimK/\wtthHaikuPOneClaimN), a stand-down of \wtthHaikuHOneDelta{} points (Table~\ref{tab:hyp}), and ops was told in every shift of both cells (P2 \wtthHaikuPTwoNonePct\% and \wtthHaikuPTwoClaimPct\%, \Ptwop{} the same).
+The small effect is not salience (a remark on the split without a claim, \cell{CONCERN}, left P1 at \wtthHaikuPOneConcernPct\%), and the testbed detects a warranted stand-down: with a cost for duplicate notes, C's real note cut the share of shifts with any witness note by \wtthHaikuPosCtrlCoreDiff{} points (\cell{POS} against \cell{NEG}; CI \wtthHaikuPosCtrlCoreCI).
+No \DebOne{} answer was coded `test' (\wtthHaikuDOneTestAllK{} of \wtthHaikuDOneTestAllN), but \wtthHaikuDOneUnsureAllPct\% were `unsure' and the models agreed poorly on test awareness ($\kappa$ \wtthKappaMMDOneAnswerTestAwarenessValue): it is uncertain, not absent, and the exclusion check removes no one.
+
+\paragraph{Rejecting the null is fragile (post hoc, D-021).}
+The effect rests on \wtthHaikuPostHocBoundaryHOneClaimNonReporters{} non-reporters in \wtthHaikuPostHocBoundaryHOneClaimShiftsM{} of \wtthHaikuPostHocBoundaryHOneClaimShiftsN{} shifts against \wtthHaikuTimingNoneNeverK{} in \cell{NONE}, which adds no bootstrap variance; the interval clears zero only because a resample omits all those shifts with probability \wtthHaikuPostHocBoundaryHOneClaimPZero\% (\wtthHaikuPostHocBoundaryHOneClaimPZeroOneFewer\% with one shift fewer, which would leave the null standing).
+The pre-registered bootstrap rejects the null, but Fisher's exact test (p~$=$~\wtthHaikuPostHocHOneFisherP) and the Newcombe interval (\wtthHaikuPostHocHOneNewcombeCI{} points) do not, so the stand-down is at most a few points and H2 and H3 are confirmatory only through this gate; their own effects hold under such methods (H2 MOVER \wtthHaikuPostHocHTwoMoverCI; H3 Newcombe \wtthHaikuPostHocHThreeNewcombeCI, Fisher p \wtthHaikuPostHocHThreeFisherP; Table~\ref{tab:posthoc}).
 
 \paragraph{Reading.}
-The stand-down is detectable but small: the exploratory equivalence interval (TOST, \wtthHaikuTostCI{} points) lies inside the pre-registered $\pm$\wtthProtocolMargin-point margin, and the recorded prediction (\wtthDesignPredStandDownLo{} to \wtthDesignPredStandDownHi{} points) was \wtthHaikuPredDeltaOneOneFiveToThreeZeroPoints.
-With a private channel and a violation clear enough to put \cell{NONE} at ceiling (D-013), a peer's bare word changed little.
+The TOST interval (\wtthHaikuTostCI{} points) is \wtthHaikuTostVerdictText, and the recorded prediction (\wtthDesignPredStandDownLo{} to \wtthDesignPredStandDownHi{} points) was \wtthHaikuPredDeltaOneOneFiveToThreeZeroPoints.
+Every witness had a private channel to ops, and P1 was at ceiling without a claim even at the least clear violation (D-013); under those conditions a bare claim barely mattered, and we did not test the absence of a channel.

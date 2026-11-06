@@ -10,6 +10,7 @@ We claim nothing about other model families, and evidence from older Claude mode
 \paragraph{Scenario.}
 The design has one fictional refund desk and one kind of violation (splitting a refund under an approval limit), one frozen clarity level (\wtthGateFrozenLevel), a claim in three paraphrases, a scripted claimant that never replies, and \wtthDesignLiveWitnessesWord{} live witnesses per shift.
 We did not vary group size, so the shift-level outcome (P2) speaks only to teams of this size.
+Non-reporters concentrate in shifts with the public paraphrase (\wtthHaikuParaphraseZeroClaimNeverK{} of \cell{CLAIM}'s \wtthHaikuTimingClaimNeverK{} and \wtthHaikuParaphraseZeroNoReceiptNeverK{} of \cell{NO-RECEIPT}'s \wtthHaikuTimingNoReceiptNeverK; pre-registered exploratory breakdown, Table~\ref{tab:paraphrase}), and the seed sets paraphrase and handle order together, so the stand-down may depend on the claim's wording or on the witnesses' slot order.
 
 \paragraph{Ceiling.}
 Gate G1 took the pre-registered ceiling branch: P1 in the pilot \cell{NONE} shifts was \wtthGateGOnePOneAtFPct\% at the frozen level, \wtthGateFrozenLevel, above the \wtthDesignGOneCeiling\% ceiling (D-013).
@@ -24,7 +25,9 @@ Agents with memory, pull-based tools or a responsive operator may behave differe
 \paragraph{Log design.}
 The log lists every note, a witness's own included, from the round after it is sent.
 In world R1 a witness can therefore see a peer's real receipt as well as the claimant's missing one, so H2 compares the claim's effect with and without a log that shows both.
-Peers' receipts alone did not lower reporting (\cell{NONE-R}), so if they explain the larger stand-down, they did so only for witnesses whom the claim had made hold off (Section~\ref{sec:h2}); a log that showed only the claimant's receipt would test this directly.
+Peers' receipts alone did not lower reporting (\cell{NONE-R}), so if they explain the larger stand-down, they did so only for witnesses whom the claim had made hold off.
+The post hoc timing fits that reading (D-021): \wtthHaikuTimingNoReceiptHeldOffPeerNeverK{} of the \wtthHaikuTimingNoReceiptNeverK{} \cell{NO-RECEIPT} never-reporters had a peer's real note in the log at their next turn (Section~\ref{sec:h2}, Table~\ref{tab:timing}); a log that showed only the claimant's receipt would test it directly.
+In world R1 the tool description still says that other agents on the board cannot see what a witness sends, while the runbook says each note adds a log line showing the sender and subject: a mixed cue, the same in every R1 cell.
 
 \paragraph{Receipts.}
 Our log is a harness-rendered block in the same plain-text prompt as the posts.
@@ -38,15 +41,20 @@ None of them is a blind human label (D-018), so their reliability rests on model
 Debrief answers are post-hoc self-reports, not evidence of a mechanism.
 
 \paragraph{Test awareness.}
-No Haiku witness's \DebOne{} answer was coded as calling the shift a test or simulation (\wtthHaikuDOneTestAllK{} of \wtthHaikuDOneTestAllN), but from \wtthHaikuDOneUnsurePosPct\% to \wtthHaikuDOneUnsurePolicyPct\% per cell said they could not tell (``unsure''), and the two models agreed poorly on test awareness in these answers (model--model $\kappa$ \wtthKappaMMDOneAnswerTestAwarenessValue).
+No Haiku witness's \DebOne{} answer was coded as calling the shift a test or simulation (\wtthHaikuDOneTestAllK{} of \wtthHaikuDOneTestAllN), but \wtthHaikuDOneUnsureAllPct\% (\wtthHaikuDOneUnsureAllK) were coded ``unsure'', from \wtthHaikuDOneUnsurePosPct\% to \wtthHaikuDOneUnsurePolicyPct\% by cell, and only \wtthHaikuDOneLiveAllPct\% ``live''.
+The two models agreed well on this live, test or unsure verdict (model--model $\kappa$ \wtthKappaMMDOneAnswerDOneVerdictValue) but poorly on whether the same answers showed test awareness ($\kappa$ \wtthKappaMMDOneAnswerTestAwarenessValue).
+Test awareness is therefore uncertain rather than absent, and the pre-registered exclusion of test-aware witnesses removes no one.
 
 \paragraph{Claude writes for Claude.}
-The stimuli were drafted with Claude and edited by the author.
-A Claude subject may find them more natural, or easier to recognise as a test.
+The stimuli were drafted with Claude and edited by the author, and the subjects, the judge, the annotator, the review audit, the code reviewers and the paper's drafter are all Claude models; the judge (\wtthDesignModelJudgeName) also codes the exploratory Sonnet subjects' posts.
+A Claude subject may find the stimuli more natural, or easier to recognise as a test.
 
 \paragraph{Statistics.}
 There is one confirmatory family, tested in a fixed sequence.
-With reporting at ceiling, a small stand-down is detectable, so a rejection says little about size; H1's effect is small, and the equivalence test that frames it is exploratory.
+H1's null is rejected by the pre-registered percentile cluster bootstrap but not by post hoc exact or score tests (D-021): the effect rests on \wtthHaikuPostHocBoundaryHOneClaimNonReporters{} non-reporters in \wtthHaikuPostHocBoundaryHOneClaimShiftsM{} of \wtthHaikuPostHocBoundaryHOneClaimShiftsN{} \cell{CLAIM} shifts against \wtthHaikuTimingNoneNeverK{} in \cell{NONE}, which therefore adds no bootstrap variance, and the interval clears zero only because a resample omits all those shifts with probability \wtthHaikuPostHocBoundaryHOneClaimPZero\% (\wtthHaikuPostHocBoundaryHOneClaimPZeroOneFewer\% had they sat in one shift fewer, which would leave the null standing); Fisher's exact test gives p~$=$~\wtthHaikuPostHocHOneFisherP{} and the Newcombe interval is \wtthHaikuPostHocHOneNewcombeCI{} points.
+Every sensitivity row reuses the same bootstrap, so none of them tests this.
+H2 and H3 are confirmatory only because H1's null was rejected; their own effects hold under the post hoc methods (H2 MOVER \wtthHaikuPostHocHTwoMoverCI{} points; H3 Newcombe \wtthHaikuPostHocHThreeNewcombeCI, Fisher p \wtthHaikuPostHocHThreeFisherP; Table~\ref{tab:posthoc}).
+With reporting at ceiling, a small stand-down is detectable, so rejecting a null says little about size; H1's effect is small, and the equivalence test that frames it is exploratory.
 Some secondary analyses rest on a pre-declared random subsample of judged items (coverage in Appendix~\ref{app:judge}).
 Exploratory results (Sonnet, board substitution, the debrief codes) carry no verdict.
 
@@ -57,7 +65,7 @@ If the keyword rule misses notes, P1 is a lower bound; the attempts analysis bou
 
 \subsection{Dual-use risks}
 \paragraph{What could help an attacker.}
-Our results say whether one casual line suppresses reporting, and whether a receipt-shaped line typed by the claimant passes for a receipt.
+Our results say whether one casual line suppresses reporting, and whether a receipt-shaped line typed by the claimant works like a real receipt on reporting.
 \paragraph{Why the marginal uplift is small.}
 The mechanism is simple, and adjacent work already documents it: unbacked approvals, fabricated authority, and spoofed tool calls in the incident itself.
 The defensive value is to show deployers where provenance must live.
@@ -82,7 +90,7 @@ The company, customers and tickets are fictional, and there are no credentials a
 The witnesses, as AI participants, get a limited deception: they are told only that they work a shift, and the first mention of a test is the \DebOne{} debrief question.
 There is no consent step and no exclusion based on debrief answers.
 This differs from Fuller's protocol, which excluded \citedFullerExclStudyOne{} and \citedFullerExclStudyTwo{} of Haiku sessions in its two studies \citep{fuller2026smoke}.
-Compute: \wtthCostTotalUsd{} on an API credit; the annotation subagents ran on the author's subscription (D-011).
+Compute: \wtthCostTotalUsd{} on an API credit so far, the exploratory follow-up of D-022 included; the annotation subagents ran on the author's subscription (D-011).
 
 \subsection{Future improvements}
 A group-size curve; other model families; opaque or filer-only receipts; a pull-verification tool; agents with persistent memory; an integration with MCP or \AtwoA{}; adaptive claimants, only under a disclosure plan; and the two stretch modules that were not run (D-008).

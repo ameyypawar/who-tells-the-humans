@@ -1,25 +1,27 @@
-% sections/04-results.tex (plan 49 section 2.3, about 2.1 pages; headings state the verdict). Every number is a
-% generated macro; verdict words come only from \wtthHaiku...Verdict / ...Sentence macros. The H1 to H3 subsections,
-% headings included, are the realised branch files (branch.tex). Table 2 is built here from macros (proper minus
-% signs, both P1 cells), in place of the generated table_hypotheses (Appendix D keeps the full generated table).
+% sections/04-results.tex (plan 49 section 2.3, about 2.1 pages; headings state the finding and the verdict). Every
+% number is a generated macro; verdict words come only from the \wtthHaiku...VerdictText macros (reader
+% wording, review M1: "supported (null rejected)", "opposite to prediction (null rejected)"); the ...Verdict code words
+% stay for branch.tex. The H1 to H3 subsections, headings included, are the realised branch files (branch.tex). Table 2
+% is built here from macros (proper minus signs, both P1 cells), in place of the generated table_hypotheses (Appendix D
+% keeps the full generated table). Post hoc results (D-021) are labelled as such wherever they appear.
 \section{Results}\label{sec:results}
-The confirmatory set is every planned Haiku shift (\wtthHaikuEpisodesInSet, all seeds up to $s_c=\wtthHaikuSC$), with \wtthHaikuFailedPermanent{} permanent failures, \wtthHaikuMissing{} missing and no turn ended by a refusal or a cap (Appendix~\ref{app:harness}); all agent and judge calls cost \wtthCostTotalUsd{} in total.
-Table~\ref{tab:hyp} gives the three confirmatory tests in their fixed order.
+The confirmatory set is every planned Haiku shift (\wtthHaikuEpisodesInSet, all seeds up to $s_c=\wtthHaikuSC$), with \wtthHaikuFailedPermanent{} permanent failures, \wtthHaikuMissing{} missing and no turn ended by a refusal or a cap (Appendix~\ref{app:harness}); all agent and judge calls so far, the exploratory follow-up included (D-022), cost \wtthCostTotalUsd.
 
 \begin{table}[t]
-\centering\footnotesize
-\begin{tabularx}{\linewidth}{@{}l>{\raggedright\arraybackslash}Xrr>{\raggedright\arraybackslash}p{1.85in}@{}}
+\centering\footnotesize\setlength{\tabcolsep}{4pt}
+\begin{tabularx}{\linewidth}{@{}l>{\raggedright\arraybackslash}Xrr>{\raggedright\arraybackslash}p{2.2in}@{}}
 \toprule
-Test & Contrast in P1 (told ops) & Difference & \wtthProtocolLevel\% CI & Decision \\
+Test & Contrast in P1 (told ops) & Diff. & \wtthProtocolLevel\% CI & Decision \\
 \midrule
-H1 & \cell{NONE} $-$ \cell{CLAIM}: \wtthHaikuPOneNonePct\% vs \wtthHaikuPOneClaimPct\% & \wtthHaikuHOneDelta & \wtthHaikuHOneCI & \wtthHaikuHOneVerdict \\
-H2 & stand-down in R0 $-$ in R1: \wtthHaikuHTwoDeltaRZero{} vs \wtthHaikuHTwoDeltaROne{} & \wtthHaikuHTwoDelta & \wtthHaikuHTwoCI & \wtthHaikuHTwoVerdict \\
-H3 & \cell{NO-RECEIPT} $-$ \cell{FORGED}: \wtthHaikuPOneNoReceiptPct\% vs \wtthHaikuPOneForgedPct\% & \wtthHaikuHThreeDelta & \wtthHaikuHThreeCI & \wtthHaikuHThreeVerdict \\
+H1 & \cell{NONE} $-$ \cell{CLAIM}: \wtthHaikuPOneNonePct\% vs \wtthHaikuPOneClaimPct\% & \wtthHaikuHOneDelta & \wtthHaikuHOneCI & \wtthHaikuHOneVerdictText \\
+H2 & stand-down in R0 $-$ in R1: \wtthHaikuHTwoDeltaRZero{} vs \wtthHaikuHTwoDeltaROne{} & \wtthHaikuHTwoDelta & \wtthHaikuHTwoCI & \wtthHaikuHTwoVerdictText \\
+H3 & \cell{NO-RECEIPT} $-$ \cell{FORGED}: \wtthHaikuPOneNoReceiptPct\% vs \wtthHaikuPOneForgedPct\% & \wtthHaikuHThreeDelta & \wtthHaikuHThreeCI & \wtthHaikuHThreeVerdictText \\
 \bottomrule
 \end{tabularx}
 \caption{\textbf{The confirmatory tests, in their fixed order} (\wtthDesignModelHaikuName).
-Differences in points, shift-level cluster bootstrap (\wtthBootstrapB{} resamples), each predicted positive; a test rejects when its interval excludes zero.
-H2's stand-downs: \cell{NONE} $-$ \cell{CLAIM} (world R0, no log) and \cell{NONE-R} $-$ \cell{NO-RECEIPT} (R1).}
+Differences in points, shift-level cluster bootstrap (\wtthBootstrapB{} resamples), each predicted positive; a null is rejected when the interval excludes zero.
+H2's stand-downs: \cell{NONE} $-$ \cell{CLAIM} (world R0, no log) and \cell{NONE-R} $-$ \cell{NO-RECEIPT} (R1).
+Post hoc (D-021): Fisher's exact test does not reject H1's null (p~$=$~\wtthHaikuPostHocHOneFisherP), so H2 and H3 are confirmatory only through a borderline gate (Section~\ref{sec:h1}).}
 \label{tab:hyp}
 \end{table}
 
@@ -27,14 +29,18 @@ H2's stand-downs: \cell{NONE} $-$ \cell{CLAIM} (world R0, no log) and \cell{NONE
 \wtthInputBranch{h2}
 \wtthInputBranch{h3}
 
-\subsection{Safety against alert load}\label{sec:frontier}
+% Review S6: with ops told in every shift without a defence, the defences cannot differ on safety here; the forged
+% line's lower load is not a saving, because its claim was false. The frontier panel is Figure fig:frontier (App D).
+\subsection{Safety did not separate the defences; real receipts cut alert load}\label{sec:frontier}
 \wtthInputBranch{frontier}
-There, standing down is the efficient outcome, and witnesses did (\cell{RECEIPT} $-$ \cell{NONE-R} in P1: \wtthHaikuDescPOneReceiptMinusNoneRDelta{} points, CI \wtthHaikuDescPOneReceiptMinusNoneRCI; descriptive); the forged line bought a similar saving (\wtthHaikuAlertLoadForgedMean) at a cost in safety (Figure~\ref{fig:one}b).
+Real receipts allowed safe de-duplication; the forged line cut notes as far (\wtthHaikuAlertLoadForgedMean), but its claim was false, so those notes were needed (Figure~\ref{fig:frontier}).
 
-\subsection{Robustness, reliability and exploratory results}\label{sec:robust}
-\textbf{Sensitivity and reliability.}
-All three differences keep their sign and side of zero under the any-note, attempts and seed-paired analyses; false reports of the held refund in the benign cell were \wtthHaikuFalseReportBNonePct\% (Appendix~\ref{app:full}); and all label agreement is model--model (Appendix~\ref{app:judge}).
+\subsection{Robustness: the effects hold, but may depend on wording}\label{sec:robust}
+\textbf{Sensitivity.}
+All three differences keep their sign and side of zero under the any-note, attempts and seed-paired analyses, and false reports of the held refund in the benign cell were \wtthHaikuFalseReportBNonePct\% (Appendix~\ref{app:full}).
+\textbf{By paraphrase} (pre-registered, exploratory).
+Of the non-reporters, \wtthHaikuParaphraseZeroClaimNeverK{} of \wtthHaikuTimingClaimNeverK{} in \cell{CLAIM} and \wtthHaikuParaphraseZeroNoReceiptNeverK{} of \wtthHaikuTimingNoReceiptNeverK{} in \cell{NO-RECEIPT} saw the public paraphrase, which the seed aliases with handle order, so the stand-down may depend on wording or slot order (Table~\ref{tab:paraphrase}).
 \textbf{Board substitution} (exploratory, D-010).
-Where a receipt was visible, real or forged, more witnesses raised the split on the board but never sent a note: \wtthHaikuBoardSubForgedPct\% in \cell{FORGED} and \wtthHaikuBoardSubReceiptPct\% in \cell{RECEIPT}, against \wtthHaikuBoardSubNoReceiptPct\% in \cell{NO-RECEIPT} and \wtthHaikuBoardSubNonePct\% in \cell{NONE}.
+Where a receipt was visible, real or forged, more witnesses raised the split on the board but sent no note (\cell{FORGED} \wtthHaikuBoardSubForgedPct\%, \cell{RECEIPT} \wtthHaikuBoardSubReceiptPct\%, \cell{NO-RECEIPT} \wtthHaikuBoardSubNoReceiptPct\%, \cell{NONE} \wtthHaikuBoardSubNonePct\%).
 \textbf{Sonnet} (exploratory).
-P1 stayed at or near ceiling in all \wtthDesignSonnetCellsWord{} cells, \wtthSonnetPOneForgedPct\% under the forged line, where P2 was \wtthSonnetPTwoForgedPct\% (Appendix~\ref{app:exploratory}).
+P1 stayed near ceiling in every cell (\wtthSonnetPOneForgedPct\% under the forged line; Appendix~\ref{app:exploratory}), but with no \cell{RECEIPT} or positive control this cannot yet be told from never standing down.

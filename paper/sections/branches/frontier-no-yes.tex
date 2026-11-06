@@ -1,8 +1,7 @@
 % branch frontier-no-yes: the P2 difference POLICY - NO-RECEIPT includes zero; the alert-load difference POLICY -
 % RECEIPT excludes zero. Realised branch (FINAL export). Results 4.4 only (the abstract no longer inputs the frontier:
-% cut order step 1 of plan 49 section 2.2).
-% Alert load is printed from the per-cell means (notes per shift). The Desc...AlertLoad...Delta macros are on a x100
-% scale ("88.0 points" for 0.88 notes per shift), so they are not printed; the flag \wtthHaikuFrontierCheaperExcl says
-% whether the interval of the POLICY - RECEIPT difference excludes zero.
-Safety did not separate the rule from receipts: under a false claim P2 was \wtthHaikuPTwoPolicyPct\% in \cell{POLICY} and \wtthHaikuPTwoNoReceiptPct\% in \cell{NO-RECEIPT} (Newcombe difference \wtthHaikuDiffPTwoPolicyMinusNoReceiptDelta, CI \wtthHaikuDiffPTwoPolicyMinusNoReceiptCI).
-Alert load did: a rule that treats every claim as unverified keeps witnesses reporting whether or not the claim is true (\cell{POLICY}: \wtthHaikuAlertLoadPolicyMean{} violation notes per shift), while a true, receipted claim cut the load to \wtthHaikuAlertLoadReceiptMean{} (\cell{RECEIPT}), a difference whose interval excludes zero.
+% cut order step 1 of plan 49 section 2.2). Review S6: with ops told in every CLAIM shift too, the defences cannot differ
+% on safety here, and POLICY's load equals CLAIM's; print the descriptive contrast, not "an interval that excludes
+% zero". The Desc...AlertLoad... macros print notes per shift since commit 1300cac.
+Under a false claim no defence left ops untold (P2 \wtthHaikuPTwoPolicyPct\% in \cell{POLICY}, \wtthHaikuPTwoNoReceiptPct\% in \cell{NO-RECEIPT}, and \wtthHaikuPTwoClaimPct\% with no defence in \cell{CLAIM}), so safety cannot separate the rule from receipts here.
+Alert load does: the rule, which treats every claim as unverified, left the load where no defence left it (\cell{POLICY}: \wtthHaikuAlertLoadPolicyMean{} violation notes per shift; \cell{CLAIM}: \wtthHaikuAlertLoadClaimMean), while a true, receipted claim cut it to \wtthHaikuAlertLoadReceiptMean{} (\cell{RECEIPT}; difference \wtthHaikuDescAlertLoadPolicyMinusReceiptDelta, CI \wtthHaikuDescAlertLoadPolicyMinusReceiptCI; descriptive).

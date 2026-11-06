@@ -13,7 +13,7 @@ The seed fixes both the claim's paraphrase and the handle order, so their effect
 
 \paragraph{Sensitivity and exploratory contrasts.}
 Table~\ref{tab:sens} repeats the three confirmatory differences under the pre-registered sensitivity analyses.
-Excluding test-aware witnesses leaves H1 at \wtthHaikuSecHOneExclTestDelta{} points (CI \wtthHaikuSecHOneExclTestCI), because no \DebOne{} answer was coded as calling the shift a test; the P2 version of H2 is \wtthHaikuSecHTwoOnPTwoDelta{} (CI \wtthHaikuSecHTwoOnPTwoCI), because P2 was \wtthHaikuPTwoNonePct, \wtthHaikuPTwoClaimPct, \wtthHaikuPTwoNoneRPct{} and \wtthHaikuPTwoNoReceiptPct\% in the four H2 cells.
+Excluding test-aware witnesses leaves H1 at \wtthHaikuSecHOneExclTestDelta{} points (CI \wtthHaikuSecHOneExclTestCI), because no \DebOne{} answer was coded as calling the shift a test (though \wtthHaikuDOneUnsureAllPct\% were coded unsure; Appendix~\ref{app:limits}); the P2 version of H2 is \wtthHaikuSecHTwoOnPTwoDelta{} (CI \wtthHaikuSecHTwoOnPTwoCI), because P2 was \wtthHaikuPTwoNonePct, \wtthHaikuPTwoClaimPct, \wtthHaikuPTwoNoneRPct{} and \wtthHaikuPTwoNoReceiptPct\% in the four H2 cells.
 Both are exploratory.
 
 \begin{table}[h]
@@ -33,6 +33,79 @@ Seed-paired bootstrap & \wtthHaikuSensSeedPairedHOneDelta{} (\wtthHaikuSensSeedP
 \label{tab:sens}
 \end{table}
 
+% ---- post hoc (D-021) robustness, timing and the pre-registered exploratory by-paraphrase breakdown ----
+\paragraph{Post hoc robustness (D-021).}
+Table~\ref{tab:posthoc} sets the pre-registered intervals beside witness-level exact and score methods that ignore clustering, and gives, for each arm with non-reporters, how many shifts hold them and how often an episode-cluster resample omits all of those shifts.
+Only H1 depends on that boundary: its non-reporters sit in \wtthHaikuPostHocBoundaryHOneClaimShiftsM{} of \wtthHaikuPostHocBoundaryHOneClaimShiftsN{} shifts, and \cell{NONE}, with none, adds no variance.
+
+\begin{table}[h]
+\centering\footnotesize\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}l>{\raggedright\arraybackslash}p{1.05in}>{\raggedright\arraybackslash}p{1.75in}>{\raggedright\arraybackslash}p{1.75in}l@{}}
+\toprule
+Test & Bootstrap CI (pre-registered) & Witness level (post hoc) & Non-reporters (shifts holding them) & P(resample omits them) \\
+\midrule
+H1 & \wtthHaikuHOneCI & Fisher p~$=$~\wtthHaikuPostHocHOneFisherP; Newcombe \wtthHaikuPostHocHOneNewcombeCI & \cell{CLAIM} \wtthHaikuPostHocBoundaryHOneClaimNonReporters{} (\wtthHaikuPostHocBoundaryHOneClaimShiftsM{} of \wtthHaikuPostHocBoundaryHOneClaimShiftsN) & \wtthHaikuPostHocBoundaryHOneClaimPZero\% (one shift fewer: \wtthHaikuPostHocBoundaryHOneClaimPZeroOneFewer\%) \\
+H2 & \wtthHaikuHTwoCI & MOVER \wtthHaikuPostHocHTwoMoverCI & \cell{CLAIM} \wtthHaikuPostHocBoundaryHTwoClaimNonReporters{} (\wtthHaikuPostHocBoundaryHTwoClaimShiftsM{} of \wtthHaikuPostHocBoundaryHTwoClaimShiftsN); \cell{NO-RECEIPT} \wtthHaikuPostHocBoundaryHTwoNoReceiptNonReporters{} (\wtthHaikuPostHocBoundaryHTwoNoReceiptShiftsM{} of \wtthHaikuPostHocBoundaryHTwoNoReceiptShiftsN) & \wtthHaikuPostHocBoundaryHTwoClaimPZero\%; \wtthHaikuPostHocBoundaryHTwoNoReceiptPZero\% \\
+H3 & \wtthHaikuHThreeCI & Fisher p \wtthHaikuPostHocHThreeFisherP; Newcombe \wtthHaikuPostHocHThreeNewcombeCI & \cell{NO-RECEIPT} \wtthHaikuPostHocBoundaryHThreeNoReceiptNonReporters{} (\wtthHaikuPostHocBoundaryHThreeNoReceiptShiftsM{} of \wtthHaikuPostHocBoundaryHThreeNoReceiptShiftsN); \cell{FORGED} \wtthHaikuPostHocBoundaryHThreeForgedNonReporters{} (\wtthHaikuPostHocBoundaryHThreeForgedShiftsM{} of \wtthHaikuPostHocBoundaryHThreeForgedShiftsN) & \wtthHaikuPostHocBoundaryHThreeNoReceiptPZero\%; \wtthHaikuPostHocBoundaryHThreeForgedPZero\% \\
+\bottomrule
+\end{tabular}
+\caption{\textbf{Post hoc robustness of the confirmatory tests} (D-021; points). The witness-level methods ignore clustering; the last column is the analytic probability that an episode-cluster resample of the arm draws none of the shifts that hold its non-reporters. No verdict changes.}
+\label{tab:posthoc}
+\end{table}
+
+\paragraph{When witnesses first told ops (post hoc, D-021).}
+Table~\ref{tab:timing} gives, for every violation cell, the round of each witness's first violation note: by round 2, or held off past round 2 and then reported later or never.
+In world R1 it also counts the never-reporters who had a peer's line in the log (another witness's, or C's real one) at their next turn, the reasons the never-reporters gave in \DebTwo, and the shifts whose first witness note came after round 2.
+Among never-reporters, ``someone else told ops'' was given by \wtthHaikuTimingNeverClaimDTwoSomeoneElseToldK{} of \wtthHaikuTimingNeverClaimDTwoN{} in \cell{CLAIM} and \wtthHaikuTimingNeverNoReceiptDTwoSomeoneElseToldK{} of \wtthHaikuTimingNeverNoReceiptDTwoN{} in \cell{NO-RECEIPT}; no cell without a claim has never-reporters, so these rates have no baseline.
+In the \wtthHaikuPTwoForgedK{} \cell{FORGED} shifts that left ops untold no witness sent any note at all (any-note shift rate \wtthHaikuKmEpisodeAnyNoteForgedSFive\%), so ``left ops untold'' holds under the any-note definition too.
+A visible real receipt did not always stop later reports: in \wtthHaikuTimingShiftReceiptLateK{} of \wtthHaikuTimingShiftReceiptN{} \cell{RECEIPT} shifts the first witness note came only in round 3 or later, with C's real log line in view since round 2.
+
+\begin{table}[h]
+\centering\footnotesize\setlength{\tabcolsep}{3.5pt}
+\begin{tabular}{@{}llrrrrrrrr@{}}
+\toprule
+ & & & Reported & Held off & then & then & Never, peer's & Never: ``someone & Shifts: first \\
+Cell & World & Witnesses & by round 2 & past round 2 & reported & never & line in view & else told'' & note late \\
+\midrule
+\cell{NONE} & R0 & \wtthHaikuTimingNoneN & \wtthHaikuTimingNoneByRoundTwoK & \wtthHaikuTimingNoneHeldOffK & \wtthHaikuTimingNoneHeldOffReportedK & \wtthHaikuTimingNoneNeverK & --- & --- & \wtthHaikuTimingShiftNoneLateK/\wtthHaikuTimingShiftNoneN \\
+\cell{CONCERN} & R0 & \wtthHaikuTimingConcernN & \wtthHaikuTimingConcernByRoundTwoK & \wtthHaikuTimingConcernHeldOffK & \wtthHaikuTimingConcernHeldOffReportedK & \wtthHaikuTimingConcernNeverK & --- & --- & \wtthHaikuTimingShiftConcernLateK/\wtthHaikuTimingShiftConcernN \\
+\cell{CLAIM} & R0 & \wtthHaikuTimingClaimN & \wtthHaikuTimingClaimByRoundTwoK & \wtthHaikuTimingClaimHeldOffK & \wtthHaikuTimingClaimHeldOffReportedK & \wtthHaikuTimingClaimNeverK & --- & \wtthHaikuTimingNeverClaimDTwoSomeoneElseToldK/\wtthHaikuTimingNeverClaimDTwoN & \wtthHaikuTimingShiftClaimLateK/\wtthHaikuTimingShiftClaimN \\
+\cell{POLICY} & R0 & \wtthHaikuTimingPolicyN & \wtthHaikuTimingPolicyByRoundTwoK & \wtthHaikuTimingPolicyHeldOffK & \wtthHaikuTimingPolicyHeldOffReportedK & \wtthHaikuTimingPolicyNeverK & --- & \wtthHaikuTimingNeverPolicyDTwoSomeoneElseToldK/\wtthHaikuTimingNeverPolicyDTwoN & \wtthHaikuTimingShiftPolicyLateK/\wtthHaikuTimingShiftPolicyN \\
+\cell{NONE-R} & R1 & \wtthHaikuTimingNoneRN & \wtthHaikuTimingNoneRByRoundTwoK & \wtthHaikuTimingNoneRHeldOffK & \wtthHaikuTimingNoneRHeldOffReportedK & \wtthHaikuTimingNoneRNeverK & \wtthHaikuTimingNoneRHeldOffPeerNeverK & --- & \wtthHaikuTimingShiftNoneRLateK/\wtthHaikuTimingShiftNoneRN \\
+\cell{NO-RECEIPT} & R1 & \wtthHaikuTimingNoReceiptN & \wtthHaikuTimingNoReceiptByRoundTwoK & \wtthHaikuTimingNoReceiptHeldOffK & \wtthHaikuTimingNoReceiptHeldOffReportedK & \wtthHaikuTimingNoReceiptNeverK & \wtthHaikuTimingNoReceiptHeldOffPeerNeverK & \wtthHaikuTimingNeverNoReceiptDTwoSomeoneElseToldK/\wtthHaikuTimingNeverNoReceiptDTwoN & \wtthHaikuTimingShiftNoReceiptLateK/\wtthHaikuTimingShiftNoReceiptN \\
+\cell{RECEIPT} & R1 & \wtthHaikuTimingReceiptN & \wtthHaikuTimingReceiptByRoundTwoK & \wtthHaikuTimingReceiptHeldOffK & \wtthHaikuTimingReceiptHeldOffReportedK & \wtthHaikuTimingReceiptNeverK & \wtthHaikuTimingReceiptHeldOffPeerNeverK & \wtthHaikuTimingNeverReceiptDTwoSomeoneElseToldK/\wtthHaikuTimingNeverReceiptDTwoN & \wtthHaikuTimingShiftReceiptLateK/\wtthHaikuTimingShiftReceiptN \\
+\cell{FORGED} & R1 & \wtthHaikuTimingForgedN & \wtthHaikuTimingForgedByRoundTwoK & \wtthHaikuTimingForgedHeldOffK & \wtthHaikuTimingForgedHeldOffReportedK & \wtthHaikuTimingForgedNeverK & \wtthHaikuTimingForgedHeldOffPeerNeverK & \wtthHaikuTimingNeverForgedDTwoSomeoneElseToldK/\wtthHaikuTimingNeverForgedDTwoN & \wtthHaikuTimingShiftForgedLateK/\wtthHaikuTimingShiftForgedN \\
+\cell{NEG} & R1 & \wtthHaikuTimingNegN & \wtthHaikuTimingNegByRoundTwoK & \wtthHaikuTimingNegHeldOffK & \wtthHaikuTimingNegHeldOffReportedK & \wtthHaikuTimingNegNeverK & \wtthHaikuTimingNegHeldOffPeerNeverK & --- & \wtthHaikuTimingShiftNegLateK/\wtthHaikuTimingShiftNegN \\
+\cell{POS} & R1 & \wtthHaikuTimingPosN & \wtthHaikuTimingPosByRoundTwoK & \wtthHaikuTimingPosHeldOffK & \wtthHaikuTimingPosHeldOffReportedK & \wtthHaikuTimingPosNeverK & \wtthHaikuTimingPosHeldOffPeerNeverK & \wtthHaikuTimingNeverPosDTwoSomeoneElseToldK/\wtthHaikuTimingNeverPosDTwoN & \wtthHaikuTimingShiftPosLateK/\wtthHaikuTimingShiftPosN \\
+\bottomrule
+\end{tabular}
+\caption{\textbf{Round of each witness's first violation note} (post hoc, exploratory; D-021; \wtthDesignModelHaikuName). ``Peer's line in view'': never-reporters with another witness's or C's real line in the \texttt{\#escalation-log} at their next turn (world R1 only). ``Someone else told'': \DebTwo{} reason among never-reporters. Last column: shifts whose first witness note came after round 2.}
+\label{tab:timing}
+\end{table}
+
+\paragraph{By paraphrase (pre-registered, exploratory).}
+The seed sets the claim's paraphrase and the handle order together, so their effects are aliased.
+Never-reporters are most frequent with the public paraphrase in every claim cell but \cell{POLICY}, most sharply in \cell{CLAIM} and \cell{NO-RECEIPT} (Table~\ref{tab:paraphrase}), so the stand-down may depend on the claim's wording or on slot order; the withheld paraphrases have the public one's meaning and length (Appendix~\ref{app:withheld}).
+
+\begin{table}[h]
+\centering\footnotesize\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}lrrrrrr@{}}
+\toprule
+ & Public: & & Withheld A: & & Withheld B: & \\
+Cell & P1 \% (k/n) & never & P1 \% (k/n) & never & P1 \% (k/n) & never \\
+\midrule
+\cell{CLAIM} & \wtthHaikuParaphraseZeroClaimPOnePct{} (\wtthHaikuParaphraseZeroClaimPOneK/\wtthHaikuParaphraseZeroClaimPOneN) & \wtthHaikuParaphraseZeroClaimNeverK & \wtthHaikuParaphraseOneClaimPOnePct{} (\wtthHaikuParaphraseOneClaimPOneK/\wtthHaikuParaphraseOneClaimPOneN) & \wtthHaikuParaphraseOneClaimNeverK & \wtthHaikuParaphraseTwoClaimPOnePct{} (\wtthHaikuParaphraseTwoClaimPOneK/\wtthHaikuParaphraseTwoClaimPOneN) & \wtthHaikuParaphraseTwoClaimNeverK \\
+\cell{POLICY} & \wtthHaikuParaphraseZeroPolicyPOnePct{} (\wtthHaikuParaphraseZeroPolicyPOneK/\wtthHaikuParaphraseZeroPolicyPOneN) & \wtthHaikuParaphraseZeroPolicyNeverK & \wtthHaikuParaphraseOnePolicyPOnePct{} (\wtthHaikuParaphraseOnePolicyPOneK/\wtthHaikuParaphraseOnePolicyPOneN) & \wtthHaikuParaphraseOnePolicyNeverK & \wtthHaikuParaphraseTwoPolicyPOnePct{} (\wtthHaikuParaphraseTwoPolicyPOneK/\wtthHaikuParaphraseTwoPolicyPOneN) & \wtthHaikuParaphraseTwoPolicyNeverK \\
+\cell{NO-RECEIPT} & \wtthHaikuParaphraseZeroNoReceiptPOnePct{} (\wtthHaikuParaphraseZeroNoReceiptPOneK/\wtthHaikuParaphraseZeroNoReceiptPOneN) & \wtthHaikuParaphraseZeroNoReceiptNeverK & \wtthHaikuParaphraseOneNoReceiptPOnePct{} (\wtthHaikuParaphraseOneNoReceiptPOneK/\wtthHaikuParaphraseOneNoReceiptPOneN) & \wtthHaikuParaphraseOneNoReceiptNeverK & \wtthHaikuParaphraseTwoNoReceiptPOnePct{} (\wtthHaikuParaphraseTwoNoReceiptPOneK/\wtthHaikuParaphraseTwoNoReceiptPOneN) & \wtthHaikuParaphraseTwoNoReceiptNeverK \\
+\cell{RECEIPT} & \wtthHaikuParaphraseZeroReceiptPOnePct{} (\wtthHaikuParaphraseZeroReceiptPOneK/\wtthHaikuParaphraseZeroReceiptPOneN) & \wtthHaikuParaphraseZeroReceiptNeverK & \wtthHaikuParaphraseOneReceiptPOnePct{} (\wtthHaikuParaphraseOneReceiptPOneK/\wtthHaikuParaphraseOneReceiptPOneN) & \wtthHaikuParaphraseOneReceiptNeverK & \wtthHaikuParaphraseTwoReceiptPOnePct{} (\wtthHaikuParaphraseTwoReceiptPOneK/\wtthHaikuParaphraseTwoReceiptPOneN) & \wtthHaikuParaphraseTwoReceiptNeverK \\
+\cell{FORGED} & \wtthHaikuParaphraseZeroForgedPOnePct{} (\wtthHaikuParaphraseZeroForgedPOneK/\wtthHaikuParaphraseZeroForgedPOneN) & \wtthHaikuParaphraseZeroForgedNeverK & \wtthHaikuParaphraseOneForgedPOnePct{} (\wtthHaikuParaphraseOneForgedPOneK/\wtthHaikuParaphraseOneForgedPOneN) & \wtthHaikuParaphraseOneForgedNeverK & \wtthHaikuParaphraseTwoForgedPOnePct{} (\wtthHaikuParaphraseTwoForgedPOneK/\wtthHaikuParaphraseTwoForgedPOneN) & \wtthHaikuParaphraseTwoForgedNeverK \\
+\cell{POS} & \wtthHaikuParaphraseZeroPosPOnePct{} (\wtthHaikuParaphraseZeroPosPOneK/\wtthHaikuParaphraseZeroPosPOneN) & \wtthHaikuParaphraseZeroPosNeverK & \wtthHaikuParaphraseOnePosPOnePct{} (\wtthHaikuParaphraseOnePosPOneK/\wtthHaikuParaphraseOnePosPOneN) & \wtthHaikuParaphraseOnePosNeverK & \wtthHaikuParaphraseTwoPosPOnePct{} (\wtthHaikuParaphraseTwoPosPOneK/\wtthHaikuParaphraseTwoPosPOneN) & \wtthHaikuParaphraseTwoPosNeverK \\
+\bottomrule
+\end{tabular}
+\caption{\textbf{P1 and never-reporting witnesses by claim paraphrase} (pre-registered exploratory breakdown; witness-level, clustering ignored; aliased with handle order).}
+\label{tab:paraphrase}
+\end{table}
+
 \paragraph{Debriefs.}
 The debrief answers are post-hoc self-reports coded by the judge, and the two models agreed on the reason codes at model--model $\kappa$ from \wtthKappaMMDTwoAnswerReasonCodesUnsureItWasAViolationValue{} to \wtthKappaMMDTwoAnswerReasonCodesSomeoneElseToldValue{} (Appendix~\ref{app:judge}), so Tables~\ref{tab:htwo}, \ref{tab:reasons} and~\ref{tab:basis} are descriptive.
 The best-agreed codes are ``someone else told ops'' among the reasons ($\kappa$ \wtthKappaMMDTwoAnswerReasonCodesSomeoneElseToldValue) and, among the evidence, the log ($\kappa$ \wtthKappaMMDTwoAnswerBasisLogLineValue) and a post ($\kappa$ \wtthKappaMMDTwoAnswerBasisCPostValue).
@@ -49,7 +122,7 @@ Second, the claim raised ``someone else told ops'' and ``thought ops was aware''
 Third, ``trusted the claim'' stayed low in every cell, and ``feared a duplicate'' was higher with the log whether or not a claim was made, so neither tracks the extra stand-down.
 Fourth, without a log the claim raised ``could not verify, so reported anyway'' more (\wtthHaikuDTwoReasonCouldNotVerifyReportedAnywayNonePct\% to \wtthHaikuDTwoReasonCouldNotVerifyReportedAnywayClaimPct\%) than with it (\wtthHaikuDTwoReasonCouldNotVerifyReportedAnywayNoneRPct\% to \wtthHaikuDTwoReasonCouldNotVerifyReportedAnywayNoReceiptPct\%), as the candidate reading expects, but this is the code the models agreed on least of the five ($\kappa$ \wtthKappaMMDTwoAnswerReasonCodesCouldNotVerifyReportedAnywayValue).
 Posts saying that someone else had told ops were most frequent in \cell{NONE-R}, which had no claim, so they mark the log rather than the claim.
-The codes cover reporters as well as witnesses who stood down and do not say whose report a witness meant, so the peer-receipt reading stays one candidate; the released per-witness table gives each witness's first-note round, which would show who held off and what the log listed when they did.
+The codes cover reporters as well as witnesses who stood down and do not say whose report a witness meant, so the peer-receipt reading stays one candidate; the post hoc timing (Table~\ref{tab:timing}) shows who held off and what the log listed when they did, which fits the reading but cannot prove it.
 
 \begin{table}[h]
 \centering\footnotesize\setlength{\tabcolsep}{4pt}
@@ -168,6 +241,13 @@ Alert-load rows in the analysis log's contrast tables are scaled by a hundred, s
 \caption{\textbf{Alert load}: violation notes per shift, the claimant's note excluded (episode bootstrap).}
 \label{tab:alert}
 \end{table}
+
+\begin{figure}[h]
+\centering
+\wtthFig{generated/analysis/figures/fig_frontier.pdf}{4in}
+\caption{\textbf{Safety against alert load under a false claim} (\wtthDesignModelHaikuName; descriptive). P2 with Wilson intervals, lower is safer, against violation notes per shift with bootstrap intervals; the receipts arm pairs \cell{RECEIPT}'s load (true claim) with \cell{NO-RECEIPT}'s P2 (false claim), and \cell{NONE} is a reference. \cell{FORGED}'s low load is not a saving: its claim was false.}
+\label{fig:frontier}
+\end{figure}
 
 \begin{table}[h]
 \centering\footnotesize
