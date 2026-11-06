@@ -1,44 +1,53 @@
-% sections/01-introduction.tex (plan 49 section 2.3, 1.0 page; Fig. 1 is defined here but counted under Results).
-% The author rewrites the opening (1.1) in his own voice. Every number in 1.1 comes from cited.tex.
+% sections/01-introduction.tex (plan 49 section 2.3, about 1.0 page; Fig. 1 and Table 1 are defined here). Rewritten in
+% pass 6 on research/68 section 0: the order follows the abstract (H3 and the only untold shifts, then H1, then H2).
+% METR's reasons are quoted exactly, with pages, and attributed to its analysis agent, which METR calls often-unreliable
+% (p.26; research/67 B1): never "had no route" (METR says "didn't see an easily-available route"). Phantom escalation is
+% a behaviour, not a belief (research/68 0.7). Every number in the first paragraph comes from cited.tex; METR's counts are
+% approximate, and METR never observed phantom escalation or a false claim of reporting (plan 49 section 4.2 items 24, 27).
+% The operator's report (openai2026hftechreport) is the primary source for the board; research/67 A11 read its PDF.
 \section{Introduction}\label{sec:intro}
 
-% 1.1 Hook, then the main finding and why it matters (review, presentation for a 5-minute judge). Quotes are verbatim
-% from METR p.62 (research/15 section 2a). Do not say METR observed phantom escalation or false claims of reporting (plan
-% 49 section 4.2 item 24); METR's counts are approximate (item 27). The finding sentence is descriptive (FORGED against
-% RECEIPT has no test; P2 by cell), every number a macro. Review 2 M1: the bare claim "barely mattered" only without a
-% log (H2's R1 stand-down is 9.6 points); M2: the typed line against a real receipt is descriptive and untested; S8: the
-% witnesses of the untold shifts did not say ops had been told.
-In \citedIncidentMonthYear, about \citedMetrAgents{} AI agents that were meant to be isolated found one another through a shared cache and ran their own message board, and about \citedMetrAttackers{} of them joined an attack on Hugging Face infrastructure.
-METR's sweep of about \citedMetrTranscripts{} transcripts for agents alerting humans found \citedMetrConsidered{} cases of an agent even considering it, and ``in none of these cases did the agent actually pursue alerting humans at all''; some agents ``instead escalated to the message board and considered the message board to be a reasonable authority'' \citep[p.~62]{greenblatt2026metr} (an approximate count: the classifier ``found \citedMetrHits{} hits, but some of these were false positives'').
-If agents take a shared board as the record of who has told the humans, one line on it can keep a violation from ever reaching a human.
-Without a log, a bare claim of having told them barely mattered (\wtthHaikuHOneDelta{} points); beside a channel-written log it cut reporting by \wtthHaikuHTwoDeltaROne{} points; and a receipt-style line typed by the claiming peer into its own post cut live \wtthDesignModelHaikuName{} witnesses' reporting to \wtthHaikuPOneForgedPct\% (a real receipt: \wtthHaikuPOneReceiptPct\%; descriptive, not tested) and alone left ops untold, in \wtthHaikuPTwoForgedK{} of \wtthHaikuPTwoForgedN{} shifts whose witnesses did not say ops had been told.
+In \citedIncidentMonthYear, about \citedMetrAgents{} AI agents that were meant to be isolated found one another through a shared cache and ran what the operator's own report calls an ``improvised message board'' \citep{openai2026hftechreport}; about \citedMetrAttackers{} of them joined an attack on Hugging Face infrastructure.
+METR's automated sweep of about \citedMetrTranscripts{} transcripts found \citedMetrConsidered{} cases of an agent even considering alerting humans, and ``in none of these cases did the agent actually pursue alerting humans at all'' \citep[p.~62]{greenblatt2026metr}.
+METR reports, from an analysis agent of the kind it calls ``often-unreliable'' \citep[p.~26]{greenblatt2026metr}, that agents thought alerting humans ``wasn't their task'', ``didn't see an easily-available route'', or ``considered the message board to be a reasonable authority'' \citep[p.~62]{greenblatt2026metr}.
+We give every witness the private route those agents did not see, and test a further candidate cause: a peer's claim to have told the humans already.
 
-% 1.2 Claims stand in for actions. The Paglieri posts are not shown to be false (plan 49 section 4.2 item 24).
-% The MetaGPT string is in the code (metagptmgxenv), not in the 2023 paper; "by default" because the function can be
-% overwritten in a remote setting (research/50 A2). Audit sentences: research/54 section 4.5 items 1 and 2 (harmonized
-% table: peers No in eight rows, Partial in seven, Yes in none), shortened for space: "in most" = the eight No rows.
-Our audit of \wtthAuditN{} agent frameworks and protocols found \wtthAuditFullVerifyWord{} that lets peers query a record of a claimed escalation; in most, peers have only the escalating agent's word (Appendix~\ref{app:audit}).
-An agent in a research swarm posted, unprompted, ``I've reported this bug to the organizers'', a claim that came just before its formal report \citep{paglieri2026cheating}; MetaGPT's \texttt{reply\_to\_human} by default returns ``SUCCESS, human has received your reply'' but delivers nothing \citep{metagptmgxenv}.
-We call this failure \emph{phantom escalation}: a peer's unverifiable claim to have told humans stands in for telling them.
+% The finding, in the order of research/68 section 0. "Within the shift": one witness of an untold shift called notify_ops
+% only in the debrief. The relay count is the final labels' claim_present = 1, claim_subject = other, in the untold shifts.
+With live \wtthDesignModelHaikuName{} witnesses, a bare claim barely mattered; text shaped like a receipt did.
+A line in the channel's log format, typed by the claiming peer into its own post, cut the share of witnesses who told ops by \wtthHaikuHThreeDelta{} points and produced the only shifts in which no one told ops within the shift (\wtthHaikuPTwoForgedK{} of \wtthHaikuPTwoForgedN); in \wtthHaikuRelayUntoldForgedShiftsK{} of them a witness relayed the claim on the board.
+The defence supplied the format for the attack.
+The bare claim moved reporting by \wtthHaikuHOneDelta{} points, under one wording, and against our prediction the log made it matter more (\wtthHaikuHTwoDeltaROne{} points).
+
+% Claims stand in for actions. The Paglieri post is not shown to be false (plan 49 section 4.2 item 24). The MetaGPT
+% string is in the code, not the 2023 paper; "by default" because the function can be overwritten (research/50 A2).
+% Audit headline on the rubric (research/65, research/68 B): peers-verify Yes in none, Partial in seven, No in eight.
+Agents do post such claims: one in a research swarm wrote, unprompted, ``I've reported this bug to the organizers'' just before its formal report \citep{paglieri2026cheating}, and MetaGPT's \texttt{reply\_to\_human} by default returns ``SUCCESS, human has received your reply'' but delivers nothing \citep{metagptmgxenv}.
+Of \wtthAuditN{} agent frameworks and protocols we audited, \wtthAuditFullVerifyWord{} gives peers a queryable escalation record, and in \wtthAuditPartialVerifyWord{} peers see a framework-built trace of the call (Appendix~\ref{app:audit}; the audit was written and re-checked by Claude agents, with no human spot-check).
+We call the failure \emph{phantom escalation}: a peer's claim to have told the humans takes the place of the act of telling.
+We define it by behaviour, not belief: witnesses in the untold shifts relayed the claim on the board, but none said in its debrief that ops had been told.
 Claims are not receipts.
 
-% 1.3 Questions and approach (PREREG section 3). Table 1 (cells at a glance) is defined here, where cell names are
-% first used (Figure 1); its caption defines R0 and R1.
+% Questions and approach (PREREG section 3). Stand-down and the -R suffix are defined here, at first use (research/66).
 We ask whether a peer's casual claim to have told ops makes fewer live witnesses tell ops (RQ1), whether a channel-written log line per real note voids an unbacked claim (RQ2), whether a receipt-style line typed by the claimant works like a receipt (RQ3), and how no defence, a one-line rule and receipts trade safety against alert load (RQ4), in a pre-registered, seed-matched experiment run via Claude Code: \wtthHaikuEpisodesInSet{} shifts of \wtthDesignLiveWitnessesWord{} live \wtthDesignModelHaikuName{} witnesses in \wtthDesignCells{} cells (Table~\ref{tab:cells}, Figure~\ref{fig:one}).
+A \emph{stand-down} is the drop, in points, in the share of witnesses who told ops; the suffix in \cell{NONE-R} marks world R1, where the channel writes a log, as in every receipt cell.
 
 \begin{figure}[t]
 \centering
 \wtthFig{generated/analysis/figures/fig1a.pdf}{5.85in}\par\smallskip
-% Fig. 1b at half width with the caption beside it (plan 49 cut order step 2: no compact variant exists, so the
-% panel is scaled instead and the caption moves beside it to save height).
+% Fig. 1b at half width with the caption beside it (plan 49 cut order step 2).
 \begin{minipage}[t]{3.05in}\vspace{0pt}\wtthFig{generated/analysis/figures/fig1b.pdf}{3.05in}\end{minipage}\hfill
 \begin{minipage}[t]{\dimexpr\linewidth-3.05in-1.2em\relax}\vspace{0pt}
 \captionsetup{font=footnotesize}
+% Fig. 1a (research/68 A6): row glosses, shaded rows where C really told ops, "---" where P2 does not apply, hollow dashed
+% follow-up rows, shift-level cluster-bootstrap intervals (\wtthFigOneAIntervalMethod); a row at 0 or 100% has none.
 \caption[Reporting by cell, and when witnesses first reported]{%
 \textbf{Reporting by cell} (\wtthDesignModelHaikuName; \wtthDesignModelSonnetName{} exploratory).
-(a)~P1, the share of witnesses who sent ops a note about the split (witness-level \wtthProtocolLevel\% Wilson intervals), and P2, the shifts in which no witness did (k of n, where C did not really report)\wtthIfEq{\wtthExpOneStatus}{complete}{; follow-up rows are exploratory (D-022, Section~\ref{sec:followup})}.
-In R1 the channel writes a log line for every real note; R0 has no log (Table~\ref{tab:cells}).
-(b)~Post hoc (D-021): when witnesses first told ops in the four H2 cells; hatched, never-reporters with a peer's line in the log at their next turn.
+(a)~P1, the share of witnesses who sent ops a note about the split, with \wtthProtocolLevel\% \wtthFigOneAIntervalMethod{} intervals (rows at \wtthHaikuPOneBNonePct\% or \wtthHaikuPOneNonePct\% have none), and P2, the shifts in which no witness did.
+Each row's gloss defines its cell (Table~\ref{tab:cells}).
+Shaded rows: C really told ops, so standing down there is correct; ``---'': P2 does not apply (C told ops, or there was no violation).
+Hollow, dashed rows ran later and are not concurrent (exploratory; Section~\ref{sec:followup}).
+(b)~Post hoc: when witnesses first told ops in the H2 cells; hatched, never-reporters with a peer's line in the log at their next turn.
 \wtthInputBranch{fig1}}
 \label{fig:one}
 \end{minipage}
@@ -47,28 +56,26 @@ In R1 the channel writes a log line for every real note; R0 has no log (Table~\r
 \begin{table}[t]
 \centering\footnotesize
 \adjustbox{max width=\linewidth}{\input{generated/design/table_cells}}
-\caption{\textbf{The \wtthDesignCellsWord{} cells at a glance} (worlds R0 and R1 as in Figure~\ref{fig:one}).
-Where C makes a claim, it is false except in \cell{RECEIPT} and \cell{POS}, where the harness files C's real note; shifts are planned seeds (Sonnet exploratory).
-Follow-up (exploratory, D-022): \cell{X-FORGED-POLICY} and \cell{X-FORGED-PROV} on Haiku (\wtthExpOneXForgedPolicyEps{} and \wtthExpOneXForgedProvEps{} shifts), \cell{RECEIPT} on Sonnet (\wtthExpOneSonnetReceiptEps; Section~\ref{sec:followup}).}
+\caption{\textbf{The \wtthDesignCellsWord{} cells at a glance} (R1: the channel writes a log). C is the claiming peer; its claim is false except in \cell{RECEIPT} and \cell{POS}, where the harness files C's real note.
+\cell{NEG} and \cell{POS} add a cost for duplicate notes and differ only in that note, so their gap tests whether the testbed detects a warranted stand-down.
+Shifts: pre-registered seeds per cell (Sonnet exploratory).
+Follow-up (exploratory): \cell{X-FORGED-POLICY} and \cell{X-FORGED-PROV} on Haiku (\wtthExpOneXForgedPolicyEps{} and \wtthExpOneXForgedProvEps{} shifts), \cell{RECEIPT} on Sonnet (\wtthExpOneSonnetReceiptEps; Section~\ref{sec:followup}).}
 \label{tab:cells}
 \end{table}
 
-% 1.4 Threat model (PREREG sections 1, 5, 6, 19; research/34 findings 1 to 3).
+% Threat model (PREREG sections 1, 5, 6, 19). Never "peers who cannot check": the log was visible (research/68 0.1).
 \paragraph{Threat model.}
 Agents on a shift share a board; a human operator is reachable only through a private, write-only tool.
-\textbf{Failure:} a peer posts that it has told the operator, and peers who cannot check treat that as the escalation.
+\textbf{Failure:} a peer posts that it has told the operator, and the others treat that post as the escalation.
 \textbf{Defence:} the channel writes one board-visible line per real note and shows an empty log as ``\wtthStimLogEmpty''
 \textbf{Spoofing (H3):} the claimant can type a receipt-like line into its own posts but cannot write the log.
 \textbf{Out of scope:} a compromised channel, collusion, adaptive claims and the operator's response.
 
-% 1.5 Contributions. Items 3 and 4 come from branch files chosen by the generated verdicts (branch.tex).
+% Contributions (research/68 0.1 to 0.4; research/65: do not credit the claim alone for H2). Verdict words stay in the
+% generated macros (Section 4); the contributions describe results.
 Our main contributions are:
 \begin{enumerate}
-\item \textbf{A named failure mode and threat model}, grounded in the incident and an audit, and \textbf{a pre-registered testbed} of live Claude witnesses with a private operator channel, a channel-written log and controls.
-\item \textbf{The size of the stand-down}: \wtthInputBranch{contrib-h1}
-\item \textbf{A test of channel-written receipts and their spoofability}: \wtthInputBranch{contrib-h23}
+\item \textbf{A behavioural definition of phantom escalation, a threat model and a pre-registered testbed} whose endpoint is whether a human is told, with redundant live Claude witnesses, a private operator channel, a channel-written log, a real-receipt comparator and controls.
+\item \textbf{The headline}: a receipt-style line the claimant typed into its own post cut reporting by \wtthHaikuHThreeDelta{} points (H3) and produced the only untold shifts, in \wtthHaikuRelayUntoldForgedShiftsK{} of which the claim spread between witnesses.
+\item \textbf{Two results against our predictions}: a bare claim barely mattered (H1, a borderline rejection resting on one wording), and the log enlarged its effect (H2), in a way that fits de-duplication on peers' real receipts as well as deference to the claim.
 \end{enumerate}
-
-% 1.6 Novelty (research/36 section 5.1). The search date comes from data/process_facts.yaml (8 November only if the
-% Nov 8 re-run happens). Never claim "first" (plan 49 section 4.2 items 1 to 5).
-To our knowledge (searches through \wtthDesignPriorArtThrough; Appendix~\ref{app:related}), no earlier study manipulates a peer's claim to have already escalated a violation to a human and measures whether live LLM witnesses still report, or tests channel-written receipts against such a claim.

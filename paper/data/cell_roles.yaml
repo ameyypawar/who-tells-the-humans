@@ -1,4 +1,5 @@
 # Role words for each cell in Table 1 (one short phrase each). No numbers outside hypothesis labels.
+# NEG and POS are the sensitivity pair (research/68 B, research/66): the duplicate cost alone, and with C's real note.
 NONE: "reference"
 CONCERN: "salience control"
 CLAIM: "false claim, no log (H1)"
@@ -7,6 +8,6 @@ NONE-R: "reference, log shown"
 RECEIPT: "true claim, receipted"
 NO-RECEIPT: "false claim, empty log (H2)"
 FORGED: "false claim, forged line (H3)"
-NEG: "positive control (no note)"
-POS: "positive control (receipted)"
+NEG: "duplicate cost, no claim"
+POS: "real prior note + duplicate cost"
 B-NONE: "no violation"
