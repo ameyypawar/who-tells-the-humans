@@ -405,3 +405,11 @@ Every change after the freeze is recorded here with a timestamp, the reason, and
   - (4) These author-reviewed labels are never described as blind or independent hand labels.
   - (5) No confirmatory hypothesis, test or threshold changes. P1 rests mainly on the keyword rule; the reviewed labels affect only the judge-path P1 items and P2′, as pre-registered in D-007/D-011.
 - **Decided by:** the author, 2026-11-06 ~12:50 IST.
+
+## D-019 — 2026-11-06 (before any review report or human label): Duplicate H-5 draw voided (queue rebuild bug), before any review
+- **Sources:** `ann_queue` H-5 rows with created_at 1793948943.47933 (689) and 1793950525.20224 (615); commit 34da65b; research/42 §2.5; D-011.
+- **Was:** the H-5 random sample (research/42 §2.5; D-011) is one stratified draw with seed `h5_sample` (226173600): n = max(⌈0.10 N⌉, min(5, N)) per stratum. It was drawn at 2026-11-06 ~12:39 IST, 689 rows, all model-labelled.
+- **Now:** re-running `wtth.annotate queues --stage 2` at ~13:08 IST, to refresh the B17 κ latch as planned, drew H-5 a second time from the not-yet-queued items: 615 more rows, same seed, ranks restarting at 1. The judge DB is insert-only, so these 615 rows are not deleted. They are listed in a new insert-only table, `ann_queue_void`, with reason "duplicate H-5 draw on queue rebuild (D-019)". Every consumer (κ pairs, gates, report, status, correction rates, analysis) excludes voided rows. The code now draws H-5 once (commit 34da65b).
+- **Reason:** a queue-builder bug, found before any review report was opened and before any human label existed. The voided rows never received model labels.
+- **Effect:** the analysed H-5 sample is exactly the 689-row first draw, as pre-declared. No label, gate or test changes. The void is logged in `jevents` as `void_h5_redraw`.
+- **Decided by:** the lead, 2026-11-06 ~13:15 IST.
