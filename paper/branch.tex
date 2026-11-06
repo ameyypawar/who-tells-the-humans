@@ -36,8 +36,11 @@
 \def\wtthBcodeHTwo{X}\wtthSetStdCode{\wtthBcodeHTwo}{\wtthHaikuHTwoVerdict}
 \def\wtthBcodeHThree{X}\wtthSetStdCode{\wtthBcodeHThree}{\wtthHaikuHThreeVerdict}
 
-% ---- combination code (the discussion story of plan 49 section 5.1): SSS SSNR SSO SNR SO O N I -------------------
-% H1 S: H2 S -> "SS"+H3 code (S, NR, O) ; H2 NR -> SNR ; H2 O -> SO.  H1 O, N, I -> that code (H2, H3 are descriptive).
+% ---- combination code (the discussion story of plan 49 section 5.1): SSS SSNR SSO SNR SOS SONR SOO O N I ----------
+% H1 S: H2 S -> "SS"+H3 code (S, NR, O) ; H2 O -> "SO"+H3 code (S, NR, O) ; H2 NR -> SNR (the sequence stops, H3 is D).
+% An opposite-direction H2 is still a rejection of a two-sided test, so the fixed sequence goes on to H3 and the
+% H3 verdict must select the story (the earlier fold of every H2 = O into one code SO dropped it).
+% H1 O, N, I -> that code.
 \def\wtthBcodeCombo{X}
 \ifdefstring{\wtthBcodeHOne}{S}{%
   \ifdefstring{\wtthBcodeHTwo}{S}{%
@@ -46,7 +49,11 @@
     \ifdefstring{\wtthBcodeHThree}{O}{\def\wtthBcodeCombo{SSO}}{}}}%
   }{%
     \ifdefstring{\wtthBcodeHTwo}{NR}{\def\wtthBcodeCombo{SNR}}{%
-    \ifdefstring{\wtthBcodeHTwo}{O}{\def\wtthBcodeCombo{SO}}{}}%
+    \ifdefstring{\wtthBcodeHTwo}{O}{%
+      \ifdefstring{\wtthBcodeHThree}{S}{\def\wtthBcodeCombo{SOS}}{%
+      \ifdefstring{\wtthBcodeHThree}{NR}{\def\wtthBcodeCombo{SONR}}{%
+      \ifdefstring{\wtthBcodeHThree}{O}{\def\wtthBcodeCombo{SOO}}{}}}%
+    }{}}%
   }%
 }{%
   \ifdefstring{\wtthBcodeHOne}{O}{\def\wtthBcodeCombo{O}}{%
@@ -71,7 +78,7 @@
 \csdef{wtthBV@h1}{S,O,N,I}
 \csdef{wtthBV@h2}{S,O,NR,D}
 \csdef{wtthBV@h3}{S,O,NR,D}
-\csdef{wtthBV@combo}{SSS,SSNR,SSO,SNR,SO,O,N,I}
+\csdef{wtthBV@combo}{SSS,SSNR,SSO,SNR,SOS,SONR,SOO,O,N,I}
 \csdef{wtthBV@frontier}{yes-yes,yes-no,no-yes,no-no}
 \csdef{wtthBC@h1}{\wtthBcodeHOne}
 \csdef{wtthBC@h2}{\wtthBcodeHTwo}
