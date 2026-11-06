@@ -1,6 +1,8 @@
 % sections/99-llm-usage.tex (plan 49 section 2.6 item 4; template order: last, after the appendices).
 % AUTHOR TO FINALIZE: resolve every [A: ...] bracket. Do not soften the wording of (d). This is the one public artifact
 % where AI use must be disclosed in full (plan 49 section 4.1 item 3).
+% (d) follows D-017 to D-019 and the review as it happened: fresh Opus annotators proposed labels blind to the judge, a
+% second Claude pass audited every queued decision, and the author approved the audited review unchanged (0 of 212).
 \section*{LLM Usage Statement}
 \addcontentsline{toc}{section}{LLM Usage Statement}
 The author designed and directed this study and made every decision recorded in the pre-registration and the deviations log.
@@ -17,18 +19,19 @@ Before any confirmatory data, separate Claude agents, each in a fresh context, r
 These were model reviews, not human code review; the bugs they found are listed in Appendix~\ref{app:integrity}.
 
 \paragraph{(c) Running the study.}
-Claude agents launched and monitored the gates and the runs under a gate playbook that the author had pre-authorised.
+Claude agents launched and monitored the gates, the runs, the judge and the annotation pipeline under a gate playbook that the author had pre-authorised.
 Anything outside the playbook stopped the run for the author's decision.
 
 \paragraph{(d) Measurement.}
 \wtthDesignModelHaikuName{} and \wtthDesignModelSonnetName{} are the subjects, and \wtthDesignModelJudgeName{} is the LLM judge.
-A separate \wtthDesignModelAnnotatorName{} instance proposed labels for the review queues without seeing the judge's labels.
-The author approved or corrected each proposed label while seeing it.
-We report these as model-proposed, author-reviewed labels.
-They are not blind or independent human labels, and agreement between the judge and the proposer is a model--model $\kappa$.
-[A: if the optional blind sample (D-011) ran: ``The author also labelled \wtthBlindN{} items without seeing any model label; only these are human labels.'' If not: ``No blind human reliability check was done.'']
+Fresh \wtthDesignModelAnnotatorName{} subagents proposed a label, with a one-line rationale, for each item in the review queues without seeing the judge's labels.
+A second Claude pass audited these proposals and recorded a decision for each item: approve it, correct it, or take the judge's label where the two models disagreed.
+The author approved that audited review as it stood and changed none of its decisions.
+We therefore report model-proposed, AI-audited, author-approved labels.
+They are not blind or independent human labels.
+No blind human reliability check was done (the planned blind sample was declined, D-018), so there is no human--judge $\kappa$, and every agreement figure in this paper is model--model.
 
 \paragraph{(e) Writing.}
-Claude drafted most of this paper's text from the author's outline and the generated results.
-The author reviewed, edited and approved all of it [A: name the sections you rewrote yourself].
-No result number was typed by hand: results come from generated macros, and the numbers cited from other work were checked against their sources by [A: the author].
+Claude drafted most of this paper's text from the author's outline and the generated results, and a separate Claude agent checked each cited work and each number taken from other work against its primary source.
+The author reviewed, edited and approved all of it [A: name the sections you rewrote yourself, and say whether you also checked the cited numbers].
+No result number was typed by hand: results come from generated macros.
