@@ -338,6 +338,32 @@ class TestCheckTurnBodies(unittest.TestCase):
                 self.assertNotIn("different prompt", p)
                 self.assertNotIn("changed description", p)
 
+    def _row_with_prompt(self, row, text):
+        r = dict(row)
+        r["prompt_text"] = text
+        return r
+
+    def test_at_in_our_own_verified_prompt_is_not_forbidden(self):
+        tdir, row = self.fresh()
+        text = "board quote: @rd-09 says hello"
+        self.edit(tdir, lambda d: d["messages"][0].update(content=[{"type": "text", "text": text}]))
+        self.assertEqual(self.check(tdir, self._row_with_prompt(row, text)), [])
+
+    def test_at_in_system_block_is_still_forbidden(self):
+        tdir, row = self.fresh()
+        text = "board quote: @rd-09 says hello"
+        self.edit(tdir, lambda d: (d["messages"][0].update(content=[{"type": "text", "text": text}]),
+                                   d["system"][2].update(text=d["system"][2]["text"] + " @x")))
+        probs = self.check(tdir, self._row_with_prompt(row, text))
+        self.assertTrue(any("forbidden strings" in p for p in probs), probs)
+
+    def test_at_in_unverified_first_message_is_still_forbidden(self):
+        tdir, row = self.fresh()
+        self.edit(tdir, lambda d: d["messages"][0].update(content=[{"type": "text", "text": "hi @rd-09"}]))
+        probs = self.check(tdir, row)
+        self.assertTrue(any("forbidden strings" in p for p in probs), probs)
+        self.assertTrue(any("first user message" in p for p in probs), probs)
+
     def test_debrief_with_tools_and_missing_bodies(self):
         tdir, row = self.fresh("debrief", ttype="d1")
         self.edit(tdir, lambda d: d.update(tools=[{"name": self.rig.prefix + "notify_ops"}]))

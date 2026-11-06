@@ -254,10 +254,32 @@ class GuardTests(unittest.TestCase):
         self.assertTrue(any(p.startswith("ANTHROPIC_API_KEY is set") for p in problems))
         self.assertTrue(any(p.startswith("CLAUDECODE is set") for p in problems))
 
+    def test_frozen_tag_pattern(self) -> None:
+        for t in ("frozen-v1", "frozen-v1.1", "frozen-v1.12"):
+            self.assertTrue(manifest.FROZEN_TAG_RE.match(t), t)
+        for t in ("frozen-v2", "frozen-v1.", "frozen-v1.x", "xfrozen-v1", "frozen-v1.1.1", "frozen-v1-rc"):
+            self.assertFalse(manifest.FROZEN_TAG_RE.match(t), t)
+
+    def test_core_accepts_frozen_v1_n_tag(self) -> None:
+        repo = tmp_dir("wp4_t44_tagrepo")
+        def git(*a):
+            subprocess.run(["git", "-C", str(repo), "-c", "user.name=t", "-c", "user.email=t@t", *a],
+                           check=True, capture_output=True)
+        git("init", "-q")
+        git("commit", "-q", "--allow-empty", "-m", "x")
+        s, _ = self.settings("wp4_t44_tag", fake=False)
+        import dataclasses
+        s = dataclasses.replace(s, paths=dataclasses.replace(s.paths, repo_root=repo))
+        for tag, ok in (("frozen-v1.2", True), ("frozen-v2", False)):
+            git("tag", tag)
+            problems = manifest.verify_startup(s, "live", "core")
+            self.assertEqual(ok, not any("does not carry tag" in p for p in problems), (tag, problems))
+            git("tag", "-d", tag)
+
     def test_core_requires_freeze(self) -> None:
         s, _ = self.settings("wp4_t44_freeze", fake=False, frozen_level=None, **{"max_turns.frozen": False})
         problems = manifest.verify_startup(s, "live", "core")
-        self.assertIn("HEAD does not carry tag frozen-v1", problems)
+        self.assertIn("HEAD does not carry tag frozen-v1 (or frozen-v1.N)", problems)
         self.assertIn("frozen_level is not set", problems)
         self.assertIn("max_turns.frozen is false", problems)
 

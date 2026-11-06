@@ -103,6 +103,9 @@ def _check_tools(settings: Any, problems: list[str]) -> None:
         problems.append(f"tools.yaml check failed: {type(exc).__name__}: {exc}")
 
 
+FROZEN_TAG_RE = re.compile(r"^frozen-v1(\.\d+)?$")
+
+
 def verify_startup(settings: Any, mode: str, phase: str) -> list[str]:
     """Every problem found (empty list = ready). Live mode adds environment, key and freeze guards."""
     p: list[str] = []
@@ -196,8 +199,8 @@ def verify_startup(settings: Any, mode: str, phase: str) -> list[str]:
             g = lambda *a: subprocess.run(["git", "-C", str(paths.repo_root), *a], capture_output=True, text=True)  # noqa: E731
             if g("status", "--porcelain").stdout.strip():
                 p.append("git tree is not clean")
-            if "frozen-v1" not in g("tag", "--points-at", "HEAD").stdout.split():
-                p.append("HEAD does not carry tag frozen-v1")
+            if not any(FROZEN_TAG_RE.match(t) for t in g("tag", "--points-at", "HEAD").stdout.split()):
+                p.append("HEAD does not carry tag frozen-v1 (or frozen-v1.N)")
             if settings.frozen_level is None:
                 p.append("frozen_level is not set")
             if not settings.max_turns.frozen:
@@ -244,7 +247,9 @@ def build_manifest(settings: Any, run_id: str, phase: str, mode: str) -> dict:
     return {
         "run_id": run_id, "phase": phase, "mode": mode, "harness_version": __version__,
         "git": {"head": _git(settings, "rev-parse", "HEAD"), "dirty": bool(_git(settings, "status", "--porcelain")),
-                "tags": _git(settings, "tag", "--points-at", "HEAD").split()},
+                "tags": _git(settings, "tag", "--points-at", "HEAD").split(),
+                "frozen_tag": next((t for t in _git(settings, "tag", "--points-at", "HEAD").split()
+                                    if FROZEN_TAG_RE.match(t)), None)},
         "versions": {"python": platform.python_version(), "mcp": mcp_v, "pyyaml": yaml_v,
                      "sqlite": sqlite3.sqlite_version},
         "binary": {"path": str(paths.binary), "sha256": _sha_file(paths.binary), "pinned": pins["binary_sha256"],

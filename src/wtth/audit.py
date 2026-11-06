@@ -417,8 +417,10 @@ def check_turn_bodies(turn_dir: Path, exposure_row: Any, toolset_yaml_path: Path
         first = _text_of_content(msgs[0].get("content")) if msgs else ""
         if first != exposure_row["prompt_text"]:
             problems.append(f"{f.name}: first user message differs from exposures.prompt_text")
+        # our own rendered prompt (byte-verified above) quotes the board, which may contain "@"; skip only that text
+        scan_first = "" if first == exposure_row["prompt_text"] else first
         scan = canon_json({"system": body.get("system"), "tools": tools, "metadata": body.get("metadata"),
-                           "first": first, "other": {k: v for k, v in body.items()
+                           "first": scan_first, "other": {k: v for k, v in body.items()
                                                      if k not in ("system", "tools", "messages", "metadata")}})
         hits = [p for p in FORBIDDEN_IN_BODIES if p in scan]
         if hits:
