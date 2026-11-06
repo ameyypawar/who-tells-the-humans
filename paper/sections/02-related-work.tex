@@ -1,29 +1,20 @@
-% sections/02-related-work.tex (plan 49 section 2.3, 0.55 page). Words, not numbers: every cited number costs a
-% verification. Sources: research/24, 29, 34, 36 (tier 1 and section 1). Every key is unverified until the author opens
-% it (bib/citations-verified.csv). Never claim "first" (plan 49 section 4.2 items 1 to 5).
-% Table 3 (nearest work against the conjunction) moved to Appendix I, the first step of the cut order, to keep
-% sections 1 to 3 within about 3.3 pages. Tightened for the follow-up (single-agent benchmarks, Concordia and the
-% compaction finding now sit in Appendix I or Section 5.2). Prompt injection (review S8; review 2 M4, S10): the forged
-% line is in-band signalling. Read in the spotlighting PDF (arXiv 2403.14720v1): Section 4.2, system-prompt
-% instructions alone have "only modest effects"; Section 5.1, for GPT-3.5-Turbo "only a negligible impact", delimiters
-% cut ASR "by about half", and the defence "could be easily subverted by an attacker who ... inserts their own
-% delimiting"; Section 6, prompt injection "is analogous to the in-band signaling problem". Our provenance note is a
-% system-prompt instruction with no delimiters, so it maps onto the instruction-only condition. CaMeL (2503.18813):
-% "a custom Python interpreter ... that tracks provenance and enforces security policies". Prompt Infection
-% (2410.07283, Section 6): LLM Tagging prepends the sending agent's name; alone it cut attack success "by only 5%",
-% combined with marking it stopped every attack. PCM already proposes channel-written evidence: our part is the test.
-% Quotes stay under 15 words.
+% sections/02-related-work.tex (plan 49 section 2.3). Rewritten in pass 6 on research/65 and research/67: the nearest LLM
+% neighbours (false success, announce-versus-act, an LLM bystander effect), pluralistic ignorance as the human analogue
+% (an analogue only: our witnesses reported no such belief), the indirect-injection benchmarks and peer spread, and a
+% precise statement of what is new: the measurement, not the attack class (research/65 MAJOR 2). Every key is verified in
+% bib/citations-verified.csv; research/67 opened each source. Spotlighting quotes are verbatim from arXiv 2403.14720v1
+% (Sections 4.2 and 5.1). mikeda2026whistle is cited only in Appendix I, as AI Village coding with weak agreement, never
+% for METR. Never claim "first" (plan 49 section 4.2 items 1 to 5). Quotes stay under 15 words.
 \section{Related Work}\label{sec:related}
 
 \paragraph{Escalation, unverified claims and bystanders.}
-A declared audience of agents left paging at ceiling or, suggestively and only for Haiku, moved reports to a slower channel \citep{fuller2026smoke}; a shared channel delayed insiders' warnings \citep{eldin2026codeofsilence}; and always-dismiss peers swayed LLM monitors' escalation decisions \citep{magistrali2026aligned}.
-An unbacked claim of prior sign-off made LLM security checkers stand down \citep{sidot2026verify}; a rule sentence treating claimed approvals as unverified stopped fabricated permissions from users but failed more often when they came via a tool result \citep{patel2026fabricated}; and claims lose their ``never verified'' status across handoffs \citep{silenceisendorsement2026}.
-Bystander research \citep{latane1968group,darley1968bystander,fischer2011bystander,markey2000bystander} and the volunteer's dilemma \citep{diekmann1985volunteer} supply the ``someone else will'' mechanism; none of this work manipulates a claim of prior escalation (Appendix~\ref{app:related}).
+A declared audience of agents left paging at ceiling or, suggestively and only for Haiku, moved reports to a slower channel \citep{fuller2026smoke}; a shared channel delayed insiders' warnings \citep{eldin2026codeofsilence}; always-dismiss peers swayed LLM monitors' escalation decisions \citep{magistrali2026aligned}; and an unbacked claim of prior sign-off made LLM security checkers stand down \citep{sidot2026verify}.
+A rule treating claimed approvals as unverified stopped fabricated permissions from users but failed more often via a tool result \citep{patel2026fabricated}, and claims lose their ``never verified'' status across handoffs \citep{silenceisendorsement2026}.
+Agents report success that the environment does not show \citep{falsesuccess2026}, and announced intent and later action diverge in LLM groups \citep{shi2026agentslie}; here a peer's announced report stands in for the act, and others act on it.
+Bystander research \citep{latane1968group,darley1968bystander,fischer2011bystander} and the volunteer's dilemma \citep{diekmann1985volunteer} supply the ``someone else will'' mechanism, which has an LLM analogue in multi-agent reasoning \citep{shehata2026bystander}; where each reader assumes the others checked, the human analogue is pluralistic ignorance \citep{miller1987pluralistic}, though our witnesses reported no such belief.
 
 \paragraph{Receipts and prompt injection.}
-PCM already attaches evidence from a log the claimant cannot write to every inter-agent claim, though it cannot prove absence \citep{ghosh2026pcm}; we test whether LLM readers use such evidence, and its absence.
-Outcome attestation is unresolved in MCP and \AtwoA{} \citep{mcp3350,a2a1769}.
-The forged line is in-band signalling, the analogy spotlighting's authors draw for indirect prompt injection, which makes models treat retrieved data as instructions \citep{greshake2023indirect,hines2024spotlighting}; they warn that an attacker who ``inserts their own delimiting'' can subvert a delimiter defence, as typing the log layout into a post does.
-Defences rank instructions by source \citep{wallace2024hierarchy}, transform untrusted text so its origin stays visible \citep{hines2024spotlighting}, tag agents' messages with the sender, which curbed agent-to-agent injection only with other safeguards \citep{lee2024promptinfection}, or, as CaMeL does, track provenance outside the model and enforce policy on it \citep{debenedetti2025camel}.
-Our provenance note (Section~\ref{sec:followup}) is a system-prompt instruction, the kind of defence spotlighting found to have ``only modest effects'', and it had no detectable effect here.
-What differs is the target, a redundant team's escalation decision swayed by a fake record rather than an instruction, and the defence, a channel-written receipt.
+PCM attaches evidence from a log the claimant cannot write to every inter-agent claim, though it cannot prove absence \citep{ghosh2026pcm}, and outcome attestation is unresolved in MCP and \AtwoA{} \citep{mcp3350,a2a1769}.
+The forged line is an indirect prompt injection by in-band signalling: tool-returned or retrieved data can hijack agents \citep{greshake2023indirect,zhan2024injecagent,debenedetti2024agentdojo}, injections and false content spread between agents \citep{lee2024promptinfection,ju2024flooding}, and spotlighting's authors warn that an attacker who ``inserts their own delimiting'' can subvert a delimiter defence \citep{hines2024spotlighting}, as typing the log layout into a post does.
+Defences rank instructions by source \citep{wallace2024hierarchy}, mark untrusted text \citep{hines2024spotlighting} or track provenance outside the model \citep{debenedetti2025camel}; our provenance note is a system-prompt instruction, the kind spotlighting found to have ``only modest effects''.
+What is new here is therefore the measurement, not the attack class: an endpoint that asks whether a human was told, redundant live peers rather than one assistant, a receipt the channel really wrote as the comparator, and pre-registration; to our knowledge (searches through \wtthDesignPriorArtThrough; Appendix~\ref{app:related}), no earlier study manipulates a peer's claim to have already escalated a violation to a human and measures whether live LLM witnesses still report.

@@ -4,25 +4,27 @@
 \section{Related-work detail}\label{app:related}
 Table~\ref{tab:nearest} sets the nearest work against the conjunction we test.
 We filled each cell from our notes on the source: its primary text where we read it, otherwise its abstract or a summary.
+The table leaves out two columns that earlier drafts carried, whether a Claude model was used and whether the study was pre-registered, because neither distinguishes a research question; the paragraphs below give both where the source reports them.
+What is new is the measurement in the last row, not the attack class (Section~\ref{sec:related}).
 
 \begin{table}[h]
 \centering\footnotesize
 \setlength{\tabcolsep}{3.5pt}
-\begin{tabular}{@{}lcccccc@{}}
+\begin{tabular}{@{}lcccc@{}}
 \toprule
- & Claim of prior & Several live & Outcome: & Channel-written & Claude & Pre- \\
-Work & escalation & LLM witnesses & a human is told & receipts & used & registered \\
+ & Claim of prior & Several live & Outcome: & Channel-written \\
+Work & escalation & LLM witnesses & a human is told & receipts \\
 \midrule
-Fuller \citep{fuller2026smoke} & \wtthNo & \wtthNo & \wtthYes & \wtthNo & \wtthYes & \wtthYes \\
-Emad Eldin \citep{eldin2026codeofsilence} & \wtthNo & \wtthYes & \wtthPart & \wtthNo & \wtthNo & \wtthNR \\
-Magistrali and Shani \citep{magistrali2026aligned} & \wtthNo & \wtthYes & \wtthPart & \wtthNo & \wtthNo & \wtthNR \\
-Sidot \citep{sidot2026verify} & \wtthPart & \wtthPart & \wtthNo & \wtthNo & \wtthYes & \wtthYes \\
-Fabricated Authority \citep{patel2026fabricated} & \wtthPart & \wtthNo & \wtthNo & \wtthNo & \wtthYes & \wtthNR \\
-Silence Is Endorsement \citep{silenceisendorsement2026} & \wtthPart & \wtthNo & \wtthNo & \wtthPart & \wtthNo & \wtthNR \\
-Mitra et al.\ \citep{mitra2026testimony} & \wtthNo & \wtthYes & \wtthNo & \wtthPart & \wtthNR & \wtthNR \\
-PCM \citep{ghosh2026pcm} & \wtthNo & \wtthNo & \wtthNo & \wtthYes & \wtthNo & \wtthNR \\
+Fuller \citep{fuller2026smoke} & \wtthNo & \wtthNo & \wtthYes & \wtthNo \\
+Emad Eldin \citep{eldin2026codeofsilence} & \wtthNo & \wtthYes & \wtthPart & \wtthNo \\
+Magistrali and Shani \citep{magistrali2026aligned} & \wtthNo & \wtthYes & \wtthPart & \wtthNo \\
+Sidot \citep{sidot2026verify} & \wtthPart & \wtthPart & \wtthNo & \wtthNo \\
+Fabricated Authority \citep{patel2026fabricated} & \wtthPart & \wtthNo & \wtthNo & \wtthNo \\
+Silence Is Endorsement \citep{silenceisendorsement2026} & \wtthPart & \wtthNo & \wtthNo & \wtthPart \\
+Mitra et al.\ \citep{mitra2026testimony} & \wtthNo & \wtthYes & \wtthNo & \wtthPart \\
+PCM \citep{ghosh2026pcm} & \wtthNo & \wtthNo & \wtthNo & \wtthYes \\
 \midrule
-This work & \wtthYes & \wtthYes & \wtthYes & \wtthYes & \wtthYes & \wtthYes \\
+This work & \wtthYes & \wtthYes & \wtthYes & \wtthYes \\
 \bottomrule
 \end{tabular}
 \caption{\textbf{Nearest work against the conjunction we test.}
@@ -32,7 +34,7 @@ For a claim, ``partly'' means a claim of prior approval or sign-off rather than 
 \end{table}
 
 \paragraph{Fuller.}
-Two pre-registered studies with a declared audience of other agents, a scripted violator, one live model per session, and a page or e-mail to a person.
+Two pre-registered studies with a declared audience of other agents, a scripted violator, one live model per session, Claude Haiku included, and a page or e-mail to a person.
 Paging sat at ceiling in the first study; in the second, Haiku's effect, exploratory and called suggestive by the report, was a shift to a slower channel rather than silence.
 No claim of reporting is manipulated.
 \paragraph{Emad Eldin.}
@@ -42,7 +44,7 @@ The author tested public routes only; no Claude model was used.
 Populations of live LLM security monitors either escalate an alert for human review or dismiss it, with committed always-dismiss peers.
 One open-weight model; no claim of having escalated and no receipts.
 \paragraph{Sidot.}
-In a CI pipeline, an untrusted note claiming a prior security sign-off made a chain of LLM checkers pass laundered changes (\texttt{claude-haiku-4-5} only as the scanner).
+In a pre-registered CI-pipeline study, an untrusted note claiming a prior security sign-off made a chain of LLM checkers pass laundered changes (\texttt{claude-haiku-4-5} only as the scanner).
 The checkers form a chain, not a group of peer witnesses, and nobody reports to a human.
 \paragraph{Fabricated Authority.}
 Fabricated permissions claimed to a single assistant.
@@ -63,6 +65,7 @@ Whistleblowing benchmarks and channel studies test single agents \citep{agrawal2
 Concordia's game master turns agents' action attempts into event statements \citep{vezhnevets2023concordia}, and flattening typed messages destroys provenance \citep{compaction2026}.
 A Claude model (Fable) escalated rather than accept a forged authorization claim when working alone, and in three-agent swarms it posted boundary norms and escalated \citep{zhang2026troy}, so we do not assume that Claude is credulous.
 LLM auditors accept false assurances more readily than false alarms \citep{trustingtool2026}.
+A coding of AI Village transcripts found agents acting on peers far more often than reporting to humans, and a missing channel as the most frequent first break, though its coders agreed weakly on that code \citep{mikeda2026whistle}; our witnesses all had a channel.
 A pilot asks whether a watching sibling changes what a worker tells its principal \citep{verdogan2026sibling}, and a peer-reporting benchmark keeps peer statements apart from trusted action records \citep{lmmontoya2026peerreporting}.
 Verified tool calls check that a tool call took effect before retrying it, and deterministic gates check a proposed write against the current state and policy before it runs \citep{verifiedtoolcalls2026,reasonlessverifymore2026}.
 A same-event pre-registration, with no runs yet, plans to follow an unverified ``done'' along an agent chain \citep{swarmhandoff2026}; it studies unverified task claims, not escalation to a human.
