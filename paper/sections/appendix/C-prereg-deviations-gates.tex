@@ -5,7 +5,7 @@
 \subsection{Timeline}\label{app:timeline}
 % Run-phase dates (core, Sonnet, judge) are results macros the analysis lead adds (plan 49 section 2.7 item 7).
 \begin{center}\footnotesize
-\begin{tabular}{@{}>{\raggedright\arraybackslash}p{3.3in}>{\raggedright\arraybackslash}p{1.6in}>{\raggedright\arraybackslash}p{1.3in}@{}}
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{3.25in}>{\raggedright\arraybackslash}p{1.6in}>{\raggedright\arraybackslash}p{1.3in}@{}}
 \toprule
 Event & When & Record \\
 \midrule
@@ -13,10 +13,11 @@ Pre-registration content frozen (PREREG v1) & \wtthDesignPreregFrozenDate & PRER
 Tag \texttt{prereg-v1} (commit \texttt{\wtthDesignPreregTagCommit}), message holds the SHA-256 of PREREG.md & \wtthDesignPreregTagDate & git tag \\
 The same SHA-256 posted in a public gist & \wtthDesignPreregGistDate & [A: gist URL] \\
 Sprint start & \wtthDesignTZero & README; D-004 \\
-Deviations D-001 to \wtthDesignDeviationsLast, each before it took effect & Table~\ref{tab:deviations} & DEVIATIONS.md \\
+Deviations D-001 to \wtthDesignDeviationsLast, each before it took effect & before the core & Table~\ref{tab:deviations} \\
 Void G0 run, its rerun on fresh pilot seeds, G1 and G2 & Table~\ref{tab:gatelog} & gate log; D-012 \\
 Tag \texttt{frozen-v1} (commit \texttt{\wtthDesignFrozenTagCommit}) & before the core & git tag \\
 Haiku core & \wtthOpsCoreStart{} to \wtthOpsCoreEnd & run manifest \\
+Deviations D-014 to D-019, each before it took effect & after the core, before any review report & Appendix~\ref{app:deviations} \\
 Analysis snapshot & \texttt{\wtthSnapshotShaShort} & \texttt{numbers.json} \\
 \bottomrule
 \end{tabular}
@@ -29,15 +30,24 @@ Six later research notes (a setup check, the final prior-art sweep, the toolchai
 [A: approve extending the list to them here and in the README, or say why they are covered.]
 
 \subsection{Deviations}\label{app:deviations}
-Each entry in \texttt{DEVIATIONS.md} gives what changed, why, who decided and which analyses it touches; every one was written before it took effect and before any confirmatory data.
+Each entry in \texttt{DEVIATIONS.md} gives what changed, why, who decided and which analyses it touches, and each was written before it took effect.
+D-001 to D-013 precede all confirmatory data (Table~\ref{tab:deviations}, generated from the log at the freeze tag); D-014 to D-019 came later and are listed after the table.
 None changes the cells, hypotheses, tests or the keyword rule.
 Three touch text a witness sees, each identically in every cell: the input schemas the pre-registration left open (D-005), rendering formats it left open (D-006), and the server name, which sets the prefix of every tool name (D-012).
 \begin{table}[h]
 \centering\footnotesize
 \input{generated/design/table_deviations}
-\caption{\textbf{Deviations from PREREG v1.} Timing as recorded in each entry's heading.}
+\caption{\textbf{Deviations from PREREG v1 up to the freeze.} Timing as recorded in each entry's heading.}
 \label{tab:deviations}
 \end{table}
+\begin{itemize}
+\item \textbf{D-014} (during the exploratory Sonnet arm, after the Haiku core). The production raw-body check stopped the Sonnet arm on a false positive: a Sonnet witness had mentioned another agent's handle in a post, which came back quoted in its debrief prompt. The check now skips the harness's own prompt, after confirming it byte for byte; the shifts in flight were rerun from scratch. Nothing a witness sees changed, and the Haiku core was unaffected.
+\item \textbf{D-015} (after collection, before any judge label existed). The API cap was raised so that the judge could use the rest of the credit, and the blind human sample was approved; D-018 later reversed the second decision.
+\item \textbf{D-016} (after the first held-out validation failed, before any judge label was used). The one revision of the judge prompt that the rubric allows: its format line now lists each item type's label keys, because every first-version answer had omitted required keys.
+\item \textbf{D-017} (before any review report). The model annotator labelled every item with a gate role and the full random agreement sample; the stage-two items queued only because the judge was unsure keep their judge labels.
+\item \textbf{D-018} (before any review report). The blind human sample was declined. The human check became the author's approval of model-proposed labels, audited by a second Claude pass, so no human--judge $\kappa$ exists.
+\item \textbf{D-019} (before any review report). Rebuilding the queues drew the random review sample a second time; the duplicate draw was voided before any review, so the analysed sample is the first draw.
+\end{itemize}
 
 \subsection{Pre-registered open items, as resolved}\label{app:tbd}
 The pre-registration listed the values still open at freeze and where each would be set.
@@ -58,7 +68,7 @@ Judge model & \wtthDesignModelJudge & D-007 \\
 Bootstrap resamples & \wtthDesignBootstrapResamples & D-011 \\
 Level for the Sonnet subset & the frozen Haiku level & configuration \\
 Cell order inside a seed & one fixed pseudo-random permutation & D-008 \\
-Pivot addendum, backup scenario & needed only if a gate called for them: \wtthGateDecision & gate log \\
+Pivot addendum, backup scenario & not needed: the gates gave GO on the ceiling branch (\texttt{\wtthGateDecision}) & gate log \\
 Hashes of the pre-registered files & SHA-256 register in the configuration & Appendix~\ref{app:withheld} \\
 Model behind Fabricated Authority's one-sentence result & pooled over two models & research notes \\
 Name split for Emad Eldin & [A: confirm] & references \\
@@ -70,11 +80,19 @@ Name split for Emad Eldin & [A: confirm] & references \\
 Every row is a pilot; pilot seeds are never pooled with confirmatory data.
 G0 checked integrity on live shifts: the raw-body audit, the init and result assertions, the reply bytes, exposure to the stimulus of round 2, the share of well-formed calls and the refusal rate (limit \wtthDesignGZeroRefusal\%).
 G1 froze the clarity level from P1 in \cell{NONE} (band \wtthDesignGOneBandLo{} to \wtthDesignGOneBandHi\%, ceiling \wtthDesignGOneCeiling\%), and G2 compared \cell{NEG} with \cell{POS} (pass at a gap of \wtthDesignGTwoGap{} points or more).
-The first G0 run was void because the CLI refused to load the server under its pre-registered name (D-012); it was rerun on fresh pilot seeds, and both runs are listed.
+The first G0 run was void because the CLI refused to load the server under its pre-registered name (D-012); it was rerun on fresh pilot seeds, and the table summarises the rerun.
 \begin{table}[h]
 \centering\footnotesize
-\wtthTab{generated/analysis/tables/table_gate_log.tex}
-\caption{\textbf{Gate log.} Pilot runs only.}
+\begin{tabular}{@{}llp{3.7in}l@{}}
+\toprule
+Gate & Level & Result & Decision \\
+\midrule
+G0 (rerun) & --- & every integrity check passed: raw-body audit, init and result assertions, reply bytes, exposure, well-formed calls and refusals (D-013) & pass \\
+G1 & L2, L3 & P1 in \cell{NONE} above the \wtthDesignGOneCeiling\% ceiling at both levels tried (\wtthGateGOnePOneAtFPct\% at the frozen level) & ceiling: F $=$ \wtthGateFrozenLevel \\
+G2 & \wtthGateFrozenLevel & \cell{NEG} against \cell{POS}: a gap of \wtthHaikuPosCtrlGTwoGap{} points, against a pass mark of \wtthDesignGTwoGap & \wtthGateGTwoResult \\
+\bottomrule
+\end{tabular}
+\caption{\textbf{Gate log} (pilot runs only; decision \texttt{\wtthGateDecision}). Every count is in \nolinkurl{paper/generated/analysis/tables/table_gate_log.csv}.}
 \label{tab:gatelog}
 \end{table}
 
@@ -89,6 +107,7 @@ They found these validity bugs, all fixed before any confirmatory data.
 \item \textbf{Floating-point verdicts.} Rates are ratios of integers, and floating-point subtraction left about half of the mathematically zero difference-in-differences slightly above or below zero. This could have rejected H2 at an interval endpoint of exactly zero, and it licensed the null claim at an upper bound of exactly \wtthProtocolMargin{} points, which the pre-registration forbids. The decision layer now uses exact arithmetic.
 \item \textbf{Wrapped replies.} The tool framework wrapped every reply in JSON instead of the pre-registered bytes. The server now returns the bare reply, and G0 checks the bytes the model sees (D-005).
 \end{enumerate}
+Two later problems were found and fixed after collection and before any review report: the false positive in the raw-body check (D-014) and the duplicate draw of the review sample (D-019).
 
 \subsection{Recorded predictions and power}\label{app:predictions}
 The pre-registration recorded these predictions before any run, from evidence on an earlier Claude generation (\texttt{claude-haiku-4-5}) that may not carry over.
@@ -107,3 +126,4 @@ Receipts: P1 in \cell{NO-RECEIPT} within \wtthDesignPredReceiptsWithin{} points 
 \end{center}
 Recomputed at the frozen level, the effects detectable at \wtthDesignPowerPct\% power are \wtthHaikuPowerHOneMDE, \wtthHaikuPowerHTwoMDE{} and \wtthHaikuPowerHThreeMDE{} points for H1 to H3 (assumed intra-class correlation \wtthHaikuPowerRho, base rate \wtthHaikuPowerP).
 Under a true stand-down of zero, the H1 null rule is met with probability \wtthHaikuPowerHOnePNullDZero.
+\clearpage
