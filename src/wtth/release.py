@@ -2,6 +2,10 @@
 fragment scan of wtth.annotate.masking; it does not copy runs/ wholesale (build_release does that), it exports
 curated tables: outcomes, labels and masked transcripts.
 
+Scope: the confirmatory Haiku core and the exploratory Sonnet arm (labels from runs/judge, strict), and since
+DEVIATIONS D-024 the exploratory follow-up of D-022 (phase exp1, its done non-probe episodes, labels from
+runs/judge_exp1 through an online snapshot, as wtth.analysis.exp1 reads them). Every row carries its phase.
+
 Masking rule (release): every withheld string is replaced exactly (raw and both JSON-escaped forms) by
 [WITHHELD:claim-paraphrase] (C2.P2/C2.P3 and backups) or [WITHHELD:forged-line] (FORGED_LINE/BK.FORGED_LINE). The
 30-character fragment rule runs for both classes; for the forged line it exempts spans that also occur in the
@@ -126,19 +130,26 @@ def write_csv(path: Path, header: list[str], rows: list[list[Any]]) -> int:
     return len(rows)
 
 
-def outcome_tables(settings: Any, db: Any, labels: Any, out: Path) -> dict[str, Any]:
+def outcome_tables(settings: Any, db: Any, labels: Any, out: Path,
+                   extra: list[tuple[str, Any, Any]] = ()) -> dict[str, Any]:
+    """core and sonnet (strict, `labels`), then each (phase, AnalysisSet, labels) of `extra` (the exp1 arms; not
+    strict, as wtth.analysis.exp1 reads them, but a witness whose P1 is unresolved stops the export)."""
     from wtth.analysis.outcomes import episode_outcomes, witness_outcomes
     from wtth.analysis.sets import analysis_set
 
     wrows: list[list[Any]] = []
     erows: list[list[Any]] = []
     whead = ehead = None
-    sets = {}
-    for phase in ("core", "sonnet"):
-        aset = analysis_set(settings, db, phase)
-        sets[phase] = aset
-        w = witness_outcomes(db, aset, labels, strict=True)
-        e = episode_outcomes(w, db, aset, labels, strict=True)
+    sets: dict[str, list[Any]] = {}
+    work = [(phase, analysis_set(settings, db, phase), labels, True) for phase in ("core", "sonnet")]
+    work += [(phase, aset, lab, False) for phase, aset, lab in extra]
+    for phase, aset, lab, strict in work:
+        sets.setdefault(phase, []).append(aset)
+        w = witness_outcomes(db, aset, lab, strict=strict)
+        e = episode_outcomes(w, db, aset, lab, strict=strict)
+        pending = sum(1 for x in w if x.p1_pending)
+        if pending:
+            raise RuntimeError(f"release: {pending} witness(es) of phase {phase} have an unresolved P1 label")
         wskip = {"notes", "posts"}
         whead = [f.name for f in fields(w[0]) if f.name not in wskip] + ["n_posts"]
         for x in w:
@@ -154,24 +165,39 @@ def outcome_tables(settings: Any, db: Any, labels: Any, out: Path) -> dict[str, 
 
 # ---- labels ----------------------------------------------------------------------------------------------------
 
-def label_tables(jdb: Any, labels: Any, episodes: dict[tuple[int, int], dict], out: Path) -> dict[str, int]:
-    items = [dict(r) for r in jdb.read(lambda c: c.execute(
-        "SELECT item_id,item_type,source_table,source_id,episode_id,attempt,round,slot,handle,kw_match,tier "
-        "FROM items WHERE source_table != 'held_out' ORDER BY order_key, item_id").fetchall())]
-    items = [i for i in items if (i["episode_id"], i["attempt"]) in episodes]
-    judge = {r["item_id"]: dict(r) for r in jdb.read(lambda c: c.execute(
-        "SELECT item_id,prompt_version,status,labels_json,confidence,uncertain FROM v_judge_current").fetchall())}
+def label_tables(jdb: Any, labels: Any, episodes: dict[tuple[int, int], dict], out: Path,
+                 extra: list[tuple[Any, Any]] = ()) -> dict[str, int]:
+    """Items of `jdb` (labels: `labels`), then those of each (judge db, labels) in `extra` (the exp1 judge database),
+    restricted to the released `episodes`; one pair of files with the union of label columns. Item ids are opaque
+    per database; an id seen twice stops the export."""
+    def read_items(db: Any) -> tuple[list[dict], dict[str, dict]]:
+        its = [dict(r) for r in db.read(lambda c: c.execute(
+            "SELECT item_id,item_type,source_table,source_id,episode_id,attempt,round,slot,handle,kw_match,tier "
+            "FROM items WHERE source_table != 'held_out' ORDER BY order_key, item_id").fetchall())]
+        its = [i for i in its if (i["episode_id"], i["attempt"]) in episodes]
+        jud = {r["item_id"]: dict(r) for r in db.read(lambda c: c.execute(
+            "SELECT item_id,prompt_version,status,labels_json,confidence,uncertain FROM v_judge_current").fetchall())}
+        return its, jud
+
+    srcs: list[tuple[dict, dict, Any]] = []        # (item, judge row or None, label source)
+    seen: set[str] = set()
+    for db, lsrc in [(jdb, labels), *extra]:
+        its, jud = read_items(db)
+        for it in its:
+            if it["item_id"] in seen:
+                raise RuntimeError("release: an item id occurs in two judge databases")
+            seen.add(it["item_id"])
+            srcs.append((it, jud.get(it["item_id"]), lsrc))
 
     def lab(d: dict | None) -> dict[str, Any]:
         return {k: _flat(v) for k, v in (d or {}).items()}
 
     jrows, frows = [], []
     keys: set[str] = set()
-    for it in items:
-        j = judge.get(it["item_id"])
+    for it, j, lsrc in srcs:
         if j and j["status"] == "valid":
             keys |= set(json.loads(j["labels_json"]))
-        fl = labels.get((it["source_table"], it["source_id"]))
+        fl = lsrc.get((it["source_table"], it["source_id"]))
         if fl is not None:
             keys |= set(fl.labels)
     lcols = sorted(keys)
@@ -184,21 +210,21 @@ def label_tables(jdb: Any, labels: Any, episodes: dict[tuple[int, int], dict], o
                 e["phase"], e["model"], e["cell"], e["seed"], e["world"], it["round"], it["slot"], it["handle"],
                 it["kw_match"]]
 
-    for it in items:
-        j = judge.get(it["item_id"])
+    for it, j, lsrc in srcs:
         if j is not None:
             l = lab(json.loads(j["labels_json"])) if j["status"] == "valid" else {}
             jrows.append(head(it) + [j["prompt_version"], j["status"], j["confidence"], j["uncertain"]]
                          + [l.get(c) for c in lcols])
-        fl = labels.get((it["source_table"], it["source_id"]))
+        fl = lsrc.get((it["source_table"], it["source_id"]))
         if fl is not None:
             l = lab(dict(fl.labels))
             frows.append(head(it) + [fl.source, fl.uncertain] + [l.get(c) for c in lcols])
     nj = write_csv(out / "labels_judge.csv", base + ["prompt_version", "judge_status", "confidence", "uncertain"] + lcols, jrows)
     nf = write_csv(out / "labels_final.csv", base + ["label_source", "uncertain"] + lcols, frows)
     src = Counter(r[len(base)] for r in frows)
-    return {"judge_rows": nj, "final_rows": nf, "final_by_source": dict(src), "items_in_scope": len(items),
-            "label_columns": lcols}
+    by_phase = {"judge": dict(Counter(r[6] for r in jrows)), "final": dict(Counter(r[6] for r in frows))}
+    return {"judge_rows": nj, "final_rows": nf, "final_by_source": dict(src), "items_in_scope": len(srcs),
+            "label_columns": lcols, "rows_by_phase": by_phase}
 
 
 # ---- transcripts -----------------------------------------------------------------------------------------------
@@ -263,8 +289,10 @@ def transcripts(db: Any, episodes: dict[tuple[int, int], dict], masker: ReleaseM
 
 # ---- driver ----------------------------------------------------------------------------------------------------
 
-def build_data_release(settings: Any, out: Path) -> dict[str, Any]:
-    """Write data/release/ tables into `out` (CSV + transcripts). Returns a summary. Scans every file afterwards."""
+def build_data_release(settings: Any, out: Path, *, with_exp1: bool = True) -> dict[str, Any]:
+    """Write data/release/ tables into `out` (CSV + transcripts). Returns a summary. Scans every file afterwards.
+    with_exp1: also release the D-022 follow-up (phase exp1; DEVIATIONS D-024 item 3)."""
+    from wtth.analysis import exp1
     from wtth.analysis.sets import snapshot_main_db
     from wtth.annotate.final import JudgeDbLabelSource
     from wtth.db import Db
@@ -276,17 +304,23 @@ def build_data_release(settings: Any, out: Path) -> dict[str, Any]:
     db = Db(snap.path)
     jdb = open_judge_db(settings)
     labels = JudgeDbLabelSource(jdb, strict=True)
-    ot = outcome_tables(settings, db, labels, out)
+    x_jdb = exp1.judge_snapshot(settings) if with_exp1 else None
+    if with_exp1 and x_jdb is None:
+        raise RuntimeError("release: the exp1 judge database is missing; pass with_exp1=False to release without it")
+    x_labels = JudgeDbLabelSource(x_jdb, strict=False) if x_jdb is not None else None
+    extra = [(exp1.PHASE, aset, x_labels) for _, aset in exp1.arm_sets(db)] if x_jdb is not None else []
+    ot = outcome_tables(settings, db, labels, out, extra=extra)
     episodes: dict[tuple[int, int], dict] = {}
-    for phase, aset in ot["sets"].items():
-        ids = {(e.episode_id, e.attempt) for e in aset.episodes}
-        for r in db.read(lambda c: c.execute("SELECT * FROM episodes").fetchall()):
+    all_eps = db.read(lambda c: c.execute("SELECT * FROM episodes").fetchall())
+    for phase, asets in ot["sets"].items():
+        ids = {(e.episode_id, e.attempt) for aset in asets for e in aset.episodes}
+        for r in all_eps:
             if (r["episode_id"], r["final_attempt"]) in ids:
                 episodes[(r["episode_id"], r["final_attempt"])] = {
                     "episode_id": r["episode_id"], "attempt": r["final_attempt"], "phase": phase, "model": r["model"],
                     "cell": r["cell"], "seed": r["seed"], "world": r["world"], "scenario": r["scenario"],
                     "handles_json": r["handles_json"]}
-    lt = label_tables(jdb, labels, episodes, out)
+    lt = label_tables(jdb, labels, episodes, out, extra=[(x_jdb, x_labels)] if x_jdb is not None else [])
     masker = ReleaseMasker(settings)
     tt = transcripts(db, episodes, masker, out)
     # scan every exported file
@@ -302,6 +336,8 @@ def build_data_release(settings: Any, out: Path) -> dict[str, Any]:
     by_cell: dict[str, dict[str, int]] = {}
     for (cell, kind), n in masker.counts.items():
         by_cell.setdefault(cell, {})[kind] = n
-    return {"snapshot_sha256": snap.sha256, "episodes": len(episodes), "outcomes": {k: v for k, v in ot.items()
-            if k in ("witness_rows", "shift_rows")}, "labels": lt, "transcripts": tt, "residual": residual,
-            "fragment_hits": frag, "masked_by_cell": by_cell, "_ot": ot, "_episodes": episodes}
+    return {"snapshot_sha256": snap.sha256, "episodes": len(episodes),
+            "episodes_by_phase": dict(Counter(e["phase"] for e in episodes.values())),
+            "outcomes": {k: v for k, v in ot.items() if k in ("witness_rows", "shift_rows")}, "labels": lt,
+            "transcripts": tt, "residual": residual, "fragment_hits": frag, "masked_by_cell": by_cell, "_ot": ot,
+            "_episodes": episodes}

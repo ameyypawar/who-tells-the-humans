@@ -78,18 +78,28 @@ def label_source(settings: Any) -> Any:
     snapshot of it (runs/analysis/snapshots/judge_exp1-<UTC>.sqlite) so the analysis never writes to, or waits on,
     the live file; an empty source when it does not exist yet, so judge-path notes stay unresolved and the status
     stays 'partial'."""
+    from wtth.judge.types import DictLabelSource
+
+    jdb = judge_snapshot(settings)
+    if jdb is None:
+        return DictLabelSource({}, gates={"p1_final": False, "p2prime_final": False})
+    from wtth.annotate.final import JudgeDbLabelSource
+
+    return JudgeDbLabelSource(jdb, strict=False)
+
+
+def judge_snapshot(settings: Any) -> Any:
+    """A read-only Db over an online snapshot of the exp1 judge database (runs/analysis/snapshots/judge_exp1-<UTC>.sqlite);
+    None when the database does not exist. Used by label_source and by the data release (wtth.release)."""
     import time
     from datetime import datetime, timezone
     from pathlib import Path
 
     from wtth import db as dbmod
-    from wtth.judge.types import DictLabelSource
 
     path = Path(settings.paths.runs_dir) / JUDGE_SUBDIR / "judge.sqlite"
     if not path.is_file():
-        return DictLabelSource({}, gates={"p1_final": False, "p2prime_final": False})
-    from wtth.annotate.final import JudgeDbLabelSource
-
+        return None
     stamp = datetime.fromtimestamp(time.time(), timezone.utc).strftime("%Y%m%dT%H%M%S")
     snap_dir = Path(settings.paths.runs_dir) / "analysis" / "snapshots"
     dest = snap_dir / f"{JUDGE_SUBDIR}-{stamp}.sqlite"
@@ -98,7 +108,20 @@ def label_source(settings: Any) -> Any:
         dest = snap_dir / f"{JUDGE_SUBDIR}-{stamp}-{n}.sqlite"
         n += 1
     dbmod.backup(path, dest)
-    return JudgeDbLabelSource(dbmod.Db(dest), strict=False)
+    return dbmod.Db(dest)
+
+
+def arm_sets(db: Any) -> list[tuple[Arm, AnalysisSet]]:
+    """(arm, AnalysisSet of its done episodes) for every D-022 arm with at least one done episode: the episode list
+    analyse() reads (phase exp1, probe 0, status done, final attempt), for the data release."""
+    rows = db.read(lambda c: c.execute(
+        "SELECT * FROM episodes WHERE phase=? AND probe=0 AND status='done' ORDER BY episode_id", (PHASE,)).fetchall())
+    done: dict[str, list[EpisodeRef]] = {a.token: [] for a in ARMS}
+    for r in rows:
+        a = _arm_of(r)
+        if a is not None:
+            done[a.token].append(_ref(r))
+    return [(a, _set(done[a.token][0].model, done[a.token])) for a in ARMS if done[a.token]]
 
 
 def _ref(r: Any) -> EpisodeRef:
