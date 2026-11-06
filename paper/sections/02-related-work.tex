@@ -3,10 +3,16 @@
 % it (bib/citations-verified.csv). Never claim "first" (plan 49 section 4.2 items 1 to 5).
 % Table 3 (nearest work against the conjunction) moved to Appendix I, the first step of the cut order, to keep
 % sections 1 to 3 within about 3.3 pages. Tightened for the follow-up (single-agent benchmarks, Concordia and the
-% compaction finding now sit in Appendix I or Section 5.2). Prompt injection (review S8): the forged line is a
-% provenance confusion; what differs here is the target and the defence (no novelty claim without the search date).
-% Spotlighting's abstract reports a large cut in attack success; only its simplest form, delimiting, helped "by half"
-% (its Section V-A), which is the form our provenance note resembles.
+% compaction finding now sit in Appendix I or Section 5.2). Prompt injection (review S8; review 2 M4, S10): the forged
+% line is in-band signalling. Read in the spotlighting PDF (arXiv 2403.14720v1): Section 4.2, system-prompt
+% instructions alone have "only modest effects"; Section 5.1, for GPT-3.5-Turbo "only a negligible impact", delimiters
+% cut ASR "by about half", and the defence "could be easily subverted by an attacker who ... inserts their own
+% delimiting"; Section 6, prompt injection "is analogous to the in-band signaling problem". Our provenance note is a
+% system-prompt instruction with no delimiters, so it maps onto the instruction-only condition. CaMeL (2503.18813):
+% "a custom Python interpreter ... that tracks provenance and enforces security policies". Prompt Infection
+% (2410.07283, Section 6): LLM Tagging prepends the sending agent's name; alone it cut attack success "by only 5%",
+% combined with marking it stopped every attack. PCM already proposes channel-written evidence: our part is the test.
+% Quotes stay under 15 words.
 \section{Related Work}\label{sec:related}
 
 \paragraph{Escalation, unverified claims and bystanders.}
@@ -15,7 +21,9 @@ An unbacked claim of prior sign-off made LLM security checkers stand down \citep
 Human bystander research \citep{latane1968group,darley1968bystander,fischer2011bystander,markey2000bystander} and the volunteer's dilemma \citep{diekmann1985volunteer} supply the ``someone else will'' mechanism; none of this work, nor any classic experiment we found in a brief search, manipulates a claim of prior escalation (Appendix~\ref{app:related}).
 
 \paragraph{Receipts and prompt injection.}
-PCM attaches evidence from a log the claimant cannot write to every inter-agent claim but cannot prove absence \citep{ghosh2026pcm}; outcome attestation is unresolved in MCP and \AtwoA{} \citep{mcp3350,a2a1769}.
-The forged line is a provenance confusion of the kind indirect prompt injection exploits, data taken as if a trusted source wrote it \citep{greshake2023indirect}; defences rank instructions by source \citep{wallace2024hierarchy}, mark untrusted text \citep{hines2024spotlighting} or keep untrusted data out of control flow \citep{debenedetti2025camel}.
-What differs here is the target, the escalation decision of a redundant team of live witnesses, swayed by a fake record rather than an instruction, and the defence, a channel-written receipt; our provenance note (Section~\ref{sec:followup}) resembles spotlighting's simplest form, delimiting, which helped only in part there and not detectably here.
-
+PCM already attaches evidence from a log the claimant cannot write to every inter-agent claim, though it cannot prove absence \citep{ghosh2026pcm}; what we add is a test of whether LLM readers use such evidence, and its absence.
+Outcome attestation is unresolved in MCP and \AtwoA{} \citep{mcp3350,a2a1769}.
+The forged line is in-band signalling, the analogy spotlighting's authors draw for indirect prompt injection, which makes models treat retrieved data as instructions \citep{greshake2023indirect,hines2024spotlighting}; they warn that an attacker who ``inserts their own delimiting'' subverts a delimiter defence, which is what typing the log layout into a post does.
+Defences rank instructions by source \citep{wallace2024hierarchy}, transform untrusted text so its origin stays visible \citep{hines2024spotlighting}, tag agents' messages with the sender, which curbed agent-to-agent injection only with other safeguards \citep{lee2024promptinfection}, or, as CaMeL does, track provenance outside the model and enforce policy on it \citep{debenedetti2025camel}.
+Our provenance note (Section~\ref{sec:followup}) is a system-prompt instruction, the kind of defence the spotlighting study found to have ``only modest effects'', and it had no detectable effect here.
+What differs is the target, the escalation decision of a redundant team of live witnesses swayed by a fake record rather than an instruction, and the defence, a channel-written receipt.
