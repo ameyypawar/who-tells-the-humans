@@ -535,15 +535,19 @@ class Isolation(unittest.TestCase):
 
     def test_every_confirmatory_number_is_unchanged(self) -> None:
         """Keys outside the exploratory ExpOne* namespace (the D-022 section, which reads phase exp1 on purpose) are
-        identical, except the spend ledger (v_cost sums every phase; exp1 judge spend sits in its own database, which
-        the analysis does not read) and the snapshot hash."""
+        identical, except the spend (v_cost sums every phase, the judge cost every runs/judge*/judge.sqlite, D-023
+        item 4, and CostExpOne* is the follow-up's share of it) and the snapshot hash. The spend without the follow-up
+        is the same in A and B."""
         a, b = self.out["a"], self.out["b"]
         conf_a = {k: v for k, v in a.items() if not k.startswith("ExpOne")}
         conf_b = {k: v for k, v in b.items() if not k.startswith("ExpOne")}
         self.assertEqual(set(conf_a), set(conf_b))
         diff = {k for k in conf_a if conf_a[k] != conf_b[k]}
-        self.assertEqual({"CostMainUsd", "CostTotalUsd", "SnapshotShaShort"}, diff)
-        self.assertEqual(a["CostJudgeUsd"], b["CostJudgeUsd"])
+        self.assertEqual({"CostMainUsd", "CostJudgeUsd", "CostTotalUsd", "CostExpOneRunUsd", "CostExpOneProbeUsd",
+                          "CostExpOneJudgeUsd", "CostExpOneTotalUsd", "SnapshotShaShort"}, diff)
+        self.assertAlmostEqual(b["CostJudgeUsd"][0] - a["CostJudgeUsd"][0], 0.75)       # the exp1 judge ledger
+        self.assertAlmostEqual(b["CostExpOneJudgeUsd"][0], 0.75)
+        self.assertEqual(a["CostBeforeExpOneUsd"], b["CostBeforeExpOneUsd"])
         self.assertGreater(len(conf_a), 100)
 
     def test_core_judge_extraction_excludes_exp1(self) -> None:
@@ -566,12 +570,17 @@ class Isolation(unittest.TestCase):
         self.assertFalse(exp_ids & got)
 
     def test_analysis_reads_only_the_core_judge_database(self) -> None:
+        """Judge mechanics (validity, re-asks, coverage) come from the confirmatory judge database only; the spend
+        counts every judge database, as the global ledger does (D-023 item 4)."""
         from wtth.analysis.run import _cost, _judge_counts
         from wtth.judge.db import judge_spent
 
-        self.assertEqual(0.0, _cost(self.sb, self.dbb)["judge_usd"])
+        c = _cost(self.sb, self.dbb)
+        self.assertEqual(0.0, c["judge_core_usd"])
+        self.assertAlmostEqual(0.75, c["judge_usd"])
+        self.assertAlmostEqual(0.75, c["exp1"]["judge_usd"])
         self.assertIsNone(_judge_counts(self.sb))         # no runs/judge/judge.sqlite in B: nothing read
-        self.assertAlmostEqual(0.75, judge_spent(self.sb))  # ... while the global ledger counts the exp1 judge
+        self.assertAlmostEqual(0.75, judge_spent(self.sb))  # ... and the global ledger counts the exp1 judge too
 
 
 # ---- judge database for exp1 -----------------------------------------------------------------------------------------

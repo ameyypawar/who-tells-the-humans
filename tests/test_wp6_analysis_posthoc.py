@@ -564,6 +564,62 @@ class SynthRunTest(unittest.TestCase):
         self.assertEqual(self.d("HumanReadStatus"), "not run")
 
 
+class CostTest(unittest.TestCase):
+    def test_spend_sums_every_judge_database_and_splits_exp1(self) -> None:
+        from wtth.analysis import tables
+        from wtth.analysis.run import _cost
+        from wtth.db import Db
+        from wtth.judge.db import create_judge_db
+
+        gt = build_synth(tmp_dir("wp6_cost") / "wtth.sqlite", SynthSpec.small(4))
+        runs = Path(gt.settings.paths.runs_dir)
+        con = sqlite3.connect(gt.path)
+        for i, (phase, model, usd) in enumerate((("core", "claude-haiku-5-5", 1.25), ("sonnet", "claude-sonnet-5-5", 2.5),
+                                                 ("exp1", "claude-sonnet-5-5", 0.75),
+                                                 ("exp1probe", "claude-haiku-5-5", 0.05))):
+            con.execute("INSERT INTO cost_ledger VALUES (?,?,?,?,?,0,0)", (f"t{i}", "r", phase, model, usd))
+        con.commit()
+        con.close()
+        for sub, rows in (("judge", (("J1", 0.5), ("J2", 1.0))), ("judge_exp1", (("J1", 0.125), ("J2", 0.375)))):
+            path = runs / sub / "judge.sqlite"
+            create_judge_db(path)
+            c = sqlite3.connect(path)
+            for j, (tier, usd) in enumerate(rows):
+                c.execute("INSERT INTO judge_ledger(call_id, run_id, model, tier, item_type, cost_usd, estimated, ts) "
+                          "VALUES (?,?,?,?,?,?,0,0)", (f"{sub}{j}", "r", "m", tier, "note", usd))
+            c.commit()
+            c.close()
+        cst = _cost(gt.settings, Db(gt.path))
+        self.assertAlmostEqual(cst["main_usd"], 4.55)
+        self.assertAlmostEqual(cst["judge_core_usd"], 1.5)
+        self.assertAlmostEqual(cst["judge_usd"], 2.0)
+        self.assertAlmostEqual(cst["total_usd"], 6.55)
+        self.assertEqual({k: round(v, 9) for k, v in cst["exp1"].items()},
+                         {"run_usd": 0.75, "probe_usd": 0.05, "judge_usd": 0.5, "total_usd": 1.3})
+        self.assertAlmostEqual(cst["before_exp1_usd"], 5.25)
+        self.assertEqual([(r["tier"], r["usd"]) for r in cst["judge_tier"]], [("J1", 0.5), ("J2", 1.0)])   # unchanged
+        f = tables.table_cost(cst, None, tmp_dir("wp6_cost_tab"))
+        rows = list(csv.reader(f.csv.read_text().splitlines()))
+        self.assertEqual([r[:2] for r in rows if r[0].startswith("judge")],
+                         [["judge", "tier J1"], ["judge", "tier J2"], ["judge (exp1)", "tier J1"],
+                          ["judge (exp1)", "tier J2"]])
+        self.assertEqual(rows[-1][3], "$6.55")
+
+    def test_unreadable_ledger_is_never_dropped(self) -> None:
+        from wtth.analysis.run import _ledger_rows
+
+        d = tmp_dir("wp6_cost_bad")
+        bad = d / "judge_x" / "judge.sqlite"
+        bad.parent.mkdir(parents=True, exist_ok=True)
+        bad.write_bytes(b"not a database" * 100)
+        with self.assertRaises(sqlite3.Error):
+            _ledger_rows(bad)
+        empty = d / "judge_y" / "judge.sqlite"
+        empty.parent.mkdir(parents=True, exist_ok=True)
+        sqlite3.connect(empty).close()
+        self.assertEqual(_ledger_rows(empty), [])
+
+
 class JudgePrevalenceTest(unittest.TestCase):
     def test_prevalence_from_the_confusion_table(self) -> None:
         agr = {"model_model": {"board_post": {"escalation_to_humans": {

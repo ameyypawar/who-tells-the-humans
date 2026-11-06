@@ -343,8 +343,9 @@ def table_gate_log(rows_in: Sequence[Mapping[str, Any]], book: Any, out_dir: Pat
 
 
 def table_cost(cost: Mapping[str, Any], book: Any, out_dir: Path) -> TableFiles:
-    """Cost by phase and model (`cost['phase_model']`: [{phase, model, n_calls, usd}]) and the judge by tier
-    (`cost['judge_tier']`: [{tier, n_calls, usd, n_estimated}]), with a total line."""
+    """Cost by phase and model (`cost['phase_model']`: [{phase, model, n_calls, usd}]), the judge by tier
+    (`cost['judge_tier']`: [{tier, n_calls, usd, n_estimated}]), the other judge databases by tier (`cost['judge_other']`:
+    [{db, tier, ...}], e.g. judge_exp1), with a total line."""
     rows: list[Sequence[Cell] | None] = []
     tot = 0.0
     for r in cost.get("phase_model", []):
@@ -355,6 +356,10 @@ def table_cost(cost: Mapping[str, Any], book: Any, out_dir: Path) -> TableFiles:
     for r in cost.get("judge_tier", []):
         rows.append([text("judge"), text(f"tier {r['tier']}"), integer(r.get("n_calls")), usd(r["usd"]),
                      integer(r.get("n_estimated"))])
+        tot += float(r["usd"])
+    for r in cost.get("judge_other", []):          # other judge databases, e.g. judge_exp1 (D-023)
+        rows.append([text(f"judge ({r['db'].removeprefix('judge_') or r['db']})"), text(f"tier {r['tier']}"),
+                     integer(r.get("n_calls")), usd(r["usd"]), integer(r.get("n_estimated"))])
         tot += float(r["usd"])
     rows.append(None)
     rows.append([text("total"), text(""), text(""), usd(tot), text("")])

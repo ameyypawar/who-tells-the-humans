@@ -124,29 +124,66 @@ def _hqa_keys(settings: Any) -> set | None:
     return {("notes", str(r[0])) for r in rows}
 
 
+EXP1_PHASES = ("exp1", "exp1probe")      # the D-022 follow-up and its integrity probes (D-023)
+
+
+def _ledger_rows(path: Path) -> list[dict[str, Any]]:
+    """judge_ledger of one judge database by tier [{tier, n_calls, usd, n_estimated}]. Read-only first; a WAL database
+    whose -shm cannot be created read-only is read through a plain connection (SELECT only). A missing ledger table is
+    no spend; any other failure raises, so spend is never dropped silently."""
+    def read(conn: sqlite3.Connection) -> list[dict[str, Any]]:
+        have = {r[0] for r in conn.execute("SELECT name FROM sqlite_master WHERE type='table'")}
+        if "judge_ledger" not in have:
+            return []
+        cols = {r[1] for r in conn.execute("PRAGMA table_info(judge_ledger)")}
+        tier = "tier" if "tier" in cols else "'all'"
+        est = "COALESCE(SUM(estimated),0)" if "estimated" in cols else "0"
+        return [dict(zip(("tier", "n_calls", "usd", "n_estimated"), r)) for r in conn.execute(
+            f"SELECT {tier}, COUNT(*), COALESCE(SUM(cost_usd),0), {est} FROM judge_ledger GROUP BY 1 ORDER BY 1")]
+
+    try:
+        conn = sqlite3.connect(f"file:{path}?mode=ro", uri=True)
+        try:
+            return read(conn)
+        finally:
+            conn.close()
+    except sqlite3.Error:
+        conn = sqlite3.connect(str(path))
+        try:
+            return read(conn)
+        finally:
+            conn.close()
+
+
 def _cost(settings: Any, db: Db) -> dict[str, Any]:
     """Keys as tables.table_cost reads them: phase_model [{phase, model, n_calls, usd}], judge_tier [{tier, n_calls,
-    usd, n_estimated}]."""
+    usd, n_estimated}] (the confirmatory judge database, runs/judge) and judge_other [{db, tier, ...}] (every other
+    runs/judge*/judge.sqlite, e.g. judge_exp1). judge_usd sums every judge database (D-023 item 4); exp1 splits out the
+    D-022 follow-up (run, probes, its judge)."""
     rows = [{"phase": r["phase"], "model": r["model"], "n_calls": int(r["n_turns"]), "usd": float(r["total_usd"] or 0.0),
              "n_estimated": int(r["n_estimated"] or 0)}
             for r in db.read(lambda c: c.execute("SELECT * FROM v_cost ORDER BY phase, model").fetchall())]
     main = sum(r["usd"] for r in rows)
-    judge_rows: list[dict[str, Any]] = []
-    jpath = Path(settings.paths.runs_dir) / "judge" / "judge.sqlite"
-    if jpath.exists():
-        conn = sqlite3.connect(f"file:{jpath}?mode=ro", uri=True)
-        try:
-            judge_rows = [dict(zip(("tier", "n_calls", "usd", "n_estimated"), r)) for r in conn.execute(
-                "SELECT tier, COUNT(*), COALESCE(SUM(cost_usd),0), COALESCE(SUM(estimated),0) FROM judge_ledger "
-                "GROUP BY tier ORDER BY tier")]
-        except sqlite3.Error:
-            judge_rows = []
-        finally:
-            conn.close()
-    judge = sum(r["usd"] for r in judge_rows)
+    runs = Path(settings.paths.runs_dir)
+    core_path = runs / "judge" / "judge.sqlite"
+    judge_rows = _ledger_rows(core_path) if core_path.exists() else []
+    other: list[dict[str, Any]] = []
+    for path in sorted(runs.glob("judge*/judge.sqlite")):
+        if path == core_path:
+            continue
+        other += [{"db": path.parent.name, **r} for r in _ledger_rows(path)]
+    judge_core = sum(float(r["usd"]) for r in judge_rows)
+    judge = judge_core + sum(float(r["usd"]) for r in other)
     prior = float(settings.budget.prior_spend_usd)
-    return {"phase_model": rows, "judge_tier": judge_rows, "main_usd": main, "judge_usd": judge, "prior_usd": prior,
-            "total_usd": main + judge + prior}
+    x_run = sum(r["usd"] for r in rows if r["phase"] == "exp1")
+    x_probe = sum(r["usd"] for r in rows if r["phase"] == "exp1probe")
+    x_judge = sum(float(r["usd"]) for r in other if r["db"] == "judge_exp1")
+    total = main + judge + prior
+    return {"phase_model": rows, "judge_tier": judge_rows, "judge_other": other, "main_usd": main, "judge_usd": judge,
+            "judge_core_usd": judge_core, "prior_usd": prior, "total_usd": total,
+            "exp1": {"run_usd": x_run, "probe_usd": x_probe, "judge_usd": x_judge,
+                     "total_usd": x_run + x_probe + x_judge},
+            "before_exp1_usd": total - (x_run + x_probe + x_judge)}
 
 
 def _judge_counts(settings: Any) -> dict[str, Any] | None:
@@ -402,8 +439,18 @@ def run_analysis(settings: Any, *, strict: bool, labels: LabelSource | None = No
     summary["human_read"] = humanread.summary_note(hr)
     cost = _cost(settings, db)
     book.add("CostMainUsd", cost["main_usd"], "usd", source="cost_ledger of the main database")
-    book.add("CostJudgeUsd", cost["judge_usd"], "usd", source="judge_ledger")
-    book.add("CostTotalUsd", cost["total_usd"], "usd", source="prior spend + main ledger + judge ledger")
+    book.add("CostJudgeUsd", cost["judge_usd"], "usd",
+             source="judge_ledger of every judge database (runs/judge*/judge.sqlite, D-023 item 4)")
+    book.add("CostTotalUsd", cost["total_usd"], "usd", source="prior spend + main ledger + every judge ledger")
+    x = cost["exp1"]
+    xsrc = "exploratory (D-022) follow-up spend (D-023 item 1)"
+    book.add("CostExpOneRunUsd", x["run_usd"], "usd", source=f"{xsrc}: main ledger, phase exp1")
+    book.add("CostExpOneProbeUsd", x["probe_usd"], "usd", source=f"{xsrc}: main ledger, phase exp1probe")
+    book.add("CostExpOneJudgeUsd", x["judge_usd"], "usd", source=f"{xsrc}: judge_ledger of runs/judge_exp1")
+    book.add("CostExpOneTotalUsd", x["total_usd"], "usd", source=f"{xsrc}: run + probes + judge")
+    book.add("CostBeforeExpOneUsd", cost["before_exp1_usd"], "usd",
+             source="spend without the D-022 follow-up: pilots, core, Sonnet arm, their judge (CostTotalUsd minus "
+                    "CostExpOneTotalUsd)")
     judge_pack = _judge_pack(settings, seeds, strict=strict, notes=notes)
     jc = _judge_counts(settings)
     if jc is not None:
