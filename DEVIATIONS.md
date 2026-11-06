@@ -486,3 +486,40 @@ Every change after the freeze is recorded here with a timestamp, the reason, and
   - No effect on the confirmatory sets. The confirmatory views select the core and sonnet phases only, and this is checked before the run.
   - Budget: about $8 of the $14.60 left under the $95 cap. The global cap and the breaker still apply.
 - **Decided by:** the author, 2026-11-06 ~15:15 IST.
+
+## D-023 — 2026-11-06 (decided before the exp1 launch and before any exp1 judging; recorded after the run): Operating rules for the exploratory follow-up (D-022)
+- **Sources:**
+  - D-022;
+  - `configs/exp1.yaml` and the tag `exp1-v1` (abe9de2);
+  - the run log `runs/logs/exp1-20261106T104105Z.log`;
+  - the harness report `runs/reports/g0_20261106T103813Z-20fd.md`;
+  - `tests/test_exp1.py`.
+- **Was:**
+  - Every phase launched under the global $95 cap with a $15 run reserve held back for the judge.
+  - Spend was projected from one average cost per phase.
+  - Every probe episode ran as a deny probe.
+  - The judge used one database, `runs/judge/judge.sqlite`.
+- **Now:**
+  1. **Budget.** exp1 launched against the full $95 cap with a run reserve of 0 and a $9 soft limit on the phase. The $15 reserve would have blocked every launch once spend reached $80.40.
+     - Actual spend: probes $0.24, run $7.29, judge $2.61 (J1 $0.13, D2 $2.49).
+     - Total after exp1: $90.54 of $95.
+  2. **Order.** The Sonnet RECEIPT arm ran first. In 200 simulated orderings it never stopped early at the cap; running Haiku first stopped early about half the time.
+  3. **Harness changes,** both tested and leaving every earlier phase unchanged:
+     - spend projection is per model, because one phase average would falsely stop a mixed-model phase;
+     - only the G0 deny-probe episode runs as a deny probe, so the `exp1probe` episodes ran as full shifts.
+  4. **Judge.** exp1 labels live in a separate database, `runs/judge_exp1/judge.sqlite`.
+     - It reuses the core judge's passed validation (prompt v2, 11 of 12, level L3) after a byte check that the prompt text is identical.
+     - J1 judged the 17 exp1 notes the keyword rule did not match. D2 judged the exp1 debrief answers: 388 of 390 valid.
+     - Board posts and D1 answers were not judged, so P2′ is not reported for exp1.
+     - The global spend total sums every `runs/judge*/judge.sqlite`.
+  5. **Seeds.**
+     - Haiku cells: seeds 109–158.
+     - Sonnet RECEIPT: seeds 109–138.
+     - Probes: seed 9101.
+     - No seed overlaps an earlier one. Starting at 109 (= 1 + 3 × 36) makes the unchanged rotation give the same mix of paraphrase, handle order and ticket set as seeds 1–50 and 1–30, so the comparison cells have the same mix.
+- **Reason:** the follow-up had to fit in what was left under the cap, and keep its data apart from the confirmatory data.
+- **Effect:**
+  - The confirmatory views still hold core 670 and Sonnet 150, and their analysis-set fingerprints equal the recorded ones.
+  - No confirmatory number changes, except the spend totals and the snapshot hash.
+  - 130 of 130 exp1 shifts ran, with 0 failed attempts, 0 refusals and 0 clips.
+- **Decided by:** the lead, through the harness agent, before launch. Recorded by the lead, 2026-11-06 ~16:45 IST.
