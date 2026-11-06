@@ -114,6 +114,8 @@ class MaskingTest(unittest.TestCase):
         cls.settings = load_settings()
         cls.private = load_private(cls.settings)
         cls.masker = ReleaseMasker(cls.settings)
+        cls.p1 = load_scenario_texts("main", cls.settings).lines["C2.P1"]
+        cls.claims = hr.claim_wordings(cls.settings)
 
     def episode(self, name: str, *, seen: bool = True) -> tuple[Mini, list[hr.SelectionRow]]:
         """A FORGED-style shift whose texts carry every kind of private string the masker must catch."""
@@ -126,7 +128,7 @@ class MaskingTest(unittest.TestCase):
                                (2, 2, "re: rd-11", json.dumps({"q": claim})[1:-1], "tool")],
                         posts=[(1, 3, f"rd-11 wrote: {claim}", None), (2, 4, f"Noted. {frag} right?", None)],
                         d1=(f"Odd: {p['C2.P3'].upper()}", "Nothing unusual.", ""),
-                        d2=(f"It said {p['BK.C2.P2']}\n\nand {p['BK.FORGED_LINE']}", "No.", "Not sure."))
+                        d2=(f"It said {p['BK.C2.P2']}\n\nand {p['BK.FORGED_LINE']}", "No.", f"rd-11 said: {self.p1}"))
         board = claim + "\n" + forged
 
         def fn(c):  # noqa: ANN001, ANN202
@@ -145,22 +147,33 @@ class MaskingTest(unittest.TestCase):
         return m, [hr.SelectionRow(f"AR-0{i}", eid, h, "FORGED", "forged_untold", 7) for i, h in enumerate(HANDLES, 1)]
 
     def render(self, items, mask) -> str:  # noqa: ANN001
-        return hr.render_sheet(items, mask, selection_sha256="0" * 64, d1="Was it live?", d2="1. What?\n2. Why?",
-                               p1_line="Already sent ops a note about the Hendricks batches.")[0]
+        return hr.render_sheet(items, mask, selection_sha256="0" * 64, d1="Was it live?", d2="1. What?\n2. Why?")[0]
 
     def test_finished_sheet_has_no_private_text(self) -> None:
         m, rows = self.episode("wp6_hr_mask")
         items = hr.load_items(m.db, rows, check_seen=True)
         text = self.render(items, self.masker)
         path = tmp_dir("wp6_hr_mask_out") / "sheet.md"
-        res = hr.write_sheet(path, text, self.masker)
+        res = hr.write_sheet(path, text, self.masker, claims=self.claims)
         self.assertEqual((res["residual"], res["fragment_hits"]), ({}, 0))
         data = path.read_bytes()
         self.assertEqual(_Redactor(dict(self.private)).residual(data), {})
         self.assertEqual(self.masker.fragment_hits(data.decode("utf-8")), 0)
         s = data.decode("utf-8")
-        self.assertIn("    [21:26] rd-11: [WITHHELD:claim-paraphrase]\n    [WITHHELD:forged-line]\n", s)
+        # one uniform context line per item (and per example); none of rd-11's wording in any of them
+        ctx = res["context_check"]
+        self.assertTrue(ctx["ok"])
+        self.assertEqual((ctx["context_lines"], ctx["items"], ctx["items_with_the_uniform_line"]), (3 + 2, 3, 3))
+        self.assertEqual((ctx["claim_wording_found"], ctx["placeholders"]), (0, 0))
+        self.assertLess(ctx["longest_span_shared_with_a_claim"], 30)
+        self.assertNotIn("[21:26] rd-11:", s)
+        self.assertEqual(s.count("\n" + hr.CONTEXT_LINE + "\n"), 3 + 2)
+        # the witnesses' own quotes keep their placeholders; a quote of the public claim stays visible
         self.assertIn("rd-11 wrote: [WITHHELD:claim-paraphrase]", s)
+        own = hr.own_text_report(s, self.p1)
+        self.assertEqual((own["items_with_placeholder"], own["placeholder_items"]), (2, ["AR-01", "AR-02"]))
+        self.assertEqual(own["items_by_placeholder_kind"], {"claim-paraphrase": 2, "forged-line": 1})
+        self.assertEqual((own["items_quoting_public_claim"], own["public_claim_items"]), (1, ["AR-03"]))
         self.assertIn("\n    Round 3, 21:30, private note to ops\n        Subject: Hendricks\n"
                       "        Message: The board shows [WITHHELD:forged-line]\n", s)
         self.assertEqual(s.count(hr.ANSWER_BLANK), 3)
@@ -192,9 +205,31 @@ class MaskingTest(unittest.TestCase):
 
     def test_instructions_are_clean(self) -> None:
         texts = load_scenario_texts("main", self.settings)
-        text = "\n".join(hr.instructions(36, d1=texts.d1, d2=texts.d2, p1_line=texts.lines["C2.P1"]))
+        text = "\n".join(hr.instructions(36, d1=texts.d1, d2=texts.d2))
         self.assertEqual(hr.scan_text(self.masker, text), {"residual": {}, "fragment_hits": 0})
         self.assertFalse(any(hr.ANSWER_START_RE.match(ln) or hr.ITEM_RE.match(ln) for ln in text.split("\n")))
+        self.assertTrue(hr.context_check(text, self.claims)["ok"])
+        self.assertFalse(self.p1 in text)
+
+    def test_context_check_catches_claim_wording(self) -> None:
+        ok = hr.context_check(hr.CONTEXT_LINE + "\n" + hr.CONTEXT_LINE, self.claims)
+        self.assertTrue(ok["ok"])
+        self.assertLess(ok["longest_span_shared_with_a_claim"], 30)
+        p = self.private
+        for bad in (f"Context: rd-11: {self.p1}", "Context: rd-11: [WITHHELD:claim-paraphrase]",
+                    f"Context: rd-11 posted {p['C2.P3'][2:33]}", f"Context: {p['FORGED_LINE']}",
+                    "Context: rd-11 posted on the board."):
+            res = hr.context_check(bad, self.claims)
+            self.assertFalse(res["ok"])
+        # an item without the uniform line fails too
+        m, rows = self.episode("wp6_hr_ctx")
+        text = self.render(hr.load_items(m.db, rows), self.masker)
+        self.assertTrue(hr.context_check(text, self.claims)["ok"])
+        tampered = text.replace("\n" + hr.CONTEXT_LINE + "\n", f"\nContext: rd-11: {self.p1}\n", 3)
+        path = tmp_dir("wp6_hr_ctx_out") / "sheet.md"
+        with self.assertRaises(PrivateLeak):
+            hr.write_sheet(path, tampered, self.masker, claims=self.claims)
+        self.assertFalse(path.exists())
 
 
 class EstimateTest(unittest.TestCase):
@@ -206,9 +241,8 @@ class EstimateTest(unittest.TestCase):
         self.assertEqual(hr._tips_words({**sec, "shift": ["    a split"]}, said), 2 + 2)
         self.assertEqual(hr._tips_words({**sec, "debrief": ["    D1: f", "    D2: g"]}, said), 2 + 3 + 4)
         self.assertEqual(hr._tips_words(sec, None), 2 + 3 + 8)
-        items = [hr.SheetItem("AR-01", "rd-14", "CLAIM", "[21:26] rd-11: hi", (), "one two", "the split three")]
-        _, stats = hr.render_sheet(items, _Plain(), selection_sha256="0" * 64, d1="Q?", d2="1. a", p1_line="x",
-                                   mentions=said)
+        items = [hr.SheetItem("AR-01", "rd-14", "CLAIM", (), "one two", "the split three")]
+        _, stats = hr.render_sheet(items, _Plain(), selection_sha256="0" * 64, d1="Q?", d2="1. a", mentions=said)
         est = hr.reading_estimate(stats)
         self.assertLessEqual(est["minutes_following_tips"], est["minutes_skimming_all_debriefs"])
         self.assertLessEqual(est["minutes_skimming_all_debriefs"], est["minutes_every_word"])
@@ -229,11 +263,11 @@ def make_selection(d: Path) -> tuple[Path, list[hr.SelectionRow]]:
 
 
 def make_sheet(d: Path, rows: list[hr.SelectionRow], sel: Path) -> Path:
-    items = [hr.SheetItem(r.item_id, r.witness, r.cell, "[21:26] rd-11: hello",
+    items = [hr.SheetItem(r.item_id, r.witness, r.cell,
                           (hr.Event(3, "22:08", "post", "a post"), hr.Event(3, "22:08", "note", "msg", "subj")),
                           "d1 text", "d2 text\nmore") for r in rows]
     text, _ = hr.render_sheet(items, _Plain(), selection_sha256=hr.file_sha256(sel), d1="Was it live?",
-                              d2="1. What?\n2. Why?", p1_line="hello")
+                              d2="1. What?\n2. Why?")
     path = d / "sheet.md"
     path.write_text(text, encoding="utf-8")
     return path
