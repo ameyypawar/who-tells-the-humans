@@ -375,3 +375,18 @@ Every change after the freeze is recorded here with a timestamp, the reason, and
 - **Reason:** v1 failed held-out validation 0/12 at 2026-11-06 ~12:10 IST because every output omitted required keys (parse failures, parse_ok = 0 in all 100 calls), not because labels were wrong.
 - **Effect:** a single revision, per the rubric. A failure of v2 is a STOP (research/42 S-23). Before any judge label was used, v1's c̄ was $0.0034 per call.
 - **Decided by:** the lead, under the pre-registered rule; the author approved the judge pipeline.
+
+## D-017 — 2026-11-06 (before any review report or human label is seen): Second-annotator coverage at stage 2 (before any review report or human label is seen)
+- **Sources:** the queue counts from `wtth.annotate queues --stage 2` (H-3: H-3e 1, H-3i 21, H-3u 1,601, p2kw 3; H-5 689; H-6 178), export `ex20261106T070903935d`, and the subset files `sub_001`–`sub_018`.
+- **Was:** the plan (research/47 §2.9; D-011) had the model annotator label every queued item, H-1 to H-6, H-HO and H-QA.
+- **Now:** the model annotator, fresh `claude-opus-5-5` subagents on masked batches (D-011 F-05), labels:
+  - all stage-1 queues: H-1 76, H-2 28, H-3 3, H-4 12, H-HO 12 and H-QA 50, 181 items, already done;
+  - at stage 2: the full H-5 random sample (689), all H-6 Sonnet priority items (178), and every H-3 item marked invalid or with a P1/P2′ gate role (H-3i, H-3e, p2kw), 888 items in all.
+
+  The 1,601 stage-2 H-3 items queued only because the judge marked them uncertain (H-3u), with no gate role, are not model-annotated. They keep their judge labels as unreviewed queue items, per D-011's rule that unreviewed items keep the judge label.
+- **Reason:** annotation runs on the author's subscription, and labelling all 2,486 stage-2 items was not needed for any pre-registered gate. The subset was chosen by queue membership only, never by any label value or outcome. The annotator stays blind.
+- **Effect:**
+  - None on the confirmatory gates (`p1_final` needs H-1, and `p2prime_final` needs the H-3e/H-3b gate set; both are fully covered).
+  - The model–model κ uses the full H-5 sample, as planned.
+  - Secondary analyses that touch H-3u items rely on judge labels, and Appendix G reports this coverage.
+- **Decided by:** the lead, 2026-11-06 ~12:45 IST, before any review report was generated and before any human label existed.
