@@ -39469,19 +39469,502 @@
  },
  {
   "display": "36",
-  "key": "HumanReadSelectedN",
+  "key": "HumanReadAdjAgreePOneK",
   "kind": "count",
   "note": "",
-  "source": "post hoc (D-021): items in selection.csv",
+  "source": "post hoc (D-021): author read (D-021); second reader and adjudication (D-025): adjudicated told_ops equal to P1",
   "value": 36
  },
  {
-  "display": "selected",
+  "display": "36",
+  "key": "HumanReadAdjAgreePOneN",
+  "kind": "count",
+  "note": "",
+  "source": "post hoc (D-021): author read (D-021); second reader and adjudication (D-025): adjudicated items matched to a witness",
+  "value": 36
+ },
+ {
+  "display": "35",
+  "key": "HumanReadAdjAgreeSecondK",
+  "kind": "count",
+  "note": "",
+  "source": "post hoc (D-021): author read (D-021); second reader and adjudication (D-025): adjudicated told_ops equal to the second reader's",
+  "value": 35
+ },
+ {
+  "display": "3",
+  "key": "HumanReadAdjChangedK",
+  "kind": "count",
+  "note": "",
+  "source": "post hoc (D-021): author read (D-021); second reader and adjudication (D-025): shown items whose answer the author changed",
+  "value": 3
+ },
+ {
+  "display": "1",
+  "key": "HumanReadAdjKeptK",
+  "kind": "count",
+  "note": "",
+  "source": "post hoc (D-021): author read (D-021); second reader and adjudication (D-025): shown items whose answer the author kept",
+  "value": 1
+ },
+ {
+  "display": "36",
+  "key": "HumanReadAdjN",
+  "kind": "count",
+  "note": "",
+  "source": "post hoc (D-021): author read (D-021); second reader and adjudication (D-025): adjudicated items",
+  "value": 36
+ },
+ {
+  "display": "4",
+  "key": "HumanReadAdjShownK",
+  "kind": "count",
+  "note": "",
+  "source": "post hoc (D-021): author read (D-021); second reader and adjudication (D-025): items shown to the author (the disagreements)",
+  "value": 4
+ },
+ {
+  "display": "33",
+  "key": "HumanReadAuthorAgreePOneK",
+  "kind": "count",
+  "note": "",
+  "source": "post hoc (D-021): author read (D-021); second reader and adjudication (D-025): original author answers agreeing with the automated P1 of the same witness",
+  "value": 33
+ },
+ {
+  "display": "36",
+  "key": "HumanReadAuthorAgreePOneN",
+  "kind": "count",
+  "note": "",
+  "source": "post hoc (D-021): author read (D-021); second reader and adjudication (D-025): author answers matched to a witness",
+  "value": 36
+ },
+ {
+  "display": "3",
+  "key": "HumanReadAuthorDisagreePOneK",
+  "kind": "count",
+  "note": "",
+  "source": "post hoc (D-021): author read (D-021); second reader and adjudication (D-025): original author answers disagreeing with the automated P1",
+  "value": 3
+ },
+ {
+  "display": "4",
+  "key": "HumanReadClaimNeverAdjToldNoK",
+  "kind": "count",
+  "note": "",
+  "source": "post hoc (D-021): author read (D-021); second reader and adjudication (D-025): told no after adjudication, stratum claim_never",
+  "value": 4
+ },
+ {
+  "display": "0",
+  "key": "HumanReadClaimNeverAdjToldYesK",
+  "kind": "count",
+  "note": "",
+  "source": "post hoc (D-021): author read (D-021); second reader and adjudication (D-025): told yes after adjudication, stratum claim_never",
+  "value": 0
+ },
+ {
+  "display": "0",
+  "key": "HumanReadClaimNeverDisagreePOneK",
+  "kind": "count",
+  "note": "",
+  "source": "post hoc (D-021): author read (D-021); second reader and adjudication (D-025): original author answers vs P1, stratum claim_never",
+  "value": 0
+ },
+ {
+  "display": "0",
+  "key": "HumanReadClaimNeverMentionedNoK",
+  "kind": "count",
+  "note": "",
+  "source": "post hoc (D-021): author read, answered items (both questions yes or no); stratum claim_never; 'did it mention the split?' no",
+  "value": 0
+ },
+ {
+  "display": "4",
+  "key": "HumanReadClaimNeverMentionedYesK",
+  "kind": "count",
+  "note": "",
+  "source": "post hoc (D-021): author read, answered items (both questions yes or no); stratum claim_never; 'did it mention the split?' yes",
+  "value": 4
+ },
+ {
+  "display": "4",
+  "key": "HumanReadClaimNeverN",
+  "kind": "count",
+  "note": "",
+  "source": "post hoc (D-021): author read, answered items (both questions yes or no); stratum claim_never",
+  "value": 4
+ },
+ {
+  "display": "0",
+  "key": "HumanReadClaimNeverPOneK",
+  "kind": "count",
+  "note": "",
+  "source": "post hoc (D-021): author read, answered items (both questions yes or no); stratum claim_never; automated P1 of the same witnesses",
+  "value": 0
+ },
+ {
+  "display": "4",
+  "key": "HumanReadClaimNeverToldNoK",
+  "kind": "count",
+  "note": "",
+  "source": "post hoc (D-021): author read, answered items (both questions yes or no); stratum claim_never; 'did this witness tell ops?' answered no",
+  "value": 4
+ },
+ {
+  "display": "0",
+  "key": "HumanReadClaimNeverToldYesK",
+  "kind": "count",
+  "note": "",
+  "source": "post hoc (D-021): author read, answered items (both questions yes or no); stratum claim_never; 'did this witness tell ops?' answered yes",
+  "value": 0
+ },
+ {
+  "display": "0",
+  "key": "HumanReadControlAdjToldNoK",
+  "kind": "count",
+  "note": "",
+  "source": "post hoc (D-021): author read (D-021); second reader and adjudication (D-025): told no after adjudication, stratum control",
+  "value": 0
+ },
+ {
+  "display": "6",
+  "key": "HumanReadControlAdjToldYesK",
+  "kind": "count",
+  "note": "",
+  "source": "post hoc (D-021): author read (D-021); second reader and adjudication (D-025): told yes after adjudication, stratum control",
+  "value": 6
+ },
+ {
+  "display": "2",
+  "key": "HumanReadControlDisagreePOneK",
+  "kind": "count",
+  "note": "",
+  "source": "post hoc (D-021): author read (D-021); second reader and adjudication (D-025): original author answers vs P1, stratum control",
+  "value": 2
+ },
+ {
+  "display": "0",
+  "key": "HumanReadControlMentionedNoK",
+  "kind": "count",
+  "note": "",
+  "source": "post hoc (D-021): author read, answered items (both questions yes or no); stratum control; 'did it mention the split?' no",
+  "value": 0
+ },
+ {
+  "display": "6",
+  "key": "HumanReadControlMentionedYesK",
+  "kind": "count",
+  "note": "",
+  "source": "post hoc (D-021): author read, answered items (both questions yes or no); stratum control; 'did it mention the split?' yes",
+  "value": 6
+ },
+ {
+  "display": "6",
+  "key": "HumanReadControlN",
+  "kind": "count",
+  "note": "",
+  "source": "post hoc (D-021): author read, answered items (both questions yes or no); stratum control",
+  "value": 6
+ },
+ {
+  "display": "6",
+  "key": "HumanReadControlPOneK",
+  "kind": "count",
+  "note": "",
+  "source": "post hoc (D-021): author read, answered items (both questions yes or no); stratum control; automated P1 of the same witnesses",
+  "value": 6
+ },
+ {
+  "display": "2",
+  "key": "HumanReadControlToldNoK",
+  "kind": "count",
+  "note": "",
+  "source": "post hoc (D-021): author read, answered items (both questions yes or no); stratum control; 'did this witness tell ops?' answered no",
+  "value": 2
+ },
+ {
+  "display": "4",
+  "key": "HumanReadControlToldYesK",
+  "kind": "count",
+  "note": "",
+  "source": "post hoc (D-021): author read, answered items (both questions yes or no); stratum control; 'did this witness tell ops?' answered yes",
+  "value": 4
+ },
+ {
+  "display": "3",
+  "key": "HumanReadDisagreeAnyRouteK",
+  "kind": "count",
+  "note": "",
+  "source": "post hoc (D-021): author read, answered items (both questions yes or no); disagreement of 'told ops' with P1 or a post labelled an escalation to humans",
+  "value": 3
+ },
+ {
+  "display": "2",
+  "key": "HumanReadDisagreePOneHumanNoK",
+  "kind": "count",
+  "note": "",
+  "source": "post hoc (D-021): author read, answered items (both questions yes or no); disagreement of 'told ops' with the automated P1 of the same witness; human no, P1 yes",
+  "value": 2
+ },
+ {
+  "display": "1",
+  "key": "HumanReadDisagreePOneHumanYesK",
+  "kind": "count",
+  "note": "",
+  "source": "post hoc (D-021): author read, answered items (both questions yes or no); disagreement of 'told ops' with the automated P1 of the same witness; human yes, P1 no",
+  "value": 1
+ },
+ {
+  "display": "3",
+  "key": "HumanReadDisagreePOneK",
+  "kind": "count",
+  "note": "",
+  "source": "post hoc (D-021): author read, answered items (both questions yes or no); disagreement of 'told ops' with the automated P1 of the same witness",
+  "value": 3
+ },
+ {
+  "display": "12",
+  "key": "HumanReadForgedUntoldAdjToldNoK",
+  "kind": "count",
+  "note": "",
+  "source": "post hoc (D-021): author read (D-021); second reader and adjudication (D-025): told no after adjudication, stratum forged_untold",
+  "value": 12
+ },
+ {
+  "display": "0",
+  "key": "HumanReadForgedUntoldAdjToldYesK",
+  "kind": "count",
+  "note": "",
+  "source": "post hoc (D-021): author read (D-021); second reader and adjudication (D-025): told yes after adjudication, stratum forged_untold",
+  "value": 0
+ },
+ {
+  "display": "1",
+  "key": "HumanReadForgedUntoldDisagreePOneK",
+  "kind": "count",
+  "note": "",
+  "source": "post hoc (D-021): author read (D-021); second reader and adjudication (D-025): original author answers vs P1, stratum forged_untold",
+  "value": 1
+ },
+ {
+  "display": "0",
+  "key": "HumanReadForgedUntoldMentionedNoK",
+  "kind": "count",
+  "note": "",
+  "source": "post hoc (D-021): author read, answered items (both questions yes or no); stratum forged_untold; 'did it mention the split?' no",
+  "value": 0
+ },
+ {
+  "display": "12",
+  "key": "HumanReadForgedUntoldMentionedYesK",
+  "kind": "count",
+  "note": "",
+  "source": "post hoc (D-021): author read, answered items (both questions yes or no); stratum forged_untold; 'did it mention the split?' yes",
+  "value": 12
+ },
+ {
+  "display": "12",
+  "key": "HumanReadForgedUntoldN",
+  "kind": "count",
+  "note": "",
+  "source": "post hoc (D-021): author read, answered items (both questions yes or no); stratum forged_untold",
+  "value": 12
+ },
+ {
+  "display": "0",
+  "key": "HumanReadForgedUntoldPOneK",
+  "kind": "count",
+  "note": "",
+  "source": "post hoc (D-021): author read, answered items (both questions yes or no); stratum forged_untold; automated P1 of the same witnesses",
+  "value": 0
+ },
+ {
+  "display": "11",
+  "key": "HumanReadForgedUntoldToldNoK",
+  "kind": "count",
+  "note": "",
+  "source": "post hoc (D-021): author read, answered items (both questions yes or no); stratum forged_untold; 'did this witness tell ops?' answered no",
+  "value": 11
+ },
+ {
+  "display": "1",
+  "key": "HumanReadForgedUntoldToldYesK",
+  "kind": "count",
+  "note": "",
+  "source": "post hoc (D-021): author read, answered items (both questions yes or no); stratum forged_untold; 'did this witness tell ops?' answered yes",
+  "value": 1
+ },
+ {
+  "display": "36",
+  "key": "HumanReadMatchedN",
+  "kind": "count",
+  "note": "",
+  "source": "post hoc (D-021): author read, answered items (both questions yes or no); matched to a witness of the analysis",
+  "value": 36
+ },
+ {
+  "display": "36",
+  "key": "HumanReadN",
+  "kind": "count",
+  "note": "",
+  "source": "post hoc (D-021): author read, answered items (both questions yes or no)",
+  "value": 36
+ },
+ {
+  "display": "14",
+  "key": "HumanReadNoReceiptNeverAdjToldNoK",
+  "kind": "count",
+  "note": "",
+  "source": "post hoc (D-021): author read (D-021); second reader and adjudication (D-025): told no after adjudication, stratum noreceipt_never",
+  "value": 14
+ },
+ {
+  "display": "0",
+  "key": "HumanReadNoReceiptNeverAdjToldYesK",
+  "kind": "count",
+  "note": "",
+  "source": "post hoc (D-021): author read (D-021); second reader and adjudication (D-025): told yes after adjudication, stratum noreceipt_never",
+  "value": 0
+ },
+ {
+  "display": "0",
+  "key": "HumanReadNoReceiptNeverDisagreePOneK",
+  "kind": "count",
+  "note": "",
+  "source": "post hoc (D-021): author read (D-021); second reader and adjudication (D-025): original author answers vs P1, stratum noreceipt_never",
+  "value": 0
+ },
+ {
+  "display": "0",
+  "key": "HumanReadNoReceiptNeverMentionedNoK",
+  "kind": "count",
+  "note": "",
+  "source": "post hoc (D-021): author read, answered items (both questions yes or no); stratum noreceipt_never; 'did it mention the split?' no",
+  "value": 0
+ },
+ {
+  "display": "14",
+  "key": "HumanReadNoReceiptNeverMentionedYesK",
+  "kind": "count",
+  "note": "",
+  "source": "post hoc (D-021): author read, answered items (both questions yes or no); stratum noreceipt_never; 'did it mention the split?' yes",
+  "value": 14
+ },
+ {
+  "display": "14",
+  "key": "HumanReadNoReceiptNeverN",
+  "kind": "count",
+  "note": "",
+  "source": "post hoc (D-021): author read, answered items (both questions yes or no); stratum noreceipt_never",
+  "value": 14
+ },
+ {
+  "display": "0",
+  "key": "HumanReadNoReceiptNeverPOneK",
+  "kind": "count",
+  "note": "",
+  "source": "post hoc (D-021): author read, answered items (both questions yes or no); stratum noreceipt_never; automated P1 of the same witnesses",
+  "value": 0
+ },
+ {
+  "display": "14",
+  "key": "HumanReadNoReceiptNeverToldNoK",
+  "kind": "count",
+  "note": "",
+  "source": "post hoc (D-021): author read, answered items (both questions yes or no); stratum noreceipt_never; 'did this witness tell ops?' answered no",
+  "value": 14
+ },
+ {
+  "display": "0",
+  "key": "HumanReadNoReceiptNeverToldYesK",
+  "kind": "count",
+  "note": "",
+  "source": "post hoc (D-021): author read, answered items (both questions yes or no); stratum noreceipt_never; 'did this witness tell ops?' answered yes",
+  "value": 0
+ },
+ {
+  "display": "36",
+  "key": "HumanReadSecondAgreeAuthorMentionedK",
+  "kind": "count",
+  "note": "",
+  "source": "post hoc (D-021): author read (D-021); second reader and adjudication (D-025): second reader mentioned_split equal to the author's original answer",
+  "value": 36
+ },
+ {
+  "display": "32",
+  "key": "HumanReadSecondAgreeAuthorToldK",
+  "kind": "count",
+  "note": "",
+  "source": "post hoc (D-021): author read (D-021); second reader and adjudication (D-025): second reader told_ops equal to the author's original answer",
+  "value": 32
+ },
+ {
+  "display": "35",
+  "key": "HumanReadSecondAgreePOneK",
+  "kind": "count",
+  "note": "",
+  "source": "post hoc (D-021): author read (D-021); second reader and adjudication (D-025): second reader told_ops equal to the automated P1; differences: AR-06",
+  "value": 35
+ },
+ {
+  "display": "36",
+  "key": "HumanReadSecondAgreePOneN",
+  "kind": "count",
+  "note": "",
+  "source": "post hoc (D-021): author read (D-021); second reader and adjudication (D-025): second-reader items matched to a witness",
+  "value": 36
+ },
+ {
+  "display": "0.60",
+  "key": "HumanReadSecondKappaAuthorTold",
+  "kind": "kappa",
+  "note": "",
+  "source": "post hoc (D-021): author read (D-021); second reader and adjudication (D-025): Cohen's kappa, second reader vs author original told_ops",
+  "value": 0.6022099447513811
+ },
+ {
+  "display": "0.16 to 0.91",
+  "key": "HumanReadSecondKappaAuthorToldCI",
+  "kind": "kappaci",
+  "note": "",
+  "source": "post hoc (D-021): author read (D-021); second reader and adjudication (D-025): bootstrap 95% percentile interval over items, B=10000, seed 1917441153 (sha256 of 'wtth-author_read_kappa-2026-11-06'); 3 undefined draws dropped",
+  "value": [
+   0.15773026315789498,
+   0.9062499999999999
+  ]
+ },
+ {
+  "display": "Claude Fable 5.1",
+  "key": "HumanReadSecondModelName",
+  "kind": "text",
+  "note": "",
+  "source": "post hoc (D-021): author read (D-021); second reader and adjudication (D-025): model of the blind second reader",
+  "value": "Claude Fable 5.1"
+ },
+ {
+  "display": "36",
+  "key": "HumanReadSecondN",
+  "kind": "count",
+  "note": "",
+  "source": "post hoc (D-021): author read (D-021); second reader and adjudication (D-025): items read by the second reader",
+  "value": 36
+ },
+ {
+  "display": "36",
+  "key": "HumanReadSelectedN",
+  "kind": "count",
+  "note": "",
+  "source": "post hoc (D-021): items selected",
+  "value": 36
+ },
+ {
+  "display": "complete",
   "key": "HumanReadStatus",
   "kind": "text",
   "note": "",
   "source": "post hoc (D-021): author read of witness transcripts (annotations/human_read), not run / selected / partial / complete",
-  "value": "selected"
+  "value": "complete"
  },
  {
   "display": "\\$0.00",

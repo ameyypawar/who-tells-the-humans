@@ -9516,10 +9516,130 @@
 \newcommand{\wtthHaikuTostVerdict}{equivalent}
 % TOST in reader wording, never 'equivalent' (review N3); exploratory
 \newcommand{\wtthHaikuTostVerdictText}{inside \ensuremath{\pm}15 points (exploratory)}
-% post hoc (D-021): items in selection.csv
+% post hoc (D-021): author read (D-021); second reader and adjudication (D-025): adjudicated told_ops equal to P1
+\newcommand{\wtthHumanReadAdjAgreePOneK}{36}
+% post hoc (D-021): author read (D-021); second reader and adjudication (D-025): adjudicated items matched to a witness
+\newcommand{\wtthHumanReadAdjAgreePOneN}{36}
+% post hoc (D-021): author read (D-021); second reader and adjudication (D-025): adjudicated told_ops equal to the second reader's
+\newcommand{\wtthHumanReadAdjAgreeSecondK}{35}
+% post hoc (D-021): author read (D-021); second reader and adjudication (D-025): shown items whose answer the author changed
+\newcommand{\wtthHumanReadAdjChangedK}{3}
+% post hoc (D-021): author read (D-021); second reader and adjudication (D-025): shown items whose answer the author kept
+\newcommand{\wtthHumanReadAdjKeptK}{1}
+% post hoc (D-021): author read (D-021); second reader and adjudication (D-025): adjudicated items
+\newcommand{\wtthHumanReadAdjN}{36}
+% post hoc (D-021): author read (D-021); second reader and adjudication (D-025): items shown to the author (the disagreements)
+\newcommand{\wtthHumanReadAdjShownK}{4}
+% post hoc (D-021): author read (D-021); second reader and adjudication (D-025): original author answers agreeing with the automated P1 of the same witness
+\newcommand{\wtthHumanReadAuthorAgreePOneK}{33}
+% post hoc (D-021): author read (D-021); second reader and adjudication (D-025): author answers matched to a witness
+\newcommand{\wtthHumanReadAuthorAgreePOneN}{36}
+% post hoc (D-021): author read (D-021); second reader and adjudication (D-025): original author answers disagreeing with the automated P1
+\newcommand{\wtthHumanReadAuthorDisagreePOneK}{3}
+% post hoc (D-021): author read (D-021); second reader and adjudication (D-025): told no after adjudication, stratum claim_never
+\newcommand{\wtthHumanReadClaimNeverAdjToldNoK}{4}
+% post hoc (D-021): author read (D-021); second reader and adjudication (D-025): told yes after adjudication, stratum claim_never
+\newcommand{\wtthHumanReadClaimNeverAdjToldYesK}{0}
+% post hoc (D-021): author read (D-021); second reader and adjudication (D-025): original author answers vs P1, stratum claim_never
+\newcommand{\wtthHumanReadClaimNeverDisagreePOneK}{0}
+% post hoc (D-021): author read, answered items (both questions yes or no); stratum claim_never; 'did it mention the split?' no
+\newcommand{\wtthHumanReadClaimNeverMentionedNoK}{0}
+% post hoc (D-021): author read, answered items (both questions yes or no); stratum claim_never; 'did it mention the split?' yes
+\newcommand{\wtthHumanReadClaimNeverMentionedYesK}{4}
+% post hoc (D-021): author read, answered items (both questions yes or no); stratum claim_never
+\newcommand{\wtthHumanReadClaimNeverN}{4}
+% post hoc (D-021): author read, answered items (both questions yes or no); stratum claim_never; automated P1 of the same witnesses
+\newcommand{\wtthHumanReadClaimNeverPOneK}{0}
+% post hoc (D-021): author read, answered items (both questions yes or no); stratum claim_never; 'did this witness tell ops?' answered no
+\newcommand{\wtthHumanReadClaimNeverToldNoK}{4}
+% post hoc (D-021): author read, answered items (both questions yes or no); stratum claim_never; 'did this witness tell ops?' answered yes
+\newcommand{\wtthHumanReadClaimNeverToldYesK}{0}
+% post hoc (D-021): author read (D-021); second reader and adjudication (D-025): told no after adjudication, stratum control
+\newcommand{\wtthHumanReadControlAdjToldNoK}{0}
+% post hoc (D-021): author read (D-021); second reader and adjudication (D-025): told yes after adjudication, stratum control
+\newcommand{\wtthHumanReadControlAdjToldYesK}{6}
+% post hoc (D-021): author read (D-021); second reader and adjudication (D-025): original author answers vs P1, stratum control
+\newcommand{\wtthHumanReadControlDisagreePOneK}{2}
+% post hoc (D-021): author read, answered items (both questions yes or no); stratum control; 'did it mention the split?' no
+\newcommand{\wtthHumanReadControlMentionedNoK}{0}
+% post hoc (D-021): author read, answered items (both questions yes or no); stratum control; 'did it mention the split?' yes
+\newcommand{\wtthHumanReadControlMentionedYesK}{6}
+% post hoc (D-021): author read, answered items (both questions yes or no); stratum control
+\newcommand{\wtthHumanReadControlN}{6}
+% post hoc (D-021): author read, answered items (both questions yes or no); stratum control; automated P1 of the same witnesses
+\newcommand{\wtthHumanReadControlPOneK}{6}
+% post hoc (D-021): author read, answered items (both questions yes or no); stratum control; 'did this witness tell ops?' answered no
+\newcommand{\wtthHumanReadControlToldNoK}{2}
+% post hoc (D-021): author read, answered items (both questions yes or no); stratum control; 'did this witness tell ops?' answered yes
+\newcommand{\wtthHumanReadControlToldYesK}{4}
+% post hoc (D-021): author read, answered items (both questions yes or no); disagreement of 'told ops' with P1 or a post labelled an escalation to humans
+\newcommand{\wtthHumanReadDisagreeAnyRouteK}{3}
+% post hoc (D-021): author read, answered items (both questions yes or no); disagreement of 'told ops' with the automated P1 of the same witness; human no, P1 yes
+\newcommand{\wtthHumanReadDisagreePOneHumanNoK}{2}
+% post hoc (D-021): author read, answered items (both questions yes or no); disagreement of 'told ops' with the automated P1 of the same witness; human yes, P1 no
+\newcommand{\wtthHumanReadDisagreePOneHumanYesK}{1}
+% post hoc (D-021): author read, answered items (both questions yes or no); disagreement of 'told ops' with the automated P1 of the same witness
+\newcommand{\wtthHumanReadDisagreePOneK}{3}
+% post hoc (D-021): author read (D-021); second reader and adjudication (D-025): told no after adjudication, stratum forged_untold
+\newcommand{\wtthHumanReadForgedUntoldAdjToldNoK}{12}
+% post hoc (D-021): author read (D-021); second reader and adjudication (D-025): told yes after adjudication, stratum forged_untold
+\newcommand{\wtthHumanReadForgedUntoldAdjToldYesK}{0}
+% post hoc (D-021): author read (D-021); second reader and adjudication (D-025): original author answers vs P1, stratum forged_untold
+\newcommand{\wtthHumanReadForgedUntoldDisagreePOneK}{1}
+% post hoc (D-021): author read, answered items (both questions yes or no); stratum forged_untold; 'did it mention the split?' no
+\newcommand{\wtthHumanReadForgedUntoldMentionedNoK}{0}
+% post hoc (D-021): author read, answered items (both questions yes or no); stratum forged_untold; 'did it mention the split?' yes
+\newcommand{\wtthHumanReadForgedUntoldMentionedYesK}{12}
+% post hoc (D-021): author read, answered items (both questions yes or no); stratum forged_untold
+\newcommand{\wtthHumanReadForgedUntoldN}{12}
+% post hoc (D-021): author read, answered items (both questions yes or no); stratum forged_untold; automated P1 of the same witnesses
+\newcommand{\wtthHumanReadForgedUntoldPOneK}{0}
+% post hoc (D-021): author read, answered items (both questions yes or no); stratum forged_untold; 'did this witness tell ops?' answered no
+\newcommand{\wtthHumanReadForgedUntoldToldNoK}{11}
+% post hoc (D-021): author read, answered items (both questions yes or no); stratum forged_untold; 'did this witness tell ops?' answered yes
+\newcommand{\wtthHumanReadForgedUntoldToldYesK}{1}
+% post hoc (D-021): author read, answered items (both questions yes or no); matched to a witness of the analysis
+\newcommand{\wtthHumanReadMatchedN}{36}
+% post hoc (D-021): author read, answered items (both questions yes or no)
+\newcommand{\wtthHumanReadN}{36}
+% post hoc (D-021): author read (D-021); second reader and adjudication (D-025): told no after adjudication, stratum noreceipt_never
+\newcommand{\wtthHumanReadNoReceiptNeverAdjToldNoK}{14}
+% post hoc (D-021): author read (D-021); second reader and adjudication (D-025): told yes after adjudication, stratum noreceipt_never
+\newcommand{\wtthHumanReadNoReceiptNeverAdjToldYesK}{0}
+% post hoc (D-021): author read (D-021); second reader and adjudication (D-025): original author answers vs P1, stratum noreceipt_never
+\newcommand{\wtthHumanReadNoReceiptNeverDisagreePOneK}{0}
+% post hoc (D-021): author read, answered items (both questions yes or no); stratum noreceipt_never; 'did it mention the split?' no
+\newcommand{\wtthHumanReadNoReceiptNeverMentionedNoK}{0}
+% post hoc (D-021): author read, answered items (both questions yes or no); stratum noreceipt_never; 'did it mention the split?' yes
+\newcommand{\wtthHumanReadNoReceiptNeverMentionedYesK}{14}
+% post hoc (D-021): author read, answered items (both questions yes or no); stratum noreceipt_never
+\newcommand{\wtthHumanReadNoReceiptNeverN}{14}
+% post hoc (D-021): author read, answered items (both questions yes or no); stratum noreceipt_never; automated P1 of the same witnesses
+\newcommand{\wtthHumanReadNoReceiptNeverPOneK}{0}
+% post hoc (D-021): author read, answered items (both questions yes or no); stratum noreceipt_never; 'did this witness tell ops?' answered no
+\newcommand{\wtthHumanReadNoReceiptNeverToldNoK}{14}
+% post hoc (D-021): author read, answered items (both questions yes or no); stratum noreceipt_never; 'did this witness tell ops?' answered yes
+\newcommand{\wtthHumanReadNoReceiptNeverToldYesK}{0}
+% post hoc (D-021): author read (D-021); second reader and adjudication (D-025): second reader mentioned_split equal to the author's original answer
+\newcommand{\wtthHumanReadSecondAgreeAuthorMentionedK}{36}
+% post hoc (D-021): author read (D-021); second reader and adjudication (D-025): second reader told_ops equal to the author's original answer
+\newcommand{\wtthHumanReadSecondAgreeAuthorToldK}{32}
+% post hoc (D-021): author read (D-021); second reader and adjudication (D-025): second reader told_ops equal to the automated P1; differences: AR-06
+\newcommand{\wtthHumanReadSecondAgreePOneK}{35}
+% post hoc (D-021): author read (D-021); second reader and adjudication (D-025): second-reader items matched to a witness
+\newcommand{\wtthHumanReadSecondAgreePOneN}{36}
+% post hoc (D-021): author read (D-021); second reader and adjudication (D-025): Cohen's kappa, second reader vs author original told_ops
+\newcommand{\wtthHumanReadSecondKappaAuthorTold}{0.60}
+% post hoc (D-021): author read (D-021); second reader and adjudication (D-025): bootstrap 95% percentile interval over items, B=10000, seed 1917441153 (sha256 of 'wtth-author_read_kappa-2026-11-06'); 3 undefined draws dropped
+\newcommand{\wtthHumanReadSecondKappaAuthorToldCI}{0.16 to 0.91}
+% post hoc (D-021): author read (D-021); second reader and adjudication (D-025): model of the blind second reader
+\newcommand{\wtthHumanReadSecondModelName}{Claude Fable 5.1}
+% post hoc (D-021): author read (D-021); second reader and adjudication (D-025): items read by the second reader
+\newcommand{\wtthHumanReadSecondN}{36}
+% post hoc (D-021): items selected
 \newcommand{\wtthHumanReadSelectedN}{36}
 % post hoc (D-021): author read of witness transcripts (annotations/human_read), not run / selected / partial / complete
-\newcommand{\wtthHumanReadStatus}{selected}
+\newcommand{\wtthHumanReadStatus}{complete}
 % mean judge cost per call in the first batch
 \newcommand{\wtthJudgeCBar}{\$0.00}
 % judge database (active prompt version) | F-20: recomputed escalation is used everywhere

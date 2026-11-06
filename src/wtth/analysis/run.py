@@ -446,7 +446,8 @@ def run_analysis(settings: Any, *, strict: bool, labels: LabelSource | None = No
     # the author read (D-021 item 3)
     hr_dir = Path(human_read_dir) if human_read_dir is not None else \
         Path(settings.paths.runs_dir).parent / "annotations" / "human_read"
-    hr = humanread.read_human_read(hr_dir, [x for ws in w_by.values() for x in ws])
+    hr = humanread.read_human_read(hr_dir, [x for ws in w_by.values() for x in ws],
+                                 bootstrap_B=seeds.bootstrap_B)
     register.register_human_read(book, hr)
     summary["human_read"] = humanread.summary_note(hr)
     cost = _cost(settings, db)

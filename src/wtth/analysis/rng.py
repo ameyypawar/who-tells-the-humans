@@ -9,6 +9,7 @@ STREAMS: dict[str, int] = {
     "attempts": 8, "test_aware": 9, "kappa": 10, "seed_paired": 11, "sonnet": 12, "misc": 13,
     "posthoc": 14,     # D-021 post-hoc intervals (added after the strict analysis; streams 0-13 are unchanged)
     "exp1": 15,        # D-022 exploratory follow-up cells
+    "author_read": 16, # D-025 bootstrap of the author / second-reader kappa
 }
 
 

@@ -307,6 +307,62 @@ class HumanReadTest(unittest.TestCase):
         self.assertEqual(book.keys(), ["HumanReadSelectedN", "HumanReadStatus"])
 
 
+class HumanReadD025Test(unittest.TestCase):
+    """The committed author read: original answers, blind second reader and adjudication (D-021 item 3, D-025).
+    Automated P1 is taken equal to the adjudicated answer (the record: adjudicated agreement with P1 is 36 of 36)."""
+    DIR = Path(__file__).resolve().parents[1] / "annotations" / "human_read"
+
+    def _results(self) -> humanread.HumanReadResults:
+        sel = humanread._read(self.DIR / "selection.csv")
+        adj = {r["item_id"]: humanread._yn(r["told_ops"]) for r in humanread._read(self.DIR / "answers_adjudicated.csv")}
+        ws = [SimpleNamespace(episode_id=int(r["episode_id"]), slot=0, handle=r["witness"], p1=adj[r["item_id"]],
+                              esc_post=False) for r in sel]
+        return humanread.read_human_read(self.DIR, ws, bootstrap_B=10000)
+
+    def test_known_values(self) -> None:
+        r = self._results()
+        self.assertEqual((r.status, r.n_answered, r.n_matched), ("complete", 36, 36))
+        self.assertEqual((r.author_agree_p1, r.disagree_p1), (33, 3))
+        self.assertEqual((r.strata["forged_untold"].disagree_p1, r.strata["control"].disagree_p1), (1, 2))
+        q = r.second
+        self.assertIsNotNone(q)
+        self.assertEqual((q.model, q.n, q.agree_author_told, q.agree_author_mentioned), ("Claude Fable 5.1", 36, 32, 36))
+        self.assertAlmostEqual(q.kappa_author_told, 0.60, delta=0.005)
+        self.assertEqual((q.n_p1, q.agree_p1, q.p1_differences), (36, 35, ("AR-06",)))
+        self.assertEqual(q.kappa_seed, int(__import__("hashlib").sha256(b"wtth-author_read_kappa-2026-11-06").hexdigest()[:8], 16))
+        self.assertLess(q.kappa_ci[0], q.kappa_author_told)
+        self.assertGreater(q.kappa_ci[1], q.kappa_author_told)
+        a = r.adjudication
+        self.assertIsNotNone(a)
+        self.assertEqual((a.shown, a.changed, a.kept, a.agree_p1, a.n_p1, a.agree_second), (4, 3, 1, 36, 36, 35))
+        # the bootstrap is deterministic
+        self.assertEqual(self._results().second.kappa_ci, q.kappa_ci)
+
+    def test_macros(self) -> None:
+        book = NumberBook()
+        register.register_human_read(book, self._results())
+        for k, v in {"HumanReadStatus": "complete", "HumanReadAuthorAgreePOneK": "33", "HumanReadAuthorAgreePOneN": "36",
+                     "HumanReadAuthorDisagreePOneK": "3", "HumanReadForgedUntoldDisagreePOneK": "1",
+                     "HumanReadControlDisagreePOneK": "2", "HumanReadSecondModelName": "Claude Fable 5.1",
+                     "HumanReadSecondAgreeAuthorToldK": "32", "HumanReadSecondKappaAuthorTold": "0.60",
+                     "HumanReadSecondAgreeAuthorMentionedK": "36", "HumanReadSecondAgreePOneK": "35",
+                     "HumanReadAdjShownK": "4", "HumanReadAdjChangedK": "3", "HumanReadAdjKeptK": "1",
+                     "HumanReadAdjAgreePOneK": "36", "HumanReadAdjAgreeSecondK": "35"}.items():
+            self.assertEqual(book.fmt(k), v, k)
+        self.assertIn(" to ", book.fmt("HumanReadSecondKappaAuthorToldCI"))
+        for s in ("ClaimNever", "ForgedUntold", "NoReceiptNever", "Control"):
+            n = book.value(f"HumanRead{s}N")
+            self.assertEqual(book.value(f"HumanRead{s}AdjToldYesK") + book.value(f"HumanRead{s}AdjToldNoK"), n)
+        for k in book.keys():
+            self.assertIn("post hoc (D-021)", book.entry(k).source, k)
+        self.assertIn("author read (D-021); second reader and adjudication (D-025)",
+                      book.entry("HumanReadSecondAgreePOneK").source)
+
+    def test_kappa_helpers(self) -> None:
+        self.assertEqual(humanread.kappa_binary([True, False, True, False], [True, False, True, False]), 1.0)
+        self.assertTrue(math.isnan(humanread.kappa_binary([True, True], [True, True])))
+
+
 # ---- the by-paraphrase breakdown ----------------------------------------------------------------------------------------
 
 class ParaphraseTest(unittest.TestCase):

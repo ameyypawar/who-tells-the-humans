@@ -622,6 +622,58 @@ def register_human_read(book: NumberBook, r: Any) -> None:
     book.add("HumanReadDisagreePOneHumanNoK", r.disagree_p1_human_no, "count", source=dsrc + "; human no, P1 yes")
     asrc = src + "; disagreement of 'told ops' with P1 or a post labelled an escalation to humans"
     book.add("HumanReadDisagreeAnyRouteK", r.disagree_any, "count", source=asrc)
+    _register_human_read_d025(book, r)
+
+
+HR_SOURCE = f"{POSTHOC}: author read (D-021); second reader and adjudication (D-025)"
+
+
+def _register_human_read_d025(book: NumberBook, r: Any) -> None:
+    from wtth.analysis.humanread import STRATA, STRATUM_TOKENS
+
+    src = HR_SOURCE
+    if r.status != "complete":
+        return
+    book.add("HumanReadAuthorAgreePOneK", r.author_agree_p1, "count",
+             source=f"{src}: original author answers agreeing with the automated P1 of the same witness")
+    book.add("HumanReadAuthorAgreePOneN", r.n_matched, "count", source=f"{src}: author answers matched to a witness")
+    book.add("HumanReadAuthorDisagreePOneK", r.disagree_p1, "count",
+             source=f"{src}: original author answers disagreeing with the automated P1")
+    for s in STRATA:
+        book.add("HumanRead" + STRATUM_TOKENS[s] + "DisagreePOneK", r.strata[s].disagree_p1, "count",
+                 source=f"{src}: original author answers vs P1, stratum {s}")
+    q = r.second
+    if q is not None:
+        book.add("HumanReadSecondModelName", q.model, "text", source=f"{src}: model of the blind second reader")
+        book.add("HumanReadSecondN", q.n, "count", source=f"{src}: items read by the second reader")
+        book.add("HumanReadSecondAgreeAuthorToldK", q.agree_author_told, "count",
+                 source=f"{src}: second reader told_ops equal to the author's original answer")
+        book.add("HumanReadSecondKappaAuthorTold", q.kappa_author_told, "kappa",
+                 source=f"{src}: Cohen's kappa, second reader vs author original told_ops")
+        book.add("HumanReadSecondKappaAuthorToldCI", q.kappa_ci, "kappaci",
+                 source=f"{src}: bootstrap 95% percentile interval over items, B={q.kappa_B}, seed {q.kappa_seed} "
+                        f"(sha256 of 'wtth-author_read_kappa-2026-11-06'); {q.kappa_undefined_draws} undefined draws dropped")
+        book.add("HumanReadSecondAgreeAuthorMentionedK", q.agree_author_mentioned, "count",
+                 source=f"{src}: second reader mentioned_split equal to the author's original answer")
+        book.add("HumanReadSecondAgreePOneK", q.agree_p1, "count",
+                 source=f"{src}: second reader told_ops equal to the automated P1; differences: "
+                        f"{', '.join(q.p1_differences) or 'none'}")
+        book.add("HumanReadSecondAgreePOneN", q.n_p1, "count", source=f"{src}: second-reader items matched to a witness")
+    a = r.adjudication
+    if a is not None:
+        book.add("HumanReadAdjShownK", a.shown, "count", source=f"{src}: items shown to the author (the disagreements)")
+        book.add("HumanReadAdjChangedK", a.changed, "count", source=f"{src}: shown items whose answer the author changed")
+        book.add("HumanReadAdjKeptK", a.kept, "count", source=f"{src}: shown items whose answer the author kept")
+        book.add("HumanReadAdjAgreePOneK", a.agree_p1, "count", source=f"{src}: adjudicated told_ops equal to P1")
+        book.add("HumanReadAdjAgreePOneN", a.n_p1, "count", source=f"{src}: adjudicated items matched to a witness")
+        book.add("HumanReadAdjAgreeSecondK", a.agree_second, "count",
+                 source=f"{src}: adjudicated told_ops equal to the second reader's")
+        book.add("HumanReadAdjN", a.n, "count", source=f"{src}: adjudicated items")
+        for s in STRATA:
+            c = a.strata[s]
+            pre = "HumanRead" + STRATUM_TOKENS[s] + "Adj"
+            book.add(pre + "ToldYesK", c.told_yes, "count", source=f"{src}: told yes after adjudication, stratum {s}")
+            book.add(pre + "ToldNoK", c.told_no, "count", source=f"{src}: told no after adjudication, stratum {s}")
 
 
 # ---- pre-registered exploratory breakdown by claim paraphrase (PREREG 16) -------------------------------------------
