@@ -1,17 +1,14 @@
-% branch h1-S: H1's null rejected in the predicted direction (code S), Results 4.1. Realised branch (FINAL export).
-% Verdict words come only from the generated \wtthHaikuHOneVerdictText (the long \wtthHaikuHOneSentence is replaced by a
-% shorter macro-only sentence, for space; Table 2 carries the test). The effect is small
-% and its rejection fragile (review M2; post hoc D-021): say so, with the exact and score tests and the boundary facts;
-% never "no effect", "robust" or "equivalent" (plan 49 section 4.2 item 6). Review M7: every witness had a private
-% channel, which was never varied, so it gets no causal credit. Review M11: 'unsure' was common and the test-awareness
-% kappa low. The phantom-belief sentence of the skeleton is dropped: every CLAIM shift had a witness note (P2 = 0).
-% Review 2 S4: the heading says "null rejected, at the boundary" (the verdict word from \wtthHaikuHOneVerdict) and the
-% recorded prediction of a 15 to 30 point stand-down failed (Appendix C.7); Table 2 keeps the generated wording. The
-% "Reading" paragraph (private channel, ceiling) is not repeated here: Section 5.1 carries it, for space; test awareness
-% (review M11) moved to the Limitations paragraph of Section 5.2 and Appendix A.
-\subsection{A bare claim fell short of prediction: H1 null \wtthHaikuHOneVerdict, at the boundary}\label{sec:h1}
-A peer's false claim lowered P1 from \wtthHaikuPOneNonePct\% (\wtthHaikuPOneNoneK/\wtthHaikuPOneNoneN) to \wtthHaikuPOneClaimPct\% (\wtthHaikuPOneClaimK/\wtthHaikuPOneClaimN), a stand-down of \wtthHaikuHOneDelta{} points (Table~\ref{tab:hyp}), so the pre-registered prediction of \wtthDesignPredStandDownLo{} to \wtthDesignPredStandDownHi{} points failed; ops was told in every shift of both cells (P2 \wtthHaikuPTwoNonePct\% and \wtthHaikuPTwoClaimPct\%, \Ptwop{} the same).
-The small effect is not salience (a remark on the split without a claim, \cell{CONCERN}, left P1 at \wtthHaikuPOneConcernPct\%), and the testbed detects a warranted stand-down: with a cost for duplicate notes, C's real note cut the share of shifts with any witness note by \wtthHaikuPosCtrlCoreDiff{} points (\cell{POS} against \cell{NEG}; CI \wtthHaikuPosCtrlCoreCI).
-
-\paragraph{Rejecting the null is fragile (post hoc, D-021).}
-The effect rests on \wtthHaikuPostHocBoundaryHOneClaimNonReporters{} non-reporters in \wtthHaikuPostHocBoundaryHOneClaimShiftsM{} of \wtthHaikuPostHocBoundaryHOneClaimShiftsN{} shifts against \wtthHaikuTimingNoneNeverK{} in \cell{NONE}, so the interval clears zero only because a resample omits all those shifts with probability \wtthHaikuPostHocBoundaryHOneClaimPZero\%, and Fisher's exact test (p~$=$~\wtthHaikuPostHocHOneFisherP) and the Newcombe interval (\wtthHaikuPostHocHOneNewcombeCI) do not reject it; H2's and H3's effects hold under such methods (Table~\ref{tab:posthoc}; Appendix~\ref{app:limits}).
+% branch h1-S: H1's null rejected in the predicted direction (code S), Results 4.1. Realised branch (FINAL export),
+% rewritten in pass 6 on research/68 section 0.3 and research/64 FLAGS 3, 4, 20 to 22: negligible (the predicted 15 to
+% 30 points failed), confined to one claim wording (P1 under CLAIM by paraphrase), and rejected only at the boundary of
+% the pre-registered bootstrap (NONE at the ceiling has no variance, so the lower limit is the smallest value above zero
+% and the fourth affected shift decides); Fisher and Newcombe do not reject, the TOST interval is inside the margin
+% (exploratory). Say once that H2 and H3 are confirmatory only through this gate. Verdict words come only from
+% \wtthHaikuHOneVerdictText; never "no effect", "robust" or "equivalent" (plan 49 section 4.2 item 6).
+\subsection{A bare claim barely mattered: H1 \wtthHaikuHOneVerdictText}\label{sec:h1}
+A peer's false claim lowered P1 from \wtthHaikuPOneNonePct\% (\wtthHaikuPOneNoneK/\wtthHaikuPOneNoneN) to \wtthHaikuPOneClaimPct\% (\wtthHaikuPOneClaimK/\wtthHaikuPOneClaimN), a stand-down of \wtthHaikuHOneDelta{} points (Table~\ref{tab:hyp}), far short of the pre-registered \wtthDesignPredStandDownLo{} to \wtthDesignPredStandDownHi{} points; every shift of both cells reached ops.
+The stand-down is confined to one claim wording: P1 was \wtthHaikuParaphraseZeroClaimPOnePct\% under the public paraphrase and \wtthHaikuParaphraseOneClaimPOnePct\% and \wtthHaikuParaphraseTwoClaimPOnePct\% under the withheld ones (aliased with slot order; the interval resamples shifts, not wordings).
+With \cell{NONE} at the ceiling every resample of it is the same, so \Done{} cannot fall below zero; the interval's lower limit, \wtthHaikuHOneLo{} points, is the smallest value above zero it can take (one witness in \wtthHaikuPostHocBoundaryHOneClaimWitnesses), and it clears zero only because a resample omits all \wtthHaikuPostHocBoundaryHOneClaimShiftsM{} \cell{CLAIM} shifts holding non-reporters with probability \wtthHaikuPostHocBoundaryHOneClaimPZero\% (\wtthHaikuPostHocBoundaryHOneClaimPZeroOneFewer\% with one such shift fewer, which would leave the null standing).
+Post hoc, Fisher's exact test (p~$=$~\wtthHaikuPostHocHOneFisherP) and the Newcombe interval \citep{newcombe1998interval} (\wtthHaikuPostHocHOneNewcombeCI) do not reject it, and the pre-registered equivalence interval \citep{schuirmann1987comparison}, \wtthHaikuTostCI{} points, is \wtthHaikuTostVerdictText.
+We read H1 as a technical rejection of a negligible effect; H2 and H3 are confirmatory only through this gate.
+A concern without a claim (\cell{CONCERN}) left P1 at \wtthHaikuPOneConcernPct\%, and the testbed detects a large, warranted stand-down: with a cost for duplicate notes, C's real note cut the share of shifts with any witness note by \wtthHaikuPosCtrlCoreDiff{} points (\cell{POS} against \cell{NEG}; CI \wtthHaikuPosCtrlCoreCI).

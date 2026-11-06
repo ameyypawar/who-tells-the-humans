@@ -1,13 +1,16 @@
-% branch h2-O: H2's null rejected in the opposite direction (code O): the claim's stand-down was larger with the log.
-% The verdict comes from \wtthHaikuHTwoVerdictText; \wtthHaikuHTwoSentence is replaced by a macro-only sentence (space).
-% Results 4.2. Realised branch (FINAL export). Review M3 and M4: never "an empty log did not protect" (P2 = 0 in CLAIM
-% and NO-RECEIPT, and the log listed peers' notes from round 3). The mechanism is unresolved: the timing (post hoc,
-% D-021) is consistent with deference to a peer's real, channel-written receipt but does not prove it, and the debrief
-% and post codes do not discriminate (citing the log is at ceiling in every R1 cell; "someone else told ops" posts rise
-% with the log with or without a claim). Detail: Appendix D (tab:timing, tab:htwo). Never "witnesses checked the log"
-% or "believed" as fact (plan 49 section 4.2 item 10).
-\subsection{The log enlarged the stand-down: H2 \wtthHaikuHTwoVerdictText}\label{sec:h2}
-Contrary to the prediction, the claim's stand-down was \wtthHaikuHTwoDeltaRZero{} points without the log and \wtthHaikuHTwoDeltaROne{} with it (CI \wtthHaikuHTwoDeltaROneCI), a difference-in-differences of \wtthHaikuHTwoDelta{} points (Table~\ref{tab:hyp}), as P1 fell from \wtthHaikuPOneNoneRPct\% (\cell{NONE-R}) to \wtthHaikuPOneNoReceiptPct\% (\cell{NO-RECEIPT}), and no shift went untold (\wtthHaikuPTwoClaimK{} of \wtthHaikuPTwoClaimN{} in \cell{CLAIM}, \wtthHaikuPTwoNoReceiptK{} of \wtthHaikuPTwoNoReceiptN{} in \cell{NO-RECEIPT}).
+% branch h2-O: H2's null rejected in the opposite direction (code O), Results 4.2. Realised branch (FINAL export),
+% rewritten in pass 6 on research/68 section 0.4 and research/64 FLAGS 1 and 8: the difference-in-differences reduces to
+% NO-RECEIPT - CLAIM (both reference cells at the ceiling); the held-off contrast by world with full denominators and its
+% cluster-bootstrap interval; the within-log split (peer's real note in view or not) carries no information (post hoc
+% Fisher); consistent with de-duplication on peers' real receipts, not separable from simply having a log (NONE-R had
+% none held off). Never "an empty log did not protect", "witnesses checked the log" or "believed" as fact.
+\subsection{The log made the claim matter more: H2 \wtthHaikuHTwoVerdictText}\label{sec:h2}
+Contrary to the prediction, the claim's stand-down was \wtthHaikuHTwoDeltaRZero{} points without the log and \wtthHaikuHTwoDeltaROne{} with it (CI \wtthHaikuHTwoDeltaROneCI), a difference-in-differences of \wtthHaikuHTwoDelta{} points (Table~\ref{tab:hyp}).
+With P1 at \wtthHaikuPOneNonePct\% in both no-claim cells, \Dtwo{} reduces to P1(\cell{NO-RECEIPT}) $-$ P1(\cell{CLAIM}), \wtthHaikuPOneNoReceiptPct\% against \wtthHaikuPOneClaimPct\%: the reference cells confirm the ceiling but add no variance.
+Every shift still reached ops (\wtthHaikuPTwoClaimK{} of \wtthHaikuPTwoClaimN{} untold in \cell{CLAIM}, \wtthHaikuPTwoNoReceiptK{} of \wtthHaikuPTwoNoReceiptN{} in \cell{NO-RECEIPT}).
 
-\paragraph{When witnesses held off (post hoc, exploratory; D-021).}
-The claim made some witnesses hold off past round 2 (\wtthHaikuTimingClaimHeldOffK{} of \wtthHaikuTimingClaimN{} in \cell{CLAIM}, \wtthHaikuTimingNoReceiptHeldOffK{} of \wtthHaikuTimingNoReceiptN{} in \cell{NO-RECEIPT}, \wtthHaikuTimingNoneRHeldOffK{} in \cell{NONE-R} and \wtthHaikuTimingNegHeldOffK{} in \cell{NEG}); without the log almost all of them reported later (\wtthHaikuTimingClaimHeldOffReportedK{} of \wtthHaikuTimingClaimHeldOffK), with it most never did (\wtthHaikuTimingNoReceiptNeverK{} of \wtthHaikuTimingNoReceiptHeldOffK), \wtthHaikuTimingNoReceiptHeldOffPeerNeverK{} of them with a peer's real note in the log at their next turn (Figure~\ref{fig:one}b), which fits, but does not prove, deference to a peer's real receipt (Table~\ref{tab:timing}).
+\paragraph{Who held off (post hoc, D-021).}
+The claim made some witnesses hold off past round 2: \wtthHaikuHeldOffClaimN{} of \wtthHaikuTimingClaimN{} in \cell{CLAIM} and \wtthHaikuHeldOffNoReceiptN{} of \wtthHaikuTimingNoReceiptN{} in \cell{NO-RECEIPT}, against \wtthHaikuTimingNoneRHeldOffK{} in \cell{NONE-R}.
+Without the log, \wtthHaikuHeldOffClaimNeverK{} of the \wtthHaikuHeldOffClaimN{} never reported (\wtthHaikuHeldOffClaimNeverPct\%); with it, \wtthHaikuHeldOffNoReceiptNeverK{} of the \wtthHaikuHeldOffNoReceiptN{} never did (\wtthHaikuHeldOffNoReceiptNeverPct\%; difference \wtthHaikuHeldOffNeverNoReceiptMinusClaimDelta{} points, cluster-bootstrap CI \wtthHaikuHeldOffNeverNoReceiptMinusClaimCI; Figure~\ref{fig:one}b).
+With the log, \wtthHaikuHeldOffSplitNoReceiptPeerN{} of the \wtthHaikuHeldOffNoReceiptN{} had a peer's real note in view at their next turn, and \wtthHaikuHeldOffSplitNoReceiptPeerNeverK{} of those never reported, against \wtthHaikuHeldOffSplitNoReceiptNoPeerNeverK{} of the \wtthHaikuHeldOffSplitNoReceiptNoPeerN{} without one (Fisher p~$=$~\wtthHaikuHeldOffSplitNoReceiptFisherP), so that split carries no information.
+The pattern is consistent with de-duplication on peers' real receipts, but it cannot be separated from simply having a log, because no witness held off in \cell{NONE-R} (Table~\ref{tab:timing}).

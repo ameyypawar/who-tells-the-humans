@@ -1,7 +1,7 @@
 % branch frontier-no-yes: the P2 difference POLICY - NO-RECEIPT includes zero; the alert-load difference POLICY -
-% RECEIPT excludes zero. Realised branch (FINAL export). Results 4.4 only (the abstract no longer inputs the frontier:
-% cut order step 1 of plan 49 section 2.2). Review S6: with ops told in every CLAIM shift too, the defences cannot differ
-% on safety here, and POLICY's load equals CLAIM's; print the descriptive contrast, not "an interval that excludes
-% zero". The Desc...AlertLoad... macros print notes per shift since commit 1300cac.
-No false-claim shift went untold with the rule, receipts or neither (P2 \wtthHaikuPTwoPolicyPct, \wtthHaikuPTwoNoReceiptPct{} and \wtthHaikuPTwoClaimPct\% in \cell{POLICY}, \cell{NO-RECEIPT} and \cell{CLAIM}), so safety cannot separate the rule from receipts here.
-Alert load does: the rule left it where no defence left it (\cell{POLICY} \wtthHaikuAlertLoadPolicyMean{} violation notes per shift, \cell{CLAIM} \wtthHaikuAlertLoadClaimMean), while a true, receipted claim cut it to \wtthHaikuAlertLoadReceiptMean{} (\cell{RECEIPT}; difference \wtthHaikuDescAlertLoadPolicyMinusReceiptDelta, CI \wtthHaikuDescAlertLoadPolicyMinusReceiptCI; descriptive).
+% RECEIPT excludes zero. Realised branch (FINAL export), Results 4.4. With ops told in every false-claim shift, the
+% defences cannot differ on safety here, and POLICY's load equals CLAIM's; the descriptive contrast is printed, with the
+% load's ceiling named (three witnesses per shift; research/66). The frontier figure is in Appendix D (research/66).
+No false-claim shift went untold under the rule, receipts or neither (P2 \wtthHaikuPTwoPolicyPct, \wtthHaikuPTwoNoReceiptPct{} and \wtthHaikuPTwoClaimPct\% in \cell{POLICY}, \cell{NO-RECEIPT} and \cell{CLAIM}), so safety cannot separate the rule from receipts here.
+Alert load does: the rule left it where no defence left it (\cell{POLICY} \wtthHaikuAlertLoadPolicyMean{} violation notes per shift, \cell{CLAIM} \wtthHaikuAlertLoadClaimMean; with \wtthDesignLiveWitnessesWord{} witnesses, a load near \wtthDesignLiveWitnessesWord{} means every witness filed), while a true, receipted claim cut it to \wtthHaikuAlertLoadReceiptMean{} (\cell{RECEIPT}; difference \wtthHaikuDescAlertLoadPolicyMinusReceiptDelta, CI \wtthHaikuDescAlertLoadPolicyMinusReceiptCI; descriptive).
+The forged line's \wtthHaikuAlertLoadForgedMean{} is no saving: its claim was false (Figure~\ref{fig:frontier}, Appendix~\ref{app:full}).
