@@ -12,7 +12,7 @@ for a in "$@"; do
     --final) CHECK=--final ;;
   esac
 done
-for t in make_placeholders design_macros extract_stimuli render_boxes deviations_table audit_table cells_table build_bib table2_narrow; do
+for t in make_placeholders design_macros extract_stimuli render_boxes deviations_table audit_table cells_table build_bib; do
   [ -f tools/$t.py ] && $PY tools/$t.py
 done
 mkdir -p build
