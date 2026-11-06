@@ -390,3 +390,18 @@ Every change after the freeze is recorded here with a timestamp, the reason, and
   - The model–model κ uses the full H-5 sample, as planned.
   - Secondary analyses that touch H-3u items rely on judge labels, and Appendix G reports this coverage.
 - **Decided by:** the lead, 2026-11-06 ~12:45 IST, before any review report was generated and before any human label existed.
+
+## D-018 — 2026-11-06 (before any review report): F-07 revised: no blind human sample; the author reviews model-proposed labels with rationales instead (before any review report)
+- **Sources:** D-015, D-007 and D-011; `wtth.annotate blind-decline`; research/42 §7.
+- **Was:** D-015 recorded F-07 = YES. The author would hand-label a blind sample of about 100 items, drawn with seed `blind_sample`, before seeing any model or judge label. That sample would be the only source of a human–judge κ.
+- **Now:**
+  - The blind sample was exported (2026-11-06 12:02 IST) but never labelled. It is formally declined, through `wtth.annotate blind-decline`, at 2026-11-06 ~12:55 IST.
+  - Instead, the author reviews the model-proposed labels (fresh `claude-opus-5-5` annotator subagents, blind to judge labels; D-011 F-05) together with each label's one-line rationale, in the review report, and approves or corrects them. The reviewed items include all gate items (H-1, H-3e) and items from the random H-5 sample.
+- **Reason:** the author's time during the sprint. At the author's direction, the human check is a review of visible model labels, not independent blind labelling.
+- **Effect:**
+  - (1) No blind human labels exist, so the paper reports NO human–judge κ.
+  - (2) Agreement is reported as model–model (judge vs Claude annotator, on H-5) and labelled "model–model".
+  - (3) The human check is reported as "model-proposed labels with rationales, reviewed by the author, who saw the model label", with the author's correction rate, overall and on the random H-5 items the author reviewed.
+  - (4) These author-reviewed labels are never described as blind or independent hand labels.
+  - (5) No confirmatory hypothesis, test or threshold changes. P1 rests mainly on the keyword rule; the reviewed labels affect only the judge-path P1 items and P2′, as pre-registered in D-007/D-011.
+- **Decided by:** the author, 2026-11-06 ~12:50 IST.
