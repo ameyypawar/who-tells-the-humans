@@ -350,9 +350,11 @@ class TestTables(unittest.TestCase):
         d = tmp_dir("wp6_tab_h")
         f = tables.table_hypotheses(hyp(), p1_rates(), None, d)
         t, rows = self.check(f, 5, 7)
-        self.assertIn("rejected, predicted direction", t)
-        self.assertIn("not rejected", t)
+        self.assertIn("supported (null rejected)", t)
+        self.assertIn("not supported (null not rejected)", t)
         self.assertIn("not tested (sequence stopped earlier)", t)
+        self.assertNotIn("rejected, predicted direction", t)
+        self.assertEqual(rows[5][-1], "inconclusive")          # the TOST row prints the fixture's verdict as given
         self.assertIn(r"NONE 30/120 (25.0%)", t.replace(r"\%", "%"))
         self.assertEqual(rows[1][3], "15.0")
         self.assertIn("95\\% CI", t)

@@ -5,7 +5,7 @@ import re
 import unittest
 
 from tests.util import tmp_dir
-from wtth.analysis import numbers, text
+from wtth.analysis import numbers, register, text
 from wtth.analysis.numbers import NumberBook, fmt_value, latex_escape, macro_name, rate_prefix, token
 from wtth.analysis.results import CellRate, Contrast, HypothesisResults
 
@@ -154,17 +154,22 @@ class SentenceTest(unittest.TestCase):
         s = self.sent(_contrast("H1", .25, .1, .4, True), _contrast("H2", .2, .05, .35, True, comps={"dR0": .25, "dR1": .05}),
                       _contrast("H3", .3, .15, .45, True))
         self.assertIn("lowered the share who notified ops about the split from 60.0\\% (144/240) to 35.0\\% (84/240)", s["HOne"])
-        self.assertIn("stand-down of 25.0 points (95\\% cluster-bootstrap CI 10.0 to 40.0; H1 rejected, first test", s["HOne"])
-        self.assertIn("stand-down was 5.0 points, against 25.0 without one (difference 20.0; 95\\% CI 5.0 to 35.0; H2 rejected, second test)", s["HTwo"])
-        self.assertIn("54.2\\% vs 25.0\\% (30.0 points; 95\\% CI 15.0 to 45.0; H3 rejected, third test)", s["HThree"])
+        self.assertIn("stand-down of 25.0 points (95\\% cluster-bootstrap CI 10.0 to 40.0; H1 supported (null rejected), "
+                      "first test", s["HOne"])
+        self.assertIn("stand-down was 5.0 points, against 25.0 without one (difference 20.0; 95\\% CI 5.0 to 35.0; H2 "
+                      "supported (null rejected), second test)", s["HTwo"])
+        self.assertIn("54.2\\% vs 25.0\\% (30.0 points; 95\\% CI 15.0 to 45.0; H3 supported (null rejected), third test)",
+                      s["HThree"])
+        self.assertNotIn("H1 rejected", s["HOne"])
         self.assertIn("Haiku 5.5", s["HOne"])
         self.assertIn("37.5-point", s["HOne"] + s.get("PositiveControl", "") + "37.5-point")
 
     def test_opposite(self) -> None:
         s = self.sent(_contrast("H1", -.25, -.4, -.1, True), _contrast("H2", .0, -.1, .1, False), _contrast("H3", .0, -.1, .1, False))
         self.assertIn("Contrary to the prediction, the claim raised reporting by 25.0 points", s["HOne"])
-        self.assertIn("rejected in the opposite direction", s["HOne"])
-        self.assertIn("not rejected, which does not show that receipts have no effect", s["HTwo"].replace("was not rejected, which", "not rejected, which"))
+        self.assertIn("H1 opposite to prediction (null rejected).", s["HOne"])
+        self.assertIn("H2 not supported (null not rejected), which does not show that receipts have no effect", s["HTwo"])
+        self.assertIn("H3 not supported (null not rejected).", s["HThree"])
 
     def test_null_and_inconclusive(self) -> None:
         h1 = _contrast("H1", .02, -.08, .12, False)
@@ -172,9 +177,10 @@ class SentenceTest(unittest.TestCase):
                       null_rule="no_meaningful_stand_down", stopped="H1")
         self.assertIn("We find no meaningful stand-down: 2.0 points (95\\% CI \\ensuremath{-}8.0 to 12.0)", s["HOne"])
         self.assertIn("pre-registered 15-point margin", s["HOne"])
+        self.assertIn("H1 not supported (null not rejected)", s["HOne"])
         self.assertIn("positive control (pilot G2) showed a 37.5-point drop", s["HOne"])
-        self.assertIn("Because H1 was not rejected, H2 and H3 are descriptive", s["HTwo"])
-        self.assertIn("Because H1 was not rejected, H3 is descriptive", s["HThree"])
+        self.assertIn("Because H1's null was not rejected, H2 and H3 are descriptive", s["HTwo"])
+        self.assertIn("Because H1's null was not rejected, H3 is descriptive", s["HThree"])
         s = self.sent(_contrast("H1", .05, -.08, .2, False), _contrast("H2", .1, -.1, .3, None, "descriptive"),
                       _contrast("H3", .1, -.1, .3, None, "descriptive"), null_rule="inconclusive", stopped="H1")
         self.assertIn("cannot rule out one of up to 20.0 points", s["HOne"])
@@ -183,7 +189,31 @@ class SentenceTest(unittest.TestCase):
     def test_h3_descriptive_after_h2(self) -> None:
         s = self.sent(_contrast("H1", .25, .1, .4, True), _contrast("H2", .0, -.1, .1, False),
                       _contrast("H3", .1, -.1, .3, None, "descriptive"), stopped="H2")
-        self.assertIn("Because H2 was not rejected, H3 is descriptive", s["HThree"])
+        self.assertIn("Because H2's null was not rejected, H3 is descriptive", s["HThree"])
+
+    def test_verdict_text_and_codes(self) -> None:
+        self.assertEqual(text.verdict_text(_contrast("H1", .02, .004, .03, True)), "supported (null rejected)")
+        self.assertEqual(text.verdict_text(_contrast("H2", -.08, -.13, -.03, True)),
+                         "opposite to prediction (null rejected)")
+        self.assertEqual(text.verdict_text(_contrast("H3", .02, -.1, .1, False)), "not supported (null not rejected)")
+        self.assertEqual(text.verdict_text(_contrast("H3", .02, -.1, .1, None, "descriptive")),
+                         "not tested (sequence stopped earlier)")
+        self.assertEqual(text.verdict_text(_contrast("P1any:D1", .02, -.1, .1, None, "exploratory")), "exploratory, no test")
+        b = _book_for_sentences()
+        self.assertEqual(text.tost_text("equivalent", b), r"inside \ensuremath{\pm}15 points (exploratory)")
+        self.assertEqual(text.tost_text("not_equivalent", b), r"not inside \ensuremath{\pm}15 points (exploratory)")
+        # the ...Verdict macros keep the code words branch.tex maps to S / O / NR
+        book = NumberBook()
+        register.register_hypotheses(book, "Haiku", HypothesisResults(
+            _contrast("H1", .02, .004, .03, True), _contrast("H2", -.08, -.13, -.03, True, comps={"dR0": .02, "dR1": .1}),
+            _contrast("H3", .02, -.1, .1, False), None, (0.0, 0.1, "equivalent"), PC, "H3"))
+        self.assertEqual([book.value(k) for k in ("HaikuHOneVerdict", "HaikuHTwoVerdict", "HaikuHThreeVerdict")],
+                         ["rejected", "rejected in the opposite direction", "not rejected"])
+        self.assertEqual([book.value(k) for k in ("HaikuHOneVerdictText", "HaikuHTwoVerdictText", "HaikuHThreeVerdictText")],
+                         ["supported (null rejected)", "opposite to prediction (null rejected)",
+                          "not supported (null not rejected)"])
+        self.assertEqual(book.value("HaikuTostVerdict"), "equivalent")
+        self.assertEqual(book.fmt("HaikuTostVerdictText"), r"inside \ensuremath{\pm}15 points (exploratory)")
 
     def test_every_digit_in_a_sentence_comes_from_the_book(self) -> None:
         b = _book_for_sentences()

@@ -154,13 +154,20 @@ _HYP_LABEL = {"H1": "NONE − CLAIM", "H2": "[NONE − CLAIM] − [NONE-R − NO
 
 
 def decision_text(c: Contrast) -> str:
-    if c.status == "unavailable":
-        return "not available"
-    if c.rejected is None:
-        return "not tested (sequence stopped earlier)"
-    if c.rejected:
-        return "rejected, predicted direction" if c.direction == "predicted" else "rejected, OPPOSITE direction"
-    return "not rejected"
+    """Reader wording (review M1), shared with the ...VerdictText macros: supported (null rejected), opposite to
+    prediction (null rejected), not supported (null not rejected); no test outside the confirmatory sequence."""
+    from wtth.analysis.text import verdict_text
+
+    return verdict_text(c)
+
+
+def tost_decision(verdict: str) -> str:
+    """The exploratory TOST row: inside / not inside the margin, never 'equivalent' (review N3)."""
+    if verdict == "equivalent":
+        return "inside ±15 points (exploratory)"
+    if verdict in ("not_equivalent", "not equivalent"):
+        return "not inside ±15 points (exploratory)"
+    return str(verdict).replace("_", " ")
 
 
 def table_hypotheses(h: HypothesisResults, rates: Sequence[CellRate], book: Any, out_dir: Path) -> TableFiles:
@@ -181,7 +188,7 @@ def table_hypotheses(h: HypothesisResults, rates: Sequence[CellRate], book: Any,
                  text(nr.replace("_", " "))])
     lo90, hi90, verdict = h.tost
     rows.append([text("TOST"), text("90% interval within ±15 points"), text(""), text(""), ci(lo90, hi90),
-                 text("exploratory"), text(str(verdict).replace("_", " "))])
+                 text("exploratory"), text(tost_decision(str(verdict)))])
     return write_table(Path(out_dir) / "table_hypotheses",
                        ["Hypothesis", "Contrast", "Cells: k/n (P1)", "Diff. (pp)", "95% CI (pp)", "Status", "Decision"],
                        rows, align="lllrrll")

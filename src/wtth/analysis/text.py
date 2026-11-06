@@ -36,8 +36,42 @@ def _neg(c: Contrast) -> str:
     return fmt_value(-c.estimate, "pp")
 
 
+# Reader wording of a confirmatory verdict (review M1: "H1 rejected" reads as "H1 refuted"). The code words of
+# numbers.VERDICTS ('rejected', 'rejected in the opposite direction', 'not rejected', 'descriptive') stay the values of
+# the ...Verdict macros, which branch.tex maps to the branch codes S, O, NR and D.
+SUPPORTED = "supported (null rejected)"
+OPPOSITE = "opposite to prediction (null rejected)"
+NOT_SUPPORTED = "not supported (null not rejected)"
+
+
+def verdict_text(c: Contrast) -> str:
+    """Reader wording of a contrast's verdict: confirmatory tests read supported / opposite to prediction / not
+    supported, each with what happened to the null; others say why there is no test."""
+    if c.status == "unavailable":
+        return "not available"
+    if c.status == "confirmatory" and c.rejected is not None:
+        if c.rejected:
+            return SUPPORTED if c.direction == "predicted" else OPPOSITE
+        return NOT_SUPPORTED
+    if c.status == "descriptive":
+        return "not tested (sequence stopped earlier)"
+    return "exploratory, no test"
+
+
+def tost_text(verdict: str, book: NumberBook) -> str:
+    """The exploratory TOST in words, never 'equivalent' (review N3): inside / not inside the +-15-point margin."""
+    _ensure_constants(book)
+    mrg = book.fmt("ProtocolMargin")
+    if verdict == "equivalent":
+        return rf"inside \ensuremath{{\pm}}{mrg} points (exploratory)"
+    if verdict in ("not_equivalent", "not equivalent"):
+        return rf"not inside \ensuremath{{\pm}}{mrg} points (exploratory)"
+    return "not available"
+
+
 def sentences(h: HypothesisResults, book: NumberBook, *, model_label: str) -> Mapping[str, str]:
-    """Keys HOne, HTwo, HThree (and PositiveControl). Rule-based template choice, no free text."""
+    """Keys HOne, HTwo, HThree (and PositiveControl). Rule-based template choice, no free text. Verdicts in the reader
+    wording of verdict_text (review M1)."""
     _ensure_constants(book)
     M = token(model_label.split()[0])
     L = latex_escape(model_label)
@@ -54,21 +88,22 @@ def sentences(h: HypothesisResults, book: NumberBook, *, model_label: str) -> Ma
         b, kb, nb = _p1(book, M, "CLAIM")
         out["HOne"] = (f"Among {L} witnesses, a peer's false claim to have told ops lowered the share who notified ops "
                        f"about the split from {a}{PCT} ({ka}/{na}) to {b}{PCT} ({kb}/{nb}), a stand-down of {est} points "
-                       f"({lvl}{PCT} cluster-bootstrap CI {lo} to {hi}; H1 rejected, first test of the pre-registered "
-                       f"sequence).")
+                       f"({lvl}{PCT} cluster-bootstrap CI {lo} to {hi}; H1 {SUPPORTED}, first test of the "
+                       f"pre-registered sequence).")
     elif c.rejected:
         out["HOne"] = (f"Contrary to the prediction, the claim raised reporting by {_neg(c)} points ({lvl}{PCT} CI "
-                       f"{lo} to {hi}); H1 is rejected in the opposite direction.")
+                       f"{lo} to {hi}); H1 {OPPOSITE}.")
     else:
         pc = h.positive_control
         gap = pc.get("g2_gap_points")
         gtxt = "" if gap is None else f" The positive control (pilot G2) showed a {fmt_value(gap, 'pts')}-point drop."
         if h.null_rule == "no_meaningful_stand_down":
-            out["HOne"] = (f"We find no meaningful stand-down: {est} points ({lvl}{PCT} CI {lo} to {hi}); the upper bound "
-                           f"is below the pre-registered {mrg}-point margin.{gtxt}")
+            out["HOne"] = (f"We find no meaningful stand-down: {est} points ({lvl}{PCT} CI {lo} to {hi}); H1 "
+                           f"{NOT_SUPPORTED}, and the upper bound is below the pre-registered {mrg}-point margin.{gtxt}")
         else:
             out["HOne"] = (f"The data show no stand-down but cannot rule out one of up to {hi} points ({est}; {lvl}{PCT} "
-                           f"CI {lo} to {hi}); by the pre-registered rule this is inconclusive.{gtxt}")
+                           f"CI {lo} to {hi}); H1 {NOT_SUPPORTED}, and by the pre-registered rule this is "
+                           f"inconclusive.{gtxt}")
 
     # ---- H2
     c = h.h2
@@ -78,17 +113,17 @@ def sentences(h: HypothesisResults, book: NumberBook, *, model_label: str) -> Ma
     if c.status == "unavailable":
         out["HTwo"] = "H2 could not be evaluated: a cell it needs has no episodes."
     elif c.status == "descriptive":
-        out["HTwo"] = (f"Because H1 was not rejected, H2 and H3 are descriptive: the difference in stand-downs was {est} "
-                       f"points ({lvl}{PCT} CI {lo} to {hi}), reported without a test.")
+        out["HTwo"] = (f"Because H1's null was not rejected, H2 and H3 are descriptive: the difference in stand-downs was "
+                       f"{est} points ({lvl}{PCT} CI {lo} to {hi}), reported without a test.")
     elif c.rejected and c.direction == "predicted":
         out["HTwo"] = (f"With a channel-written log, the same claim's stand-down was {r1} points, against {r0} without "
-                       f"one (difference {est}; {lvl}{PCT} CI {lo} to {hi}; H2 rejected, second test).")
+                       f"one (difference {est}; {lvl}{PCT} CI {lo} to {hi}; H2 {SUPPORTED}, second test).")
     elif c.rejected:
         out["HTwo"] = (f"Contrary to the prediction, the difference in stand-downs was {est} points ({lvl}{PCT} CI {lo} "
-                       f"to {hi}); H2 is rejected in the opposite direction.")
+                       f"to {hi}); H2 {OPPOSITE}.")
     else:
         out["HTwo"] = (f"With a channel-written log, the stand-down was {r1} points, against {r0} without one "
-                       f"(difference {est}; {lvl}{PCT} CI {lo} to {hi}); H2 was not rejected, which does not show that "
+                       f"(difference {est}; {lvl}{PCT} CI {lo} to {hi}); H2 {NOT_SUPPORTED}, which does not show that "
                        f"receipts have no effect.")
 
     # ---- H3
@@ -98,21 +133,21 @@ def sentences(h: HypothesisResults, book: NumberBook, *, model_label: str) -> Ma
         out["HThree"] = "H3 could not be evaluated: a cell it needs has no episodes."
     elif c.status == "descriptive":
         why = "H1" if h.stopped_at == "H1" else "H2"
-        out["HThree"] = (f"Because {why} was not rejected, H3 is descriptive: {est} points ({lvl}{PCT} CI {lo} to {hi}), "
-                         f"reported without a test.")
+        out["HThree"] = (f"Because {why}'s null was not rejected, H3 is descriptive: {est} points ({lvl}{PCT} CI {lo} to "
+                         f"{hi}), reported without a test.")
     else:
         a, ka, na = _p1(book, M, "NO-RECEIPT")
         b, kb, nb = _p1(book, M, "FORGED")
         if c.rejected and c.direction == "predicted":
             out["HThree"] = (f"A receipt-style line typed by the claimant into its own post lowered reporting relative to "
                              f"the same claim with an empty log: {a}{PCT} vs {b}{PCT} ({est} points; {lvl}{PCT} CI {lo} "
-                             f"to {hi}; H3 rejected, third test).")
+                             f"to {hi}; H3 {SUPPORTED}, third test).")
         elif c.rejected:
             out["HThree"] = (f"Contrary to the prediction, the forged line raised reporting: {a}{PCT} vs {b}{PCT} ({est} "
-                             f"points; {lvl}{PCT} CI {lo} to {hi}); H3 is rejected in the opposite direction.")
+                             f"points; {lvl}{PCT} CI {lo} to {hi}); H3 {OPPOSITE}.")
         else:
             out["HThree"] = (f"A receipt-style line typed by the claimant: {a}{PCT} vs {b}{PCT} ({est} points; {lvl}{PCT} "
-                             f"CI {lo} to {hi}); H3 was not rejected.")
+                             f"CI {lo} to {hi}); H3 {NOT_SUPPORTED}.")
     pc = h.positive_control
     if pc.get("core_diff") is not None:
         out["PositiveControl"] = (

@@ -122,8 +122,13 @@ def add_board_sub(book: NumberBook, M: str, r: BoardSubRate) -> None:
 
 
 def register_hypotheses(book: NumberBook, M: str, h: HypothesisResults) -> None:
+    from wtth.analysis.text import tost_text, verdict_text
+
     for name, c in (("HOne", h.h1), ("HTwo", h.h2), ("HThree", h.h3)):
         book.add_contrast(M + name, c)
+        book.add(M + name + "VerdictText", verdict_text(c), "text",
+                 source=f"{c.name}: confirmatory verdict in reader wording (review M1); {M}{name}Verdict keeps the code "
+                        f"word that branch.tex maps to S / O / NR / D")
     for k, key in (("dR0", "DeltaRZero"), ("dR1", "DeltaROne")):
         if k in h.h2.components:
             book.add(M + "HTwo" + key, h.h2.components[k], "pp", source="H2 component (same replicates)")
@@ -135,6 +140,8 @@ def register_hypotheses(book: NumberBook, M: str, h: HypothesisResults) -> None:
     book.add(M + "TostHi", hi90, "pp", source="TOST")
     book.add(M + "TostCI", (lo90, hi90), "ci", source="TOST")
     book.add(M + "TostVerdict", vword(tv), "verdict", source="TOST")
+    book.add(M + "TostVerdictText", tost_text(tv, book), "latex",
+             source="TOST in reader wording, never 'equivalent' (review N3); exploratory")
     book.add(M + "StoppedAt", h.stopped_at or "none", "text", source="fixed sequence H1, H2, H3")
     pc = h.positive_control
     book.add(M + "PosCtrlGTwoGap", pc.get("g2_gap_points"), "pts", source=f"G2 pilot, phase {pc.get('g2_phase')} (pilot)")
