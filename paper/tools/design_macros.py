@@ -115,6 +115,8 @@ def main() -> None:
     ana = yaml.safe_load(show(ref, "configs/analysis.yaml"))
     put("KappaThreshold", f"{ana['kappa_threshold']:.2f}")
     put("BootstrapResamples", fmt_int(ana["bootstrap_B"]))
+    for k, v in exp1_sentences().items():
+        put(k, v)
     write_env_table(ref)
     write_preexisting_extension(facts["preexisting_extension"])
     put("SourceRef", ref)
@@ -126,6 +128,59 @@ def main() -> None:
     lines += [rf"\newcommand{{\wtthDesign{k}}}{{{v}}}" for k, v in out.items()]
     write_generated(PAPER / "generated/design/design.tex", "\n".join(l for l in lines if l) + "\n")
     print(f"design_macros: {len(out)} macros from {ref}{' (PROVISIONAL)' if prov else ''}")
+
+
+EXP1_TAG = "exp1-v1"
+_HEADING = re.compile(r"^#{1,6}\s+(.*?)\s*$")
+
+
+def fenced_block(md: str, heading_prefix: str) -> str:
+    """The first ```text block under the first heading that starts with `heading_prefix`: the parse of
+    wtth.prereg.fenced_blocks / block_at (lines joined with \\n, no trailing newline)."""
+    heading, cur = "", None
+    for line in md.split("\n"):
+        if cur is None:
+            m = _HEADING.match(line)
+            if m:
+                heading = m.group(1)
+            elif line == "```text":
+                cur = []
+        elif line == "```":
+            if heading.startswith(heading_prefix):
+                return "\n".join(cur)
+            cur = None
+        else:
+            cur.append(line)
+    raise SystemExit(f"design_macros: no ```text block under a heading starting {heading_prefix!r}")
+
+
+def exp1_sentences() -> dict[str, str]:
+    """The two sentences the D-022 follow-up added to FORGED's runbook, read at the tag exp1-v1 that froze them, so the
+    paper never types them. ExpOnePolicySentence: RB-POLICY from prereg/prompts/runbook.md (SHA-256 checked against
+    configs/prereg_hashes.json); ExpOneProvSentence: XP-PROV from exp/prompts/runbook_exp1.md (SHA-256 checked against
+    configs/exp1.yaml). Where runs/stimuli holds the system prompt the witnesses were sent, its last paragraph must be
+    the same text, byte for byte."""
+    import hashlib
+
+    try:
+        git("rev-parse", "--verify", "--quiet", f"refs/tags/{EXP1_TAG}")
+    except subprocess.CalledProcessError:
+        raise SystemExit(f"design_macros: tag {EXP1_TAG} is missing; the follow-up's text is frozen there")
+    cfg = yaml.safe_load(show(EXP1_TAG, "configs/exp1.yaml"))
+    ent = next(x for x in cfg["extra_texts"] if x["path"] == "exp/prompts/runbook_exp1.md")
+    raw = show(EXP1_TAG, ent["path"])
+    if hashlib.sha256(raw).hexdigest() != ent["sha256"]:
+        raise SystemExit("design_macros: SHA-256 of exp/prompts/runbook_exp1.md differs from configs/exp1.yaml")
+    rb = show(EXP1_TAG, "prereg/prompts/runbook.md")
+    if hashlib.sha256(rb).hexdigest() != hashes(EXP1_TAG)["files"]["prompts/runbook.md"]:
+        raise SystemExit("design_macros: SHA-256 of prompts/runbook.md differs from configs/prereg_hashes.json")
+    texts = {"ExpOnePolicySentence": ("V-R1-POLICY", fenced_block(rb.decode("utf-8"), "RB-POLICY")),
+             "ExpOneProvSentence": ("V-R1-PROV", fenced_block(raw.decode("utf-8"), "XP-PROV"))}
+    for variant, t in texts.values():
+        sent = REPO / "runs" / "stimuli" / f"system_main_SB-1_{variant}.txt"
+        if sent.is_file() and sent.read_text(encoding="utf-8").split("\n\n")[-1] != t:
+            raise SystemExit(f"design_macros: the last paragraph of runs/stimuli/{sent.name} differs from the tagged text")
+    return {k: tex_escape(t) for k, (_, t) in texts.items()}
 
 
 def json_get(ref: str, path: str, key: str):
