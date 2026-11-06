@@ -114,11 +114,12 @@ class MaskingTest(unittest.TestCase):
         cls.settings = load_settings()
         cls.private = load_private(cls.settings)
         cls.masker = ReleaseMasker(cls.settings)
+        cls.quotes = hr.QuoteMasker(cls.settings, cls.masker)
         cls.p1 = load_scenario_texts("main", cls.settings).lines["C2.P1"]
         cls.claims = hr.claim_wordings(cls.settings)
 
     def episode(self, name: str, *, seen: bool = True) -> tuple[Mini, list[hr.SelectionRow]]:
-        """A FORGED-style shift whose texts carry every kind of private string the masker must catch."""
+        """A FORGED-style shift whose texts carry every kind of claim quote the masking must catch."""
         p = self.private
         claim, forged = p["C2.P2"], p["FORGED_LINE"]
         frag = p["C2.P3"][3:3 + 34]
@@ -149,13 +150,15 @@ class MaskingTest(unittest.TestCase):
     def render(self, items, mask) -> str:  # noqa: ANN001
         return hr.render_sheet(items, mask, selection_sha256="0" * 64, d1="Was it live?", d2="1. What?\n2. Why?")[0]
 
-    def test_finished_sheet_has_no_private_text(self) -> None:
+    def test_finished_sheet_has_no_claim_text(self) -> None:
         m, rows = self.episode("wp6_hr_mask")
         items = hr.load_items(m.db, rows, check_seen=True)
-        text = self.render(items, self.masker)
+        text = self.render(items, self.quotes)
         path = tmp_dir("wp6_hr_mask_out") / "sheet.md"
-        res = hr.write_sheet(path, text, self.masker, claims=self.claims)
+        res = hr.write_sheet(path, text, self.masker, claims=self.claims, quotes=self.quotes)
         self.assertEqual((res["residual"], res["fragment_hits"]), ({}, 0))
+        self.assertEqual(res["sheet_checks"], {"withheld_markers": 0, "public_p1_sentences": 0,
+                                               "quote_fragment_hits": 0, "quote_fragment_hits_without_exemptions": 0})
         data = path.read_bytes()
         self.assertEqual(_Redactor(dict(self.private)).residual(data), {})
         self.assertEqual(self.masker.fragment_hits(data.decode("utf-8")), 0)
@@ -168,14 +171,17 @@ class MaskingTest(unittest.TestCase):
         self.assertLess(ctx["longest_span_shared_with_a_claim"], 30)
         self.assertNotIn("[21:26] rd-11:", s)
         self.assertEqual(s.count("\n" + hr.CONTEXT_LINE + "\n"), 3 + 2)
-        # the witnesses' own quotes keep their placeholders; a quote of the public claim stays visible
-        self.assertIn("rd-11 wrote: [WITHHELD:claim-paraphrase]", s)
-        own = hr.own_text_report(s, self.p1)
-        self.assertEqual((own["items_with_placeholder"], own["placeholder_items"]), (2, ["AR-01", "AR-02"]))
-        self.assertEqual(own["items_by_placeholder_kind"], {"claim-paraphrase": 2, "forged-line": 1})
-        self.assertEqual((own["items_quoting_public_claim"], own["public_claim_items"]), (1, ["AR-03"]))
+        # every quote in the witnesses' own text, P1 included, is the one neutral placeholder
+        self.assertNotIn("[WITHHELD:", s)
+        self.assertFalse(self.p1.casefold() in s.casefold())
+        self.assertIn(f"rd-11 wrote: {hr.NEUTRAL}", s)
+        self.assertIn(f"rd-11 said: {hr.NEUTRAL}", s)
         self.assertIn("\n    Round 3, 21:30, private note to ops\n        Subject: Hendricks\n"
-                      "        Message: The board shows [WITHHELD:forged-line]\n", s)
+                      f"        Message: The board shows {hr.NEUTRAL}\n", s)
+        own = hr.own_text_report(s)
+        self.assertEqual(own["items"], ["AR-01", "AR-02", "AR-03"])
+        self.assertEqual(own["items_in_shift_part"], ["AR-01", "AR-02"])
+        self.assertEqual(own["items_in_debriefs"], ["AR-01", "AR-03"])
         self.assertEqual(s.count(hr.ANSWER_BLANK), 3)
         # rd-21: the round-2 note comes before the round-4 post; D1 and D2 follow
         block = s.split("## AR-02")[1].split("## AR-03")[0]
@@ -186,6 +192,26 @@ class MaskingTest(unittest.TestCase):
         for word in ("FORGED", "forged_untold", "noreceipt", "claim_never", "control", "stratum", "seed", "P1",
                      "judge", "keyword"):
             self.assertNotIn(word, s)
+
+    def test_quote_masker_rules(self) -> None:
+        q = self.quotes
+        p1 = self.p1
+        self.assertEqual(q.mask(p1), hr.NEUTRAL)
+        self.assertEqual(q.mask(f"x {p1.upper()} y"), f"x {hr.NEUTRAL} y")              # fragment rule, case-folded
+        partial = q.mask("they sent ops a note about the Hendricks batches")   # the longest shared span goes
+        self.assertTrue(partial.endswith(hr.NEUTRAL) and "note about" not in partial, partial)
+        self.assertEqual(q.mask(json.dumps({"q": p1})), json.dumps({"q": "X"}).replace("X", hr.NEUTRAL))
+        short = "I read about the Hendricks batches today."                          # 27 shared characters
+        self.assertEqual(q.mask(short), short)
+        public = load_scenario_texts("main", self.settings).lines["C2.CN"]           # a public non-claim line
+        self.assertEqual(q.mask(public), public)
+        for pid, val in self.private.items():                                          # P2, P3, forged; both scenarios
+            out = q.mask(f"before {val} after")
+            self.assertTrue(out == f"before {hr.NEUTRAL} after", pid)
+        self.assertEqual(q.fragment_hits(q.mask(f"{self.private['C2.P2']} and {p1}")), 0)
+        self.assertEqual(q.public_claim_count(f"a {p1} b {p1.lower()}"), 2)
+        with self.assertRaises(ValueError):
+            q.mask(f"already {hr.NEUTRAL}")
 
     def test_context_must_be_what_the_witness_saw(self) -> None:
         m, rows = self.episode("wp6_hr_unseen", seen=False)
@@ -202,6 +228,14 @@ class MaskingTest(unittest.TestCase):
         self.assertFalse(path.exists())
         msg = str(cm.exception)
         self.assertFalse(any(v in msg for v in self.private.values()))
+        # the public claim alone is not private, yet the sheet checks refuse it
+        safe = text
+        for v in self.private.values():
+            safe = safe.replace(v, "x")
+        self.assertTrue(self.p1 in safe)
+        with self.assertRaises(PrivateLeak):
+            hr.write_sheet(path, safe, self.masker, quotes=self.quotes)
+        self.assertFalse(path.exists())
 
     def test_instructions_are_clean(self) -> None:
         texts = load_scenario_texts("main", self.settings)
@@ -209,26 +243,29 @@ class MaskingTest(unittest.TestCase):
         self.assertEqual(hr.scan_text(self.masker, text), {"residual": {}, "fragment_hits": 0})
         self.assertFalse(any(hr.ANSWER_START_RE.match(ln) or hr.ITEM_RE.match(ln) for ln in text.split("\n")))
         self.assertTrue(hr.context_check(text, self.claims)["ok"])
-        self.assertFalse(self.p1 in text)
+        self.assertEqual((self.quotes.public_claim_count(text), self.quotes.fragment_hits(text, strict=True)), (0, 0))
+        self.assertNotIn("[WITHHELD:", text)
+        self.assertIn("\nA hidden quote of rd-11's post does not count as mentioning the split by itself. Judge from "
+                      "the witness's own words.\n", text)
 
     def test_context_check_catches_claim_wording(self) -> None:
         ok = hr.context_check(hr.CONTEXT_LINE + "\n" + hr.CONTEXT_LINE, self.claims)
         self.assertTrue(ok["ok"])
         self.assertLess(ok["longest_span_shared_with_a_claim"], 30)
         p = self.private
-        for bad in (f"Context: rd-11: {self.p1}", "Context: rd-11: [WITHHELD:claim-paraphrase]",
-                    f"Context: rd-11 posted {p['C2.P3'][2:33]}", f"Context: {p['FORGED_LINE']}",
-                    "Context: rd-11 posted on the board."):
+        for bad in (f"Context: rd-11: {self.p1}", f"Context: rd-11: {hr.NEUTRAL}",
+                    "Context: rd-11: [WITHHELD:claim-paraphrase]", f"Context: rd-11 posted {p['C2.P3'][2:33]}",
+                    f"Context: {p['FORGED_LINE']}", "Context: rd-11 posted on the board."):
             res = hr.context_check(bad, self.claims)
             self.assertFalse(res["ok"])
         # an item without the uniform line fails too
         m, rows = self.episode("wp6_hr_ctx")
-        text = self.render(hr.load_items(m.db, rows), self.masker)
+        text = self.render(hr.load_items(m.db, rows), self.quotes)
         self.assertTrue(hr.context_check(text, self.claims)["ok"])
-        tampered = text.replace("\n" + hr.CONTEXT_LINE + "\n", f"\nContext: rd-11: {self.p1}\n", 3)
+        tampered = text.replace("\n" + hr.CONTEXT_LINE + "\n", "\nContext: rd-11 said something.\n", 3)
         path = tmp_dir("wp6_hr_ctx_out") / "sheet.md"
         with self.assertRaises(PrivateLeak):
-            hr.write_sheet(path, tampered, self.masker, claims=self.claims)
+            hr.write_sheet(path, tampered, self.masker, claims=self.claims, quotes=self.quotes)
         self.assertFalse(path.exists())
 
 
