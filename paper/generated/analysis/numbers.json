@@ -26743,49 +26743,6 @@
   "value": "opposite to prediction (null rejected)"
  },
  {
-  "display": "150",
-  "key": "HaikuHeldOffBNoneN",
-  "kind": "count",
-  "note": "",
-  "source": "post hoc (D-021/D-024): witnesses with no violation note by the end of round 2 (held off; the rule of the D-021 timing), and of those the ones who never sent one by round 5; B-NONE; held-off witnesses",
-  "value": 150
- },
- {
-  "display": "97.5 to 100.0",
-  "key": "HaikuHeldOffBNoneNeverCI",
-  "kind": "ci",
-  "note": "",
-  "source": "post hoc (D-021/D-024): witnesses with no violation note by the end of round 2 (held off; the rule of the D-021 timing), and of those the ones who never sent one by round 5; B-NONE; Wilson 95% interval, witness level, clustering ignored",
-  "value": [
-   0.9750297556319235,
-   1.0
-  ]
- },
- {
-  "display": "150",
-  "key": "HaikuHeldOffBNoneNeverK",
-  "kind": "count",
-  "note": "",
-  "source": "post hoc (D-021/D-024): witnesses with no violation note by the end of round 2 (held off; the rule of the D-021 timing), and of those the ones who never sent one by round 5; B-NONE; held-off witnesses who never reported",
-  "value": 150
- },
- {
-  "display": "100.0",
-  "key": "HaikuHeldOffBNoneNeverPct",
-  "kind": "prop",
-  "note": "",
-  "source": "post hoc (D-021/D-024): witnesses with no violation note by the end of round 2 (held off; the rule of the D-021 timing), and of those the ones who never sent one by round 5; B-NONE; never-reported share of the held-off",
-  "value": 1.0
- },
- {
-  "display": "50",
-  "key": "HaikuHeldOffBNoneShifts",
-  "kind": "count",
-  "note": "",
-  "source": "post hoc (D-021/D-024): witnesses with no violation note by the end of round 2 (held off; the rule of the D-021 timing), and of those the ones who never sent one by round 5; B-NONE; shifts holding them, of 50",
-  "value": 50
- },
- {
   "display": "47",
   "key": "HaikuHeldOffClaimN",
   "kind": "count",
