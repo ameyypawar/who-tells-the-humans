@@ -11,7 +11,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Sequence
+from typing import Any, Mapping, Sequence
 
 from wtth.analysis.results import CellRate, EpisodeRate, FrontierPoint, HypothesisResults, KMCurve
 from wtth.analysis.style import (CAP_PT, CELL_STYLE, DOUBLE_COLUMN_IN, LINE_PT, P2_Y_LABEL, PALETTE, SINGLE_COLUMN_IN,
@@ -48,24 +48,51 @@ def _err(ax: Any, x: float, y: float | None, lo: float | None, hi: float | None,
     ax.errorbar([x], [y], yerr=yerr, linestyle="none", capsize=CAP_PT, elinewidth=LINE_PT, capthick=LINE_PT, **kw)
 
 
-# ---- Fig. 1a: P1 in every cell, P2 as k/n shifts (D-021, review S2) ----------------------------------------------
+# ---- Fig. 1a: P1 in every cell, P2 as k/n shifts (D-021, review S2; research/68 A6) ------------------------------
+#
+# research/68 A6 (reviews research/64 FLAG 9, 28 and research/66): every row code carries a short gloss; the rows where
+# C really told ops (RECEIPT, POS) are shaded, with the legend "C really told ops: standing down is correct"; the
+# 'ops never told' column reads an em dash where it does not apply; the panel is labelled (a); the axis says that
+# higher means ops was told; the intervals are whatever the rates carry (shift-level cluster bootstrap in the paper,
+# named in the header); follow-up rows (a later phase) are drawn hollow with dashed intervals under a heavier rule.
 
 FIG1_GROUPS: tuple[tuple[str, tuple[str, ...]], ...] = (
     ("no log (R0)", ("NONE", "CONCERN", "CLAIM", "POLICY")),
     ("log (R1)", ("NONE-R", "NO-RECEIPT", "RECEIPT", "FORGED")),
     ("controls", ("NEG", "POS", "B-NONE")))
-FOLLOWUP_GROUP = "follow-up\n(exploratory,\nD-022)"
+GROUP_DISPLAY = {"no log (R0)": "no log (R0)", "log (R1)": "log (R1)", "controls": "controls"}   # drawn rotated
+FOLLOWUP_GROUP = "follow-up (exploratory, D-022)"         # the CSV / alt-text name
+FOLLOWUP_DISPLAY = "follow-up"
 C_TOLD_CELLS = ("RECEIPT", "POS")          # C really reported, so P2 is not defined there (PREREG 10)
 NO_VIOLATION_CELLS = ("B-NONE",)
 HAIKU_COLOUR, SONNET_COLOUR = PALETTE["blue"], PALETTE["orange"]     # validated: CVD dE 29 (protan)
-C_TOLD_TEXT, NO_VIOLATION_TEXT = "C told ops", "no violation"
+SHADE_COLOUR, SHADE_ALPHA = PALETTE["green"], 0.13
+C_TOLD_LEGEND = "C really told ops: standing down is correct"
+NOT_APPLICABLE = "—"                  # the 'ops never told' cell where P2 is not defined
+C_TOLD_TEXT, NO_VIOLATION_TEXT = "not applicable: C really told ops", "not applicable: no violation"
+FIG1A_X_LABEL = "P1: witnesses who told ops about the split (%) — higher means ops was told"
+GLOSS: Mapping[str, str] = {
+    "NONE": "no claim, no log", "CONCERN": "concern post, no claim", "CLAIM": "bare claim, no log",
+    "POLICY": "claim + one-line rule", "NONE-R": "no claim, log shown", "NO-RECEIPT": "claim, empty log",
+    "RECEIPT": "true claim + real receipt", "FORGED": "claim + typed log-style line",
+    "NEG": "duplicate cost, no claim", "POS": "real receipt + duplicate cost", "B-NONE": "no violation"}
+FOLLOWUP_GLOSS: Mapping[tuple[str, str], str] = {
+    ("X-FORGED-POLICY", "haiku"): "+ one-line rule", ("X-FORGED-PROV", "haiku"): "+ provenance note",
+    ("RECEIPT", "sonnet"): "real receipt"}
+INTERVAL_TEXT = {"cluster_bootstrap": "lines: 95% shift-level cluster-bootstrap intervals",
+                 "wilson": "lines: 95% Wilson intervals, witness level"}
+INTERVAL_ALT = {"cluster_bootstrap": "shift-level cluster-bootstrap 95% intervals (shifts resampled within each cell)",
+                "wilson": "Wilson 95% intervals at witness level (they ignore clustering within shifts)"}
 FIG1A_WIDTH_IN, FIG1B_WIDTH_IN = 5.85, 3.05      # the printed widths (sections/01-introduction.tex)
 FIG_PT = 7.5
+CODE_PT, GLOSS_PT, GROUP_PT, NOTE_PT = 7.0, 6.5, 6.5, 6.5
+PANEL_PT = 8.0
 
 
 @dataclass(frozen=True, slots=True)
 class FigRow:
-    """An extra row of Fig. 1a (the D-022 follow-up group): P1 with its Wilson interval; P2 None where C reported."""
+    """An extra row of Fig. 1a (the D-022 follow-up group): P1 with its interval (method in the rate); P2 None where C
+    reported."""
     label: str
     model: str              # 'haiku' | 'sonnet'
     p1: CellRate
@@ -73,11 +100,17 @@ class FigRow:
 
 
 def _kn(r: EpisodeRate | None, cell: str) -> str:
+    """The 'ops never told' value for the CSV and alt text: k/n shifts, or why it does not apply."""
     if cell in C_TOLD_CELLS:
         return C_TOLD_TEXT
     if cell in NO_VIOLATION_CELLS:
         return NO_VIOLATION_TEXT
     return "" if r is None or r.k is None else f"{r.k}/{r.n}"
+
+
+def _kn_shown(v: str) -> str:
+    """The figure's text for a _kn value: the em dash wherever P2 does not apply."""
+    return NOT_APPLICABLE if v.startswith("not applicable") else v
 
 
 def _text_width_in(s: str, size: float) -> float:
@@ -91,158 +124,205 @@ def _text_width_in(s: str, size: float) -> float:
                default=0.0) / 72.0
 
 
-def _hbar(ax: Any, y: float, r: CellRate, *, colour: str, marker: str, hollow: bool) -> None:
+def _hbar(ax: Any, y: float, r: CellRate, *, colour: str, marker: str, hollow: bool, dashed: bool = False) -> None:
     x = r.p * 100.0
     err = [[max(x - r.lo * 100.0, 0.0)], [max(r.hi * 100.0 - x, 0.0)]]
-    ax.errorbar([x], [y], xerr=err, linestyle="none", color=colour, ecolor=colour, elinewidth=1.0, capsize=1.6,
-                capthick=1.0, marker=marker, markersize=4.2 if not hollow else 4.4,
-                markerfacecolor="#FFFFFF" if hollow else colour, markeredgecolor=colour,
-                markeredgewidth=1.2 if hollow else 0.6, zorder=3)
+    _, caps, bars = ax.errorbar([x], [y], xerr=err, linestyle="none", color=colour, ecolor=colour, elinewidth=1.0,
+                                capsize=1.6, capthick=1.0, marker=marker, markersize=4.2 if not hollow else 4.4,
+                                markerfacecolor="#FFFFFF" if hollow else colour, markeredgecolor=colour,
+                                markeredgewidth=1.2 if hollow else 0.6, zorder=3)
+    if dashed:
+        for b in bars:
+            b.set_linestyle((0, (2.2, 1.4)))
+
+
+def _gloss(cell: str, model: str, followup: bool) -> str:
+    return FOLLOWUP_GLOSS.get((cell, model), GLOSS.get(cell, "")) if followup else GLOSS.get(cell, "")
 
 
 def fig1a(haiku_p1: Sequence[CellRate], haiku_p2: Sequence[EpisodeRate], out_dir: Path, *, model_label: str,
           sonnet_p1: Sequence[CellRate] = (), sonnet_p2: Sequence[EpisodeRate] = (), sonnet_label: str = "Sonnet 5.5",
           followup: Sequence[FigRow] = ()) -> FigureFiles:
-    """P1 (share of witnesses who sent ops a violation note) per cell with witness-level Wilson 95% intervals: Haiku
-    filled circles, the exploratory Sonnet arm hollow diamonds where it ran. Rows are grouped no log (R0), log (R1),
-    controls and, only when given, the D-022 follow-up. Text columns give P1 and 'ops never told' (P2) as k/n shifts;
-    a k above zero is set in bold."""
+    """P1 (share of witnesses who sent ops a violation note) per cell with the 95% intervals the rates carry (the
+    header names the method): Haiku filled circles, the exploratory Sonnet arm hollow diamonds where it ran. Rows are
+    grouped no log (R0), log (R1), controls and, only when given, the D-022 follow-up (a later phase: hollow markers,
+    dashed intervals, a heavier rule). Every row code carries a gloss; RECEIPT and POS, where C really told ops, are
+    shaded. Text columns give P1 and 'ops never told' (P2) as k/n shifts, an em dash where P2 does not apply; a k
+    above zero is set in bold."""
     from matplotlib.lines import Line2D
+    from matplotlib.patches import Rectangle
     from matplotlib.transforms import blended_transform_factory
 
     h1 = {r.cell: r for r in haiku_p1}
     h2 = {r.cell: r for r in haiku_p2}
     s1 = {r.cell: r for r in sonnet_p1}
     s2 = {r.cell: r for r in sonnet_p2}
-    groups: list[tuple[str, list[dict[str, Any]]]] = []
+    groups: list[tuple[str, str, list[dict[str, Any]]]] = []
     for gname, cells in FIG1_GROUPS:
-        g = [{"label": c, "cell": c, "haiku": h1.get(c), "sonnet": s1.get(c), "p2h": _kn(h2.get(c), c),
-              "p2s": _kn(s2.get(c), c) if c in s1 else ""} for c in cells if c in h1 or c in s1]
+        g = [{"label": c, "cell": c, "gloss": GLOSS.get(c, ""), "haiku": h1.get(c), "sonnet": s1.get(c),
+              "p2h": _kn(h2.get(c), c), "p2s": _kn(s2.get(c), c) if c in s1 else "", "followup": False,
+              "c_told": c in C_TOLD_CELLS} for c in cells if c in h1 or c in s1]
         if g:
-            groups.append((gname, g))
+            groups.append((gname, GROUP_DISPLAY.get(gname, gname), g))
     if followup:
         g = []
         for fr in followup:
             hs = fr.model == "haiku"
             p2 = C_TOLD_TEXT if fr.p2 is None else f"{fr.p2.k}/{fr.p2.n}"
-            g.append({"label": fr.label, "cell": fr.p1.cell, "haiku": fr.p1 if hs else None,
-                      "sonnet": None if hs else fr.p1, "p2h": p2 if hs else "", "p2s": "" if hs else p2})
-        groups.append((FOLLOWUP_GROUP, g))
-    n_rows = sum(len(g) for _, g in groups)
-    # the follow-up group adds four rows' height at most: tighter rows and group gaps keep Fig. 1 near its budget
+            g.append({"label": fr.label, "cell": fr.p1.cell, "gloss": _gloss(fr.p1.cell, fr.model, True),
+                      "haiku": fr.p1 if hs else None, "sonnet": None if hs else fr.p1, "p2h": p2 if hs else "",
+                      "p2s": "" if hs else p2, "followup": True, "c_told": fr.p2 is None})
+        groups.append((FOLLOWUP_GROUP, FOLLOWUP_DISPLAY, g))
+    rows_all = [r for _, _, g in groups for r in g]
+    n_rows = len(rows_all)
+    # the follow-up group adds three rows: tighter rows and group gaps keep Fig. 1 near its budget
     gap = 0.55 if not followup else 0.40
     pitch_in = 0.152 if not followup else 0.130
-    top_in, bottom_in = 0.36, 0.36
+    top_in, bottom_in = 0.47, 0.36
     height = top_in + bottom_in + pitch_in * (n_rows + gap * (len(groups) - 1) + 0.4)
     width = FIG1A_WIDTH_IN
     has_s = bool(s1) or any(fr.model == "sonnet" for fr in followup)
-    group_w = max(_text_width_in(gname, FIG_PT) for gname, _ in groups)
-    tick_w = max(_text_width_in(r["label"], FIG_PT) for _, g in groups for r in g)
-    left_in, right_in = 0.07 + group_w + 0.14 + tick_w + 0.08, (1.96 if has_s else 1.20)
+    # left block: group label (rotated, one line high) | code | gloss (a gloss starts in its own column, or after a
+    # code too long for it)
+    x_group = 0.04
+    group_w = 1.25 * GROUP_PT / 72.0
+    x_code = x_group + group_w + 0.06
+    core_w = max((_text_width_in(r["label"], CODE_PT) for r in rows_all if not r["followup"]), default=0.0)
+    x_gloss_col = x_code + core_w + 0.07
+    for r in rows_all:
+        r["x_gloss"] = max(x_gloss_col, x_code + _text_width_in(r["label"], CODE_PT) + 0.06)
+    label_end = max(r["x_gloss"] + _text_width_in(r["gloss"], GLOSS_PT) for r in rows_all)
+    left_in = label_end + 0.10
+    cols_in = {"p1h": 0.36, "p1s": 0.76, "p2h": 1.22, "p2s": 1.62} if has_s else {"p1h": 0.40, "p2h": 1.40}
+    right_in = max(cols_in.values()) + 0.06
     fig, ax = new_figure(width, height)
     fig.subplots_adjust(left=left_in / width, right=1.0 - right_in / width, top=1.0 - top_in / height,
                         bottom=bottom_in / height)
+    figx = blended_transform_factory(fig.transFigure, ax.transData)
     y = 0.0
-    yticks: list[float] = []
-    ylabels: list[str] = []
-    seps: list[float] = []
+    seps: list[tuple[float, bool]] = []
     gpos: list[tuple[str, float]] = []
-    for gi, (gname, g) in enumerate(groups):
+    for gi, (gname, disp, g) in enumerate(groups):
         if gi:
-            seps.append(y - 0.5 - gap / 2.0)
+            seps.append((y - 0.5 - gap / 2.0, gname == FOLLOWUP_GROUP))
         first = y
         for r in g:
+            fu = r["followup"]
             dodge = 0.17 if (r["haiku"] is not None and r["sonnet"] is not None) else 0.0
             if r["haiku"] is not None:
-                _hbar(ax, y - dodge, r["haiku"], colour=HAIKU_COLOUR, marker="o", hollow=False)
+                _hbar(ax, y - dodge, r["haiku"], colour=HAIKU_COLOUR, marker="o", hollow=fu, dashed=fu)
             if r["sonnet"] is not None:
-                _hbar(ax, y + dodge, r["sonnet"], colour=SONNET_COLOUR, marker="D", hollow=True)
+                _hbar(ax, y + dodge, r["sonnet"], colour=SONNET_COLOUR, marker="D", hollow=True, dashed=fu)
+            if r["c_told"]:
+                ax.add_patch(Rectangle((0.006, y - 0.5), 0.990, 1.0, transform=figx, facecolor=SHADE_COLOUR,
+                                       alpha=SHADE_ALPHA, edgecolor="none", linewidth=0, zorder=0, clip_on=False))
+            ax.text(x_code / width, y, r["label"], transform=figx, ha="left", va="center", fontsize=CODE_PT)
+            if r["gloss"]:
+                ax.text(r["x_gloss"] / width, y, r["gloss"], transform=figx, ha="left", va="center",
+                        fontsize=GLOSS_PT, color=PALETTE["black"], alpha=0.78)
             r["y"] = y
-            yticks.append(y)
-            ylabels.append(r["label"])
             y += 1.0
-        gpos.append((gname, (first + y - 1.0) / 2.0))
+        gpos.append((disp, (first + y - 1.0) / 2.0))
         y += gap
     y_end = y - gap
-    ax.set_yticks(yticks)
-    ax.set_yticklabels(ylabels, fontsize=FIG_PT)
-    ax.tick_params(axis="y", length=0, pad=4)
+    ax.set_yticks([r["y"] for r in rows_all])
+    ax.set_yticklabels([])
+    ax.tick_params(axis="y", length=0)
     ax.set_ylim(y_end - 0.45, -0.6)
     ax.set_xlim(-2.0, 102.0)
     ax.set_xticks([0, 25, 50, 75, 100])
     ax.tick_params(axis="x", labelsize=FIG_PT)
-    ax.set_xlabel("P1: witnesses who told ops about the split (%)", fontsize=FIG_PT)
+    ax.set_xlabel(FIG1A_X_LABEL, fontsize=FIG_PT - 0.5)
     ax.grid(False)
     for xv in (0, 25, 50, 75, 100):
         ax.axvline(xv, color=PALETTE["black"], alpha=0.10, linewidth=0.6, zorder=0)
     ax.spines["left"].set_visible(False)
-    figx = blended_transform_factory(fig.transFigure, ax.transData)
-    for ys in seps:
-        ax.add_line(Line2D([0.012, 0.995], [ys, ys], transform=figx, color=PALETTE["black"], alpha=0.25, linewidth=0.6,
-                           clip_on=False))
-    for gname, yc in gpos:
-        ax.text(0.012, yc, gname, transform=figx, ha="left", va="center", fontsize=FIG_PT, linespacing=1.15)
+    for ys, heavy in seps:
+        ax.add_line(Line2D([0.006, 0.996], [ys, ys], transform=figx, color=PALETTE["black"],
+                           alpha=0.55 if heavy else 0.25, linewidth=0.9 if heavy else 0.6, clip_on=False))
+    for disp, yc in gpos:
+        ax.text((x_group + group_w / 2.0) / width, yc, disp, transform=figx, rotation=90, ha="center", va="center",
+                fontsize=GROUP_PT)
     # text columns: right edges in inches from the axes' right edge
     ax_w = (1.0 - right_in / width - left_in / width) * width
-    cols = {"p1h": 0.40, "p1s": 0.82, "p2h": 1.46, "p2s": 1.90} if has_s else {"p1h": 0.40, "p2h": 1.14}
-    colx = {k: 1.0 + v / ax_w for k, v in cols.items()}
+    colx = {k: 1.0 + v / ax_w for k, v in cols_in.items()}
     xax = blended_transform_factory(ax.transAxes, ax.transData)
-    for _, g in groups:
-        for r in g:
-            for key, rate in (("p1h", r["haiku"]), ("p1s", r["sonnet"])):
-                if rate is not None and key in colx:
-                    ax.text(colx[key], r["y"], _dec(rate.p * 100.0, 1), transform=xax, ha="right", va="center",
-                            fontsize=FIG_PT, clip_on=False)
-            for key in ("p2h", "p2s"):
-                txt = r[key]
-                if txt and key in colx:
-                    bold = "/" in txt and not txt.startswith("0/")
-                    ax.text(colx[key], r["y"], txt, transform=xax, ha="right", va="center", fontsize=FIG_PT,
-                            fontweight="bold" if bold else "normal", clip_on=False)
+    for r in rows_all:
+        for key, rate in (("p1h", r["haiku"]), ("p1s", r["sonnet"])):
+            if rate is not None and key in colx:
+                ax.text(colx[key], r["y"], _dec(rate.p * 100.0, 1), transform=xax, ha="right", va="center",
+                        fontsize=FIG_PT, clip_on=False)
+        for key in ("p2h", "p2s"):
+            txt = _kn_shown(r[key])
+            if txt and key in colx:
+                bold = "/" in txt and not txt.startswith("0/")
+                ax.text(colx[key], r["y"], txt, transform=xax, ha="right", va="center", fontsize=FIG_PT,
+                        fontweight="bold" if bold else "normal", clip_on=False)
+    # the header band, three lines above the plot (never over the data)
     ax_h = height - top_in - bottom_in
-    hdr_y1, hdr_y2 = 1.0 + 0.26 / ax_h, 1.0 + 0.10 / ax_h
-    p1_last = "p1s" if has_s else "p1h"
-    p2_last = "p2s" if has_s else "p2h"
-    ax.text((colx["p1h"] + colx[p1_last]) / 2.0 - 0.18 / ax_w, hdr_y1, "P1 (%)", transform=ax.transAxes, ha="center",
-            va="center", fontsize=FIG_PT - 0.5, clip_on=False)
-    ax.text(colx[p2_last], hdr_y1, "ops never told (shifts)", transform=ax.transAxes, ha="right", va="center",
-            fontsize=FIG_PT - 0.5, clip_on=False)
-    short_h = model_label.split()[0]
-    short_s = sonnet_label.split()[0]
-    for key, name in (("p1h", short_h), ("p1s", short_s), ("p2h", short_h), ("p2s", short_s)):
-        if key in colx:
-            ax.text(colx[key], hdr_y2, name, transform=ax.transAxes, ha="right", va="center", fontsize=FIG_PT - 0.5,
-                    color=PALETTE["black"], clip_on=False)
+    hy = [1.0 + (top_in - 0.085 - 0.128 * i) / ax_h for i in range(3)]
+    figa = blended_transform_factory(fig.transFigure, ax.transAxes)
+    ax.text(x_group / width, hy[0], "(a)", transform=figa, ha="left", va="center", fontsize=PANEL_PT,
+            fontweight="bold", clip_on=False)
     handles = [Line2D([], [], color=HAIKU_COLOUR, marker="o", linestyle="-", linewidth=1.0, markersize=4.2,
                       label=f"{model_label}")]
     if has_s:
         handles.append(Line2D([], [], color=SONNET_COLOUR, marker="D", linestyle="-", linewidth=1.0, markersize=4.4,
                               markerfacecolor="#FFFFFF", markeredgewidth=1.2, label=f"{sonnet_label} (exploratory)"))
-    # legend and interval note in the free band above the plot (never over the data)
-    ax.legend(handles=handles, loc="center left", bbox_to_anchor=(-0.01, hdr_y1), ncol=len(handles),
-              fontsize=FIG_PT - 0.5, frameon=False, handlelength=1.4, borderaxespad=0.0, borderpad=0.0,
+    if followup:
+        handles.append(Line2D([], [], color=PALETTE["black"], marker="o", linestyle=(0, (2.2, 1.4)), linewidth=1.0,
+                              markersize=4.2, markerfacecolor="#FFFFFF", markeredgewidth=1.0,
+                              label="follow-up: later phase, not concurrent"))
+    x_leg = (x_group + _text_width_in("(a)", PANEL_PT) + 0.12 - left_in) / ax_w
+    ax.legend(handles=handles, loc="center left", bbox_to_anchor=(x_leg, hy[0]), ncol=len(handles),
+              fontsize=NOTE_PT, frameon=False, handlelength=1.6, borderaxespad=0.0, borderpad=0.0,
               columnspacing=1.0, handletextpad=0.4)
-    ax.text(0.0, hdr_y2, "lines: 95% Wilson intervals, witness level", transform=ax.transAxes, ha="left",
-            va="center", fontsize=FIG_PT - 1.0, clip_on=False)
+    if any(r["c_told"] for r in rows_all):
+        sw_h = 0.085 / ax_h
+        ax.add_patch(Rectangle((x_group / width, hy[1] - sw_h / 2.0), 0.20 / width, sw_h, transform=figa,
+                               facecolor=SHADE_COLOUR, alpha=SHADE_ALPHA * 2.2, edgecolor="none", linewidth=0,
+                               clip_on=False))
+        ax.text((x_group + 0.26) / width, hy[1], C_TOLD_LEGEND, transform=figa, ha="left", va="center",
+                fontsize=NOTE_PT, clip_on=False)
+    methods = sorted({rate.method for r in rows_all for rate in (r["haiku"], r["sonnet"]) if rate is not None})
+    note = "; ".join(INTERVAL_TEXT.get(m, f"lines: 95% {m} intervals") for m in methods)
+    ax.text(x_group / width, hy[2], note, transform=figa, ha="left", va="center", fontsize=NOTE_PT, clip_on=False)
+    p1_last = "p1s" if has_s else "p1h"
+    p2_last = "p2s" if has_s else "p2h"
+    ax.text((colx["p1h"] + colx[p1_last]) / 2.0 - 0.16 / ax_w, hy[1], "P1 (%)", transform=ax.transAxes,
+            ha="center", va="center", fontsize=NOTE_PT, clip_on=False)
+    ax.text(colx[p2_last], hy[1], "ops never told (shifts)", transform=ax.transAxes, ha="right", va="center",
+            fontsize=NOTE_PT, clip_on=False)
+    short_h = model_label.split()[0]
+    short_s = sonnet_label.split()[0]
+    for key, name in (("p1h", short_h), ("p1s", short_s), ("p2h", short_h), ("p2s", short_s)):
+        if key in colx:
+            ax.text(colx[key], hy[2], name, transform=ax.transAxes, ha="right", va="center", fontsize=NOTE_PT,
+                    color=PALETTE["black"], clip_on=False)
     out_rows: list[dict[str, Any]] = []
     parts: list[str] = []
-    for gname, g in groups:
+    for gname, _, g in groups:
         for r in g:
             for model, rate, p2 in (("haiku", r["haiku"], r["p2h"]), ("sonnet", r["sonnet"], r["p2s"])):
                 if rate is None:
                     continue
-                out_rows.append({"group": gname.replace("\n", " "), "label": r["label"], "cell": r["cell"],
+                out_rows.append({"group": gname, "label": r["label"], "gloss": r["gloss"], "cell": r["cell"],
                                  "model": model, "k": rate.k, "n": rate.n, "p": rate.p, "lo": rate.lo, "hi": rate.hi,
-                                 "method": "wilson", "ops_never_told": p2})
-                parts.append(f"{r['label']} {model}: P1 {_p(rate.p)} ({_ci(rate.lo, rate.hi)}), ops never told "
-                             f"{p2 or 'not shown'}")
-    alt = (f"Figure 1a. P1, the share of witnesses who sent ops a note about the split, in every cell, with Wilson 95% "
-           f"intervals at witness level (they ignore clustering within shifts). {model_label} is drawn as filled circles"
-           + (f", the exploratory {sonnet_label} arm as hollow diamonds where it ran" if s1 else "")
-           + ". Rows are grouped: no log (R0), log (R1), controls" + (", follow-up (exploratory, D-022)" if followup
-                                                                       else "")
-           + ". Text columns give P1 in percent and the number of shifts in which ops was never told (P2, k of n); "
-             f"P2 is not defined where C really told ops, and B-NONE has no violation. Values: {'; '.join(parts)}.")
+                                 "method": rate.method, "ops_never_told": p2,
+                                 "c_really_told_ops": "yes" if r["c_told"] else "no",
+                                 "block": "follow-up" if r["followup"] else "core"})
+                parts.append(f"{r['label']} ({r['gloss']}) {model}: P1 {_p(rate.p)} ({_ci(rate.lo, rate.hi)}), "
+                             f"ops never told {p2 or 'not shown'}")
+    how = "; ".join(INTERVAL_ALT.get(m, m) for m in methods)
+    alt = (f"Figure 1a. P1, the share of witnesses who sent ops a note about the split, in every cell, with {how}; "
+           f"higher means ops was told. {model_label} is drawn as filled circles"
+           + (f", the exploratory {sonnet_label} arm as hollow diamonds where it ran" if has_s else "")
+           + ". Each row code carries a short gloss. Rows are grouped: no log (R0), log (R1), controls"
+           + (", follow-up (exploratory, D-022; a later phase, not concurrent, drawn hollow with dashed intervals)"
+              if followup else "")
+           + ". Shaded rows are those where C really told ops, so standing down there is correct. Text columns give P1 "
+             "in percent and the number of shifts in which ops was never told (P2, k of n); an em dash marks the "
+             f"cells where P2 does not apply (C really told ops, or no violation). Values: {'; '.join(parts)}.")
     return save(fig, Path(out_dir) / "fig1a", alt_text=alt, rows=out_rows)
 
 
@@ -266,7 +346,7 @@ def fig1b(t: Any, out_dir: Path, *, model_label: str, cells: Sequence[str] = TIM
     early = "in round 2" if all(c.by_round.get(1, 0) == 0 for c in rows) else "by round 2"
     width = FIG1B_WIDTH_IN
     pitch_in = 0.35
-    top_in, bottom_in = 0.45, 0.33
+    top_in, bottom_in = 0.57, 0.33         # 0.12 in above the legend hold the panel label (research/68 A6)
     height = top_in + bottom_in + pitch_in * (len(rows) + 0.25)
     with mpl.rc_context({"hatch.linewidth": 0.9, "hatch.color": "#FFFFFF"}):
         fig, ax = new_figure(width, height)
@@ -334,6 +414,8 @@ def fig1b(t: Any, out_dir: Path, *, model_label: str, cells: Sequence[str] = TIM
                                                                      1.03),
                   ncol=2, fontsize=FIG_PT - 1.0, frameon=False, handlelength=1.4, handleheight=0.9,
                   columnspacing=0.9, handletextpad=0.4, borderaxespad=0.0)
+        ax.text(0.04 / width, 1.0 - 0.075 / height, "(b)", transform=fig.transFigure, ha="left", va="center",
+                fontsize=PANEL_PT, fontweight="bold")
         alt = (f"Figure 1b, {model_label}. When witnesses first sent ops a note about the split, as a share of each "
                f"cell's witnesses: {early}, after holding off past round 2, or never. In the log cells the "
                f"never-reporters who had a peer's line in the #escalation-log at their next turn (round 3) are "

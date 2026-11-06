@@ -179,10 +179,13 @@ class TestFigures(unittest.TestCase):
         alt = res["fig1a"].alt_txt.read_text()
         self.assertIn("Wilson 95% intervals at witness level", alt)
         for c in CELLS11:
-            self.assertIn(c + " haiku: P1 ", alt)
-        self.assertIn("FORGED haiku: P1 66.7% (58.8 to 73.7), ops never told 4/50", alt)
-        self.assertIn("FORGED sonnet: P1 96.7%", alt)
-        self.assertIn("RECEIPT haiku: P1 68.0% (60.2 to 74.9), ops never told C told ops", alt)
+            self.assertIn(f"{c} ({figures.GLOSS[c]}) haiku: P1 ", alt)
+        self.assertIn("FORGED (claim + typed log-style line) haiku: P1 66.7% (58.8 to 73.7), ops never told 4/50", alt)
+        self.assertIn("FORGED (claim + typed log-style line) sonnet: P1 96.7%", alt)
+        self.assertIn("RECEIPT (true claim + real receipt) haiku: P1 68.0% (60.2 to 74.9), ops never told not "
+                      "applicable: C really told ops", alt)
+        self.assertIn("higher means ops was told", alt)
+        self.assertIn("Shaded rows are those where C really told ops", alt)
         self.assertNotIn("follow-up", alt)
         alt_b = res["fig1b"].alt_txt.read_text()
         self.assertIn("NO-RECEIPT (log): 205 of 240 reported in round 2, 12 held off and reported later, 23 never "
@@ -251,9 +254,12 @@ class TestFigures(unittest.TestCase):
                 self.assertEqual((int(g["k"]), int(g["n"]), float(g["p"]), float(g["lo"]), float(g["hi"])),
                                  (r.k, r.n, r.p, r.lo, r.hi))
         self.assertEqual(got[("FORGED", "haiku")]["ops_never_told"], "4/50")
-        self.assertEqual(got[("RECEIPT", "haiku")]["ops_never_told"], "C told ops")
-        self.assertEqual(got[("POS", "haiku")]["ops_never_told"], "C told ops")
-        self.assertEqual(got[("B-NONE", "haiku")]["ops_never_told"], "no violation")
+        self.assertEqual(got[("RECEIPT", "haiku")]["ops_never_told"], "not applicable: C really told ops")
+        self.assertEqual(got[("POS", "haiku")]["ops_never_told"], "not applicable: C really told ops")
+        self.assertEqual(got[("B-NONE", "haiku")]["ops_never_told"], "not applicable: no violation")
+        self.assertEqual({c for (c, _), r in got.items() if r["c_really_told_ops"] == "yes"}, {"RECEIPT", "POS"})
+        self.assertEqual(got[("FORGED", "haiku")]["gloss"], "claim + typed log-style line")
+        self.assertEqual({r["method"] for r in rows}, {"wilson"})
         self.assertEqual(got[("NO-RECEIPT", "sonnet")]["ops_never_told"], "0/30")
         self.assertEqual({r["group"] for r in rows}, {"no log (R0)", "log (R1)", "controls"})
         tb = {r["cell"]: r for r in read_csv(res["fig1b"].data_csv)}
@@ -281,8 +287,10 @@ class TestFigures(unittest.TestCase):
         fu = [r for r in rows if r["group"].startswith("follow-up")]
         self.assertEqual([(r["label"], r["model"], r["ops_never_told"]) for r in fu],
                          [("X-FORGED-POLICY", "haiku", "1/50"), ("X-FORGED-PROV", "haiku", "6/50"),
-                          ("RECEIPT (Sonnet)", "sonnet", "C told ops")])
-        self.assertIn("follow-up (exploratory, D-022)", f.alt_txt.read_text())
+                          ("RECEIPT (Sonnet)", "sonnet", "not applicable: C really told ops")])
+        self.assertEqual({r["block"] for r in fu}, {"follow-up"})
+        self.assertEqual([r["c_really_told_ops"] for r in fu], ["no", "no", "yes"])
+        self.assertIn("follow-up (exploratory, D-022; a later phase, not concurrent", f.alt_txt.read_text())
 
     def test_series_are_distinguishable_without_colour(self):
         pairs = list(style.CELL_STYLE.values())
@@ -303,6 +311,79 @@ class TestFigures(unittest.TestCase):
         self.assertEqual(len(read_csv(f.data_csv)), 1)
         f = figures.fig_frontier(frontier()[:1], d, model_label="Sonnet")
         self.assertTrue(f.pdf.exists())
+
+
+class Inspect:
+    """Wraps style.save to record, before the figure is closed, its texts, shaded patches and dashed intervals."""
+
+    def __enter__(self):
+        self.orig = figures.save
+        self.info: dict[str, dict] = {}
+
+        def wrapper(fig, stem, **kw):
+            from matplotlib.colors import to_hex
+            from matplotlib.text import Text
+
+            ax = fig.axes[0]
+            texts = [t.get_text() for t in fig.findobj(Text) if t.get_visible() and t.get_text().strip()]
+            shades = [p for p in ax.patches if to_hex(p.get_facecolor(), keep_alpha=False).upper()
+                      == figures.SHADE_COLOUR.upper()]
+            dashed = [c for c in ax.collections if any(ls[1] is not None for ls in c.get_linestyle())]
+            self.info[Path(stem).name] = {"texts": texts, "shades": len(shades), "dashed": len(dashed),
+                                          "xlabel": ax.get_xlabel()}
+            return self.orig(fig, stem, **kw)
+        figures.save = wrapper
+        return self
+
+    def __exit__(self, *a):
+        figures.save = self.orig
+
+
+def cluster(rates):
+    from dataclasses import replace
+
+    return [replace(r, method="cluster_bootstrap") for r in rates]
+
+
+class TestFig1Review68(unittest.TestCase):
+    """research/68 A6: glosses, shading where C really told ops, the em dash, panel labels, the axis direction, the
+    interval method in the header, and a visually distinct follow-up block."""
+
+    def test_marks(self):
+        d = tmp_dir("wp6_fig_r68")
+        for variant in ("main", "followup"):
+            with Inspect() as ins:
+                fig1a_full(d, followup_rows() if variant == "followup" else ())
+                figures.fig1b(timing_fixture(), d, model_label="Haiku 5.5")
+            a, b = ins.info["fig1a"], ins.info["fig1b"]
+            self.assertIn("(a)", a["texts"])
+            self.assertIn("(b)", b["texts"])
+            self.assertEqual(a["xlabel"], figures.FIG1A_X_LABEL)
+            self.assertIn("higher means ops was told", a["xlabel"])
+            for c in CELLS11:
+                self.assertIn(c, a["texts"])
+                self.assertIn(figures.GLOSS[c], a["texts"])
+            self.assertIn(figures.C_TOLD_LEGEND, a["texts"])
+            self.assertNotIn("C told ops", a["texts"])
+            fu = variant == "followup"
+            # RECEIPT, POS and B-NONE (and the Sonnet RECEIPT follow-up row); one band per C-told row, plus the swatch
+            self.assertEqual(a["texts"].count(figures.NOT_APPLICABLE), 3 + fu)
+            self.assertEqual(a["shades"], 2 + fu + 1)
+            self.assertEqual(a["dashed"], 3 if fu else 0)
+            self.assertIn("lines: 95% Wilson intervals, witness level", a["texts"])
+            if fu:
+                for g in ("+ one-line rule", "+ provenance note", "real receipt"):
+                    self.assertIn(g, a["texts"])
+
+    def test_cluster_method_named(self):
+        d = tmp_dir("wp6_fig_r68_cluster")
+        with Inspect() as ins:
+            f = figures.fig1a(cluster(wilson_rates("haiku", P1_KN)), p2_shifts("haiku", HAIKU_P2), d,
+                              model_label="Haiku 5.5", sonnet_p1=cluster(wilson_rates("sonnet", SONNET_KN)),
+                              sonnet_p2=p2_shifts("sonnet", {c: (0, 30) for c in SONNET_KN}), sonnet_label="Sonnet 5.5")
+        self.assertIn("lines: 95% shift-level cluster-bootstrap intervals", ins.info["fig1a"]["texts"])
+        self.assertIn("shift-level cluster-bootstrap 95% intervals", f.alt_txt.read_text())
+        self.assertEqual({r["method"] for r in read_csv(f.data_csv)}, {"cluster_bootstrap"})
 
 
 class TestFormatting(unittest.TestCase):
