@@ -39,7 +39,8 @@ P1 and P2 are mechanical: a keyword rule, with a judge path for unmatched notes 
 The planned precision check of the keyword rule was never reviewed; post hoc, the final labels code \wtthHaikuKwCheckMatchedFinalK{} of \wtthHaikuKwCheckMatchedFinalN{} keyword-matched core notes as about the violation (model-coded, D-024; Appendix~\ref{app:judge}).
 \Ptwop{}, concern, test awareness and the debrief codes come from an LLM judge (\wtthDesignModelJudgeName) and from labels that a model proposed and a second pass of the same model (\wtthDesignModelAnnotatorName) audited, whose \wtthReviewReviewed{} pre-filled decisions the author approved unchanged (D-020); the audit is therefore not independent of the proposals.
 None of them is a blind human label (D-018), so their reliability rests on model--model $\kappa$ alone, which ranges from \wtthKappaMMDTwoAnswerReasonCodesUnsureItWasAViolationValue{} to \wtthKappaMMDTwoAnswerReasonCodesSomeoneElseToldValue{} across the debrief reason codes.
-\ifdefstring{\wtthHumanReadStatus}{complete}{\wtthStub{author-read result (D-021) for Appendix A}}{No human read of transcripts is reported here: the author's read of \wtthHumanReadSelectedN{} selected transcripts (D-021) is pending.}
+\ifdefstring{\wtthHumanReadStatus}{complete}{The one human check is the author's read of \wtthHumanReadSelectedN{} transcripts, shuffled and shown without any label (post hoc; D-021, D-025; Appendix~\ref{app:authorread}): his original answers matched the automated P1 for \wtthHumanReadAuthorAgreePOneK{} of \wtthHumanReadAuthorAgreePOneN, a blind second reader (\wtthHumanReadSecondModelName) agreed with him for \wtthHumanReadSecondAgreeAuthorToldK{} ($\kappa$ \wtthHumanReadSecondKappaAuthorTold, CI \wtthHumanReadSecondKappaAuthorToldCI), and after adjudicating only the \wtthHumanReadAdjShownK{} disagreements he matched P1 for \wtthHumanReadAdjAgreePOneK.
+The selection is weighted toward never-reporters, so the read checks P1 for missed reports rather than measuring its precision, it covers none of the judge-coded labels, and its second reader is itself a Claude model.}{No human read of transcripts is reported here: the author's read of \wtthHumanReadSelectedN{} selected transcripts (D-021) is pending.}
 Debrief answers are post-hoc self-reports, not evidence of a mechanism.
 
 \paragraph{Test awareness.}
@@ -48,7 +49,7 @@ The two models agreed well on this live, test or unsure verdict (model--model $\
 Test awareness is therefore uncertain rather than absent, and the pre-registered exclusion of test-aware witnesses removes no one.
 
 \paragraph{Claude writes for Claude.}
-The stimuli were drafted with Claude and edited by the author, and the subjects, the judge, the annotator, the review audit, the code reviewers and the paper's drafter are all Claude models; the judge (\wtthDesignModelJudgeName) also codes the exploratory Sonnet subjects' posts and notes.
+The stimuli were drafted with Claude and edited by the author, and the subjects, the judge, the annotator, the review audit, the second reader of the author read, the code reviewers and the paper's drafter are all Claude models; the judge (\wtthDesignModelJudgeName) also codes the exploratory Sonnet subjects' posts and notes.
 Sonnet's P1 is keyword-coded too: every note in the Sonnet subset matched the keyword rule (\wtthSonnetKwCheckMatchedN{} of \wtthSonnetKwCheckNotesN), and in the follow-up the judge path decided \wtthExpOneKwCheckPOneLabelOnlyK{} of the \wtthExpOneKwCheckPOneK{} witnesses with P1 (model-coded, post hoc, D-024), so the shared model touches the secondary codes, not P1.
 A Claude subject may find the stimuli more natural, or easier to recognise as a test.
 

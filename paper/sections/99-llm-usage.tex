@@ -5,7 +5,8 @@
 % labels, a second Claude pass pre-filled all 212 review decisions, and the author approved them unchanged (D-020;
 % correction rate 0 of 212). Never say the author decided or reviewed items one by one.
 % The audit pass ran on Claude Opus 5.5, the proposer's model. The author read (D-021) is pending until
-% \wtthHumanReadStatus is complete: no result, and no claim that a human read anything.
+% \wtthHumanReadStatus is complete: no result, and no claim that a human read anything. Once complete, (d) says the
+% author read the transcripts himself and that a Claude Fable 5.1 agent was the blind second reader (D-025).
 \section*{LLM Usage Statement}
 \addcontentsline{toc}{section}{LLM Usage Statement}
 The author designed and directed this study and made or approved every decision recorded in the pre-registration and the deviations log.
@@ -32,8 +33,10 @@ At the author's request, a second \wtthDesignModelAnnotatorName{} pass in a fres
 The author read the pre-filled file and approved it as it stood, changing none of the \wtthReviewReviewed{} decisions; his correction rate is \wtthDesignReviewAuthorChanged{} of \wtthReviewReviewed.
 We therefore report model-proposed, AI-audited, author-approved labels.
 They are not blind or independent human labels.
-No blind human reliability check was done (the planned blind sample was declined, D-018), so there is no human--judge $\kappa$, and every agreement figure in this paper is model--model.
-\ifdefstring{\wtthHumanReadStatus}{complete}{\wtthStub{author-read result (D-021) for the LLM Usage Statement}}{The author's read of \wtthHumanReadSelectedN{} selected transcripts (D-021) is pending, and no result of it is reported.}
+No blind human reliability check of the labels was done (the planned blind sample was declined, D-018), so there is no human--judge $\kappa$, and every agreement figure for the labels is model--model.
+\ifdefstring{\wtthHumanReadStatus}{complete}{The one human check is the author read (D-021): the author himself read \wtthHumanReadSelectedN{} selected transcripts, shuffled and without labels or outcomes, and answered two questions for each.
+At his request, a Claude agent of the harsh-code-reviewer type, running \wtthHumanReadSecondModelName, then read the same items blind as a second reader, and the author adjudicated only the \wtthHumanReadAdjShownK{} items where the two differed (D-025; Appendix~\ref{app:authorread}); his original answers are the primary result.
+The author--second-reader $\kappa$ is therefore human--model, the paper's only agreement figure that is not model--model.}{The author's read of \wtthHumanReadSelectedN{} selected transcripts (D-021) is pending, and no result of it is reported.}
 
 \paragraph{(e) Writing.}
 Claude drafted the text of this paper from the author's outline and the generated results; the author reviewed and approved it.

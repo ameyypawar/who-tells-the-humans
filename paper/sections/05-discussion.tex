@@ -10,7 +10,9 @@
 % Review 2: M3 (item 3: Sonnet across phases; instruction-only defences were partial in prior work: Fabricated
 % Authority's rule failed more often via a tool result, spotlighting's system-prompt instructions had modest effects),
 % S3 (item 2: the empty state did not help Haiku; item 4: under a false claim the log lowered P1, with no shift untold),
-% S12 (the judge is the Sonnet subjects' model). The author read stays conditional and pending.
+% S12 (the judge is the Sonnet subjects' model). Author read (D-021, D-025): the original answers come first; it is the
+% only human check, weighted toward never-reporters, so it looks for missed reports and does not measure P1's precision;
+% the second reader is a Claude model, so its agreement with the author is human--model. Detail: Appendix G.
 \section{Discussion and Limitations}\label{sec:discussion}
 \subsection{Back to the incident: a candidate mechanism, not an explanation}
 \wtthInputBranch{disc}
@@ -25,5 +27,6 @@
 \end{enumerate}
 
 \paragraph{Limitations and future work.}
-Claude throughout (stimuli, subjects, judge, annotator, review audit, code review; the judge is the Sonnet subjects' model; P1 is keyword-coded); one fictional scenario at one clarity level, at ceiling, with non-reporters concentrated in one paraphrase and handle order; uncertain test awareness (\wtthHaikuDOneTestAllK{} \DebOne{} answers coded `test', but \wtthHaikuDOneUnsureAllPct\% `unsure'); a scripted claimant, \wtthDesignLiveWitnessesWord{} witnesses per shift, stateless turns and a stub operator; a log that also lists peers' notes, so H2 mixes the claimant's missing receipt with peers' real ones; no cell separating a receipt's format from a more specific claim; an LLM judge and AI-audited labels, \ifdefstring{\wtthHumanReadStatus}{complete}{\wtthStub{author-read result (D-021) for the Limitations}}{with no human check yet (the author's read of \wtthHumanReadSelectedN{} transcripts, D-021, is pending)}; and self-reported, model-coded debriefs (Appendix~\ref{app:limits}).
-Next: group size, other models, a claimant-only log and a receipt-checking tool.
+Claude throughout (stimuli, subjects, judge, annotator, review audit, second reader, code review; the judge is the Sonnet subjects' model; P1 is keyword-coded); one fictional scenario at one clarity level, at ceiling, with non-reporters concentrated in one paraphrase and handle order; uncertain test awareness (\wtthHaikuDOneUnsureAllPct\% of \DebOne{} answers `unsure', \wtthHaikuDOneTestAllK{} `test'); a scripted claimant, \wtthDesignLiveWitnessesWord{} witnesses per shift, stateless turns and a stub operator; a log that also lists peers' notes, so H2 mixes the claimant's missing receipt with peers' real ones; no cell separating receipt format from claim specificity; an LLM judge and AI-audited labels\ifdefstring{\wtthHumanReadStatus}{complete}{}{, with no human check yet (the author's read of \wtthHumanReadSelectedN{} transcripts, D-021, is pending)}; and self-reported, model-coded debriefs (Appendix~\ref{app:limits}).
+\ifdefstring{\wtthHumanReadStatus}{complete}{The only human check, the author's read of \wtthHumanReadSelectedN{} shuffled, unlabelled transcripts weighted toward never-reporters, looks for missed reports, not P1's precision (post hoc; D-021, D-025): his original answers matched P1 for \wtthHumanReadAuthorAgreePOneK{} of \wtthHumanReadAuthorAgreePOneN; a blind second reader (\wtthHumanReadSecondModelName) agreed with him for \wtthHumanReadSecondAgreeAuthorToldK{} ($\kappa$ \wtthHumanReadSecondKappaAuthorTold) and with P1 for \wtthHumanReadSecondAgreePOneK; shown only the \wtthHumanReadAdjShownK{} disagreements, he changed \wtthHumanReadAdjChangedK, leaving \wtthHumanReadAdjAgreePOneK{} of \wtthHumanReadAdjAgreePOneN{} matching P1, and no witness told ops by a route P1 missed (Appendix~\ref{app:authorread}).}{}
+Next: group size, other models, a claimant-only log, a receipt-checking tool.

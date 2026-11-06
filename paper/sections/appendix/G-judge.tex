@@ -5,7 +5,9 @@
 % (D-020; correction rate 0 of 212); never say the author decided or reviewed items one by one. The generated tables
 % label that step "AI-audited, author-approved review". There is no human-judge kappa (D-018).
 % The audit pass ran on Claude Opus 5.5, the proposer's model (\wtthDesignModelAnnotatorName). The author read (D-021) is
-% conditional on \wtthHumanReadStatus: until it is complete, say it is pending and give no result.
+% conditional on \wtthHumanReadStatus: until it is complete, say it is pending and give no result. Once complete (export
+% cc74314), G.7 reports it: the author's original answers first, then the blind second reader (Claude Fable 5.1) and the
+% adjudication (D-025); it is the only human check, weighted toward never-reporters, so it checks for missed reports.
 \section{Judge rubric, validation and agreement}\label{app:judge}
 
 \subsection{What the judge codes}
@@ -46,10 +48,31 @@ The judge's reviewed escalation positives were not upheld (precision \wtthReview
 
 \subsection{No human labels}
 The planned author-blind sample was drawn but declined before any review report was opened (D-018; blind labels: \wtthBlindN), and the author changed none of the audited decisions (D-020).
-No label used here was produced or corrected by a human, so there is no human--judge $\kappa$ and no human reliability estimate; every agreement figure below is model--model.
-\ifdefstring{\wtthHumanReadStatus}{complete}{\wtthStub{author-read result (D-021) for Appendix G}}{The author's read of \wtthHumanReadSelectedN{} selected transcripts (D-021) is pending, and no result of it is reported.}
+No label used here was produced or corrected by a human, so there is no human--judge $\kappa$ and no human reliability estimate for any label; every agreement figure in Sections~\ref{app:mmagree} and~\ref{app:kwcheck} is model--model.
+\ifdefstring{\wtthHumanReadStatus}{complete}{The one human check is the author read below, which reads witness transcripts against P1 rather than labels, and its agreement figure is human--model.
 
-\subsection{Model--model agreement}
+\subsection{Author read (post hoc; D-021, D-025)}\label{app:authorread}
+This is the study's only human check.
+The author read \wtthHumanReadSelectedN{} witness transcripts, shuffled, without seeing any label or outcome (D-021): every never-reporter in \cell{CLAIM} (\wtthHumanReadClaimNeverN), every witness of the \cell{FORGED} shifts that left ops untold (\wtthHumanReadForgedUntoldN), \wtthHumanReadNoReceiptNeverN{} of the \cell{NO-RECEIPT} never-reporters, drawn with a logged seed, and \wtthHumanReadControlN{} reporting witnesses, drawn the same way, as controls.
+For each he answered two questions: did this witness tell ops about the split, by a note or by a post addressed to ops, and did it mention the split anywhere?
+
+His original answers, the primary result, agree with the automated P1 for \wtthHumanReadAuthorAgreePOneK{} of \wtthHumanReadAuthorAgreePOneN{} witnesses.
+He read the never-reporters as not telling ops (\wtthHumanReadClaimNeverToldNoK{} of \wtthHumanReadClaimNeverN{} in \cell{CLAIM}, \wtthHumanReadForgedUntoldToldNoK{} of \wtthHumanReadForgedUntoldN{} in the untold \cell{FORGED} shifts, \wtthHumanReadNoReceiptNeverToldNoK{} of \wtthHumanReadNoReceiptNeverN{} in \cell{NO-RECEIPT}) and \wtthHumanReadControlToldYesK{} of the \wtthHumanReadControlN{} controls as telling ops, and he read every witness as mentioning the split (\wtthHumanReadClaimNeverMentionedYesK, \wtthHumanReadForgedUntoldMentionedYesK, \wtthHumanReadNoReceiptNeverMentionedYesK{} and \wtthHumanReadControlMentionedYesK{} in the same strata).
+
+A blind second reader, a Claude agent of the harsh-code-reviewer type running \wtthHumanReadSecondModelName, then labelled the same items from a copy of the sheet with every answer blanked, seeing no label, outcome, selection file or answer of the author's (D-025).
+It agreed with the author's original answer on whether ops was told for \wtthHumanReadSecondAgreeAuthorToldK{} of \wtthHumanReadSecondN{} items (Cohen's $\kappa$ \wtthHumanReadSecondKappaAuthorTold, item bootstrap CI \wtthHumanReadSecondKappaAuthorToldCI), a human--model agreement with a Claude reader, and on whether the split was mentioned for \wtthHumanReadSecondAgreeAuthorMentionedK.
+It agreed with P1 for \wtthHumanReadSecondAgreePOneK{} of \wtthHumanReadSecondAgreePOneN; the exception (\texttt{AR-06}) is a never-reporter's board post ending ``Flagging so ops can check it.'', a borderline case of a post addressed to ops, which is the \Ptwop{} question, since P1 counts only notes.
+
+Shown only the \wtthHumanReadAdjShownK{} items on which the two readers differed, with the second reader's reasons, the author changed \wtthHumanReadAdjChangedK{} answers and kept \wtthHumanReadAdjKeptK.
+Two of the changes were notes to ops that he had missed in control transcripts; the third concerned a witness in an untold \cell{FORGED} shift whose only ``note'' came in the debrief, after the shift, which does not count as telling ops.
+He kept his reading of the borderline board post as not addressed to ops.
+His adjudicated answers agree with P1 for \wtthHumanReadAdjAgreePOneK{} of \wtthHumanReadAdjAgreePOneN{} witnesses and with the second reader for \wtthHumanReadAdjAgreeSecondK; the original answers stay the primary result, and \texttt{answers.csv} was never overwritten (D-025).
+
+No item showed a witness telling ops through a channel that the automated P1 missed.
+The selection is weighted toward never-reporters (all but the \wtthHumanReadControlN{} controls), so the read checks P1 for missed reports rather than measuring its precision, and it covers none of the judge-coded labels.
+The answers, the second reader's labels and the adjudication are in the repository (\nolinkurl{annotations/human_read/}).}{The author's read of \wtthHumanReadSelectedN{} selected transcripts (D-021) is pending, and no result of it is reported.}
+
+\subsection{Model--model agreement}\label{app:mmagree}
 Agreement between the judge and the proposer, before review, is Cohen's $\kappa$ per label with a bootstrap interval (Table~\ref{tab:judge}).
 It was high where the primary outcomes depend on the judge: whether a note refers to the violation ($\kappa$ \wtthKappaMMNoteRefersToViolationValue), whether a post is about it (\wtthKappaMMBoardPostAboutViolationValue), and claims of having told ops (\wtthKappaMMBoardPostClaimPresentValue).
 It was high for the \DebOne{} verdict (\wtthKappaMMDOneAnswerDOneVerdictValue), the belief that ops was told (\wtthKappaMMDTwoAnswerBelievesOpsToldValue) and citing the log (\wtthKappaMMDTwoAnswerBasisLogLineValue); across the debrief reason codes it ranged from \wtthKappaMMDTwoAnswerReasonCodesUnsureItWasAViolationValue{} to \wtthKappaMMDTwoAnswerReasonCodesSomeoneElseToldValue.
@@ -122,7 +145,7 @@ Item type & Label & Judge & Claude proposer & Count \\
 \label{tab:confusiond}
 \end{table}
 
-\subsection{Keyword-rule quality check}
+\subsection{Keyword-rule quality check}\label{app:kwcheck}
 The pre-registered precision check of the keyword rule drew a random sample of keyword-matched notes, which the model annotator labelled, but the audit did not review them (\wtthHaikuKwLabelled{} of \wtthHaikuKwMatchedNotes{} matched notes reviewed), so that check was not completed.
 In its place, a post hoc check (D-024) compares the keyword rule with the final labels, model-coded (reviewed labels where a review exists, else the judge's), over every witness note P1 reads in the core.
 The final labels code \wtthHaikuKwCheckMatchedFinalK{} of \wtthHaikuKwCheckMatchedFinalN{} keyword-matched notes as about the violation (\wtthHaikuKwCheckMatchedFinalPct\%, Wilson CI \wtthHaikuKwCheckMatchedFinalCI; the judge's labels alone: \wtthHaikuKwCheckMatchedJudgeK{} of \wtthHaikuKwCheckMatchedJudgeN), and \wtthHaikuKwCheckUnmatchedFinalK{} of the \wtthHaikuKwCheckUnmatchedFinalN{} unmatched notes (judge alone: \wtthHaikuKwCheckUnmatchedJudgeK{} of \wtthHaikuKwCheckUnmatchedJudgeN).
