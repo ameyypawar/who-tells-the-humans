@@ -15,7 +15,7 @@
 \item \textbf{Do not rely on channel-written receipts that posts can imitate}: our log's layout became the forgery template (ours, Section~\ref{sec:h3}), and the log lowered reporting under a bare claim.
 \item \textbf{Make receipts unforgeable by construction}: render them outside the post stream, as a field no agent can write, or sign them, as transparency logs do for certificates \citep{rfc6962,rfc9162}, with an explicit empty state (untested; prior: \citep{ghosh2026pcm,vezhnevets2023concordia}), a candidate for MCP and \AtwoA{} \citep{mcp3350,a2a2355}.
 \item \textbf{Give agents a way to check a receipt}, such as a log query (untested): prompt rules did not detectably help Haiku (exploratory, Section~\ref{sec:followup}), and were partial in prior work \citep{patel2026fabricated,hines2024spotlighting}.
-\item \textbf{Key de-duplication to real receipts}: after a true, receipted claim alert load was \wtthHaikuAlertLoadReceiptMean{} notes per shift, against \wtthHaikuAlertLoadPolicyMean{} under the rule, a saving only real reports make legitimate (the forged line's \wtthHaikuAlertLoadForgedMean{} is none: its claim was false; ours, Section~\ref{sec:frontier}).
+\item \textbf{Key de-duplication to real receipts}: after a true, receipted claim alert load was \wtthHaikuAlertLoadReceiptMean{} notes per shift, against \wtthHaikuAlertLoadPolicyMean{} under the rule, a saving only real reports make legitimate (the forged line's lower \wtthHaikuAlertLoadForgedMean{} is no saving, since its claim was false; Section~\ref{sec:frontier}).
 \item \textbf{Keep a private channel to a human} (prior: \citep{eldin2026codeofsilence,fuller2026smoke}; untested here).
 \end{enumerate}
 
