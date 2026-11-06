@@ -5,6 +5,7 @@
 """
 import csv
 import re
+import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -37,7 +38,7 @@ def pdftext(pages: bool = False) -> str:
     if not pdf.exists():
         bad("1", "build/main.pdf missing", True)
         return ""
-    return subprocess.run(["/opt/homebrew/bin/pdftotext", "-layout", str(pdf), "-"], capture_output=True, text=True).stdout
+    return subprocess.run([shutil.which("pdftotext") or "/opt/homebrew/bin/pdftotext", "-layout", str(pdf), "-"], capture_output=True, text=True).stdout
 
 
 TEXT = pdftext()

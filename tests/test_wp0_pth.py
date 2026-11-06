@@ -7,14 +7,16 @@ from __future__ import annotations
 
 import os
 import subprocess
+import sys
 import unittest
 from pathlib import Path
 
 from tests.util import tmp_dir
 
 REPO = Path(__file__).resolve().parents[1]
-PYTHON = "/Users/amey/.local/wtth/venv/bin/python"
-REAL_PTH = Path("/Users/amey/.local/wtth/venv/lib/python3.12/site-packages/wtth.pth")
+WTTH_HOME = Path(os.environ.get("WTTH_HOME", "/Users/amey/.local/wtth"))
+PYTHON = os.environ.get("WTTH_PYTHON") or sys.executable
+REAL_PTH = WTTH_HOME / "venv/lib/python3.12/site-packages/wtth.pth"
 
 
 class PthTests(unittest.TestCase):

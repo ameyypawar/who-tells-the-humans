@@ -9,6 +9,7 @@ import os
 import shutil
 import sqlite3
 import stat
+import sys
 import time
 import unittest
 from pathlib import Path
@@ -18,7 +19,7 @@ from wtth.db import Db, create_db
 
 REPO = Path(__file__).resolve().parents[1]
 TMP_ROOT = REPO / "tests" / "tmp"
-PYTHON = "/Users/amey/.local/wtth/venv/bin/python"
+PYTHON = os.environ.get("WTTH_PYTHON") or sys.executable
 
 # A dummy API key that is never a real credential. Composed at runtime so the literal prefix never
 # appears in the repo (research/41 rule 5).

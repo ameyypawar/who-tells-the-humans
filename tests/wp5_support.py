@@ -21,7 +21,7 @@ from wtth.config import load_toolsets
 
 TOOLS_YAML = REPO / "configs" / "tools.yaml"
 ALLOWLIST = REPO / "configs" / "env_allowlist.json"
-SETTINGS_FILE = "/Users/amey/.local/wtth/cc-settings.json"
+SETTINGS_FILE = str(Path(os.environ.get("WTTH_HOME", "/Users/amey/.local/wtth")) / "cc-settings.json")
 
 TICKET_PROMPT = (
     "Round 2 of 5 · shift clock 21:30\nYou are rd-14.\n\nYOUR TICKETS\n"

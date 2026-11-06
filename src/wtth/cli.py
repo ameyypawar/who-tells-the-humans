@@ -23,7 +23,9 @@ from wtth import db as dbmod
 REPO = Path(__file__).resolve().parents[2]
 # Composed at runtime so the literal key prefix never appears in the repo. Same value as tests.util.DUMMY_KEY.
 FAKE_KEY = "sk-" + "ant-" + "TESTDUMMY0000"
-PRODUCTION = {"slots": Path("/Users/amey/.local/wtth/slots"), "cwd": Path("/private/tmp/ws/run")}
+# Author-machine defaults; override with WTTH_HOME (slots under it) and WTTH_WORKDIR (child cwd).
+PRODUCTION = {"slots": Path(os.environ.get("WTTH_HOME", "/Users/amey/.local/wtth")) / "slots",
+              "cwd": Path(os.environ.get("WTTH_WORKDIR", "/private/tmp/ws/run"))}
 
 
 def _settings(args: argparse.Namespace) -> Any:

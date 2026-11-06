@@ -16,7 +16,7 @@ from wtth.runner.stream import parse_stream
 from wtth.types import StreamRecord, ToolSpec, Toolset, TurnType
 
 EXP = EXPECTED_INIT
-WTTH = Path("/Users/amey/.local/wtth")
+WTTH = Path(os.environ.get("WTTH_HOME", "/Users/amey/.local/wtth"))
 REHEARSAL = sorted(glob.glob(str(WTTH / "rehearsal" / "out-*.jsonl")))
 PROBES = sorted(glob.glob(str(WTTH / "probe-*.jsonl")))
 

@@ -3,7 +3,7 @@
 # Usage: build.sh [--offline] [--no-check] [--final]   (--offline = tectonic --only-cached)
 set -e
 cd "$(dirname "$0")"
-PY=/Users/amey/.local/wtth/venv/bin/python
+PY="${WTTH_PYTHON:-/Users/amey/.local/wtth/venv/bin/python}"
 OFFLINE=""; CHECK=--draft; RUN_CHECK=1
 for a in "$@"; do
   case "$a" in
