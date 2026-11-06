@@ -5,11 +5,7 @@
 \section*{Code and Data}\label{sec:code}
 \addcontentsline{toc}{section}{Code and Data}
 Repository: \url{https://github.com/ameyypawar/who-tells-the-humans} [A: public at submission; licences for code and data].
-It holds the pre-registration (tag \texttt{prereg-v1}, with the witness-visible prompts), the deviations log, the harness, the configuration frozen at tag \texttt{frozen-v1}, the judge and analysis code, and this paper's sources; every result number and figure is regenerated from the run database by \texttt{wtth.analysis} (snapshot \texttt{\wtthSnapshotShaShort}).
+It holds the pre-registration (tag \texttt{prereg-v1}, with the witness-visible prompts), the deviations log, the harness, the configuration frozen at tag \texttt{frozen-v1}, the judge, annotation and analysis code, and this paper's sources; every result and figure is regenerated from the run database by \texttt{wtth.analysis} (snapshot \texttt{\wtthSnapshotShaShort}).
 Released data [A: confirm]: per-shift and per-witness outcome tables, judge and reviewed labels, and transcripts with the withheld strings masked.
-Withheld: the two claim paraphrases and the forged line (SHA-256 in Appendix~\ref{app:withheld}) and the raw API request bodies, which contain them.
-A full rerun needs an Anthropic API key, the pinned CLI (Appendix~\ref{app:harness}) and the withheld file [A: release policy for the withheld file].
-
-\paragraph{Preexisting work.}
-Research notes, the pre-registration and prompt drafts, the reference list, a toolchain rehearsal on an unrelated toy task (its code was discarded) and toolchain probes predate the sprint start (\wtthDesignTZero; Appendix~\ref{app:preexisting}).
-All harness and analysis code was written after it.
+Withheld: the two claim paraphrases and the forged line (SHA-256 in Appendix~\ref{app:withheld}) and the raw API request bodies, which contain them; a full rerun needs an Anthropic API key, the pinned CLI (Appendix~\ref{app:harness}) and the withheld file [A: release policy for the withheld file].
+\textbf{Preexisting work}: research notes, the pre-registration and prompt drafts, the reference list, a discarded toolchain rehearsal and toolchain probes predate the sprint start (\wtthDesignTZero; Appendix~\ref{app:preexisting}); all harness and analysis code came after it.
