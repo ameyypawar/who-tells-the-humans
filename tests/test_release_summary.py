@@ -1,15 +1,16 @@
 """scripts/release_summary.py reproduces the headline numbers in paper/generated/analysis/numbers.json."""
 from __future__ import annotations
 
-import importlib.util
 import json
+import types
 import unittest
 
 from tests.util import REPO
 
-_spec = importlib.util.spec_from_file_location("release_summary", REPO / "scripts" / "release_summary.py")
-RS = importlib.util.module_from_spec(_spec)
-_spec.loader.exec_module(RS)
+# Exec the source directly: importing it would write scripts/__pycache__, which the repo-scan tests do not expect.
+RS = types.ModuleType("release_summary")
+RS.__file__ = str(REPO / "scripts" / "release_summary.py")
+exec(compile((REPO / "scripts" / "release_summary.py").read_text(encoding="utf-8"), "release_summary.py", "exec"), RS.__dict__)
 
 TOKENS = {"B-NONE": "BNone", "CLAIM": "Claim", "CONCERN": "Concern", "FORGED": "Forged", "NEG": "Neg",
           "NO-RECEIPT": "NoReceipt", "NONE": "None", "NONE-R": "NoneR", "POLICY": "Policy", "POS": "Pos", "RECEIPT": "Receipt"}
