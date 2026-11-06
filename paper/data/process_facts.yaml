@@ -9,3 +9,13 @@ model_names:
 annotator_model:   {value: "claude-opus-5-5", source: "DEVIATIONS.md D-011 F-05"}
 prereg_gist_date:  {value: "3 November 2026", source: "author, relayed in the writer brief of 2026-11-06: the PREREG hash was posted in a public gist on 2026-11-03, before data (gist URL still to be added by the author)"}
 oss_audit_date:    {value: "28 October 2026", source: "research/34-oss-audit-summary.md header (2026-10-28)"}
+# Research notes written after PREREG section 20 was frozen (it lists research/01-34) and last modified before T0.
+# Source: file modification times in the planning repository's research/ folder, read 2026-11-06 with stat (IST);
+# research/49 4.1 item 9. Extending the list to them is the author decision in research/51 item 7.
+preexisting_extension:
+  - {note: "research/35", what: "setup check (probe calls)", modified: "14:57 IST on 3 November 2026"}
+  - {note: "research/36", what: "final prior-art sweep", modified: "19:16 IST on 5 November 2026"}
+  - {note: "research/37", what: "notes on the toolchain rehearsal", modified: "13:51 IST on 5 November 2026"}
+  - {note: "research/38", what: "review of the harness design and the rehearsal prototypes", modified: "20:05 IST on 5 November 2026"}
+  - {note: "research/39", what: "quality rating of the same", modified: "19:58 IST on 5 November 2026"}
+  - {note: "research/40", what: "build specification from those two reviews", modified: "20:06 IST on 5 November 2026"}

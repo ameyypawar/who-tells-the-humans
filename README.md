@@ -9,6 +9,7 @@ All code and results will be added during the sprint (Nov 6–8, 2026). Withheld
 - **T0 (sprint start): Thu 2026-11-05 21:26:10 IST (15:56:10 UTC)**, earlier than the originally planned Sat Nov 7 03:00 IST kickoff.
 - Permission: Apart Research staff on the hackathon Discord (#help-desk, Nov 5) said: "You can start today 🙂 Friday has already started in some parts of the world".
 - Everything before T0 was preparation and is disclosed in the report: research notes, the pre-registration, prompt drafts, references, a toolchain rehearsal on an unrelated toy task (its code was discarded), and toolchain probes.
+- The preexisting research notes are `research/01–40`. PREREG §20 lists `research/01–34`; the list is extended here and in the report (Appendix C.2) to six later notes, all last modified before T0: `research/35` (setup check, Nov 3 14:57 IST), `research/36` (final prior-art sweep, Nov 5 19:16), `research/37` (toolchain rehearsal notes, Nov 5 13:51), `research/38` and `research/39` (two reviews of the harness design and the rehearsal prototypes, Nov 5 20:05 and 19:58) and `research/40` (build specification from those reviews, Nov 5 20:06).
 
 ## Running the harness
 
