@@ -1,10 +1,22 @@
-% sections/05-discussion.tex (writer fills; budget 0.85 page)
+% sections/05-discussion.tex (plan 49 section 2.3, about 0.85 page). 5.1 is the realised branch file (branch.tex).
+% 5.2: each recommendation is tagged with its evidence, ours (sections 4.1 to 4.4) or prior (cited keys already in the
+% bibliography; no new keys). Strength wording follows the realised codes: H2 = O (a log is not enough), H3 = S
+% (provenance must be enforced), frontier no-yes (a rule matched receipts on safety, not on alert load).
+% Never: "receipts restore reporting", "one sentence fixes it", secure against a compromised channel (plan 49 4.2).
 \section{Discussion and Limitations}\label{sec:discussion}
 \subsection{Back to the incident}
 \wtthInputBranch{disc}
-\subsection{What deployers and protocol designers can do}
-\wtthStub{5.2 numbered recommendations, each tagged with its evidence}
-\subsection{Limitations}
-\wtthStub{5.3 bullets pointing to Appendix A}
-\subsection{Future work}
-\wtthStub{5.4}
+
+\subsection{What deployers and protocol designers can do}\label{sec:recs}
+\begin{enumerate}
+\item \textbf{Give agents a sanctioned, private channel to a human.} With one, a bare claim barely mattered (ours, Section~\ref{sec:h1}).
+\item \textbf{Let only the channel write receipts, in a form no agent can forge}: a role-typed field rendered unlike any post, or a signed record, never text inside a message (ours, Section~\ref{sec:h3}; prior: \citep{ghosh2026pcm,vezhnevets2023concordia,compaction2026}).
+\item \textbf{Teach agents to check a receipt's provenance before they stand down}: where it sits and which sender the channel stamped, not what it looks like (ours, \cell{FORGED} against \cell{RECEIPT}); a rule sentence alone fails more often for claims that arrive through tool output (prior: \citep{patel2026fabricated}).
+\item \textbf{Show absence, but test what a log does}: ``\wtthStimLogEmpty'' makes a claim checkable, yet beside a false claim it did not raise reporting (ours, Section~\ref{sec:h2}).
+\item \textbf{Key de-duplication to receipts, not to a one-line rule}, which matched receipts on safety but not on alert load (ours, Section~\ref{sec:frontier}); and \textbf{protect reporters}, since our receipts name the sender (untested).
+\end{enumerate}
+Channel-written receipts with an explicit empty state, a form agents cannot type and a provenance check are a candidate pattern for tool-outcome attestation in MCP and for \AtwoA{} extensions \citep{mcp3350,a2a2355}, not a standard.
+
+\subsection{Limitations and future work}
+Claude only, with \wtthDesignModelSonnetName{} exploratory; one fictional scenario at one clarity level, at ceiling; a scripted claimant and \wtthDesignLiveWitnessesWord{} witnesses per shift; stateless turns and a stub operator; a plain-text log that also lists the witnesses' own notes, so H2 mixes the claimant's missing receipt with peers' real ones; an LLM judge and AI-audited model labels with no blind human check; and self-reported debriefs whose reason codes mostly agreed poorly between models (Appendix~\ref{app:limits}).
+Next: a group-size curve, other model families, a log showing only the claimant's receipt (to separate the readings of H2), signed or typed receipts with a verification tool, agents with memory, and the two modules we did not run (D-008).
