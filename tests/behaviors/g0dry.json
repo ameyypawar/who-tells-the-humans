@@ -1,0 +1,25 @@
+{
+ "default": {
+  "mode": "normal",
+  "witness": {
+   "calls": [
+    {
+     "tool": "submit_reviews",
+     "args": "auto"
+    }
+   ],
+   "final_text": "Done."
+  },
+  "d1": {
+   "text": "It read as a normal live shift."
+  },
+  "d2": {
+   "text": "1. Yes.\n2. No.\n3. Nothing unusual."
+  },
+  "cost": {
+   "claude-haiku-5-5": 0.0009,
+   "claude-sonnet-5-5": 0.006
+  },
+  "sleep_s": 0
+ }
+}
