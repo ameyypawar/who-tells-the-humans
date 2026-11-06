@@ -6,14 +6,680 @@
 \newcommand{\wtthBlindStatus}{declined}
 % configs/analysis.yaml
 \newcommand{\wtthBootstrapB}{10{,}000}
-% judge_ledger
-\newcommand{\wtthCostJudgeUsd}{\$40.89}
+% spend without the D-022 follow-up: pilots, core, Sonnet arm, their judge (CostTotalUsd minus CostExpOneTotalUsd)
+\newcommand{\wtthCostBeforeExpOneUsd}{\$80.40}
+% exploratory (D-022) follow-up spend (D-023 item 1): judge_ledger of runs/judge_exp1
+\newcommand{\wtthCostExpOneJudgeUsd}{\$2.61}
+% exploratory (D-022) follow-up spend (D-023 item 1): main ledger, phase exp1probe
+\newcommand{\wtthCostExpOneProbeUsd}{\$0.24}
+% exploratory (D-022) follow-up spend (D-023 item 1): main ledger, phase exp1
+\newcommand{\wtthCostExpOneRunUsd}{\$7.29}
+% exploratory (D-022) follow-up spend (D-023 item 1): run + probes + judge
+\newcommand{\wtthCostExpOneTotalUsd}{\$10.14}
+% judge_ledger of every judge database (runs/judge*/judge.sqlite, D-023 item 4)
+\newcommand{\wtthCostJudgeUsd}{\$43.50}
 % cost_ledger of the main database
-\newcommand{\wtthCostMainUsd}{\$44.10}
-% prior spend + main ledger + judge ledger
-\newcommand{\wtthCostTotalUsd}{\$84.99}
-% exploratory (D-022): phase exp1 not run / partial / complete (done episodes by arm SonnetReceipt 20, XForgedPolicy 0, XForgedProv 0)
-\newcommand{\wtthExpOneStatus}{partial}
+\newcommand{\wtthCostMainUsd}{\$47.04}
+% prior spend + main ledger + every judge ledger
+\newcommand{\wtthCostTotalUsd}{\$90.54}
+% P1:RECEIPT-SonnetForged stream=exp1 B=10000 level=0.95; exploratory (D-022)
+\newcommand{\wtthExpOneDiffPOneSonnetReceiptMinusSonnetForgedB}{10{,}000}
+% P1:RECEIPT-SonnetForged stream=exp1 B=10000 level=0.95; exploratory (D-022)
+\newcommand{\wtthExpOneDiffPOneSonnetReceiptMinusSonnetForgedCI}{\ensuremath{-}46.7 to \ensuremath{-}22.2}
+% P1:RECEIPT-SonnetForged stream=exp1 B=10000 level=0.95; exploratory (D-022)
+\newcommand{\wtthExpOneDiffPOneSonnetReceiptMinusSonnetForgedDelta}{\ensuremath{-}34.4}
+% P1:RECEIPT-SonnetForged stream=exp1 B=10000 level=0.95; exploratory (D-022)
+\newcommand{\wtthExpOneDiffPOneSonnetReceiptMinusSonnetForgedDirection}{opposite}
+% P1:RECEIPT-SonnetForged (exploratory (D-022)): interval excludes 0
+\newcommand{\wtthExpOneDiffPOneSonnetReceiptMinusSonnetForgedExcl}{yes}
+% P1:RECEIPT-SonnetForged stream=exp1 B=10000 level=0.95; exploratory (D-022)
+\newcommand{\wtthExpOneDiffPOneSonnetReceiptMinusSonnetForgedHi}{\ensuremath{-}22.2}
+% P1:RECEIPT-SonnetForged stream=exp1 B=10000 level=0.95; exploratory (D-022)
+\newcommand{\wtthExpOneDiffPOneSonnetReceiptMinusSonnetForgedLo}{\ensuremath{-}46.7}
+% P1:RECEIPT-SonnetForged stream=exp1 B=10000 level=0.95; exploratory (D-022)
+\newcommand{\wtthExpOneDiffPOneSonnetReceiptMinusSonnetForgedStatus}{exploratory}
+% P1:RECEIPT-SonnetForged stream=exp1 B=10000 level=0.95; exploratory (D-022)
+\newcommand{\wtthExpOneDiffPOneSonnetReceiptMinusSonnetForgedVerdict}{exploratory}
+% P1:X-FORGED-POLICY-HaikuForged stream=exp1 B=10000 level=0.95; exploratory (D-022)
+\newcommand{\wtthExpOneDiffPOneXForgedPolicyMinusHaikuForgedB}{10{,}000}
+% P1:X-FORGED-POLICY-HaikuForged stream=exp1 B=10000 level=0.95; exploratory (D-022)
+\newcommand{\wtthExpOneDiffPOneXForgedPolicyMinusHaikuForgedCI}{\ensuremath{-}4.0 to 18.7}
+% P1:X-FORGED-POLICY-HaikuForged stream=exp1 B=10000 level=0.95; exploratory (D-022)
+\newcommand{\wtthExpOneDiffPOneXForgedPolicyMinusHaikuForgedDelta}{7.3}
+% P1:X-FORGED-POLICY-HaikuForged stream=exp1 B=10000 level=0.95; exploratory (D-022)
+\newcommand{\wtthExpOneDiffPOneXForgedPolicyMinusHaikuForgedDirection}{predicted}
+% P1:X-FORGED-POLICY-HaikuForged (exploratory (D-022)): interval excludes 0
+\newcommand{\wtthExpOneDiffPOneXForgedPolicyMinusHaikuForgedExcl}{no}
+% P1:X-FORGED-POLICY-HaikuForged stream=exp1 B=10000 level=0.95; exploratory (D-022)
+\newcommand{\wtthExpOneDiffPOneXForgedPolicyMinusHaikuForgedHi}{18.7}
+% P1:X-FORGED-POLICY-HaikuForged stream=exp1 B=10000 level=0.95; exploratory (D-022)
+\newcommand{\wtthExpOneDiffPOneXForgedPolicyMinusHaikuForgedLo}{\ensuremath{-}4.0}
+% P1:X-FORGED-POLICY-HaikuForged stream=exp1 B=10000 level=0.95; exploratory (D-022)
+\newcommand{\wtthExpOneDiffPOneXForgedPolicyMinusHaikuForgedStatus}{exploratory}
+% P1:X-FORGED-POLICY-HaikuForged stream=exp1 B=10000 level=0.95; exploratory (D-022)
+\newcommand{\wtthExpOneDiffPOneXForgedPolicyMinusHaikuForgedVerdict}{exploratory}
+% P1:X-FORGED-POLICY-HaikuNoReceipt stream=exp1 B=10000 level=0.95; exploratory (D-022)
+\newcommand{\wtthExpOneDiffPOneXForgedPolicyMinusHaikuNoReceiptB}{10{,}000}
+% P1:X-FORGED-POLICY-HaikuNoReceipt stream=exp1 B=10000 level=0.95; exploratory (D-022)
+\newcommand{\wtthExpOneDiffPOneXForgedPolicyMinusHaikuNoReceiptCI}{\ensuremath{-}24.9 to \ensuremath{-}8.1}
+% P1:X-FORGED-POLICY-HaikuNoReceipt stream=exp1 B=10000 level=0.95; exploratory (D-022)
+\newcommand{\wtthExpOneDiffPOneXForgedPolicyMinusHaikuNoReceiptDelta}{\ensuremath{-}16.4}
+% P1:X-FORGED-POLICY-HaikuNoReceipt stream=exp1 B=10000 level=0.95; exploratory (D-022)
+\newcommand{\wtthExpOneDiffPOneXForgedPolicyMinusHaikuNoReceiptDirection}{opposite}
+% P1:X-FORGED-POLICY-HaikuNoReceipt (exploratory (D-022)): interval excludes 0
+\newcommand{\wtthExpOneDiffPOneXForgedPolicyMinusHaikuNoReceiptExcl}{yes}
+% P1:X-FORGED-POLICY-HaikuNoReceipt stream=exp1 B=10000 level=0.95; exploratory (D-022)
+\newcommand{\wtthExpOneDiffPOneXForgedPolicyMinusHaikuNoReceiptHi}{\ensuremath{-}8.1}
+% P1:X-FORGED-POLICY-HaikuNoReceipt stream=exp1 B=10000 level=0.95; exploratory (D-022)
+\newcommand{\wtthExpOneDiffPOneXForgedPolicyMinusHaikuNoReceiptLo}{\ensuremath{-}24.9}
+% P1:X-FORGED-POLICY-HaikuNoReceipt stream=exp1 B=10000 level=0.95; exploratory (D-022)
+\newcommand{\wtthExpOneDiffPOneXForgedPolicyMinusHaikuNoReceiptStatus}{exploratory}
+% P1:X-FORGED-POLICY-HaikuNoReceipt stream=exp1 B=10000 level=0.95; exploratory (D-022)
+\newcommand{\wtthExpOneDiffPOneXForgedPolicyMinusHaikuNoReceiptVerdict}{exploratory}
+% P1:X-FORGED-PROV-HaikuForged stream=exp1 B=10000 level=0.95; exploratory (D-022)
+\newcommand{\wtthExpOneDiffPOneXForgedProvMinusHaikuForgedB}{10{,}000}
+% P1:X-FORGED-PROV-HaikuForged stream=exp1 B=10000 level=0.95; exploratory (D-022)
+\newcommand{\wtthExpOneDiffPOneXForgedProvMinusHaikuForgedCI}{\ensuremath{-}4.0 to 17.3}
+% P1:X-FORGED-PROV-HaikuForged stream=exp1 B=10000 level=0.95; exploratory (D-022)
+\newcommand{\wtthExpOneDiffPOneXForgedProvMinusHaikuForgedDelta}{6.7}
+% P1:X-FORGED-PROV-HaikuForged stream=exp1 B=10000 level=0.95; exploratory (D-022)
+\newcommand{\wtthExpOneDiffPOneXForgedProvMinusHaikuForgedDirection}{predicted}
+% P1:X-FORGED-PROV-HaikuForged (exploratory (D-022)): interval excludes 0
+\newcommand{\wtthExpOneDiffPOneXForgedProvMinusHaikuForgedExcl}{no}
+% P1:X-FORGED-PROV-HaikuForged stream=exp1 B=10000 level=0.95; exploratory (D-022)
+\newcommand{\wtthExpOneDiffPOneXForgedProvMinusHaikuForgedHi}{17.3}
+% P1:X-FORGED-PROV-HaikuForged stream=exp1 B=10000 level=0.95; exploratory (D-022)
+\newcommand{\wtthExpOneDiffPOneXForgedProvMinusHaikuForgedLo}{\ensuremath{-}4.0}
+% P1:X-FORGED-PROV-HaikuForged stream=exp1 B=10000 level=0.95; exploratory (D-022)
+\newcommand{\wtthExpOneDiffPOneXForgedProvMinusHaikuForgedStatus}{exploratory}
+% P1:X-FORGED-PROV-HaikuForged stream=exp1 B=10000 level=0.95; exploratory (D-022)
+\newcommand{\wtthExpOneDiffPOneXForgedProvMinusHaikuForgedVerdict}{exploratory}
+% P1:X-FORGED-PROV-HaikuNoReceipt stream=exp1 B=10000 level=0.95; exploratory (D-022)
+\newcommand{\wtthExpOneDiffPOneXForgedProvMinusHaikuNoReceiptB}{10{,}000}
+% P1:X-FORGED-PROV-HaikuNoReceipt stream=exp1 B=10000 level=0.95; exploratory (D-022)
+\newcommand{\wtthExpOneDiffPOneXForgedProvMinusHaikuNoReceiptCI}{\ensuremath{-}25.2 to \ensuremath{-}8.8}
+% P1:X-FORGED-PROV-HaikuNoReceipt stream=exp1 B=10000 level=0.95; exploratory (D-022)
+\newcommand{\wtthExpOneDiffPOneXForgedProvMinusHaikuNoReceiptDelta}{\ensuremath{-}17.1}
+% P1:X-FORGED-PROV-HaikuNoReceipt stream=exp1 B=10000 level=0.95; exploratory (D-022)
+\newcommand{\wtthExpOneDiffPOneXForgedProvMinusHaikuNoReceiptDirection}{opposite}
+% P1:X-FORGED-PROV-HaikuNoReceipt (exploratory (D-022)): interval excludes 0
+\newcommand{\wtthExpOneDiffPOneXForgedProvMinusHaikuNoReceiptExcl}{yes}
+% P1:X-FORGED-PROV-HaikuNoReceipt stream=exp1 B=10000 level=0.95; exploratory (D-022)
+\newcommand{\wtthExpOneDiffPOneXForgedProvMinusHaikuNoReceiptHi}{\ensuremath{-}8.8}
+% P1:X-FORGED-PROV-HaikuNoReceipt stream=exp1 B=10000 level=0.95; exploratory (D-022)
+\newcommand{\wtthExpOneDiffPOneXForgedProvMinusHaikuNoReceiptLo}{\ensuremath{-}25.2}
+% P1:X-FORGED-PROV-HaikuNoReceipt stream=exp1 B=10000 level=0.95; exploratory (D-022)
+\newcommand{\wtthExpOneDiffPOneXForgedProvMinusHaikuNoReceiptStatus}{exploratory}
+% P1:X-FORGED-PROV-HaikuNoReceipt stream=exp1 B=10000 level=0.95; exploratory (D-022)
+\newcommand{\wtthExpOneDiffPOneXForgedProvMinusHaikuNoReceiptVerdict}{exploratory}
+% P2:X-FORGED-POLICY-HaikuForged stream=exp1 B=10000 level=0.95; exploratory (D-022)
+\newcommand{\wtthExpOneDiffPTwoXForgedPolicyMinusHaikuForgedB}{10{,}000}
+% P2:X-FORGED-POLICY-HaikuForged stream=exp1 B=10000 level=0.95; exploratory (D-022)
+\newcommand{\wtthExpOneDiffPTwoXForgedPolicyMinusHaikuForgedCI}{\ensuremath{-}14.0 to 2.0}
+% P2:X-FORGED-POLICY-HaikuForged stream=exp1 B=10000 level=0.95; exploratory (D-022)
+\newcommand{\wtthExpOneDiffPTwoXForgedPolicyMinusHaikuForgedDelta}{\ensuremath{-}6.0}
+% P2:X-FORGED-POLICY-HaikuForged stream=exp1 B=10000 level=0.95; exploratory (D-022)
+\newcommand{\wtthExpOneDiffPTwoXForgedPolicyMinusHaikuForgedDirection}{opposite}
+% P2:X-FORGED-POLICY-HaikuForged (exploratory (D-022)): interval excludes 0
+\newcommand{\wtthExpOneDiffPTwoXForgedPolicyMinusHaikuForgedExcl}{no}
+% P2:X-FORGED-POLICY-HaikuForged stream=exp1 B=10000 level=0.95; exploratory (D-022)
+\newcommand{\wtthExpOneDiffPTwoXForgedPolicyMinusHaikuForgedHi}{2.0}
+% P2:X-FORGED-POLICY-HaikuForged stream=exp1 B=10000 level=0.95; exploratory (D-022)
+\newcommand{\wtthExpOneDiffPTwoXForgedPolicyMinusHaikuForgedLo}{\ensuremath{-}14.0}
+% P2:X-FORGED-POLICY-HaikuForged stream=exp1 B=10000 level=0.95; exploratory (D-022)
+\newcommand{\wtthExpOneDiffPTwoXForgedPolicyMinusHaikuForgedStatus}{exploratory}
+% P2:X-FORGED-POLICY-HaikuForged stream=exp1 B=10000 level=0.95; exploratory (D-022)
+\newcommand{\wtthExpOneDiffPTwoXForgedPolicyMinusHaikuForgedVerdict}{exploratory}
+% P2:X-FORGED-POLICY-HaikuNoReceipt stream=exp1 B=10000 level=0.95; exploratory (D-022)
+\newcommand{\wtthExpOneDiffPTwoXForgedPolicyMinusHaikuNoReceiptB}{10{,}000}
+% P2:X-FORGED-POLICY-HaikuNoReceipt stream=exp1 B=10000 level=0.95; exploratory (D-022)
+\newcommand{\wtthExpOneDiffPTwoXForgedPolicyMinusHaikuNoReceiptCI}{0.0 to 6.0}
+% P2:X-FORGED-POLICY-HaikuNoReceipt stream=exp1 B=10000 level=0.95; exploratory (D-022)
+\newcommand{\wtthExpOneDiffPTwoXForgedPolicyMinusHaikuNoReceiptDelta}{2.0}
+% P2:X-FORGED-POLICY-HaikuNoReceipt stream=exp1 B=10000 level=0.95; exploratory (D-022)
+\newcommand{\wtthExpOneDiffPTwoXForgedPolicyMinusHaikuNoReceiptDirection}{predicted}
+% P2:X-FORGED-POLICY-HaikuNoReceipt (exploratory (D-022)): interval excludes 0
+\newcommand{\wtthExpOneDiffPTwoXForgedPolicyMinusHaikuNoReceiptExcl}{no}
+% P2:X-FORGED-POLICY-HaikuNoReceipt stream=exp1 B=10000 level=0.95; exploratory (D-022)
+\newcommand{\wtthExpOneDiffPTwoXForgedPolicyMinusHaikuNoReceiptHi}{6.0}
+% P2:X-FORGED-POLICY-HaikuNoReceipt stream=exp1 B=10000 level=0.95; exploratory (D-022)
+\newcommand{\wtthExpOneDiffPTwoXForgedPolicyMinusHaikuNoReceiptLo}{0.0}
+% P2:X-FORGED-POLICY-HaikuNoReceipt stream=exp1 B=10000 level=0.95; exploratory (D-022)
+\newcommand{\wtthExpOneDiffPTwoXForgedPolicyMinusHaikuNoReceiptStatus}{exploratory}
+% P2:X-FORGED-POLICY-HaikuNoReceipt stream=exp1 B=10000 level=0.95; exploratory (D-022)
+\newcommand{\wtthExpOneDiffPTwoXForgedPolicyMinusHaikuNoReceiptVerdict}{exploratory}
+% P2:X-FORGED-PROV-HaikuForged stream=exp1 B=10000 level=0.95; exploratory (D-022)
+\newcommand{\wtthExpOneDiffPTwoXForgedProvMinusHaikuForgedB}{10{,}000}
+% P2:X-FORGED-PROV-HaikuForged stream=exp1 B=10000 level=0.95; exploratory (D-022)
+\newcommand{\wtthExpOneDiffPTwoXForgedProvMinusHaikuForgedCI}{\ensuremath{-}16.0 to \ensuremath{-}2.0}
+% P2:X-FORGED-PROV-HaikuForged stream=exp1 B=10000 level=0.95; exploratory (D-022)
+\newcommand{\wtthExpOneDiffPTwoXForgedProvMinusHaikuForgedDelta}{\ensuremath{-}8.0}
+% P2:X-FORGED-PROV-HaikuForged stream=exp1 B=10000 level=0.95; exploratory (D-022)
+\newcommand{\wtthExpOneDiffPTwoXForgedProvMinusHaikuForgedDirection}{opposite}
+% P2:X-FORGED-PROV-HaikuForged (exploratory (D-022)): interval excludes 0
+\newcommand{\wtthExpOneDiffPTwoXForgedProvMinusHaikuForgedExcl}{yes}
+% P2:X-FORGED-PROV-HaikuForged stream=exp1 B=10000 level=0.95; exploratory (D-022)
+\newcommand{\wtthExpOneDiffPTwoXForgedProvMinusHaikuForgedHi}{\ensuremath{-}2.0}
+% P2:X-FORGED-PROV-HaikuForged stream=exp1 B=10000 level=0.95; exploratory (D-022)
+\newcommand{\wtthExpOneDiffPTwoXForgedProvMinusHaikuForgedLo}{\ensuremath{-}16.0}
+% P2:X-FORGED-PROV-HaikuForged stream=exp1 B=10000 level=0.95; exploratory (D-022)
+\newcommand{\wtthExpOneDiffPTwoXForgedProvMinusHaikuForgedStatus}{exploratory}
+% P2:X-FORGED-PROV-HaikuForged stream=exp1 B=10000 level=0.95; exploratory (D-022)
+\newcommand{\wtthExpOneDiffPTwoXForgedProvMinusHaikuForgedVerdict}{exploratory}
+% P2:X-FORGED-PROV-HaikuNoReceipt stream=exp1 B=10000 level=0.95; exploratory (D-022)
+\newcommand{\wtthExpOneDiffPTwoXForgedProvMinusHaikuNoReceiptB}{10{,}000}
+% P2:X-FORGED-PROV-HaikuNoReceipt stream=exp1 B=10000 level=0.95; exploratory (D-022)
+\newcommand{\wtthExpOneDiffPTwoXForgedProvMinusHaikuNoReceiptCI}{0.0 to 0.0}
+% P2:X-FORGED-PROV-HaikuNoReceipt stream=exp1 B=10000 level=0.95; exploratory (D-022)
+\newcommand{\wtthExpOneDiffPTwoXForgedProvMinusHaikuNoReceiptDelta}{0.0}
+% P2:X-FORGED-PROV-HaikuNoReceipt stream=exp1 B=10000 level=0.95; exploratory (D-022)
+\newcommand{\wtthExpOneDiffPTwoXForgedProvMinusHaikuNoReceiptDirection}{zero}
+% P2:X-FORGED-PROV-HaikuNoReceipt (exploratory (D-022)): interval excludes 0
+\newcommand{\wtthExpOneDiffPTwoXForgedProvMinusHaikuNoReceiptExcl}{no}
+% P2:X-FORGED-PROV-HaikuNoReceipt stream=exp1 B=10000 level=0.95; exploratory (D-022)
+\newcommand{\wtthExpOneDiffPTwoXForgedProvMinusHaikuNoReceiptHi}{0.0}
+% P2:X-FORGED-PROV-HaikuNoReceipt stream=exp1 B=10000 level=0.95; exploratory (D-022)
+\newcommand{\wtthExpOneDiffPTwoXForgedProvMinusHaikuNoReceiptLo}{0.0}
+% P2:X-FORGED-PROV-HaikuNoReceipt stream=exp1 B=10000 level=0.95; exploratory (D-022)
+\newcommand{\wtthExpOneDiffPTwoXForgedProvMinusHaikuNoReceiptStatus}{exploratory}
+% P2:X-FORGED-PROV-HaikuNoReceipt stream=exp1 B=10000 level=0.95; exploratory (D-022)
+\newcommand{\wtthExpOneDiffPTwoXForgedProvMinusHaikuNoReceiptVerdict}{exploratory}
+% exploratory (D-022): RECEIPT (Sonnet) shifts
+\newcommand{\wtthExpOneSonnetReceiptEps}{30}
+% sonnet RECEIPT p1 (wilson); exploratory (D-022), phase exp1, witness-level Wilson
+\newcommand{\wtthExpOneSonnetReceiptPOneCI}{51.9 to 71.5}
+% sonnet RECEIPT p1 (wilson); exploratory (D-022), phase exp1, witness-level Wilson | share of units with a known label
+\newcommand{\wtthExpOneSonnetReceiptPOneCov}{100.0}
+% sonnet RECEIPT p1 (wilson); exploratory (D-022), phase exp1, witness-level Wilson
+\newcommand{\wtthExpOneSonnetReceiptPOneEps}{30}
+% sonnet RECEIPT p1 (wilson); exploratory (D-022), phase exp1, witness-level Wilson
+\newcommand{\wtthExpOneSonnetReceiptPOneHi}{71.5}
+% sonnet RECEIPT p1 (wilson); exploratory (D-022), phase exp1, witness-level Wilson
+\newcommand{\wtthExpOneSonnetReceiptPOneK}{56}
+% sonnet RECEIPT p1 (wilson); exploratory (D-022), phase exp1, witness-level Wilson
+\newcommand{\wtthExpOneSonnetReceiptPOneLo}{51.9}
+% sonnet RECEIPT p1 (wilson); exploratory (D-022), phase exp1, witness-level Wilson
+\newcommand{\wtthExpOneSonnetReceiptPOneN}{90}
+% sonnet RECEIPT p1 (wilson); exploratory (D-022), phase exp1, witness-level Wilson
+\newcommand{\wtthExpOneSonnetReceiptPOnePct}{62.2}
+% exploratory (D-022): phase exp1 not run / partial / complete (done episodes by arm SonnetReceipt 30, XForgedPolicy 50, XForgedProv 50)
+\newcommand{\wtthExpOneStatus}{complete}
+% exploratory (D-022), descriptive: sonnet RECEIPT witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); could_not_verify_reported_anyway
+\newcommand{\wtthExpOneTimingNeverSonnetReceiptDTwoCouldNotVerifyReportedAnywayK}{2}
+% exploratory (D-022), descriptive: sonnet RECEIPT witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); could_not_verify_reported_anyway
+\newcommand{\wtthExpOneTimingNeverSonnetReceiptDTwoCouldNotVerifyReportedAnywayPct}{5.9}
+% exploratory (D-022), descriptive: sonnet RECEIPT witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); feared_duplicate
+\newcommand{\wtthExpOneTimingNeverSonnetReceiptDTwoFearedDuplicateK}{19}
+% exploratory (D-022), descriptive: sonnet RECEIPT witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); feared_duplicate
+\newcommand{\wtthExpOneTimingNeverSonnetReceiptDTwoFearedDuplicatePct}{55.9}
+% exploratory (D-022), descriptive: sonnet RECEIPT witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); judged_rule_broken
+\newcommand{\wtthExpOneTimingNeverSonnetReceiptDTwoJudgedRuleBrokenK}{33}
+% exploratory (D-022), descriptive: sonnet RECEIPT witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); judged_rule_broken
+\newcommand{\wtthExpOneTimingNeverSonnetReceiptDTwoJudgedRuleBrokenPct}{97.1}
+% exploratory (D-022), descriptive: sonnet RECEIPT witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several)
+\newcommand{\wtthExpOneTimingNeverSonnetReceiptDTwoN}{34}
+% exploratory (D-022), descriptive: sonnet RECEIPT witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); no_channel_perceived
+\newcommand{\wtthExpOneTimingNeverSonnetReceiptDTwoNoChannelPerceivedK}{0}
+% exploratory (D-022), descriptive: sonnet RECEIPT witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); no_channel_perceived
+\newcommand{\wtthExpOneTimingNeverSonnetReceiptDTwoNoChannelPerceivedPct}{0.0}
+% exploratory (D-022), descriptive: sonnet RECEIPT witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); not_my_job
+\newcommand{\wtthExpOneTimingNeverSonnetReceiptDTwoNotMyJobK}{2}
+% exploratory (D-022), descriptive: sonnet RECEIPT witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); not_my_job
+\newcommand{\wtthExpOneTimingNeverSonnetReceiptDTwoNotMyJobPct}{5.9}
+% exploratory (D-022), descriptive: sonnet RECEIPT witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); noticed_violation
+\newcommand{\wtthExpOneTimingNeverSonnetReceiptDTwoNoticedViolationK}{34}
+% exploratory (D-022), descriptive: sonnet RECEIPT witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); noticed_violation
+\newcommand{\wtthExpOneTimingNeverSonnetReceiptDTwoNoticedViolationPct}{100.0}
+% exploratory (D-022), descriptive: sonnet RECEIPT witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); other
+\newcommand{\wtthExpOneTimingNeverSonnetReceiptDTwoOtherK}{4}
+% exploratory (D-022), descriptive: sonnet RECEIPT witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); other
+\newcommand{\wtthExpOneTimingNeverSonnetReceiptDTwoOtherPct}{11.8}
+% exploratory (D-022), descriptive: sonnet RECEIPT witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); someone_else_told
+\newcommand{\wtthExpOneTimingNeverSonnetReceiptDTwoSomeoneElseToldK}{34}
+% exploratory (D-022), descriptive: sonnet RECEIPT witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); someone_else_told
+\newcommand{\wtthExpOneTimingNeverSonnetReceiptDTwoSomeoneElseToldPct}{100.0}
+% exploratory (D-022), descriptive: sonnet RECEIPT witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); thought_ops_aware
+\newcommand{\wtthExpOneTimingNeverSonnetReceiptDTwoThoughtOpsAwareK}{17}
+% exploratory (D-022), descriptive: sonnet RECEIPT witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); thought_ops_aware
+\newcommand{\wtthExpOneTimingNeverSonnetReceiptDTwoThoughtOpsAwarePct}{50.0}
+% exploratory (D-022), descriptive: sonnet RECEIPT witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); trusted_claim
+\newcommand{\wtthExpOneTimingNeverSonnetReceiptDTwoTrustedClaimK}{22}
+% exploratory (D-022), descriptive: sonnet RECEIPT witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); trusted_claim
+\newcommand{\wtthExpOneTimingNeverSonnetReceiptDTwoTrustedClaimPct}{64.7}
+% exploratory (D-022), descriptive: sonnet RECEIPT witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); unsure_it_was_a_violation
+\newcommand{\wtthExpOneTimingNeverSonnetReceiptDTwoUnsureItWasAViolationK}{0}
+% exploratory (D-022), descriptive: sonnet RECEIPT witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); unsure_it_was_a_violation
+\newcommand{\wtthExpOneTimingNeverSonnetReceiptDTwoUnsureItWasAViolationPct}{0.0}
+% exploratory (D-022), descriptive: haiku X-FORGED-POLICY witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); could_not_verify_reported_anyway
+\newcommand{\wtthExpOneTimingNeverXForgedPolicyDTwoCouldNotVerifyReportedAnywayK}{30}
+% exploratory (D-022), descriptive: haiku X-FORGED-POLICY witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); could_not_verify_reported_anyway
+\newcommand{\wtthExpOneTimingNeverXForgedPolicyDTwoCouldNotVerifyReportedAnywayPct}{76.9}
+% exploratory (D-022), descriptive: haiku X-FORGED-POLICY witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); feared_duplicate
+\newcommand{\wtthExpOneTimingNeverXForgedPolicyDTwoFearedDuplicateK}{5}
+% exploratory (D-022), descriptive: haiku X-FORGED-POLICY witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); feared_duplicate
+\newcommand{\wtthExpOneTimingNeverXForgedPolicyDTwoFearedDuplicatePct}{12.8}
+% exploratory (D-022), descriptive: haiku X-FORGED-POLICY witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); judged_rule_broken
+\newcommand{\wtthExpOneTimingNeverXForgedPolicyDTwoJudgedRuleBrokenK}{37}
+% exploratory (D-022), descriptive: haiku X-FORGED-POLICY witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); judged_rule_broken
+\newcommand{\wtthExpOneTimingNeverXForgedPolicyDTwoJudgedRuleBrokenPct}{94.9}
+% exploratory (D-022), descriptive: haiku X-FORGED-POLICY witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several)
+\newcommand{\wtthExpOneTimingNeverXForgedPolicyDTwoN}{39}
+% exploratory (D-022), descriptive: haiku X-FORGED-POLICY witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); no_channel_perceived
+\newcommand{\wtthExpOneTimingNeverXForgedPolicyDTwoNoChannelPerceivedK}{17}
+% exploratory (D-022), descriptive: haiku X-FORGED-POLICY witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); no_channel_perceived
+\newcommand{\wtthExpOneTimingNeverXForgedPolicyDTwoNoChannelPerceivedPct}{43.6}
+% exploratory (D-022), descriptive: haiku X-FORGED-POLICY witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); not_my_job
+\newcommand{\wtthExpOneTimingNeverXForgedPolicyDTwoNotMyJobK}{7}
+% exploratory (D-022), descriptive: haiku X-FORGED-POLICY witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); not_my_job
+\newcommand{\wtthExpOneTimingNeverXForgedPolicyDTwoNotMyJobPct}{17.9}
+% exploratory (D-022), descriptive: haiku X-FORGED-POLICY witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); noticed_violation
+\newcommand{\wtthExpOneTimingNeverXForgedPolicyDTwoNoticedViolationK}{39}
+% exploratory (D-022), descriptive: haiku X-FORGED-POLICY witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); noticed_violation
+\newcommand{\wtthExpOneTimingNeverXForgedPolicyDTwoNoticedViolationPct}{100.0}
+% exploratory (D-022), descriptive: haiku X-FORGED-POLICY witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); other
+\newcommand{\wtthExpOneTimingNeverXForgedPolicyDTwoOtherK}{18}
+% exploratory (D-022), descriptive: haiku X-FORGED-POLICY witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); other
+\newcommand{\wtthExpOneTimingNeverXForgedPolicyDTwoOtherPct}{46.2}
+% exploratory (D-022), descriptive: haiku X-FORGED-POLICY witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); someone_else_told
+\newcommand{\wtthExpOneTimingNeverXForgedPolicyDTwoSomeoneElseToldK}{25}
+% exploratory (D-022), descriptive: haiku X-FORGED-POLICY witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); someone_else_told
+\newcommand{\wtthExpOneTimingNeverXForgedPolicyDTwoSomeoneElseToldPct}{64.1}
+% exploratory (D-022), descriptive: haiku X-FORGED-POLICY witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); thought_ops_aware
+\newcommand{\wtthExpOneTimingNeverXForgedPolicyDTwoThoughtOpsAwareK}{12}
+% exploratory (D-022), descriptive: haiku X-FORGED-POLICY witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); thought_ops_aware
+\newcommand{\wtthExpOneTimingNeverXForgedPolicyDTwoThoughtOpsAwarePct}{30.8}
+% exploratory (D-022), descriptive: haiku X-FORGED-POLICY witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); trusted_claim
+\newcommand{\wtthExpOneTimingNeverXForgedPolicyDTwoTrustedClaimK}{2}
+% exploratory (D-022), descriptive: haiku X-FORGED-POLICY witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); trusted_claim
+\newcommand{\wtthExpOneTimingNeverXForgedPolicyDTwoTrustedClaimPct}{5.1}
+% exploratory (D-022), descriptive: haiku X-FORGED-POLICY witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); unsure_it_was_a_violation
+\newcommand{\wtthExpOneTimingNeverXForgedPolicyDTwoUnsureItWasAViolationK}{0}
+% exploratory (D-022), descriptive: haiku X-FORGED-POLICY witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); unsure_it_was_a_violation
+\newcommand{\wtthExpOneTimingNeverXForgedPolicyDTwoUnsureItWasAViolationPct}{0.0}
+% exploratory (D-022), descriptive: haiku X-FORGED-PROV witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); could_not_verify_reported_anyway
+\newcommand{\wtthExpOneTimingNeverXForgedProvDTwoCouldNotVerifyReportedAnywayK}{19}
+% exploratory (D-022), descriptive: haiku X-FORGED-PROV witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); could_not_verify_reported_anyway
+\newcommand{\wtthExpOneTimingNeverXForgedProvDTwoCouldNotVerifyReportedAnywayPct}{47.5}
+% exploratory (D-022), descriptive: haiku X-FORGED-PROV witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); feared_duplicate
+\newcommand{\wtthExpOneTimingNeverXForgedProvDTwoFearedDuplicateK}{4}
+% exploratory (D-022), descriptive: haiku X-FORGED-PROV witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); feared_duplicate
+\newcommand{\wtthExpOneTimingNeverXForgedProvDTwoFearedDuplicatePct}{10.0}
+% exploratory (D-022), descriptive: haiku X-FORGED-PROV witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); judged_rule_broken
+\newcommand{\wtthExpOneTimingNeverXForgedProvDTwoJudgedRuleBrokenK}{38}
+% exploratory (D-022), descriptive: haiku X-FORGED-PROV witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); judged_rule_broken
+\newcommand{\wtthExpOneTimingNeverXForgedProvDTwoJudgedRuleBrokenPct}{95.0}
+% exploratory (D-022), descriptive: haiku X-FORGED-PROV witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several)
+\newcommand{\wtthExpOneTimingNeverXForgedProvDTwoN}{40}
+% exploratory (D-022), descriptive: haiku X-FORGED-PROV witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); no_channel_perceived
+\newcommand{\wtthExpOneTimingNeverXForgedProvDTwoNoChannelPerceivedK}{8}
+% exploratory (D-022), descriptive: haiku X-FORGED-PROV witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); no_channel_perceived
+\newcommand{\wtthExpOneTimingNeverXForgedProvDTwoNoChannelPerceivedPct}{20.0}
+% exploratory (D-022), descriptive: haiku X-FORGED-PROV witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); not_my_job
+\newcommand{\wtthExpOneTimingNeverXForgedProvDTwoNotMyJobK}{6}
+% exploratory (D-022), descriptive: haiku X-FORGED-PROV witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); not_my_job
+\newcommand{\wtthExpOneTimingNeverXForgedProvDTwoNotMyJobPct}{15.0}
+% exploratory (D-022), descriptive: haiku X-FORGED-PROV witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); noticed_violation
+\newcommand{\wtthExpOneTimingNeverXForgedProvDTwoNoticedViolationK}{40}
+% exploratory (D-022), descriptive: haiku X-FORGED-PROV witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); noticed_violation
+\newcommand{\wtthExpOneTimingNeverXForgedProvDTwoNoticedViolationPct}{100.0}
+% exploratory (D-022), descriptive: haiku X-FORGED-PROV witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); other
+\newcommand{\wtthExpOneTimingNeverXForgedProvDTwoOtherK}{24}
+% exploratory (D-022), descriptive: haiku X-FORGED-PROV witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); other
+\newcommand{\wtthExpOneTimingNeverXForgedProvDTwoOtherPct}{60.0}
+% exploratory (D-022), descriptive: haiku X-FORGED-PROV witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); someone_else_told
+\newcommand{\wtthExpOneTimingNeverXForgedProvDTwoSomeoneElseToldK}{22}
+% exploratory (D-022), descriptive: haiku X-FORGED-PROV witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); someone_else_told
+\newcommand{\wtthExpOneTimingNeverXForgedProvDTwoSomeoneElseToldPct}{55.0}
+% exploratory (D-022), descriptive: haiku X-FORGED-PROV witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); thought_ops_aware
+\newcommand{\wtthExpOneTimingNeverXForgedProvDTwoThoughtOpsAwareK}{14}
+% exploratory (D-022), descriptive: haiku X-FORGED-PROV witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); thought_ops_aware
+\newcommand{\wtthExpOneTimingNeverXForgedProvDTwoThoughtOpsAwarePct}{35.0}
+% exploratory (D-022), descriptive: haiku X-FORGED-PROV witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); trusted_claim
+\newcommand{\wtthExpOneTimingNeverXForgedProvDTwoTrustedClaimK}{2}
+% exploratory (D-022), descriptive: haiku X-FORGED-PROV witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); trusted_claim
+\newcommand{\wtthExpOneTimingNeverXForgedProvDTwoTrustedClaimPct}{5.0}
+% exploratory (D-022), descriptive: haiku X-FORGED-PROV witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); unsure_it_was_a_violation
+\newcommand{\wtthExpOneTimingNeverXForgedProvDTwoUnsureItWasAViolationK}{0}
+% exploratory (D-022), descriptive: haiku X-FORGED-PROV witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); unsure_it_was_a_violation
+\newcommand{\wtthExpOneTimingNeverXForgedProvDTwoUnsureItWasAViolationPct}{0.0}
+% exploratory (D-022), descriptive: sonnet RECEIPT shifts, round of the first witness violation note; first witness note in round 3 or later with C's real log line already in the round-2 digest
+\newcommand{\wtthExpOneTimingShiftSonnetReceiptLateAfterReceiptK}{23}
+% exploratory (D-022), descriptive: sonnet RECEIPT shifts, round of the first witness violation note; first witness note in round 3 or later
+\newcommand{\wtthExpOneTimingShiftSonnetReceiptLateK}{23}
+% exploratory (D-022), descriptive: sonnet RECEIPT shifts, round of the first witness violation note; first witness note in round 3 or later
+\newcommand{\wtthExpOneTimingShiftSonnetReceiptLatePct}{76.7}
+% exploratory (D-022), descriptive: sonnet RECEIPT shifts, round of the first witness violation note
+\newcommand{\wtthExpOneTimingShiftSonnetReceiptN}{30}
+% exploratory (D-022), descriptive: sonnet RECEIPT shifts, round of the first witness violation note; no witness note
+\newcommand{\wtthExpOneTimingShiftSonnetReceiptNeverK}{3}
+% exploratory (D-022), descriptive: sonnet RECEIPT shifts, round of the first witness violation note; no witness note
+\newcommand{\wtthExpOneTimingShiftSonnetReceiptNeverPct}{10.0}
+% exploratory (D-022), descriptive: sonnet RECEIPT shifts, round of the first witness violation note
+\newcommand{\wtthExpOneTimingShiftSonnetReceiptRoundFiveK}{0}
+% exploratory (D-022), descriptive: sonnet RECEIPT shifts, round of the first witness violation note
+\newcommand{\wtthExpOneTimingShiftSonnetReceiptRoundFivePct}{0.0}
+% exploratory (D-022), descriptive: sonnet RECEIPT shifts, round of the first witness violation note
+\newcommand{\wtthExpOneTimingShiftSonnetReceiptRoundFourK}{19}
+% exploratory (D-022), descriptive: sonnet RECEIPT shifts, round of the first witness violation note
+\newcommand{\wtthExpOneTimingShiftSonnetReceiptRoundFourPct}{63.3}
+% exploratory (D-022), descriptive: sonnet RECEIPT shifts, round of the first witness violation note
+\newcommand{\wtthExpOneTimingShiftSonnetReceiptRoundOneK}{0}
+% exploratory (D-022), descriptive: sonnet RECEIPT shifts, round of the first witness violation note
+\newcommand{\wtthExpOneTimingShiftSonnetReceiptRoundOnePct}{0.0}
+% exploratory (D-022), descriptive: sonnet RECEIPT shifts, round of the first witness violation note
+\newcommand{\wtthExpOneTimingShiftSonnetReceiptRoundThreeK}{4}
+% exploratory (D-022), descriptive: sonnet RECEIPT shifts, round of the first witness violation note
+\newcommand{\wtthExpOneTimingShiftSonnetReceiptRoundThreePct}{13.3}
+% exploratory (D-022), descriptive: sonnet RECEIPT shifts, round of the first witness violation note
+\newcommand{\wtthExpOneTimingShiftSonnetReceiptRoundTwoK}{4}
+% exploratory (D-022), descriptive: sonnet RECEIPT shifts, round of the first witness violation note
+\newcommand{\wtthExpOneTimingShiftSonnetReceiptRoundTwoPct}{13.3}
+% exploratory (D-022), descriptive: haiku X-FORGED-POLICY shifts, round of the first witness violation note; first witness note in round 3 or later
+\newcommand{\wtthExpOneTimingShiftXForgedPolicyLateK}{8}
+% exploratory (D-022), descriptive: haiku X-FORGED-POLICY shifts, round of the first witness violation note; first witness note in round 3 or later
+\newcommand{\wtthExpOneTimingShiftXForgedPolicyLatePct}{16.0}
+% exploratory (D-022), descriptive: haiku X-FORGED-POLICY shifts, round of the first witness violation note
+\newcommand{\wtthExpOneTimingShiftXForgedPolicyN}{50}
+% exploratory (D-022), descriptive: haiku X-FORGED-POLICY shifts, round of the first witness violation note; no witness note
+\newcommand{\wtthExpOneTimingShiftXForgedPolicyNeverK}{1}
+% exploratory (D-022), descriptive: haiku X-FORGED-POLICY shifts, round of the first witness violation note; no witness note
+\newcommand{\wtthExpOneTimingShiftXForgedPolicyNeverPct}{2.0}
+% exploratory (D-022), descriptive: haiku X-FORGED-POLICY shifts, round of the first witness violation note
+\newcommand{\wtthExpOneTimingShiftXForgedPolicyRoundFiveK}{0}
+% exploratory (D-022), descriptive: haiku X-FORGED-POLICY shifts, round of the first witness violation note
+\newcommand{\wtthExpOneTimingShiftXForgedPolicyRoundFivePct}{0.0}
+% exploratory (D-022), descriptive: haiku X-FORGED-POLICY shifts, round of the first witness violation note
+\newcommand{\wtthExpOneTimingShiftXForgedPolicyRoundFourK}{0}
+% exploratory (D-022), descriptive: haiku X-FORGED-POLICY shifts, round of the first witness violation note
+\newcommand{\wtthExpOneTimingShiftXForgedPolicyRoundFourPct}{0.0}
+% exploratory (D-022), descriptive: haiku X-FORGED-POLICY shifts, round of the first witness violation note
+\newcommand{\wtthExpOneTimingShiftXForgedPolicyRoundOneK}{0}
+% exploratory (D-022), descriptive: haiku X-FORGED-POLICY shifts, round of the first witness violation note
+\newcommand{\wtthExpOneTimingShiftXForgedPolicyRoundOnePct}{0.0}
+% exploratory (D-022), descriptive: haiku X-FORGED-POLICY shifts, round of the first witness violation note
+\newcommand{\wtthExpOneTimingShiftXForgedPolicyRoundThreeK}{8}
+% exploratory (D-022), descriptive: haiku X-FORGED-POLICY shifts, round of the first witness violation note
+\newcommand{\wtthExpOneTimingShiftXForgedPolicyRoundThreePct}{16.0}
+% exploratory (D-022), descriptive: haiku X-FORGED-POLICY shifts, round of the first witness violation note
+\newcommand{\wtthExpOneTimingShiftXForgedPolicyRoundTwoK}{41}
+% exploratory (D-022), descriptive: haiku X-FORGED-POLICY shifts, round of the first witness violation note
+\newcommand{\wtthExpOneTimingShiftXForgedPolicyRoundTwoPct}{82.0}
+% exploratory (D-022), descriptive: haiku X-FORGED-PROV shifts, round of the first witness violation note; first witness note in round 3 or later
+\newcommand{\wtthExpOneTimingShiftXForgedProvLateK}{18}
+% exploratory (D-022), descriptive: haiku X-FORGED-PROV shifts, round of the first witness violation note; first witness note in round 3 or later
+\newcommand{\wtthExpOneTimingShiftXForgedProvLatePct}{36.0}
+% exploratory (D-022), descriptive: haiku X-FORGED-PROV shifts, round of the first witness violation note
+\newcommand{\wtthExpOneTimingShiftXForgedProvN}{50}
+% exploratory (D-022), descriptive: haiku X-FORGED-PROV shifts, round of the first witness violation note; no witness note
+\newcommand{\wtthExpOneTimingShiftXForgedProvNeverK}{0}
+% exploratory (D-022), descriptive: haiku X-FORGED-PROV shifts, round of the first witness violation note; no witness note
+\newcommand{\wtthExpOneTimingShiftXForgedProvNeverPct}{0.0}
+% exploratory (D-022), descriptive: haiku X-FORGED-PROV shifts, round of the first witness violation note
+\newcommand{\wtthExpOneTimingShiftXForgedProvRoundFiveK}{0}
+% exploratory (D-022), descriptive: haiku X-FORGED-PROV shifts, round of the first witness violation note
+\newcommand{\wtthExpOneTimingShiftXForgedProvRoundFivePct}{0.0}
+% exploratory (D-022), descriptive: haiku X-FORGED-PROV shifts, round of the first witness violation note
+\newcommand{\wtthExpOneTimingShiftXForgedProvRoundFourK}{1}
+% exploratory (D-022), descriptive: haiku X-FORGED-PROV shifts, round of the first witness violation note
+\newcommand{\wtthExpOneTimingShiftXForgedProvRoundFourPct}{2.0}
+% exploratory (D-022), descriptive: haiku X-FORGED-PROV shifts, round of the first witness violation note
+\newcommand{\wtthExpOneTimingShiftXForgedProvRoundOneK}{0}
+% exploratory (D-022), descriptive: haiku X-FORGED-PROV shifts, round of the first witness violation note
+\newcommand{\wtthExpOneTimingShiftXForgedProvRoundOnePct}{0.0}
+% exploratory (D-022), descriptive: haiku X-FORGED-PROV shifts, round of the first witness violation note
+\newcommand{\wtthExpOneTimingShiftXForgedProvRoundThreeK}{17}
+% exploratory (D-022), descriptive: haiku X-FORGED-PROV shifts, round of the first witness violation note
+\newcommand{\wtthExpOneTimingShiftXForgedProvRoundThreePct}{34.0}
+% exploratory (D-022), descriptive: haiku X-FORGED-PROV shifts, round of the first witness violation note
+\newcommand{\wtthExpOneTimingShiftXForgedProvRoundTwoK}{32}
+% exploratory (D-022), descriptive: haiku X-FORGED-PROV shifts, round of the first witness violation note
+\newcommand{\wtthExpOneTimingShiftXForgedProvRoundTwoPct}{64.0}
+% exploratory (D-022), descriptive: sonnet RECEIPT witnesses, round of the first violation note (P1 definition); ByRoundTwo
+\newcommand{\wtthExpOneTimingSonnetReceiptByRoundTwoK}{4}
+% exploratory (D-022), descriptive: sonnet RECEIPT witnesses, round of the first violation note (P1 definition); ByRoundTwo, share of the cell's witnesses
+\newcommand{\wtthExpOneTimingSonnetReceiptByRoundTwoPct}{4.4}
+% exploratory (D-022), descriptive: sonnet RECEIPT witnesses, round of the first violation note (P1 definition); HeldOff
+\newcommand{\wtthExpOneTimingSonnetReceiptHeldOffK}{86}
+% exploratory (D-022), descriptive: sonnet RECEIPT witnesses, round of the first violation note (P1 definition); held off (no violation note by the end of round 2), and a peer's line (another witness or C) in the #escalation-log of the round-3 digest
+\newcommand{\wtthExpOneTimingSonnetReceiptHeldOffNoPeerK}{0}
+% exploratory (D-022), descriptive: sonnet RECEIPT witnesses, round of the first violation note (P1 definition); held off (no violation note by the end of round 2), and a peer's line (another witness or C) in the #escalation-log of the round-3 digest
+\newcommand{\wtthExpOneTimingSonnetReceiptHeldOffNoPeerNeverK}{0}
+% exploratory (D-022), descriptive: sonnet RECEIPT witnesses, round of the first violation note (P1 definition); held off (no violation note by the end of round 2), and a peer's line (another witness or C) in the #escalation-log of the round-3 digest
+\newcommand{\wtthExpOneTimingSonnetReceiptHeldOffNoPeerReportedK}{0}
+% exploratory (D-022), descriptive: sonnet RECEIPT witnesses, round of the first violation note (P1 definition); HeldOff, share of the cell's witnesses
+\newcommand{\wtthExpOneTimingSonnetReceiptHeldOffPct}{95.6}
+% exploratory (D-022), descriptive: sonnet RECEIPT witnesses, round of the first violation note (P1 definition); held off (no violation note by the end of round 2), and a peer's line (another witness or C) in the #escalation-log of the round-3 digest
+\newcommand{\wtthExpOneTimingSonnetReceiptHeldOffPeerK}{86}
+% exploratory (D-022), descriptive: sonnet RECEIPT witnesses, round of the first violation note (P1 definition); held off (no violation note by the end of round 2), and a peer's line (another witness or C) in the #escalation-log of the round-3 digest
+\newcommand{\wtthExpOneTimingSonnetReceiptHeldOffPeerNeverK}{34}
+% exploratory (D-022), descriptive: sonnet RECEIPT witnesses, round of the first violation note (P1 definition); held off (no violation note by the end of round 2), and a peer's line (another witness or C) in the #escalation-log of the round-3 digest
+\newcommand{\wtthExpOneTimingSonnetReceiptHeldOffPeerPct}{100.0}
+% exploratory (D-022), descriptive: sonnet RECEIPT witnesses, round of the first violation note (P1 definition); held off (no violation note by the end of round 2), and a peer's line (another witness or C) in the #escalation-log of the round-3 digest
+\newcommand{\wtthExpOneTimingSonnetReceiptHeldOffPeerReportedK}{52}
+% exploratory (D-022), descriptive: sonnet RECEIPT witnesses, round of the first violation note (P1 definition); HeldOffReported
+\newcommand{\wtthExpOneTimingSonnetReceiptHeldOffReportedK}{52}
+% exploratory (D-022), descriptive: sonnet RECEIPT witnesses, round of the first violation note (P1 definition); HeldOffReported, share of the cell's witnesses
+\newcommand{\wtthExpOneTimingSonnetReceiptHeldOffReportedPct}{57.8}
+% exploratory (D-022), descriptive: sonnet RECEIPT witnesses, round of the first violation note (P1 definition); witnesses with no violation note by the end of round 2 who reported later
+\newcommand{\wtthExpOneTimingSonnetReceiptLaterOfHeldOffPct}{60.5}
+% exploratory (D-022), descriptive: sonnet RECEIPT witnesses, round of the first violation note (P1 definition); the cell shows #escalation-log
+\newcommand{\wtthExpOneTimingSonnetReceiptLog}{yes}
+% exploratory (D-022), descriptive: sonnet RECEIPT witnesses, round of the first violation note (P1 definition)
+\newcommand{\wtthExpOneTimingSonnetReceiptN}{90}
+% exploratory (D-022), descriptive: sonnet RECEIPT witnesses, round of the first violation note (P1 definition); Never
+\newcommand{\wtthExpOneTimingSonnetReceiptNeverK}{34}
+% exploratory (D-022), descriptive: sonnet RECEIPT witnesses, round of the first violation note (P1 definition); Never, share of the cell's witnesses
+\newcommand{\wtthExpOneTimingSonnetReceiptNeverPct}{37.8}
+% exploratory (D-022), descriptive: sonnet RECEIPT witnesses, round of the first violation note (P1 definition); held off (no violation note by the end of round 2), and a peer's line (another witness or C) in the #escalation-log of the round-3 digest; share of the never-reporters
+\newcommand{\wtthExpOneTimingSonnetReceiptNeverPeerPct}{100.0}
+% exploratory (D-022), descriptive: sonnet RECEIPT witnesses, round of the first violation note (P1 definition); held off (no violation note by the end of round 2), and a peer's line (another witness or C) in the #escalation-log of the round-3 digest; of those, the recorded log lines agree with the visibility rule
+\newcommand{\wtthExpOneTimingSonnetReceiptRecordedAgree}{86}
+% exploratory (D-022), descriptive: sonnet RECEIPT witnesses, round of the first violation note (P1 definition); held off (no violation note by the end of round 2), and a peer's line (another witness or C) in the #escalation-log of the round-3 digest; held-off witnesses whose recorded round-3 prompt (exposures) was read
+\newcommand{\wtthExpOneTimingSonnetReceiptRecordedChecked}{86}
+% exploratory (D-022), descriptive: sonnet RECEIPT witnesses, round of the first violation note (P1 definition)
+\newcommand{\wtthExpOneTimingSonnetReceiptRoundFiveK}{0}
+% exploratory (D-022), descriptive: sonnet RECEIPT witnesses, round of the first violation note (P1 definition)
+\newcommand{\wtthExpOneTimingSonnetReceiptRoundFivePct}{0.0}
+% exploratory (D-022), descriptive: sonnet RECEIPT witnesses, round of the first violation note (P1 definition)
+\newcommand{\wtthExpOneTimingSonnetReceiptRoundFourK}{47}
+% exploratory (D-022), descriptive: sonnet RECEIPT witnesses, round of the first violation note (P1 definition)
+\newcommand{\wtthExpOneTimingSonnetReceiptRoundFourPct}{52.2}
+% exploratory (D-022), descriptive: sonnet RECEIPT witnesses, round of the first violation note (P1 definition)
+\newcommand{\wtthExpOneTimingSonnetReceiptRoundOneK}{0}
+% exploratory (D-022), descriptive: sonnet RECEIPT witnesses, round of the first violation note (P1 definition)
+\newcommand{\wtthExpOneTimingSonnetReceiptRoundOnePct}{0.0}
+% exploratory (D-022), descriptive: sonnet RECEIPT witnesses, round of the first violation note (P1 definition)
+\newcommand{\wtthExpOneTimingSonnetReceiptRoundThreeK}{5}
+% exploratory (D-022), descriptive: sonnet RECEIPT witnesses, round of the first violation note (P1 definition)
+\newcommand{\wtthExpOneTimingSonnetReceiptRoundThreePct}{5.6}
+% exploratory (D-022), descriptive: sonnet RECEIPT witnesses, round of the first violation note (P1 definition)
+\newcommand{\wtthExpOneTimingSonnetReceiptRoundTwoK}{4}
+% exploratory (D-022), descriptive: sonnet RECEIPT witnesses, round of the first violation note (P1 definition)
+\newcommand{\wtthExpOneTimingSonnetReceiptRoundTwoPct}{4.4}
+% exploratory (D-022), descriptive: haiku X-FORGED-POLICY witnesses, round of the first violation note (P1 definition); ByRoundTwo
+\newcommand{\wtthExpOneTimingXForgedPolicyByRoundTwoK}{86}
+% exploratory (D-022), descriptive: haiku X-FORGED-POLICY witnesses, round of the first violation note (P1 definition); ByRoundTwo, share of the cell's witnesses
+\newcommand{\wtthExpOneTimingXForgedPolicyByRoundTwoPct}{57.3}
+% exploratory (D-022), descriptive: haiku X-FORGED-POLICY witnesses, round of the first violation note (P1 definition); HeldOff
+\newcommand{\wtthExpOneTimingXForgedPolicyHeldOffK}{64}
+% exploratory (D-022), descriptive: haiku X-FORGED-POLICY witnesses, round of the first violation note (P1 definition); held off (no violation note by the end of round 2), and a peer's line (another witness or C) in the #escalation-log of the round-3 digest
+\newcommand{\wtthExpOneTimingXForgedPolicyHeldOffNoPeerK}{27}
+% exploratory (D-022), descriptive: haiku X-FORGED-POLICY witnesses, round of the first violation note (P1 definition); held off (no violation note by the end of round 2), and a peer's line (another witness or C) in the #escalation-log of the round-3 digest
+\newcommand{\wtthExpOneTimingXForgedPolicyHeldOffNoPeerNeverK}{13}
+% exploratory (D-022), descriptive: haiku X-FORGED-POLICY witnesses, round of the first violation note (P1 definition); held off (no violation note by the end of round 2), and a peer's line (another witness or C) in the #escalation-log of the round-3 digest
+\newcommand{\wtthExpOneTimingXForgedPolicyHeldOffNoPeerReportedK}{14}
+% exploratory (D-022), descriptive: haiku X-FORGED-POLICY witnesses, round of the first violation note (P1 definition); HeldOff, share of the cell's witnesses
+\newcommand{\wtthExpOneTimingXForgedPolicyHeldOffPct}{42.7}
+% exploratory (D-022), descriptive: haiku X-FORGED-POLICY witnesses, round of the first violation note (P1 definition); held off (no violation note by the end of round 2), and a peer's line (another witness or C) in the #escalation-log of the round-3 digest
+\newcommand{\wtthExpOneTimingXForgedPolicyHeldOffPeerK}{37}
+% exploratory (D-022), descriptive: haiku X-FORGED-POLICY witnesses, round of the first violation note (P1 definition); held off (no violation note by the end of round 2), and a peer's line (another witness or C) in the #escalation-log of the round-3 digest
+\newcommand{\wtthExpOneTimingXForgedPolicyHeldOffPeerNeverK}{26}
+% exploratory (D-022), descriptive: haiku X-FORGED-POLICY witnesses, round of the first violation note (P1 definition); held off (no violation note by the end of round 2), and a peer's line (another witness or C) in the #escalation-log of the round-3 digest
+\newcommand{\wtthExpOneTimingXForgedPolicyHeldOffPeerPct}{57.8}
+% exploratory (D-022), descriptive: haiku X-FORGED-POLICY witnesses, round of the first violation note (P1 definition); held off (no violation note by the end of round 2), and a peer's line (another witness or C) in the #escalation-log of the round-3 digest
+\newcommand{\wtthExpOneTimingXForgedPolicyHeldOffPeerReportedK}{11}
+% exploratory (D-022), descriptive: haiku X-FORGED-POLICY witnesses, round of the first violation note (P1 definition); HeldOffReported
+\newcommand{\wtthExpOneTimingXForgedPolicyHeldOffReportedK}{25}
+% exploratory (D-022), descriptive: haiku X-FORGED-POLICY witnesses, round of the first violation note (P1 definition); HeldOffReported, share of the cell's witnesses
+\newcommand{\wtthExpOneTimingXForgedPolicyHeldOffReportedPct}{16.7}
+% exploratory (D-022), descriptive: haiku X-FORGED-POLICY witnesses, round of the first violation note (P1 definition); witnesses with no violation note by the end of round 2 who reported later
+\newcommand{\wtthExpOneTimingXForgedPolicyLaterOfHeldOffPct}{39.1}
+% exploratory (D-022), descriptive: haiku X-FORGED-POLICY witnesses, round of the first violation note (P1 definition); the cell shows #escalation-log
+\newcommand{\wtthExpOneTimingXForgedPolicyLog}{yes}
+% exploratory (D-022), descriptive: haiku X-FORGED-POLICY witnesses, round of the first violation note (P1 definition)
+\newcommand{\wtthExpOneTimingXForgedPolicyN}{150}
+% exploratory (D-022), descriptive: haiku X-FORGED-POLICY witnesses, round of the first violation note (P1 definition); Never
+\newcommand{\wtthExpOneTimingXForgedPolicyNeverK}{39}
+% exploratory (D-022), descriptive: haiku X-FORGED-POLICY witnesses, round of the first violation note (P1 definition); Never, share of the cell's witnesses
+\newcommand{\wtthExpOneTimingXForgedPolicyNeverPct}{26.0}
+% exploratory (D-022), descriptive: haiku X-FORGED-POLICY witnesses, round of the first violation note (P1 definition); held off (no violation note by the end of round 2), and a peer's line (another witness or C) in the #escalation-log of the round-3 digest; share of the never-reporters
+\newcommand{\wtthExpOneTimingXForgedPolicyNeverPeerPct}{66.7}
+% exploratory (D-022), descriptive: haiku X-FORGED-POLICY witnesses, round of the first violation note (P1 definition); held off (no violation note by the end of round 2), and a peer's line (another witness or C) in the #escalation-log of the round-3 digest; of those, the recorded log lines agree with the visibility rule
+\newcommand{\wtthExpOneTimingXForgedPolicyRecordedAgree}{64}
+% exploratory (D-022), descriptive: haiku X-FORGED-POLICY witnesses, round of the first violation note (P1 definition); held off (no violation note by the end of round 2), and a peer's line (another witness or C) in the #escalation-log of the round-3 digest; held-off witnesses whose recorded round-3 prompt (exposures) was read
+\newcommand{\wtthExpOneTimingXForgedPolicyRecordedChecked}{64}
+% exploratory (D-022), descriptive: haiku X-FORGED-POLICY witnesses, round of the first violation note (P1 definition)
+\newcommand{\wtthExpOneTimingXForgedPolicyRoundFiveK}{0}
+% exploratory (D-022), descriptive: haiku X-FORGED-POLICY witnesses, round of the first violation note (P1 definition)
+\newcommand{\wtthExpOneTimingXForgedPolicyRoundFivePct}{0.0}
+% exploratory (D-022), descriptive: haiku X-FORGED-POLICY witnesses, round of the first violation note (P1 definition)
+\newcommand{\wtthExpOneTimingXForgedPolicyRoundFourK}{0}
+% exploratory (D-022), descriptive: haiku X-FORGED-POLICY witnesses, round of the first violation note (P1 definition)
+\newcommand{\wtthExpOneTimingXForgedPolicyRoundFourPct}{0.0}
+% exploratory (D-022), descriptive: haiku X-FORGED-POLICY witnesses, round of the first violation note (P1 definition)
+\newcommand{\wtthExpOneTimingXForgedPolicyRoundOneK}{0}
+% exploratory (D-022), descriptive: haiku X-FORGED-POLICY witnesses, round of the first violation note (P1 definition)
+\newcommand{\wtthExpOneTimingXForgedPolicyRoundOnePct}{0.0}
+% exploratory (D-022), descriptive: haiku X-FORGED-POLICY witnesses, round of the first violation note (P1 definition)
+\newcommand{\wtthExpOneTimingXForgedPolicyRoundThreeK}{25}
+% exploratory (D-022), descriptive: haiku X-FORGED-POLICY witnesses, round of the first violation note (P1 definition)
+\newcommand{\wtthExpOneTimingXForgedPolicyRoundThreePct}{16.7}
+% exploratory (D-022), descriptive: haiku X-FORGED-POLICY witnesses, round of the first violation note (P1 definition)
+\newcommand{\wtthExpOneTimingXForgedPolicyRoundTwoK}{86}
+% exploratory (D-022), descriptive: haiku X-FORGED-POLICY witnesses, round of the first violation note (P1 definition)
+\newcommand{\wtthExpOneTimingXForgedPolicyRoundTwoPct}{57.3}
+% exploratory (D-022), descriptive: haiku X-FORGED-PROV witnesses, round of the first violation note (P1 definition); ByRoundTwo
+\newcommand{\wtthExpOneTimingXForgedProvByRoundTwoK}{64}
+% exploratory (D-022), descriptive: haiku X-FORGED-PROV witnesses, round of the first violation note (P1 definition); ByRoundTwo, share of the cell's witnesses
+\newcommand{\wtthExpOneTimingXForgedProvByRoundTwoPct}{42.7}
+% exploratory (D-022), descriptive: haiku X-FORGED-PROV witnesses, round of the first violation note (P1 definition); HeldOff
+\newcommand{\wtthExpOneTimingXForgedProvHeldOffK}{86}
+% exploratory (D-022), descriptive: haiku X-FORGED-PROV witnesses, round of the first violation note (P1 definition); held off (no violation note by the end of round 2), and a peer's line (another witness or C) in the #escalation-log of the round-3 digest
+\newcommand{\wtthExpOneTimingXForgedProvHeldOffNoPeerK}{54}
+% exploratory (D-022), descriptive: haiku X-FORGED-PROV witnesses, round of the first violation note (P1 definition); held off (no violation note by the end of round 2), and a peer's line (another witness or C) in the #escalation-log of the round-3 digest
+\newcommand{\wtthExpOneTimingXForgedProvHeldOffNoPeerNeverK}{19}
+% exploratory (D-022), descriptive: haiku X-FORGED-PROV witnesses, round of the first violation note (P1 definition); held off (no violation note by the end of round 2), and a peer's line (another witness or C) in the #escalation-log of the round-3 digest
+\newcommand{\wtthExpOneTimingXForgedProvHeldOffNoPeerReportedK}{35}
+% exploratory (D-022), descriptive: haiku X-FORGED-PROV witnesses, round of the first violation note (P1 definition); HeldOff, share of the cell's witnesses
+\newcommand{\wtthExpOneTimingXForgedProvHeldOffPct}{57.3}
+% exploratory (D-022), descriptive: haiku X-FORGED-PROV witnesses, round of the first violation note (P1 definition); held off (no violation note by the end of round 2), and a peer's line (another witness or C) in the #escalation-log of the round-3 digest
+\newcommand{\wtthExpOneTimingXForgedProvHeldOffPeerK}{32}
+% exploratory (D-022), descriptive: haiku X-FORGED-PROV witnesses, round of the first violation note (P1 definition); held off (no violation note by the end of round 2), and a peer's line (another witness or C) in the #escalation-log of the round-3 digest
+\newcommand{\wtthExpOneTimingXForgedProvHeldOffPeerNeverK}{21}
+% exploratory (D-022), descriptive: haiku X-FORGED-PROV witnesses, round of the first violation note (P1 definition); held off (no violation note by the end of round 2), and a peer's line (another witness or C) in the #escalation-log of the round-3 digest
+\newcommand{\wtthExpOneTimingXForgedProvHeldOffPeerPct}{37.2}
+% exploratory (D-022), descriptive: haiku X-FORGED-PROV witnesses, round of the first violation note (P1 definition); held off (no violation note by the end of round 2), and a peer's line (another witness or C) in the #escalation-log of the round-3 digest
+\newcommand{\wtthExpOneTimingXForgedProvHeldOffPeerReportedK}{11}
+% exploratory (D-022), descriptive: haiku X-FORGED-PROV witnesses, round of the first violation note (P1 definition); HeldOffReported
+\newcommand{\wtthExpOneTimingXForgedProvHeldOffReportedK}{46}
+% exploratory (D-022), descriptive: haiku X-FORGED-PROV witnesses, round of the first violation note (P1 definition); HeldOffReported, share of the cell's witnesses
+\newcommand{\wtthExpOneTimingXForgedProvHeldOffReportedPct}{30.7}
+% exploratory (D-022), descriptive: haiku X-FORGED-PROV witnesses, round of the first violation note (P1 definition); witnesses with no violation note by the end of round 2 who reported later
+\newcommand{\wtthExpOneTimingXForgedProvLaterOfHeldOffPct}{53.5}
+% exploratory (D-022), descriptive: haiku X-FORGED-PROV witnesses, round of the first violation note (P1 definition); the cell shows #escalation-log
+\newcommand{\wtthExpOneTimingXForgedProvLog}{yes}
+% exploratory (D-022), descriptive: haiku X-FORGED-PROV witnesses, round of the first violation note (P1 definition)
+\newcommand{\wtthExpOneTimingXForgedProvN}{150}
+% exploratory (D-022), descriptive: haiku X-FORGED-PROV witnesses, round of the first violation note (P1 definition); Never
+\newcommand{\wtthExpOneTimingXForgedProvNeverK}{40}
+% exploratory (D-022), descriptive: haiku X-FORGED-PROV witnesses, round of the first violation note (P1 definition); Never, share of the cell's witnesses
+\newcommand{\wtthExpOneTimingXForgedProvNeverPct}{26.7}
+% exploratory (D-022), descriptive: haiku X-FORGED-PROV witnesses, round of the first violation note (P1 definition); held off (no violation note by the end of round 2), and a peer's line (another witness or C) in the #escalation-log of the round-3 digest; share of the never-reporters
+\newcommand{\wtthExpOneTimingXForgedProvNeverPeerPct}{52.5}
+% exploratory (D-022), descriptive: haiku X-FORGED-PROV witnesses, round of the first violation note (P1 definition); held off (no violation note by the end of round 2), and a peer's line (another witness or C) in the #escalation-log of the round-3 digest; of those, the recorded log lines agree with the visibility rule
+\newcommand{\wtthExpOneTimingXForgedProvRecordedAgree}{86}
+% exploratory (D-022), descriptive: haiku X-FORGED-PROV witnesses, round of the first violation note (P1 definition); held off (no violation note by the end of round 2), and a peer's line (another witness or C) in the #escalation-log of the round-3 digest; held-off witnesses whose recorded round-3 prompt (exposures) was read
+\newcommand{\wtthExpOneTimingXForgedProvRecordedChecked}{86}
+% exploratory (D-022), descriptive: haiku X-FORGED-PROV witnesses, round of the first violation note (P1 definition)
+\newcommand{\wtthExpOneTimingXForgedProvRoundFiveK}{1}
+% exploratory (D-022), descriptive: haiku X-FORGED-PROV witnesses, round of the first violation note (P1 definition)
+\newcommand{\wtthExpOneTimingXForgedProvRoundFivePct}{0.7}
+% exploratory (D-022), descriptive: haiku X-FORGED-PROV witnesses, round of the first violation note (P1 definition)
+\newcommand{\wtthExpOneTimingXForgedProvRoundFourK}{1}
+% exploratory (D-022), descriptive: haiku X-FORGED-PROV witnesses, round of the first violation note (P1 definition)
+\newcommand{\wtthExpOneTimingXForgedProvRoundFourPct}{0.7}
+% exploratory (D-022), descriptive: haiku X-FORGED-PROV witnesses, round of the first violation note (P1 definition)
+\newcommand{\wtthExpOneTimingXForgedProvRoundOneK}{0}
+% exploratory (D-022), descriptive: haiku X-FORGED-PROV witnesses, round of the first violation note (P1 definition)
+\newcommand{\wtthExpOneTimingXForgedProvRoundOnePct}{0.0}
+% exploratory (D-022), descriptive: haiku X-FORGED-PROV witnesses, round of the first violation note (P1 definition)
+\newcommand{\wtthExpOneTimingXForgedProvRoundThreeK}{44}
+% exploratory (D-022), descriptive: haiku X-FORGED-PROV witnesses, round of the first violation note (P1 definition)
+\newcommand{\wtthExpOneTimingXForgedProvRoundThreePct}{29.3}
+% exploratory (D-022), descriptive: haiku X-FORGED-PROV witnesses, round of the first violation note (P1 definition)
+\newcommand{\wtthExpOneTimingXForgedProvRoundTwoK}{64}
+% exploratory (D-022), descriptive: haiku X-FORGED-PROV witnesses, round of the first violation note (P1 definition)
+\newcommand{\wtthExpOneTimingXForgedProvRoundTwoPct}{42.7}
+% exploratory (D-022): X-FORGED-POLICY shifts
+\newcommand{\wtthExpOneXForgedPolicyEps}{50}
+% haiku X-FORGED-POLICY p1 (wilson); exploratory (D-022), phase exp1, witness-level Wilson
+\newcommand{\wtthExpOneXForgedPolicyPOneCI}{66.4 to 80.4}
+% haiku X-FORGED-POLICY p1 (wilson); exploratory (D-022), phase exp1, witness-level Wilson | share of units with a known label
+\newcommand{\wtthExpOneXForgedPolicyPOneCov}{100.0}
+% haiku X-FORGED-POLICY p1 (wilson); exploratory (D-022), phase exp1, witness-level Wilson
+\newcommand{\wtthExpOneXForgedPolicyPOneEps}{50}
+% haiku X-FORGED-POLICY p1 (wilson); exploratory (D-022), phase exp1, witness-level Wilson
+\newcommand{\wtthExpOneXForgedPolicyPOneHi}{80.4}
+% haiku X-FORGED-POLICY p1 (wilson); exploratory (D-022), phase exp1, witness-level Wilson
+\newcommand{\wtthExpOneXForgedPolicyPOneK}{111}
+% haiku X-FORGED-POLICY p1 (wilson); exploratory (D-022), phase exp1, witness-level Wilson
+\newcommand{\wtthExpOneXForgedPolicyPOneLo}{66.4}
+% haiku X-FORGED-POLICY p1 (wilson); exploratory (D-022), phase exp1, witness-level Wilson
+\newcommand{\wtthExpOneXForgedPolicyPOneN}{150}
+% haiku X-FORGED-POLICY p1 (wilson); exploratory (D-022), phase exp1, witness-level Wilson
+\newcommand{\wtthExpOneXForgedPolicyPOnePct}{74.0}
+% exploratory (D-022): haiku X-FORGED-POLICY P2 (episode level, Wilson), phase exp1
+\newcommand{\wtthExpOneXForgedPolicyPTwoCI}{0.4 to 10.5}
+% exploratory (D-022): haiku X-FORGED-POLICY P2 (episode level, Wilson), phase exp1
+\newcommand{\wtthExpOneXForgedPolicyPTwoHi}{10.5}
+% exploratory (D-022): haiku X-FORGED-POLICY P2 (episode level, Wilson), phase exp1
+\newcommand{\wtthExpOneXForgedPolicyPTwoK}{1}
+% exploratory (D-022): haiku X-FORGED-POLICY P2 (episode level, Wilson), phase exp1
+\newcommand{\wtthExpOneXForgedPolicyPTwoLo}{0.4}
+% exploratory (D-022): haiku X-FORGED-POLICY P2 (episode level, Wilson), phase exp1
+\newcommand{\wtthExpOneXForgedPolicyPTwoN}{50}
+% exploratory (D-022): haiku X-FORGED-POLICY P2 (episode level, Wilson), phase exp1
+\newcommand{\wtthExpOneXForgedPolicyPTwoPct}{2.0}
+% exploratory (D-022): X-FORGED-PROV shifts
+\newcommand{\wtthExpOneXForgedProvEps}{50}
+% haiku X-FORGED-PROV p1 (wilson); exploratory (D-022), phase exp1, witness-level Wilson
+\newcommand{\wtthExpOneXForgedProvPOneCI}{65.7 to 79.8}
+% haiku X-FORGED-PROV p1 (wilson); exploratory (D-022), phase exp1, witness-level Wilson | share of units with a known label
+\newcommand{\wtthExpOneXForgedProvPOneCov}{100.0}
+% haiku X-FORGED-PROV p1 (wilson); exploratory (D-022), phase exp1, witness-level Wilson
+\newcommand{\wtthExpOneXForgedProvPOneEps}{50}
+% haiku X-FORGED-PROV p1 (wilson); exploratory (D-022), phase exp1, witness-level Wilson
+\newcommand{\wtthExpOneXForgedProvPOneHi}{79.8}
+% haiku X-FORGED-PROV p1 (wilson); exploratory (D-022), phase exp1, witness-level Wilson
+\newcommand{\wtthExpOneXForgedProvPOneK}{110}
+% haiku X-FORGED-PROV p1 (wilson); exploratory (D-022), phase exp1, witness-level Wilson
+\newcommand{\wtthExpOneXForgedProvPOneLo}{65.7}
+% haiku X-FORGED-PROV p1 (wilson); exploratory (D-022), phase exp1, witness-level Wilson
+\newcommand{\wtthExpOneXForgedProvPOneN}{150}
+% haiku X-FORGED-PROV p1 (wilson); exploratory (D-022), phase exp1, witness-level Wilson
+\newcommand{\wtthExpOneXForgedProvPOnePct}{73.3}
+% exploratory (D-022): haiku X-FORGED-PROV P2 (episode level, Wilson), phase exp1
+\newcommand{\wtthExpOneXForgedProvPTwoCI}{0.0 to 7.1}
+% exploratory (D-022): haiku X-FORGED-PROV P2 (episode level, Wilson), phase exp1
+\newcommand{\wtthExpOneXForgedProvPTwoHi}{7.1}
+% exploratory (D-022): haiku X-FORGED-PROV P2 (episode level, Wilson), phase exp1
+\newcommand{\wtthExpOneXForgedProvPTwoK}{0}
+% exploratory (D-022): haiku X-FORGED-PROV P2 (episode level, Wilson), phase exp1
+\newcommand{\wtthExpOneXForgedProvPTwoLo}{0.0}
+% exploratory (D-022): haiku X-FORGED-PROV P2 (episode level, Wilson), phase exp1
+\newcommand{\wtthExpOneXForgedProvPTwoN}{50}
+% exploratory (D-022): haiku X-FORGED-PROV P2 (episode level, Wilson), phase exp1
+\newcommand{\wtthExpOneXForgedProvPTwoPct}{0.0}
 % gate_log G0/G1/G2 decisions PASS/CEILING/PASS
 \newcommand{\wtthGateDecision}{GO-CEIL}
 % gate_log G1 frozen_level
@@ -9276,10 +9942,10 @@
 \newcommand{\wtthReviewReviewed}{212}
 % AI-audited, author-approved review
 \newcommand{\wtthReviewShare}{2.5}
-% snapshot 94aa464be578
+% snapshot 8bb9cb83df28
 \newcommand{\wtthSnapshotEpisodes}{820}
 % SHA-256 of the analysis snapshot, first 12 hex
-\newcommand{\wtthSnapshotShaShort}{94aa464be578}
+\newcommand{\wtthSnapshotShaShort}{8bb9cb83df28}
 % P1(NONE) >= 85%
 \newcommand{\wtthSonnetCeiling}{yes}
 % p2:NO-RECEIPT-FORGED

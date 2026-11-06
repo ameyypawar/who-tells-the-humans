@@ -24,36 +24,2742 @@
   "value": 10000
  },
  {
-  "display": "\\$40.89",
+  "display": "\\$80.40",
+  "key": "CostBeforeExpOneUsd",
+  "kind": "usd",
+  "note": "",
+  "source": "spend without the D-022 follow-up: pilots, core, Sonnet arm, their judge (CostTotalUsd minus CostExpOneTotalUsd)",
+  "value": 80.40409297500001
+ },
+ {
+  "display": "\\$2.61",
+  "key": "CostExpOneJudgeUsd",
+  "kind": "usd",
+  "note": "",
+  "source": "exploratory (D-022) follow-up spend (D-023 item 1): judge_ledger of runs/judge_exp1",
+  "value": 2.6127411000000005
+ },
+ {
+  "display": "\\$0.24",
+  "key": "CostExpOneProbeUsd",
+  "kind": "usd",
+  "note": "",
+  "source": "exploratory (D-022) follow-up spend (D-023 item 1): main ledger, phase exp1probe",
+  "value": 0.236285755
+ },
+ {
+  "display": "\\$7.29",
+  "key": "CostExpOneRunUsd",
+  "kind": "usd",
+  "note": "",
+  "source": "exploratory (D-022) follow-up spend (D-023 item 1): main ledger, phase exp1",
+  "value": 7.286518225
+ },
+ {
+  "display": "\\$10.14",
+  "key": "CostExpOneTotalUsd",
+  "kind": "usd",
+  "note": "",
+  "source": "exploratory (D-022) follow-up spend (D-023 item 1): run + probes + judge",
+  "value": 10.13554508
+ },
+ {
+  "display": "\\$43.50",
   "key": "CostJudgeUsd",
   "kind": "usd",
   "note": "",
-  "source": "judge_ledger",
-  "value": 40.8869094
+  "source": "judge_ledger of every judge database (runs/judge*/judge.sqlite, D-023 item 4)",
+  "value": 43.4996505
  },
  {
-  "display": "\\$44.10",
+  "display": "\\$47.04",
   "key": "CostMainUsd",
   "kind": "usd",
   "note": "",
   "source": "cost_ledger of the main database",
-  "value": 44.102645530000004
+  "value": 47.039987555
  },
  {
-  "display": "\\$84.99",
+  "display": "\\$90.54",
   "key": "CostTotalUsd",
   "kind": "usd",
   "note": "",
-  "source": "prior spend + main ledger + judge ledger",
-  "value": 84.98955493
+  "source": "prior spend + main ledger + every judge ledger",
+  "value": 90.53963805500001
  },
  {
-  "display": "partial",
+  "display": "10{,}000",
+  "key": "ExpOneDiffPOneSonnetReceiptMinusSonnetForgedB",
+  "kind": "count",
+  "note": "",
+  "source": "P1:RECEIPT-SonnetForged stream=exp1 B=10000 level=0.95; exploratory (D-022)",
+  "value": 10000
+ },
+ {
+  "display": "\\ensuremath{-}46.7 to \\ensuremath{-}22.2",
+  "key": "ExpOneDiffPOneSonnetReceiptMinusSonnetForgedCI",
+  "kind": "ci",
+  "note": "",
+  "source": "P1:RECEIPT-SonnetForged stream=exp1 B=10000 level=0.95; exploratory (D-022)",
+  "value": [
+   -0.466666666667,
+   -0.222222222222
+  ]
+ },
+ {
+  "display": "\\ensuremath{-}34.4",
+  "key": "ExpOneDiffPOneSonnetReceiptMinusSonnetForgedDelta",
+  "kind": "pp",
+  "note": "",
+  "source": "P1:RECEIPT-SonnetForged stream=exp1 B=10000 level=0.95; exploratory (D-022)",
+  "value": -0.344444444444
+ },
+ {
+  "display": "opposite",
+  "key": "ExpOneDiffPOneSonnetReceiptMinusSonnetForgedDirection",
+  "kind": "verdict",
+  "note": "",
+  "source": "P1:RECEIPT-SonnetForged stream=exp1 B=10000 level=0.95; exploratory (D-022)",
+  "value": "opposite"
+ },
+ {
+  "display": "yes",
+  "key": "ExpOneDiffPOneSonnetReceiptMinusSonnetForgedExcl",
+  "kind": "verdict",
+  "note": "",
+  "source": "P1:RECEIPT-SonnetForged (exploratory (D-022)): interval excludes 0",
+  "value": "yes"
+ },
+ {
+  "display": "\\ensuremath{-}22.2",
+  "key": "ExpOneDiffPOneSonnetReceiptMinusSonnetForgedHi",
+  "kind": "pp",
+  "note": "",
+  "source": "P1:RECEIPT-SonnetForged stream=exp1 B=10000 level=0.95; exploratory (D-022)",
+  "value": -0.222222222222
+ },
+ {
+  "display": "\\ensuremath{-}46.7",
+  "key": "ExpOneDiffPOneSonnetReceiptMinusSonnetForgedLo",
+  "kind": "pp",
+  "note": "",
+  "source": "P1:RECEIPT-SonnetForged stream=exp1 B=10000 level=0.95; exploratory (D-022)",
+  "value": -0.466666666667
+ },
+ {
+  "display": "exploratory",
+  "key": "ExpOneDiffPOneSonnetReceiptMinusSonnetForgedStatus",
+  "kind": "verdict",
+  "note": "",
+  "source": "P1:RECEIPT-SonnetForged stream=exp1 B=10000 level=0.95; exploratory (D-022)",
+  "value": "exploratory"
+ },
+ {
+  "display": "exploratory",
+  "key": "ExpOneDiffPOneSonnetReceiptMinusSonnetForgedVerdict",
+  "kind": "verdict",
+  "note": "",
+  "source": "P1:RECEIPT-SonnetForged stream=exp1 B=10000 level=0.95; exploratory (D-022)",
+  "value": "exploratory"
+ },
+ {
+  "display": "10{,}000",
+  "key": "ExpOneDiffPOneXForgedPolicyMinusHaikuForgedB",
+  "kind": "count",
+  "note": "",
+  "source": "P1:X-FORGED-POLICY-HaikuForged stream=exp1 B=10000 level=0.95; exploratory (D-022)",
+  "value": 10000
+ },
+ {
+  "display": "\\ensuremath{-}4.0 to 18.7",
+  "key": "ExpOneDiffPOneXForgedPolicyMinusHaikuForgedCI",
+  "kind": "ci",
+  "note": "",
+  "source": "P1:X-FORGED-POLICY-HaikuForged stream=exp1 B=10000 level=0.95; exploratory (D-022)",
+  "value": [
+   -0.04,
+   0.186666666667
+  ]
+ },
+ {
+  "display": "7.3",
+  "key": "ExpOneDiffPOneXForgedPolicyMinusHaikuForgedDelta",
+  "kind": "pp",
+  "note": "",
+  "source": "P1:X-FORGED-POLICY-HaikuForged stream=exp1 B=10000 level=0.95; exploratory (D-022)",
+  "value": 0.073333333333
+ },
+ {
+  "display": "predicted",
+  "key": "ExpOneDiffPOneXForgedPolicyMinusHaikuForgedDirection",
+  "kind": "verdict",
+  "note": "",
+  "source": "P1:X-FORGED-POLICY-HaikuForged stream=exp1 B=10000 level=0.95; exploratory (D-022)",
+  "value": "predicted"
+ },
+ {
+  "display": "no",
+  "key": "ExpOneDiffPOneXForgedPolicyMinusHaikuForgedExcl",
+  "kind": "verdict",
+  "note": "",
+  "source": "P1:X-FORGED-POLICY-HaikuForged (exploratory (D-022)): interval excludes 0",
+  "value": "no"
+ },
+ {
+  "display": "18.7",
+  "key": "ExpOneDiffPOneXForgedPolicyMinusHaikuForgedHi",
+  "kind": "pp",
+  "note": "",
+  "source": "P1:X-FORGED-POLICY-HaikuForged stream=exp1 B=10000 level=0.95; exploratory (D-022)",
+  "value": 0.186666666667
+ },
+ {
+  "display": "\\ensuremath{-}4.0",
+  "key": "ExpOneDiffPOneXForgedPolicyMinusHaikuForgedLo",
+  "kind": "pp",
+  "note": "",
+  "source": "P1:X-FORGED-POLICY-HaikuForged stream=exp1 B=10000 level=0.95; exploratory (D-022)",
+  "value": -0.04
+ },
+ {
+  "display": "exploratory",
+  "key": "ExpOneDiffPOneXForgedPolicyMinusHaikuForgedStatus",
+  "kind": "verdict",
+  "note": "",
+  "source": "P1:X-FORGED-POLICY-HaikuForged stream=exp1 B=10000 level=0.95; exploratory (D-022)",
+  "value": "exploratory"
+ },
+ {
+  "display": "exploratory",
+  "key": "ExpOneDiffPOneXForgedPolicyMinusHaikuForgedVerdict",
+  "kind": "verdict",
+  "note": "",
+  "source": "P1:X-FORGED-POLICY-HaikuForged stream=exp1 B=10000 level=0.95; exploratory (D-022)",
+  "value": "exploratory"
+ },
+ {
+  "display": "10{,}000",
+  "key": "ExpOneDiffPOneXForgedPolicyMinusHaikuNoReceiptB",
+  "kind": "count",
+  "note": "",
+  "source": "P1:X-FORGED-POLICY-HaikuNoReceipt stream=exp1 B=10000 level=0.95; exploratory (D-022)",
+  "value": 10000
+ },
+ {
+  "display": "\\ensuremath{-}24.9 to \\ensuremath{-}8.1",
+  "key": "ExpOneDiffPOneXForgedPolicyMinusHaikuNoReceiptCI",
+  "kind": "ci",
+  "note": "",
+  "source": "P1:X-FORGED-POLICY-HaikuNoReceipt stream=exp1 B=10000 level=0.95; exploratory (D-022)",
+  "value": [
+   -0.249166666667,
+   -0.080833333333
+  ]
+ },
+ {
+  "display": "\\ensuremath{-}16.4",
+  "key": "ExpOneDiffPOneXForgedPolicyMinusHaikuNoReceiptDelta",
+  "kind": "pp",
+  "note": "",
+  "source": "P1:X-FORGED-POLICY-HaikuNoReceipt stream=exp1 B=10000 level=0.95; exploratory (D-022)",
+  "value": -0.164166666667
+ },
+ {
+  "display": "opposite",
+  "key": "ExpOneDiffPOneXForgedPolicyMinusHaikuNoReceiptDirection",
+  "kind": "verdict",
+  "note": "",
+  "source": "P1:X-FORGED-POLICY-HaikuNoReceipt stream=exp1 B=10000 level=0.95; exploratory (D-022)",
+  "value": "opposite"
+ },
+ {
+  "display": "yes",
+  "key": "ExpOneDiffPOneXForgedPolicyMinusHaikuNoReceiptExcl",
+  "kind": "verdict",
+  "note": "",
+  "source": "P1:X-FORGED-POLICY-HaikuNoReceipt (exploratory (D-022)): interval excludes 0",
+  "value": "yes"
+ },
+ {
+  "display": "\\ensuremath{-}8.1",
+  "key": "ExpOneDiffPOneXForgedPolicyMinusHaikuNoReceiptHi",
+  "kind": "pp",
+  "note": "",
+  "source": "P1:X-FORGED-POLICY-HaikuNoReceipt stream=exp1 B=10000 level=0.95; exploratory (D-022)",
+  "value": -0.080833333333
+ },
+ {
+  "display": "\\ensuremath{-}24.9",
+  "key": "ExpOneDiffPOneXForgedPolicyMinusHaikuNoReceiptLo",
+  "kind": "pp",
+  "note": "",
+  "source": "P1:X-FORGED-POLICY-HaikuNoReceipt stream=exp1 B=10000 level=0.95; exploratory (D-022)",
+  "value": -0.249166666667
+ },
+ {
+  "display": "exploratory",
+  "key": "ExpOneDiffPOneXForgedPolicyMinusHaikuNoReceiptStatus",
+  "kind": "verdict",
+  "note": "",
+  "source": "P1:X-FORGED-POLICY-HaikuNoReceipt stream=exp1 B=10000 level=0.95; exploratory (D-022)",
+  "value": "exploratory"
+ },
+ {
+  "display": "exploratory",
+  "key": "ExpOneDiffPOneXForgedPolicyMinusHaikuNoReceiptVerdict",
+  "kind": "verdict",
+  "note": "",
+  "source": "P1:X-FORGED-POLICY-HaikuNoReceipt stream=exp1 B=10000 level=0.95; exploratory (D-022)",
+  "value": "exploratory"
+ },
+ {
+  "display": "10{,}000",
+  "key": "ExpOneDiffPOneXForgedProvMinusHaikuForgedB",
+  "kind": "count",
+  "note": "",
+  "source": "P1:X-FORGED-PROV-HaikuForged stream=exp1 B=10000 level=0.95; exploratory (D-022)",
+  "value": 10000
+ },
+ {
+  "display": "\\ensuremath{-}4.0 to 17.3",
+  "key": "ExpOneDiffPOneXForgedProvMinusHaikuForgedCI",
+  "kind": "ci",
+  "note": "",
+  "source": "P1:X-FORGED-PROV-HaikuForged stream=exp1 B=10000 level=0.95; exploratory (D-022)",
+  "value": [
+   -0.04,
+   0.173333333333
+  ]
+ },
+ {
+  "display": "6.7",
+  "key": "ExpOneDiffPOneXForgedProvMinusHaikuForgedDelta",
+  "kind": "pp",
+  "note": "",
+  "source": "P1:X-FORGED-PROV-HaikuForged stream=exp1 B=10000 level=0.95; exploratory (D-022)",
+  "value": 0.066666666667
+ },
+ {
+  "display": "predicted",
+  "key": "ExpOneDiffPOneXForgedProvMinusHaikuForgedDirection",
+  "kind": "verdict",
+  "note": "",
+  "source": "P1:X-FORGED-PROV-HaikuForged stream=exp1 B=10000 level=0.95; exploratory (D-022)",
+  "value": "predicted"
+ },
+ {
+  "display": "no",
+  "key": "ExpOneDiffPOneXForgedProvMinusHaikuForgedExcl",
+  "kind": "verdict",
+  "note": "",
+  "source": "P1:X-FORGED-PROV-HaikuForged (exploratory (D-022)): interval excludes 0",
+  "value": "no"
+ },
+ {
+  "display": "17.3",
+  "key": "ExpOneDiffPOneXForgedProvMinusHaikuForgedHi",
+  "kind": "pp",
+  "note": "",
+  "source": "P1:X-FORGED-PROV-HaikuForged stream=exp1 B=10000 level=0.95; exploratory (D-022)",
+  "value": 0.173333333333
+ },
+ {
+  "display": "\\ensuremath{-}4.0",
+  "key": "ExpOneDiffPOneXForgedProvMinusHaikuForgedLo",
+  "kind": "pp",
+  "note": "",
+  "source": "P1:X-FORGED-PROV-HaikuForged stream=exp1 B=10000 level=0.95; exploratory (D-022)",
+  "value": -0.04
+ },
+ {
+  "display": "exploratory",
+  "key": "ExpOneDiffPOneXForgedProvMinusHaikuForgedStatus",
+  "kind": "verdict",
+  "note": "",
+  "source": "P1:X-FORGED-PROV-HaikuForged stream=exp1 B=10000 level=0.95; exploratory (D-022)",
+  "value": "exploratory"
+ },
+ {
+  "display": "exploratory",
+  "key": "ExpOneDiffPOneXForgedProvMinusHaikuForgedVerdict",
+  "kind": "verdict",
+  "note": "",
+  "source": "P1:X-FORGED-PROV-HaikuForged stream=exp1 B=10000 level=0.95; exploratory (D-022)",
+  "value": "exploratory"
+ },
+ {
+  "display": "10{,}000",
+  "key": "ExpOneDiffPOneXForgedProvMinusHaikuNoReceiptB",
+  "kind": "count",
+  "note": "",
+  "source": "P1:X-FORGED-PROV-HaikuNoReceipt stream=exp1 B=10000 level=0.95; exploratory (D-022)",
+  "value": 10000
+ },
+ {
+  "display": "\\ensuremath{-}25.2 to \\ensuremath{-}8.8",
+  "key": "ExpOneDiffPOneXForgedProvMinusHaikuNoReceiptCI",
+  "kind": "ci",
+  "note": "",
+  "source": "P1:X-FORGED-PROV-HaikuNoReceipt stream=exp1 B=10000 level=0.95; exploratory (D-022)",
+  "value": [
+   -0.251666666667,
+   -0.0875
+  ]
+ },
+ {
+  "display": "\\ensuremath{-}17.1",
+  "key": "ExpOneDiffPOneXForgedProvMinusHaikuNoReceiptDelta",
+  "kind": "pp",
+  "note": "",
+  "source": "P1:X-FORGED-PROV-HaikuNoReceipt stream=exp1 B=10000 level=0.95; exploratory (D-022)",
+  "value": -0.170833333333
+ },
+ {
+  "display": "opposite",
+  "key": "ExpOneDiffPOneXForgedProvMinusHaikuNoReceiptDirection",
+  "kind": "verdict",
+  "note": "",
+  "source": "P1:X-FORGED-PROV-HaikuNoReceipt stream=exp1 B=10000 level=0.95; exploratory (D-022)",
+  "value": "opposite"
+ },
+ {
+  "display": "yes",
+  "key": "ExpOneDiffPOneXForgedProvMinusHaikuNoReceiptExcl",
+  "kind": "verdict",
+  "note": "",
+  "source": "P1:X-FORGED-PROV-HaikuNoReceipt (exploratory (D-022)): interval excludes 0",
+  "value": "yes"
+ },
+ {
+  "display": "\\ensuremath{-}8.8",
+  "key": "ExpOneDiffPOneXForgedProvMinusHaikuNoReceiptHi",
+  "kind": "pp",
+  "note": "",
+  "source": "P1:X-FORGED-PROV-HaikuNoReceipt stream=exp1 B=10000 level=0.95; exploratory (D-022)",
+  "value": -0.0875
+ },
+ {
+  "display": "\\ensuremath{-}25.2",
+  "key": "ExpOneDiffPOneXForgedProvMinusHaikuNoReceiptLo",
+  "kind": "pp",
+  "note": "",
+  "source": "P1:X-FORGED-PROV-HaikuNoReceipt stream=exp1 B=10000 level=0.95; exploratory (D-022)",
+  "value": -0.251666666667
+ },
+ {
+  "display": "exploratory",
+  "key": "ExpOneDiffPOneXForgedProvMinusHaikuNoReceiptStatus",
+  "kind": "verdict",
+  "note": "",
+  "source": "P1:X-FORGED-PROV-HaikuNoReceipt stream=exp1 B=10000 level=0.95; exploratory (D-022)",
+  "value": "exploratory"
+ },
+ {
+  "display": "exploratory",
+  "key": "ExpOneDiffPOneXForgedProvMinusHaikuNoReceiptVerdict",
+  "kind": "verdict",
+  "note": "",
+  "source": "P1:X-FORGED-PROV-HaikuNoReceipt stream=exp1 B=10000 level=0.95; exploratory (D-022)",
+  "value": "exploratory"
+ },
+ {
+  "display": "10{,}000",
+  "key": "ExpOneDiffPTwoXForgedPolicyMinusHaikuForgedB",
+  "kind": "count",
+  "note": "",
+  "source": "P2:X-FORGED-POLICY-HaikuForged stream=exp1 B=10000 level=0.95; exploratory (D-022)",
+  "value": 10000
+ },
+ {
+  "display": "\\ensuremath{-}14.0 to 2.0",
+  "key": "ExpOneDiffPTwoXForgedPolicyMinusHaikuForgedCI",
+  "kind": "ci",
+  "note": "",
+  "source": "P2:X-FORGED-POLICY-HaikuForged stream=exp1 B=10000 level=0.95; exploratory (D-022)",
+  "value": [
+   -0.14,
+   0.02
+  ]
+ },
+ {
+  "display": "\\ensuremath{-}6.0",
+  "key": "ExpOneDiffPTwoXForgedPolicyMinusHaikuForgedDelta",
+  "kind": "pp",
+  "note": "",
+  "source": "P2:X-FORGED-POLICY-HaikuForged stream=exp1 B=10000 level=0.95; exploratory (D-022)",
+  "value": -0.06
+ },
+ {
+  "display": "opposite",
+  "key": "ExpOneDiffPTwoXForgedPolicyMinusHaikuForgedDirection",
+  "kind": "verdict",
+  "note": "",
+  "source": "P2:X-FORGED-POLICY-HaikuForged stream=exp1 B=10000 level=0.95; exploratory (D-022)",
+  "value": "opposite"
+ },
+ {
+  "display": "no",
+  "key": "ExpOneDiffPTwoXForgedPolicyMinusHaikuForgedExcl",
+  "kind": "verdict",
+  "note": "",
+  "source": "P2:X-FORGED-POLICY-HaikuForged (exploratory (D-022)): interval excludes 0",
+  "value": "no"
+ },
+ {
+  "display": "2.0",
+  "key": "ExpOneDiffPTwoXForgedPolicyMinusHaikuForgedHi",
+  "kind": "pp",
+  "note": "",
+  "source": "P2:X-FORGED-POLICY-HaikuForged stream=exp1 B=10000 level=0.95; exploratory (D-022)",
+  "value": 0.02
+ },
+ {
+  "display": "\\ensuremath{-}14.0",
+  "key": "ExpOneDiffPTwoXForgedPolicyMinusHaikuForgedLo",
+  "kind": "pp",
+  "note": "",
+  "source": "P2:X-FORGED-POLICY-HaikuForged stream=exp1 B=10000 level=0.95; exploratory (D-022)",
+  "value": -0.14
+ },
+ {
+  "display": "exploratory",
+  "key": "ExpOneDiffPTwoXForgedPolicyMinusHaikuForgedStatus",
+  "kind": "verdict",
+  "note": "",
+  "source": "P2:X-FORGED-POLICY-HaikuForged stream=exp1 B=10000 level=0.95; exploratory (D-022)",
+  "value": "exploratory"
+ },
+ {
+  "display": "exploratory",
+  "key": "ExpOneDiffPTwoXForgedPolicyMinusHaikuForgedVerdict",
+  "kind": "verdict",
+  "note": "",
+  "source": "P2:X-FORGED-POLICY-HaikuForged stream=exp1 B=10000 level=0.95; exploratory (D-022)",
+  "value": "exploratory"
+ },
+ {
+  "display": "10{,}000",
+  "key": "ExpOneDiffPTwoXForgedPolicyMinusHaikuNoReceiptB",
+  "kind": "count",
+  "note": "",
+  "source": "P2:X-FORGED-POLICY-HaikuNoReceipt stream=exp1 B=10000 level=0.95; exploratory (D-022)",
+  "value": 10000
+ },
+ {
+  "display": "0.0 to 6.0",
+  "key": "ExpOneDiffPTwoXForgedPolicyMinusHaikuNoReceiptCI",
+  "kind": "ci",
+  "note": "",
+  "source": "P2:X-FORGED-POLICY-HaikuNoReceipt stream=exp1 B=10000 level=0.95; exploratory (D-022)",
+  "value": [
+   0.0,
+   0.06
+  ]
+ },
+ {
+  "display": "2.0",
+  "key": "ExpOneDiffPTwoXForgedPolicyMinusHaikuNoReceiptDelta",
+  "kind": "pp",
+  "note": "",
+  "source": "P2:X-FORGED-POLICY-HaikuNoReceipt stream=exp1 B=10000 level=0.95; exploratory (D-022)",
+  "value": 0.02
+ },
+ {
+  "display": "predicted",
+  "key": "ExpOneDiffPTwoXForgedPolicyMinusHaikuNoReceiptDirection",
+  "kind": "verdict",
+  "note": "",
+  "source": "P2:X-FORGED-POLICY-HaikuNoReceipt stream=exp1 B=10000 level=0.95; exploratory (D-022)",
+  "value": "predicted"
+ },
+ {
+  "display": "no",
+  "key": "ExpOneDiffPTwoXForgedPolicyMinusHaikuNoReceiptExcl",
+  "kind": "verdict",
+  "note": "",
+  "source": "P2:X-FORGED-POLICY-HaikuNoReceipt (exploratory (D-022)): interval excludes 0",
+  "value": "no"
+ },
+ {
+  "display": "6.0",
+  "key": "ExpOneDiffPTwoXForgedPolicyMinusHaikuNoReceiptHi",
+  "kind": "pp",
+  "note": "",
+  "source": "P2:X-FORGED-POLICY-HaikuNoReceipt stream=exp1 B=10000 level=0.95; exploratory (D-022)",
+  "value": 0.06
+ },
+ {
+  "display": "0.0",
+  "key": "ExpOneDiffPTwoXForgedPolicyMinusHaikuNoReceiptLo",
+  "kind": "pp",
+  "note": "",
+  "source": "P2:X-FORGED-POLICY-HaikuNoReceipt stream=exp1 B=10000 level=0.95; exploratory (D-022)",
+  "value": 0.0
+ },
+ {
+  "display": "exploratory",
+  "key": "ExpOneDiffPTwoXForgedPolicyMinusHaikuNoReceiptStatus",
+  "kind": "verdict",
+  "note": "",
+  "source": "P2:X-FORGED-POLICY-HaikuNoReceipt stream=exp1 B=10000 level=0.95; exploratory (D-022)",
+  "value": "exploratory"
+ },
+ {
+  "display": "exploratory",
+  "key": "ExpOneDiffPTwoXForgedPolicyMinusHaikuNoReceiptVerdict",
+  "kind": "verdict",
+  "note": "",
+  "source": "P2:X-FORGED-POLICY-HaikuNoReceipt stream=exp1 B=10000 level=0.95; exploratory (D-022)",
+  "value": "exploratory"
+ },
+ {
+  "display": "10{,}000",
+  "key": "ExpOneDiffPTwoXForgedProvMinusHaikuForgedB",
+  "kind": "count",
+  "note": "",
+  "source": "P2:X-FORGED-PROV-HaikuForged stream=exp1 B=10000 level=0.95; exploratory (D-022)",
+  "value": 10000
+ },
+ {
+  "display": "\\ensuremath{-}16.0 to \\ensuremath{-}2.0",
+  "key": "ExpOneDiffPTwoXForgedProvMinusHaikuForgedCI",
+  "kind": "ci",
+  "note": "",
+  "source": "P2:X-FORGED-PROV-HaikuForged stream=exp1 B=10000 level=0.95; exploratory (D-022)",
+  "value": [
+   -0.16,
+   -0.02
+  ]
+ },
+ {
+  "display": "\\ensuremath{-}8.0",
+  "key": "ExpOneDiffPTwoXForgedProvMinusHaikuForgedDelta",
+  "kind": "pp",
+  "note": "",
+  "source": "P2:X-FORGED-PROV-HaikuForged stream=exp1 B=10000 level=0.95; exploratory (D-022)",
+  "value": -0.08
+ },
+ {
+  "display": "opposite",
+  "key": "ExpOneDiffPTwoXForgedProvMinusHaikuForgedDirection",
+  "kind": "verdict",
+  "note": "",
+  "source": "P2:X-FORGED-PROV-HaikuForged stream=exp1 B=10000 level=0.95; exploratory (D-022)",
+  "value": "opposite"
+ },
+ {
+  "display": "yes",
+  "key": "ExpOneDiffPTwoXForgedProvMinusHaikuForgedExcl",
+  "kind": "verdict",
+  "note": "",
+  "source": "P2:X-FORGED-PROV-HaikuForged (exploratory (D-022)): interval excludes 0",
+  "value": "yes"
+ },
+ {
+  "display": "\\ensuremath{-}2.0",
+  "key": "ExpOneDiffPTwoXForgedProvMinusHaikuForgedHi",
+  "kind": "pp",
+  "note": "",
+  "source": "P2:X-FORGED-PROV-HaikuForged stream=exp1 B=10000 level=0.95; exploratory (D-022)",
+  "value": -0.02
+ },
+ {
+  "display": "\\ensuremath{-}16.0",
+  "key": "ExpOneDiffPTwoXForgedProvMinusHaikuForgedLo",
+  "kind": "pp",
+  "note": "",
+  "source": "P2:X-FORGED-PROV-HaikuForged stream=exp1 B=10000 level=0.95; exploratory (D-022)",
+  "value": -0.16
+ },
+ {
+  "display": "exploratory",
+  "key": "ExpOneDiffPTwoXForgedProvMinusHaikuForgedStatus",
+  "kind": "verdict",
+  "note": "",
+  "source": "P2:X-FORGED-PROV-HaikuForged stream=exp1 B=10000 level=0.95; exploratory (D-022)",
+  "value": "exploratory"
+ },
+ {
+  "display": "exploratory",
+  "key": "ExpOneDiffPTwoXForgedProvMinusHaikuForgedVerdict",
+  "kind": "verdict",
+  "note": "",
+  "source": "P2:X-FORGED-PROV-HaikuForged stream=exp1 B=10000 level=0.95; exploratory (D-022)",
+  "value": "exploratory"
+ },
+ {
+  "display": "10{,}000",
+  "key": "ExpOneDiffPTwoXForgedProvMinusHaikuNoReceiptB",
+  "kind": "count",
+  "note": "",
+  "source": "P2:X-FORGED-PROV-HaikuNoReceipt stream=exp1 B=10000 level=0.95; exploratory (D-022)",
+  "value": 10000
+ },
+ {
+  "display": "0.0 to 0.0",
+  "key": "ExpOneDiffPTwoXForgedProvMinusHaikuNoReceiptCI",
+  "kind": "ci",
+  "note": "",
+  "source": "P2:X-FORGED-PROV-HaikuNoReceipt stream=exp1 B=10000 level=0.95; exploratory (D-022)",
+  "value": [
+   0.0,
+   0.0
+  ]
+ },
+ {
+  "display": "0.0",
+  "key": "ExpOneDiffPTwoXForgedProvMinusHaikuNoReceiptDelta",
+  "kind": "pp",
+  "note": "",
+  "source": "P2:X-FORGED-PROV-HaikuNoReceipt stream=exp1 B=10000 level=0.95; exploratory (D-022)",
+  "value": 0.0
+ },
+ {
+  "display": "zero",
+  "key": "ExpOneDiffPTwoXForgedProvMinusHaikuNoReceiptDirection",
+  "kind": "verdict",
+  "note": "",
+  "source": "P2:X-FORGED-PROV-HaikuNoReceipt stream=exp1 B=10000 level=0.95; exploratory (D-022)",
+  "value": "zero"
+ },
+ {
+  "display": "no",
+  "key": "ExpOneDiffPTwoXForgedProvMinusHaikuNoReceiptExcl",
+  "kind": "verdict",
+  "note": "",
+  "source": "P2:X-FORGED-PROV-HaikuNoReceipt (exploratory (D-022)): interval excludes 0",
+  "value": "no"
+ },
+ {
+  "display": "0.0",
+  "key": "ExpOneDiffPTwoXForgedProvMinusHaikuNoReceiptHi",
+  "kind": "pp",
+  "note": "",
+  "source": "P2:X-FORGED-PROV-HaikuNoReceipt stream=exp1 B=10000 level=0.95; exploratory (D-022)",
+  "value": 0.0
+ },
+ {
+  "display": "0.0",
+  "key": "ExpOneDiffPTwoXForgedProvMinusHaikuNoReceiptLo",
+  "kind": "pp",
+  "note": "",
+  "source": "P2:X-FORGED-PROV-HaikuNoReceipt stream=exp1 B=10000 level=0.95; exploratory (D-022)",
+  "value": 0.0
+ },
+ {
+  "display": "exploratory",
+  "key": "ExpOneDiffPTwoXForgedProvMinusHaikuNoReceiptStatus",
+  "kind": "verdict",
+  "note": "",
+  "source": "P2:X-FORGED-PROV-HaikuNoReceipt stream=exp1 B=10000 level=0.95; exploratory (D-022)",
+  "value": "exploratory"
+ },
+ {
+  "display": "exploratory",
+  "key": "ExpOneDiffPTwoXForgedProvMinusHaikuNoReceiptVerdict",
+  "kind": "verdict",
+  "note": "",
+  "source": "P2:X-FORGED-PROV-HaikuNoReceipt stream=exp1 B=10000 level=0.95; exploratory (D-022)",
+  "value": "exploratory"
+ },
+ {
+  "display": "30",
+  "key": "ExpOneSonnetReceiptEps",
+  "kind": "count",
+  "note": "",
+  "source": "exploratory (D-022): RECEIPT (Sonnet) shifts",
+  "value": 30
+ },
+ {
+  "display": "51.9 to 71.5",
+  "key": "ExpOneSonnetReceiptPOneCI",
+  "kind": "ci",
+  "note": "",
+  "source": "sonnet RECEIPT p1 (wilson); exploratory (D-022), phase exp1, witness-level Wilson",
+  "value": [
+   0.5189976405818348,
+   0.715440317613552
+  ]
+ },
+ {
+  "display": "100.0",
+  "key": "ExpOneSonnetReceiptPOneCov",
+  "kind": "prop",
+  "note": "share of units with a known label",
+  "source": "sonnet RECEIPT p1 (wilson); exploratory (D-022), phase exp1, witness-level Wilson",
+  "value": 1.0
+ },
+ {
+  "display": "30",
+  "key": "ExpOneSonnetReceiptPOneEps",
+  "kind": "count",
+  "note": "",
+  "source": "sonnet RECEIPT p1 (wilson); exploratory (D-022), phase exp1, witness-level Wilson",
+  "value": 30
+ },
+ {
+  "display": "71.5",
+  "key": "ExpOneSonnetReceiptPOneHi",
+  "kind": "prop",
+  "note": "",
+  "source": "sonnet RECEIPT p1 (wilson); exploratory (D-022), phase exp1, witness-level Wilson",
+  "value": 0.715440317613552
+ },
+ {
+  "display": "56",
+  "key": "ExpOneSonnetReceiptPOneK",
+  "kind": "count",
+  "note": "",
+  "source": "sonnet RECEIPT p1 (wilson); exploratory (D-022), phase exp1, witness-level Wilson",
+  "value": 56
+ },
+ {
+  "display": "51.9",
+  "key": "ExpOneSonnetReceiptPOneLo",
+  "kind": "prop",
+  "note": "",
+  "source": "sonnet RECEIPT p1 (wilson); exploratory (D-022), phase exp1, witness-level Wilson",
+  "value": 0.5189976405818348
+ },
+ {
+  "display": "90",
+  "key": "ExpOneSonnetReceiptPOneN",
+  "kind": "count",
+  "note": "",
+  "source": "sonnet RECEIPT p1 (wilson); exploratory (D-022), phase exp1, witness-level Wilson",
+  "value": 90
+ },
+ {
+  "display": "62.2",
+  "key": "ExpOneSonnetReceiptPOnePct",
+  "kind": "prop",
+  "note": "",
+  "source": "sonnet RECEIPT p1 (wilson); exploratory (D-022), phase exp1, witness-level Wilson",
+  "value": 0.6222222222222222
+ },
+ {
+  "display": "complete",
   "key": "ExpOneStatus",
   "kind": "text",
   "note": "",
-  "source": "exploratory (D-022): phase exp1 not run / partial / complete (done episodes by arm SonnetReceipt 20, XForgedPolicy 0, XForgedProv 0)",
-  "value": "partial"
+  "source": "exploratory (D-022): phase exp1 not run / partial / complete (done episodes by arm SonnetReceipt 30, XForgedPolicy 50, XForgedProv 50)",
+  "value": "complete"
+ },
+ {
+  "display": "2",
+  "key": "ExpOneTimingNeverSonnetReceiptDTwoCouldNotVerifyReportedAnywayK",
+  "kind": "count",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: sonnet RECEIPT witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); could_not_verify_reported_anyway",
+  "value": 2
+ },
+ {
+  "display": "5.9",
+  "key": "ExpOneTimingNeverSonnetReceiptDTwoCouldNotVerifyReportedAnywayPct",
+  "kind": "prop",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: sonnet RECEIPT witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); could_not_verify_reported_anyway",
+  "value": 0.058823529411764705
+ },
+ {
+  "display": "19",
+  "key": "ExpOneTimingNeverSonnetReceiptDTwoFearedDuplicateK",
+  "kind": "count",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: sonnet RECEIPT witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); feared_duplicate",
+  "value": 19
+ },
+ {
+  "display": "55.9",
+  "key": "ExpOneTimingNeverSonnetReceiptDTwoFearedDuplicatePct",
+  "kind": "prop",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: sonnet RECEIPT witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); feared_duplicate",
+  "value": 0.5588235294117647
+ },
+ {
+  "display": "33",
+  "key": "ExpOneTimingNeverSonnetReceiptDTwoJudgedRuleBrokenK",
+  "kind": "count",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: sonnet RECEIPT witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); judged_rule_broken",
+  "value": 33
+ },
+ {
+  "display": "97.1",
+  "key": "ExpOneTimingNeverSonnetReceiptDTwoJudgedRuleBrokenPct",
+  "kind": "prop",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: sonnet RECEIPT witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); judged_rule_broken",
+  "value": 0.9705882352941176
+ },
+ {
+  "display": "34",
+  "key": "ExpOneTimingNeverSonnetReceiptDTwoN",
+  "kind": "count",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: sonnet RECEIPT witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several)",
+  "value": 34
+ },
+ {
+  "display": "0",
+  "key": "ExpOneTimingNeverSonnetReceiptDTwoNoChannelPerceivedK",
+  "kind": "count",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: sonnet RECEIPT witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); no_channel_perceived",
+  "value": 0
+ },
+ {
+  "display": "0.0",
+  "key": "ExpOneTimingNeverSonnetReceiptDTwoNoChannelPerceivedPct",
+  "kind": "prop",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: sonnet RECEIPT witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); no_channel_perceived",
+  "value": 0.0
+ },
+ {
+  "display": "2",
+  "key": "ExpOneTimingNeverSonnetReceiptDTwoNotMyJobK",
+  "kind": "count",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: sonnet RECEIPT witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); not_my_job",
+  "value": 2
+ },
+ {
+  "display": "5.9",
+  "key": "ExpOneTimingNeverSonnetReceiptDTwoNotMyJobPct",
+  "kind": "prop",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: sonnet RECEIPT witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); not_my_job",
+  "value": 0.058823529411764705
+ },
+ {
+  "display": "34",
+  "key": "ExpOneTimingNeverSonnetReceiptDTwoNoticedViolationK",
+  "kind": "count",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: sonnet RECEIPT witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); noticed_violation",
+  "value": 34
+ },
+ {
+  "display": "100.0",
+  "key": "ExpOneTimingNeverSonnetReceiptDTwoNoticedViolationPct",
+  "kind": "prop",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: sonnet RECEIPT witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); noticed_violation",
+  "value": 1.0
+ },
+ {
+  "display": "4",
+  "key": "ExpOneTimingNeverSonnetReceiptDTwoOtherK",
+  "kind": "count",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: sonnet RECEIPT witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); other",
+  "value": 4
+ },
+ {
+  "display": "11.8",
+  "key": "ExpOneTimingNeverSonnetReceiptDTwoOtherPct",
+  "kind": "prop",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: sonnet RECEIPT witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); other",
+  "value": 0.11764705882352941
+ },
+ {
+  "display": "34",
+  "key": "ExpOneTimingNeverSonnetReceiptDTwoSomeoneElseToldK",
+  "kind": "count",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: sonnet RECEIPT witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); someone_else_told",
+  "value": 34
+ },
+ {
+  "display": "100.0",
+  "key": "ExpOneTimingNeverSonnetReceiptDTwoSomeoneElseToldPct",
+  "kind": "prop",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: sonnet RECEIPT witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); someone_else_told",
+  "value": 1.0
+ },
+ {
+  "display": "17",
+  "key": "ExpOneTimingNeverSonnetReceiptDTwoThoughtOpsAwareK",
+  "kind": "count",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: sonnet RECEIPT witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); thought_ops_aware",
+  "value": 17
+ },
+ {
+  "display": "50.0",
+  "key": "ExpOneTimingNeverSonnetReceiptDTwoThoughtOpsAwarePct",
+  "kind": "prop",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: sonnet RECEIPT witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); thought_ops_aware",
+  "value": 0.5
+ },
+ {
+  "display": "22",
+  "key": "ExpOneTimingNeverSonnetReceiptDTwoTrustedClaimK",
+  "kind": "count",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: sonnet RECEIPT witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); trusted_claim",
+  "value": 22
+ },
+ {
+  "display": "64.7",
+  "key": "ExpOneTimingNeverSonnetReceiptDTwoTrustedClaimPct",
+  "kind": "prop",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: sonnet RECEIPT witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); trusted_claim",
+  "value": 0.6470588235294118
+ },
+ {
+  "display": "0",
+  "key": "ExpOneTimingNeverSonnetReceiptDTwoUnsureItWasAViolationK",
+  "kind": "count",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: sonnet RECEIPT witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); unsure_it_was_a_violation",
+  "value": 0
+ },
+ {
+  "display": "0.0",
+  "key": "ExpOneTimingNeverSonnetReceiptDTwoUnsureItWasAViolationPct",
+  "kind": "prop",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: sonnet RECEIPT witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); unsure_it_was_a_violation",
+  "value": 0.0
+ },
+ {
+  "display": "30",
+  "key": "ExpOneTimingNeverXForgedPolicyDTwoCouldNotVerifyReportedAnywayK",
+  "kind": "count",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-POLICY witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); could_not_verify_reported_anyway",
+  "value": 30
+ },
+ {
+  "display": "76.9",
+  "key": "ExpOneTimingNeverXForgedPolicyDTwoCouldNotVerifyReportedAnywayPct",
+  "kind": "prop",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-POLICY witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); could_not_verify_reported_anyway",
+  "value": 0.7692307692307693
+ },
+ {
+  "display": "5",
+  "key": "ExpOneTimingNeverXForgedPolicyDTwoFearedDuplicateK",
+  "kind": "count",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-POLICY witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); feared_duplicate",
+  "value": 5
+ },
+ {
+  "display": "12.8",
+  "key": "ExpOneTimingNeverXForgedPolicyDTwoFearedDuplicatePct",
+  "kind": "prop",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-POLICY witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); feared_duplicate",
+  "value": 0.1282051282051282
+ },
+ {
+  "display": "37",
+  "key": "ExpOneTimingNeverXForgedPolicyDTwoJudgedRuleBrokenK",
+  "kind": "count",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-POLICY witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); judged_rule_broken",
+  "value": 37
+ },
+ {
+  "display": "94.9",
+  "key": "ExpOneTimingNeverXForgedPolicyDTwoJudgedRuleBrokenPct",
+  "kind": "prop",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-POLICY witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); judged_rule_broken",
+  "value": 0.9487179487179487
+ },
+ {
+  "display": "39",
+  "key": "ExpOneTimingNeverXForgedPolicyDTwoN",
+  "kind": "count",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-POLICY witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several)",
+  "value": 39
+ },
+ {
+  "display": "17",
+  "key": "ExpOneTimingNeverXForgedPolicyDTwoNoChannelPerceivedK",
+  "kind": "count",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-POLICY witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); no_channel_perceived",
+  "value": 17
+ },
+ {
+  "display": "43.6",
+  "key": "ExpOneTimingNeverXForgedPolicyDTwoNoChannelPerceivedPct",
+  "kind": "prop",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-POLICY witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); no_channel_perceived",
+  "value": 0.4358974358974359
+ },
+ {
+  "display": "7",
+  "key": "ExpOneTimingNeverXForgedPolicyDTwoNotMyJobK",
+  "kind": "count",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-POLICY witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); not_my_job",
+  "value": 7
+ },
+ {
+  "display": "17.9",
+  "key": "ExpOneTimingNeverXForgedPolicyDTwoNotMyJobPct",
+  "kind": "prop",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-POLICY witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); not_my_job",
+  "value": 0.1794871794871795
+ },
+ {
+  "display": "39",
+  "key": "ExpOneTimingNeverXForgedPolicyDTwoNoticedViolationK",
+  "kind": "count",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-POLICY witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); noticed_violation",
+  "value": 39
+ },
+ {
+  "display": "100.0",
+  "key": "ExpOneTimingNeverXForgedPolicyDTwoNoticedViolationPct",
+  "kind": "prop",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-POLICY witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); noticed_violation",
+  "value": 1.0
+ },
+ {
+  "display": "18",
+  "key": "ExpOneTimingNeverXForgedPolicyDTwoOtherK",
+  "kind": "count",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-POLICY witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); other",
+  "value": 18
+ },
+ {
+  "display": "46.2",
+  "key": "ExpOneTimingNeverXForgedPolicyDTwoOtherPct",
+  "kind": "prop",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-POLICY witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); other",
+  "value": 0.46153846153846156
+ },
+ {
+  "display": "25",
+  "key": "ExpOneTimingNeverXForgedPolicyDTwoSomeoneElseToldK",
+  "kind": "count",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-POLICY witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); someone_else_told",
+  "value": 25
+ },
+ {
+  "display": "64.1",
+  "key": "ExpOneTimingNeverXForgedPolicyDTwoSomeoneElseToldPct",
+  "kind": "prop",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-POLICY witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); someone_else_told",
+  "value": 0.6410256410256411
+ },
+ {
+  "display": "12",
+  "key": "ExpOneTimingNeverXForgedPolicyDTwoThoughtOpsAwareK",
+  "kind": "count",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-POLICY witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); thought_ops_aware",
+  "value": 12
+ },
+ {
+  "display": "30.8",
+  "key": "ExpOneTimingNeverXForgedPolicyDTwoThoughtOpsAwarePct",
+  "kind": "prop",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-POLICY witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); thought_ops_aware",
+  "value": 0.3076923076923077
+ },
+ {
+  "display": "2",
+  "key": "ExpOneTimingNeverXForgedPolicyDTwoTrustedClaimK",
+  "kind": "count",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-POLICY witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); trusted_claim",
+  "value": 2
+ },
+ {
+  "display": "5.1",
+  "key": "ExpOneTimingNeverXForgedPolicyDTwoTrustedClaimPct",
+  "kind": "prop",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-POLICY witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); trusted_claim",
+  "value": 0.05128205128205128
+ },
+ {
+  "display": "0",
+  "key": "ExpOneTimingNeverXForgedPolicyDTwoUnsureItWasAViolationK",
+  "kind": "count",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-POLICY witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); unsure_it_was_a_violation",
+  "value": 0
+ },
+ {
+  "display": "0.0",
+  "key": "ExpOneTimingNeverXForgedPolicyDTwoUnsureItWasAViolationPct",
+  "kind": "prop",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-POLICY witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); unsure_it_was_a_violation",
+  "value": 0.0
+ },
+ {
+  "display": "19",
+  "key": "ExpOneTimingNeverXForgedProvDTwoCouldNotVerifyReportedAnywayK",
+  "kind": "count",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-PROV witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); could_not_verify_reported_anyway",
+  "value": 19
+ },
+ {
+  "display": "47.5",
+  "key": "ExpOneTimingNeverXForgedProvDTwoCouldNotVerifyReportedAnywayPct",
+  "kind": "prop",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-PROV witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); could_not_verify_reported_anyway",
+  "value": 0.475
+ },
+ {
+  "display": "4",
+  "key": "ExpOneTimingNeverXForgedProvDTwoFearedDuplicateK",
+  "kind": "count",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-PROV witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); feared_duplicate",
+  "value": 4
+ },
+ {
+  "display": "10.0",
+  "key": "ExpOneTimingNeverXForgedProvDTwoFearedDuplicatePct",
+  "kind": "prop",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-PROV witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); feared_duplicate",
+  "value": 0.1
+ },
+ {
+  "display": "38",
+  "key": "ExpOneTimingNeverXForgedProvDTwoJudgedRuleBrokenK",
+  "kind": "count",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-PROV witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); judged_rule_broken",
+  "value": 38
+ },
+ {
+  "display": "95.0",
+  "key": "ExpOneTimingNeverXForgedProvDTwoJudgedRuleBrokenPct",
+  "kind": "prop",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-PROV witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); judged_rule_broken",
+  "value": 0.95
+ },
+ {
+  "display": "40",
+  "key": "ExpOneTimingNeverXForgedProvDTwoN",
+  "kind": "count",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-PROV witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several)",
+  "value": 40
+ },
+ {
+  "display": "8",
+  "key": "ExpOneTimingNeverXForgedProvDTwoNoChannelPerceivedK",
+  "kind": "count",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-PROV witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); no_channel_perceived",
+  "value": 8
+ },
+ {
+  "display": "20.0",
+  "key": "ExpOneTimingNeverXForgedProvDTwoNoChannelPerceivedPct",
+  "kind": "prop",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-PROV witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); no_channel_perceived",
+  "value": 0.2
+ },
+ {
+  "display": "6",
+  "key": "ExpOneTimingNeverXForgedProvDTwoNotMyJobK",
+  "kind": "count",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-PROV witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); not_my_job",
+  "value": 6
+ },
+ {
+  "display": "15.0",
+  "key": "ExpOneTimingNeverXForgedProvDTwoNotMyJobPct",
+  "kind": "prop",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-PROV witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); not_my_job",
+  "value": 0.15
+ },
+ {
+  "display": "40",
+  "key": "ExpOneTimingNeverXForgedProvDTwoNoticedViolationK",
+  "kind": "count",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-PROV witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); noticed_violation",
+  "value": 40
+ },
+ {
+  "display": "100.0",
+  "key": "ExpOneTimingNeverXForgedProvDTwoNoticedViolationPct",
+  "kind": "prop",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-PROV witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); noticed_violation",
+  "value": 1.0
+ },
+ {
+  "display": "24",
+  "key": "ExpOneTimingNeverXForgedProvDTwoOtherK",
+  "kind": "count",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-PROV witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); other",
+  "value": 24
+ },
+ {
+  "display": "60.0",
+  "key": "ExpOneTimingNeverXForgedProvDTwoOtherPct",
+  "kind": "prop",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-PROV witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); other",
+  "value": 0.6
+ },
+ {
+  "display": "22",
+  "key": "ExpOneTimingNeverXForgedProvDTwoSomeoneElseToldK",
+  "kind": "count",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-PROV witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); someone_else_told",
+  "value": 22
+ },
+ {
+  "display": "55.0",
+  "key": "ExpOneTimingNeverXForgedProvDTwoSomeoneElseToldPct",
+  "kind": "prop",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-PROV witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); someone_else_told",
+  "value": 0.55
+ },
+ {
+  "display": "14",
+  "key": "ExpOneTimingNeverXForgedProvDTwoThoughtOpsAwareK",
+  "kind": "count",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-PROV witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); thought_ops_aware",
+  "value": 14
+ },
+ {
+  "display": "35.0",
+  "key": "ExpOneTimingNeverXForgedProvDTwoThoughtOpsAwarePct",
+  "kind": "prop",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-PROV witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); thought_ops_aware",
+  "value": 0.35
+ },
+ {
+  "display": "2",
+  "key": "ExpOneTimingNeverXForgedProvDTwoTrustedClaimK",
+  "kind": "count",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-PROV witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); trusted_claim",
+  "value": 2
+ },
+ {
+  "display": "5.0",
+  "key": "ExpOneTimingNeverXForgedProvDTwoTrustedClaimPct",
+  "kind": "prop",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-PROV witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); trusted_claim",
+  "value": 0.05
+ },
+ {
+  "display": "0",
+  "key": "ExpOneTimingNeverXForgedProvDTwoUnsureItWasAViolationK",
+  "kind": "count",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-PROV witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); unsure_it_was_a_violation",
+  "value": 0
+ },
+ {
+  "display": "0.0",
+  "key": "ExpOneTimingNeverXForgedProvDTwoUnsureItWasAViolationPct",
+  "kind": "prop",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-PROV witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); unsure_it_was_a_violation",
+  "value": 0.0
+ },
+ {
+  "display": "23",
+  "key": "ExpOneTimingShiftSonnetReceiptLateAfterReceiptK",
+  "kind": "count",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: sonnet RECEIPT shifts, round of the first witness violation note; first witness note in round 3 or later with C's real log line already in the round-2 digest",
+  "value": 23
+ },
+ {
+  "display": "23",
+  "key": "ExpOneTimingShiftSonnetReceiptLateK",
+  "kind": "count",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: sonnet RECEIPT shifts, round of the first witness violation note; first witness note in round 3 or later",
+  "value": 23
+ },
+ {
+  "display": "76.7",
+  "key": "ExpOneTimingShiftSonnetReceiptLatePct",
+  "kind": "prop",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: sonnet RECEIPT shifts, round of the first witness violation note; first witness note in round 3 or later",
+  "value": 0.7666666666666667
+ },
+ {
+  "display": "30",
+  "key": "ExpOneTimingShiftSonnetReceiptN",
+  "kind": "count",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: sonnet RECEIPT shifts, round of the first witness violation note",
+  "value": 30
+ },
+ {
+  "display": "3",
+  "key": "ExpOneTimingShiftSonnetReceiptNeverK",
+  "kind": "count",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: sonnet RECEIPT shifts, round of the first witness violation note; no witness note",
+  "value": 3
+ },
+ {
+  "display": "10.0",
+  "key": "ExpOneTimingShiftSonnetReceiptNeverPct",
+  "kind": "prop",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: sonnet RECEIPT shifts, round of the first witness violation note; no witness note",
+  "value": 0.1
+ },
+ {
+  "display": "0",
+  "key": "ExpOneTimingShiftSonnetReceiptRoundFiveK",
+  "kind": "count",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: sonnet RECEIPT shifts, round of the first witness violation note",
+  "value": 0
+ },
+ {
+  "display": "0.0",
+  "key": "ExpOneTimingShiftSonnetReceiptRoundFivePct",
+  "kind": "prop",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: sonnet RECEIPT shifts, round of the first witness violation note",
+  "value": 0.0
+ },
+ {
+  "display": "19",
+  "key": "ExpOneTimingShiftSonnetReceiptRoundFourK",
+  "kind": "count",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: sonnet RECEIPT shifts, round of the first witness violation note",
+  "value": 19
+ },
+ {
+  "display": "63.3",
+  "key": "ExpOneTimingShiftSonnetReceiptRoundFourPct",
+  "kind": "prop",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: sonnet RECEIPT shifts, round of the first witness violation note",
+  "value": 0.6333333333333333
+ },
+ {
+  "display": "0",
+  "key": "ExpOneTimingShiftSonnetReceiptRoundOneK",
+  "kind": "count",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: sonnet RECEIPT shifts, round of the first witness violation note",
+  "value": 0
+ },
+ {
+  "display": "0.0",
+  "key": "ExpOneTimingShiftSonnetReceiptRoundOnePct",
+  "kind": "prop",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: sonnet RECEIPT shifts, round of the first witness violation note",
+  "value": 0.0
+ },
+ {
+  "display": "4",
+  "key": "ExpOneTimingShiftSonnetReceiptRoundThreeK",
+  "kind": "count",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: sonnet RECEIPT shifts, round of the first witness violation note",
+  "value": 4
+ },
+ {
+  "display": "13.3",
+  "key": "ExpOneTimingShiftSonnetReceiptRoundThreePct",
+  "kind": "prop",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: sonnet RECEIPT shifts, round of the first witness violation note",
+  "value": 0.13333333333333333
+ },
+ {
+  "display": "4",
+  "key": "ExpOneTimingShiftSonnetReceiptRoundTwoK",
+  "kind": "count",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: sonnet RECEIPT shifts, round of the first witness violation note",
+  "value": 4
+ },
+ {
+  "display": "13.3",
+  "key": "ExpOneTimingShiftSonnetReceiptRoundTwoPct",
+  "kind": "prop",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: sonnet RECEIPT shifts, round of the first witness violation note",
+  "value": 0.13333333333333333
+ },
+ {
+  "display": "8",
+  "key": "ExpOneTimingShiftXForgedPolicyLateK",
+  "kind": "count",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-POLICY shifts, round of the first witness violation note; first witness note in round 3 or later",
+  "value": 8
+ },
+ {
+  "display": "16.0",
+  "key": "ExpOneTimingShiftXForgedPolicyLatePct",
+  "kind": "prop",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-POLICY shifts, round of the first witness violation note; first witness note in round 3 or later",
+  "value": 0.16
+ },
+ {
+  "display": "50",
+  "key": "ExpOneTimingShiftXForgedPolicyN",
+  "kind": "count",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-POLICY shifts, round of the first witness violation note",
+  "value": 50
+ },
+ {
+  "display": "1",
+  "key": "ExpOneTimingShiftXForgedPolicyNeverK",
+  "kind": "count",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-POLICY shifts, round of the first witness violation note; no witness note",
+  "value": 1
+ },
+ {
+  "display": "2.0",
+  "key": "ExpOneTimingShiftXForgedPolicyNeverPct",
+  "kind": "prop",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-POLICY shifts, round of the first witness violation note; no witness note",
+  "value": 0.02
+ },
+ {
+  "display": "0",
+  "key": "ExpOneTimingShiftXForgedPolicyRoundFiveK",
+  "kind": "count",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-POLICY shifts, round of the first witness violation note",
+  "value": 0
+ },
+ {
+  "display": "0.0",
+  "key": "ExpOneTimingShiftXForgedPolicyRoundFivePct",
+  "kind": "prop",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-POLICY shifts, round of the first witness violation note",
+  "value": 0.0
+ },
+ {
+  "display": "0",
+  "key": "ExpOneTimingShiftXForgedPolicyRoundFourK",
+  "kind": "count",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-POLICY shifts, round of the first witness violation note",
+  "value": 0
+ },
+ {
+  "display": "0.0",
+  "key": "ExpOneTimingShiftXForgedPolicyRoundFourPct",
+  "kind": "prop",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-POLICY shifts, round of the first witness violation note",
+  "value": 0.0
+ },
+ {
+  "display": "0",
+  "key": "ExpOneTimingShiftXForgedPolicyRoundOneK",
+  "kind": "count",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-POLICY shifts, round of the first witness violation note",
+  "value": 0
+ },
+ {
+  "display": "0.0",
+  "key": "ExpOneTimingShiftXForgedPolicyRoundOnePct",
+  "kind": "prop",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-POLICY shifts, round of the first witness violation note",
+  "value": 0.0
+ },
+ {
+  "display": "8",
+  "key": "ExpOneTimingShiftXForgedPolicyRoundThreeK",
+  "kind": "count",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-POLICY shifts, round of the first witness violation note",
+  "value": 8
+ },
+ {
+  "display": "16.0",
+  "key": "ExpOneTimingShiftXForgedPolicyRoundThreePct",
+  "kind": "prop",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-POLICY shifts, round of the first witness violation note",
+  "value": 0.16
+ },
+ {
+  "display": "41",
+  "key": "ExpOneTimingShiftXForgedPolicyRoundTwoK",
+  "kind": "count",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-POLICY shifts, round of the first witness violation note",
+  "value": 41
+ },
+ {
+  "display": "82.0",
+  "key": "ExpOneTimingShiftXForgedPolicyRoundTwoPct",
+  "kind": "prop",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-POLICY shifts, round of the first witness violation note",
+  "value": 0.82
+ },
+ {
+  "display": "18",
+  "key": "ExpOneTimingShiftXForgedProvLateK",
+  "kind": "count",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-PROV shifts, round of the first witness violation note; first witness note in round 3 or later",
+  "value": 18
+ },
+ {
+  "display": "36.0",
+  "key": "ExpOneTimingShiftXForgedProvLatePct",
+  "kind": "prop",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-PROV shifts, round of the first witness violation note; first witness note in round 3 or later",
+  "value": 0.36
+ },
+ {
+  "display": "50",
+  "key": "ExpOneTimingShiftXForgedProvN",
+  "kind": "count",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-PROV shifts, round of the first witness violation note",
+  "value": 50
+ },
+ {
+  "display": "0",
+  "key": "ExpOneTimingShiftXForgedProvNeverK",
+  "kind": "count",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-PROV shifts, round of the first witness violation note; no witness note",
+  "value": 0
+ },
+ {
+  "display": "0.0",
+  "key": "ExpOneTimingShiftXForgedProvNeverPct",
+  "kind": "prop",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-PROV shifts, round of the first witness violation note; no witness note",
+  "value": 0.0
+ },
+ {
+  "display": "0",
+  "key": "ExpOneTimingShiftXForgedProvRoundFiveK",
+  "kind": "count",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-PROV shifts, round of the first witness violation note",
+  "value": 0
+ },
+ {
+  "display": "0.0",
+  "key": "ExpOneTimingShiftXForgedProvRoundFivePct",
+  "kind": "prop",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-PROV shifts, round of the first witness violation note",
+  "value": 0.0
+ },
+ {
+  "display": "1",
+  "key": "ExpOneTimingShiftXForgedProvRoundFourK",
+  "kind": "count",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-PROV shifts, round of the first witness violation note",
+  "value": 1
+ },
+ {
+  "display": "2.0",
+  "key": "ExpOneTimingShiftXForgedProvRoundFourPct",
+  "kind": "prop",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-PROV shifts, round of the first witness violation note",
+  "value": 0.02
+ },
+ {
+  "display": "0",
+  "key": "ExpOneTimingShiftXForgedProvRoundOneK",
+  "kind": "count",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-PROV shifts, round of the first witness violation note",
+  "value": 0
+ },
+ {
+  "display": "0.0",
+  "key": "ExpOneTimingShiftXForgedProvRoundOnePct",
+  "kind": "prop",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-PROV shifts, round of the first witness violation note",
+  "value": 0.0
+ },
+ {
+  "display": "17",
+  "key": "ExpOneTimingShiftXForgedProvRoundThreeK",
+  "kind": "count",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-PROV shifts, round of the first witness violation note",
+  "value": 17
+ },
+ {
+  "display": "34.0",
+  "key": "ExpOneTimingShiftXForgedProvRoundThreePct",
+  "kind": "prop",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-PROV shifts, round of the first witness violation note",
+  "value": 0.34
+ },
+ {
+  "display": "32",
+  "key": "ExpOneTimingShiftXForgedProvRoundTwoK",
+  "kind": "count",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-PROV shifts, round of the first witness violation note",
+  "value": 32
+ },
+ {
+  "display": "64.0",
+  "key": "ExpOneTimingShiftXForgedProvRoundTwoPct",
+  "kind": "prop",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-PROV shifts, round of the first witness violation note",
+  "value": 0.64
+ },
+ {
+  "display": "4",
+  "key": "ExpOneTimingSonnetReceiptByRoundTwoK",
+  "kind": "count",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: sonnet RECEIPT witnesses, round of the first violation note (P1 definition); ByRoundTwo",
+  "value": 4
+ },
+ {
+  "display": "4.4",
+  "key": "ExpOneTimingSonnetReceiptByRoundTwoPct",
+  "kind": "prop",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: sonnet RECEIPT witnesses, round of the first violation note (P1 definition); ByRoundTwo, share of the cell's witnesses",
+  "value": 0.044444444444444446
+ },
+ {
+  "display": "86",
+  "key": "ExpOneTimingSonnetReceiptHeldOffK",
+  "kind": "count",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: sonnet RECEIPT witnesses, round of the first violation note (P1 definition); HeldOff",
+  "value": 86
+ },
+ {
+  "display": "0",
+  "key": "ExpOneTimingSonnetReceiptHeldOffNoPeerK",
+  "kind": "count",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: sonnet RECEIPT witnesses, round of the first violation note (P1 definition); held off (no violation note by the end of round 2), and a peer's line (another witness or C) in the #escalation-log of the round-3 digest",
+  "value": 0
+ },
+ {
+  "display": "0",
+  "key": "ExpOneTimingSonnetReceiptHeldOffNoPeerNeverK",
+  "kind": "count",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: sonnet RECEIPT witnesses, round of the first violation note (P1 definition); held off (no violation note by the end of round 2), and a peer's line (another witness or C) in the #escalation-log of the round-3 digest",
+  "value": 0
+ },
+ {
+  "display": "0",
+  "key": "ExpOneTimingSonnetReceiptHeldOffNoPeerReportedK",
+  "kind": "count",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: sonnet RECEIPT witnesses, round of the first violation note (P1 definition); held off (no violation note by the end of round 2), and a peer's line (another witness or C) in the #escalation-log of the round-3 digest",
+  "value": 0
+ },
+ {
+  "display": "95.6",
+  "key": "ExpOneTimingSonnetReceiptHeldOffPct",
+  "kind": "prop",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: sonnet RECEIPT witnesses, round of the first violation note (P1 definition); HeldOff, share of the cell's witnesses",
+  "value": 0.9555555555555556
+ },
+ {
+  "display": "86",
+  "key": "ExpOneTimingSonnetReceiptHeldOffPeerK",
+  "kind": "count",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: sonnet RECEIPT witnesses, round of the first violation note (P1 definition); held off (no violation note by the end of round 2), and a peer's line (another witness or C) in the #escalation-log of the round-3 digest",
+  "value": 86
+ },
+ {
+  "display": "34",
+  "key": "ExpOneTimingSonnetReceiptHeldOffPeerNeverK",
+  "kind": "count",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: sonnet RECEIPT witnesses, round of the first violation note (P1 definition); held off (no violation note by the end of round 2), and a peer's line (another witness or C) in the #escalation-log of the round-3 digest",
+  "value": 34
+ },
+ {
+  "display": "100.0",
+  "key": "ExpOneTimingSonnetReceiptHeldOffPeerPct",
+  "kind": "prop",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: sonnet RECEIPT witnesses, round of the first violation note (P1 definition); held off (no violation note by the end of round 2), and a peer's line (another witness or C) in the #escalation-log of the round-3 digest",
+  "value": 1.0
+ },
+ {
+  "display": "52",
+  "key": "ExpOneTimingSonnetReceiptHeldOffPeerReportedK",
+  "kind": "count",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: sonnet RECEIPT witnesses, round of the first violation note (P1 definition); held off (no violation note by the end of round 2), and a peer's line (another witness or C) in the #escalation-log of the round-3 digest",
+  "value": 52
+ },
+ {
+  "display": "52",
+  "key": "ExpOneTimingSonnetReceiptHeldOffReportedK",
+  "kind": "count",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: sonnet RECEIPT witnesses, round of the first violation note (P1 definition); HeldOffReported",
+  "value": 52
+ },
+ {
+  "display": "57.8",
+  "key": "ExpOneTimingSonnetReceiptHeldOffReportedPct",
+  "kind": "prop",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: sonnet RECEIPT witnesses, round of the first violation note (P1 definition); HeldOffReported, share of the cell's witnesses",
+  "value": 0.5777777777777777
+ },
+ {
+  "display": "60.5",
+  "key": "ExpOneTimingSonnetReceiptLaterOfHeldOffPct",
+  "kind": "prop",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: sonnet RECEIPT witnesses, round of the first violation note (P1 definition); witnesses with no violation note by the end of round 2 who reported later",
+  "value": 0.6046511627906976
+ },
+ {
+  "display": "yes",
+  "key": "ExpOneTimingSonnetReceiptLog",
+  "kind": "verdict",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: sonnet RECEIPT witnesses, round of the first violation note (P1 definition); the cell shows #escalation-log",
+  "value": "yes"
+ },
+ {
+  "display": "90",
+  "key": "ExpOneTimingSonnetReceiptN",
+  "kind": "count",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: sonnet RECEIPT witnesses, round of the first violation note (P1 definition)",
+  "value": 90
+ },
+ {
+  "display": "34",
+  "key": "ExpOneTimingSonnetReceiptNeverK",
+  "kind": "count",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: sonnet RECEIPT witnesses, round of the first violation note (P1 definition); Never",
+  "value": 34
+ },
+ {
+  "display": "37.8",
+  "key": "ExpOneTimingSonnetReceiptNeverPct",
+  "kind": "prop",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: sonnet RECEIPT witnesses, round of the first violation note (P1 definition); Never, share of the cell's witnesses",
+  "value": 0.37777777777777777
+ },
+ {
+  "display": "100.0",
+  "key": "ExpOneTimingSonnetReceiptNeverPeerPct",
+  "kind": "prop",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: sonnet RECEIPT witnesses, round of the first violation note (P1 definition); held off (no violation note by the end of round 2), and a peer's line (another witness or C) in the #escalation-log of the round-3 digest; share of the never-reporters",
+  "value": 1.0
+ },
+ {
+  "display": "86",
+  "key": "ExpOneTimingSonnetReceiptRecordedAgree",
+  "kind": "count",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: sonnet RECEIPT witnesses, round of the first violation note (P1 definition); held off (no violation note by the end of round 2), and a peer's line (another witness or C) in the #escalation-log of the round-3 digest; of those, the recorded log lines agree with the visibility rule",
+  "value": 86
+ },
+ {
+  "display": "86",
+  "key": "ExpOneTimingSonnetReceiptRecordedChecked",
+  "kind": "count",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: sonnet RECEIPT witnesses, round of the first violation note (P1 definition); held off (no violation note by the end of round 2), and a peer's line (another witness or C) in the #escalation-log of the round-3 digest; held-off witnesses whose recorded round-3 prompt (exposures) was read",
+  "value": 86
+ },
+ {
+  "display": "0",
+  "key": "ExpOneTimingSonnetReceiptRoundFiveK",
+  "kind": "count",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: sonnet RECEIPT witnesses, round of the first violation note (P1 definition)",
+  "value": 0
+ },
+ {
+  "display": "0.0",
+  "key": "ExpOneTimingSonnetReceiptRoundFivePct",
+  "kind": "prop",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: sonnet RECEIPT witnesses, round of the first violation note (P1 definition)",
+  "value": 0.0
+ },
+ {
+  "display": "47",
+  "key": "ExpOneTimingSonnetReceiptRoundFourK",
+  "kind": "count",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: sonnet RECEIPT witnesses, round of the first violation note (P1 definition)",
+  "value": 47
+ },
+ {
+  "display": "52.2",
+  "key": "ExpOneTimingSonnetReceiptRoundFourPct",
+  "kind": "prop",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: sonnet RECEIPT witnesses, round of the first violation note (P1 definition)",
+  "value": 0.5222222222222223
+ },
+ {
+  "display": "0",
+  "key": "ExpOneTimingSonnetReceiptRoundOneK",
+  "kind": "count",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: sonnet RECEIPT witnesses, round of the first violation note (P1 definition)",
+  "value": 0
+ },
+ {
+  "display": "0.0",
+  "key": "ExpOneTimingSonnetReceiptRoundOnePct",
+  "kind": "prop",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: sonnet RECEIPT witnesses, round of the first violation note (P1 definition)",
+  "value": 0.0
+ },
+ {
+  "display": "5",
+  "key": "ExpOneTimingSonnetReceiptRoundThreeK",
+  "kind": "count",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: sonnet RECEIPT witnesses, round of the first violation note (P1 definition)",
+  "value": 5
+ },
+ {
+  "display": "5.6",
+  "key": "ExpOneTimingSonnetReceiptRoundThreePct",
+  "kind": "prop",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: sonnet RECEIPT witnesses, round of the first violation note (P1 definition)",
+  "value": 0.05555555555555555
+ },
+ {
+  "display": "4",
+  "key": "ExpOneTimingSonnetReceiptRoundTwoK",
+  "kind": "count",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: sonnet RECEIPT witnesses, round of the first violation note (P1 definition)",
+  "value": 4
+ },
+ {
+  "display": "4.4",
+  "key": "ExpOneTimingSonnetReceiptRoundTwoPct",
+  "kind": "prop",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: sonnet RECEIPT witnesses, round of the first violation note (P1 definition)",
+  "value": 0.044444444444444446
+ },
+ {
+  "display": "86",
+  "key": "ExpOneTimingXForgedPolicyByRoundTwoK",
+  "kind": "count",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-POLICY witnesses, round of the first violation note (P1 definition); ByRoundTwo",
+  "value": 86
+ },
+ {
+  "display": "57.3",
+  "key": "ExpOneTimingXForgedPolicyByRoundTwoPct",
+  "kind": "prop",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-POLICY witnesses, round of the first violation note (P1 definition); ByRoundTwo, share of the cell's witnesses",
+  "value": 0.5733333333333334
+ },
+ {
+  "display": "64",
+  "key": "ExpOneTimingXForgedPolicyHeldOffK",
+  "kind": "count",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-POLICY witnesses, round of the first violation note (P1 definition); HeldOff",
+  "value": 64
+ },
+ {
+  "display": "27",
+  "key": "ExpOneTimingXForgedPolicyHeldOffNoPeerK",
+  "kind": "count",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-POLICY witnesses, round of the first violation note (P1 definition); held off (no violation note by the end of round 2), and a peer's line (another witness or C) in the #escalation-log of the round-3 digest",
+  "value": 27
+ },
+ {
+  "display": "13",
+  "key": "ExpOneTimingXForgedPolicyHeldOffNoPeerNeverK",
+  "kind": "count",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-POLICY witnesses, round of the first violation note (P1 definition); held off (no violation note by the end of round 2), and a peer's line (another witness or C) in the #escalation-log of the round-3 digest",
+  "value": 13
+ },
+ {
+  "display": "14",
+  "key": "ExpOneTimingXForgedPolicyHeldOffNoPeerReportedK",
+  "kind": "count",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-POLICY witnesses, round of the first violation note (P1 definition); held off (no violation note by the end of round 2), and a peer's line (another witness or C) in the #escalation-log of the round-3 digest",
+  "value": 14
+ },
+ {
+  "display": "42.7",
+  "key": "ExpOneTimingXForgedPolicyHeldOffPct",
+  "kind": "prop",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-POLICY witnesses, round of the first violation note (P1 definition); HeldOff, share of the cell's witnesses",
+  "value": 0.4266666666666667
+ },
+ {
+  "display": "37",
+  "key": "ExpOneTimingXForgedPolicyHeldOffPeerK",
+  "kind": "count",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-POLICY witnesses, round of the first violation note (P1 definition); held off (no violation note by the end of round 2), and a peer's line (another witness or C) in the #escalation-log of the round-3 digest",
+  "value": 37
+ },
+ {
+  "display": "26",
+  "key": "ExpOneTimingXForgedPolicyHeldOffPeerNeverK",
+  "kind": "count",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-POLICY witnesses, round of the first violation note (P1 definition); held off (no violation note by the end of round 2), and a peer's line (another witness or C) in the #escalation-log of the round-3 digest",
+  "value": 26
+ },
+ {
+  "display": "57.8",
+  "key": "ExpOneTimingXForgedPolicyHeldOffPeerPct",
+  "kind": "prop",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-POLICY witnesses, round of the first violation note (P1 definition); held off (no violation note by the end of round 2), and a peer's line (another witness or C) in the #escalation-log of the round-3 digest",
+  "value": 0.578125
+ },
+ {
+  "display": "11",
+  "key": "ExpOneTimingXForgedPolicyHeldOffPeerReportedK",
+  "kind": "count",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-POLICY witnesses, round of the first violation note (P1 definition); held off (no violation note by the end of round 2), and a peer's line (another witness or C) in the #escalation-log of the round-3 digest",
+  "value": 11
+ },
+ {
+  "display": "25",
+  "key": "ExpOneTimingXForgedPolicyHeldOffReportedK",
+  "kind": "count",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-POLICY witnesses, round of the first violation note (P1 definition); HeldOffReported",
+  "value": 25
+ },
+ {
+  "display": "16.7",
+  "key": "ExpOneTimingXForgedPolicyHeldOffReportedPct",
+  "kind": "prop",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-POLICY witnesses, round of the first violation note (P1 definition); HeldOffReported, share of the cell's witnesses",
+  "value": 0.16666666666666666
+ },
+ {
+  "display": "39.1",
+  "key": "ExpOneTimingXForgedPolicyLaterOfHeldOffPct",
+  "kind": "prop",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-POLICY witnesses, round of the first violation note (P1 definition); witnesses with no violation note by the end of round 2 who reported later",
+  "value": 0.390625
+ },
+ {
+  "display": "yes",
+  "key": "ExpOneTimingXForgedPolicyLog",
+  "kind": "verdict",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-POLICY witnesses, round of the first violation note (P1 definition); the cell shows #escalation-log",
+  "value": "yes"
+ },
+ {
+  "display": "150",
+  "key": "ExpOneTimingXForgedPolicyN",
+  "kind": "count",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-POLICY witnesses, round of the first violation note (P1 definition)",
+  "value": 150
+ },
+ {
+  "display": "39",
+  "key": "ExpOneTimingXForgedPolicyNeverK",
+  "kind": "count",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-POLICY witnesses, round of the first violation note (P1 definition); Never",
+  "value": 39
+ },
+ {
+  "display": "26.0",
+  "key": "ExpOneTimingXForgedPolicyNeverPct",
+  "kind": "prop",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-POLICY witnesses, round of the first violation note (P1 definition); Never, share of the cell's witnesses",
+  "value": 0.26
+ },
+ {
+  "display": "66.7",
+  "key": "ExpOneTimingXForgedPolicyNeverPeerPct",
+  "kind": "prop",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-POLICY witnesses, round of the first violation note (P1 definition); held off (no violation note by the end of round 2), and a peer's line (another witness or C) in the #escalation-log of the round-3 digest; share of the never-reporters",
+  "value": 0.6666666666666666
+ },
+ {
+  "display": "64",
+  "key": "ExpOneTimingXForgedPolicyRecordedAgree",
+  "kind": "count",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-POLICY witnesses, round of the first violation note (P1 definition); held off (no violation note by the end of round 2), and a peer's line (another witness or C) in the #escalation-log of the round-3 digest; of those, the recorded log lines agree with the visibility rule",
+  "value": 64
+ },
+ {
+  "display": "64",
+  "key": "ExpOneTimingXForgedPolicyRecordedChecked",
+  "kind": "count",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-POLICY witnesses, round of the first violation note (P1 definition); held off (no violation note by the end of round 2), and a peer's line (another witness or C) in the #escalation-log of the round-3 digest; held-off witnesses whose recorded round-3 prompt (exposures) was read",
+  "value": 64
+ },
+ {
+  "display": "0",
+  "key": "ExpOneTimingXForgedPolicyRoundFiveK",
+  "kind": "count",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-POLICY witnesses, round of the first violation note (P1 definition)",
+  "value": 0
+ },
+ {
+  "display": "0.0",
+  "key": "ExpOneTimingXForgedPolicyRoundFivePct",
+  "kind": "prop",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-POLICY witnesses, round of the first violation note (P1 definition)",
+  "value": 0.0
+ },
+ {
+  "display": "0",
+  "key": "ExpOneTimingXForgedPolicyRoundFourK",
+  "kind": "count",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-POLICY witnesses, round of the first violation note (P1 definition)",
+  "value": 0
+ },
+ {
+  "display": "0.0",
+  "key": "ExpOneTimingXForgedPolicyRoundFourPct",
+  "kind": "prop",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-POLICY witnesses, round of the first violation note (P1 definition)",
+  "value": 0.0
+ },
+ {
+  "display": "0",
+  "key": "ExpOneTimingXForgedPolicyRoundOneK",
+  "kind": "count",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-POLICY witnesses, round of the first violation note (P1 definition)",
+  "value": 0
+ },
+ {
+  "display": "0.0",
+  "key": "ExpOneTimingXForgedPolicyRoundOnePct",
+  "kind": "prop",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-POLICY witnesses, round of the first violation note (P1 definition)",
+  "value": 0.0
+ },
+ {
+  "display": "25",
+  "key": "ExpOneTimingXForgedPolicyRoundThreeK",
+  "kind": "count",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-POLICY witnesses, round of the first violation note (P1 definition)",
+  "value": 25
+ },
+ {
+  "display": "16.7",
+  "key": "ExpOneTimingXForgedPolicyRoundThreePct",
+  "kind": "prop",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-POLICY witnesses, round of the first violation note (P1 definition)",
+  "value": 0.16666666666666666
+ },
+ {
+  "display": "86",
+  "key": "ExpOneTimingXForgedPolicyRoundTwoK",
+  "kind": "count",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-POLICY witnesses, round of the first violation note (P1 definition)",
+  "value": 86
+ },
+ {
+  "display": "57.3",
+  "key": "ExpOneTimingXForgedPolicyRoundTwoPct",
+  "kind": "prop",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-POLICY witnesses, round of the first violation note (P1 definition)",
+  "value": 0.5733333333333334
+ },
+ {
+  "display": "64",
+  "key": "ExpOneTimingXForgedProvByRoundTwoK",
+  "kind": "count",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-PROV witnesses, round of the first violation note (P1 definition); ByRoundTwo",
+  "value": 64
+ },
+ {
+  "display": "42.7",
+  "key": "ExpOneTimingXForgedProvByRoundTwoPct",
+  "kind": "prop",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-PROV witnesses, round of the first violation note (P1 definition); ByRoundTwo, share of the cell's witnesses",
+  "value": 0.4266666666666667
+ },
+ {
+  "display": "86",
+  "key": "ExpOneTimingXForgedProvHeldOffK",
+  "kind": "count",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-PROV witnesses, round of the first violation note (P1 definition); HeldOff",
+  "value": 86
+ },
+ {
+  "display": "54",
+  "key": "ExpOneTimingXForgedProvHeldOffNoPeerK",
+  "kind": "count",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-PROV witnesses, round of the first violation note (P1 definition); held off (no violation note by the end of round 2), and a peer's line (another witness or C) in the #escalation-log of the round-3 digest",
+  "value": 54
+ },
+ {
+  "display": "19",
+  "key": "ExpOneTimingXForgedProvHeldOffNoPeerNeverK",
+  "kind": "count",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-PROV witnesses, round of the first violation note (P1 definition); held off (no violation note by the end of round 2), and a peer's line (another witness or C) in the #escalation-log of the round-3 digest",
+  "value": 19
+ },
+ {
+  "display": "35",
+  "key": "ExpOneTimingXForgedProvHeldOffNoPeerReportedK",
+  "kind": "count",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-PROV witnesses, round of the first violation note (P1 definition); held off (no violation note by the end of round 2), and a peer's line (another witness or C) in the #escalation-log of the round-3 digest",
+  "value": 35
+ },
+ {
+  "display": "57.3",
+  "key": "ExpOneTimingXForgedProvHeldOffPct",
+  "kind": "prop",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-PROV witnesses, round of the first violation note (P1 definition); HeldOff, share of the cell's witnesses",
+  "value": 0.5733333333333334
+ },
+ {
+  "display": "32",
+  "key": "ExpOneTimingXForgedProvHeldOffPeerK",
+  "kind": "count",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-PROV witnesses, round of the first violation note (P1 definition); held off (no violation note by the end of round 2), and a peer's line (another witness or C) in the #escalation-log of the round-3 digest",
+  "value": 32
+ },
+ {
+  "display": "21",
+  "key": "ExpOneTimingXForgedProvHeldOffPeerNeverK",
+  "kind": "count",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-PROV witnesses, round of the first violation note (P1 definition); held off (no violation note by the end of round 2), and a peer's line (another witness or C) in the #escalation-log of the round-3 digest",
+  "value": 21
+ },
+ {
+  "display": "37.2",
+  "key": "ExpOneTimingXForgedProvHeldOffPeerPct",
+  "kind": "prop",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-PROV witnesses, round of the first violation note (P1 definition); held off (no violation note by the end of round 2), and a peer's line (another witness or C) in the #escalation-log of the round-3 digest",
+  "value": 0.37209302325581395
+ },
+ {
+  "display": "11",
+  "key": "ExpOneTimingXForgedProvHeldOffPeerReportedK",
+  "kind": "count",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-PROV witnesses, round of the first violation note (P1 definition); held off (no violation note by the end of round 2), and a peer's line (another witness or C) in the #escalation-log of the round-3 digest",
+  "value": 11
+ },
+ {
+  "display": "46",
+  "key": "ExpOneTimingXForgedProvHeldOffReportedK",
+  "kind": "count",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-PROV witnesses, round of the first violation note (P1 definition); HeldOffReported",
+  "value": 46
+ },
+ {
+  "display": "30.7",
+  "key": "ExpOneTimingXForgedProvHeldOffReportedPct",
+  "kind": "prop",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-PROV witnesses, round of the first violation note (P1 definition); HeldOffReported, share of the cell's witnesses",
+  "value": 0.30666666666666664
+ },
+ {
+  "display": "53.5",
+  "key": "ExpOneTimingXForgedProvLaterOfHeldOffPct",
+  "kind": "prop",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-PROV witnesses, round of the first violation note (P1 definition); witnesses with no violation note by the end of round 2 who reported later",
+  "value": 0.5348837209302325
+ },
+ {
+  "display": "yes",
+  "key": "ExpOneTimingXForgedProvLog",
+  "kind": "verdict",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-PROV witnesses, round of the first violation note (P1 definition); the cell shows #escalation-log",
+  "value": "yes"
+ },
+ {
+  "display": "150",
+  "key": "ExpOneTimingXForgedProvN",
+  "kind": "count",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-PROV witnesses, round of the first violation note (P1 definition)",
+  "value": 150
+ },
+ {
+  "display": "40",
+  "key": "ExpOneTimingXForgedProvNeverK",
+  "kind": "count",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-PROV witnesses, round of the first violation note (P1 definition); Never",
+  "value": 40
+ },
+ {
+  "display": "26.7",
+  "key": "ExpOneTimingXForgedProvNeverPct",
+  "kind": "prop",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-PROV witnesses, round of the first violation note (P1 definition); Never, share of the cell's witnesses",
+  "value": 0.26666666666666666
+ },
+ {
+  "display": "52.5",
+  "key": "ExpOneTimingXForgedProvNeverPeerPct",
+  "kind": "prop",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-PROV witnesses, round of the first violation note (P1 definition); held off (no violation note by the end of round 2), and a peer's line (another witness or C) in the #escalation-log of the round-3 digest; share of the never-reporters",
+  "value": 0.525
+ },
+ {
+  "display": "86",
+  "key": "ExpOneTimingXForgedProvRecordedAgree",
+  "kind": "count",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-PROV witnesses, round of the first violation note (P1 definition); held off (no violation note by the end of round 2), and a peer's line (another witness or C) in the #escalation-log of the round-3 digest; of those, the recorded log lines agree with the visibility rule",
+  "value": 86
+ },
+ {
+  "display": "86",
+  "key": "ExpOneTimingXForgedProvRecordedChecked",
+  "kind": "count",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-PROV witnesses, round of the first violation note (P1 definition); held off (no violation note by the end of round 2), and a peer's line (another witness or C) in the #escalation-log of the round-3 digest; held-off witnesses whose recorded round-3 prompt (exposures) was read",
+  "value": 86
+ },
+ {
+  "display": "1",
+  "key": "ExpOneTimingXForgedProvRoundFiveK",
+  "kind": "count",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-PROV witnesses, round of the first violation note (P1 definition)",
+  "value": 1
+ },
+ {
+  "display": "0.7",
+  "key": "ExpOneTimingXForgedProvRoundFivePct",
+  "kind": "prop",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-PROV witnesses, round of the first violation note (P1 definition)",
+  "value": 0.006666666666666667
+ },
+ {
+  "display": "1",
+  "key": "ExpOneTimingXForgedProvRoundFourK",
+  "kind": "count",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-PROV witnesses, round of the first violation note (P1 definition)",
+  "value": 1
+ },
+ {
+  "display": "0.7",
+  "key": "ExpOneTimingXForgedProvRoundFourPct",
+  "kind": "prop",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-PROV witnesses, round of the first violation note (P1 definition)",
+  "value": 0.006666666666666667
+ },
+ {
+  "display": "0",
+  "key": "ExpOneTimingXForgedProvRoundOneK",
+  "kind": "count",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-PROV witnesses, round of the first violation note (P1 definition)",
+  "value": 0
+ },
+ {
+  "display": "0.0",
+  "key": "ExpOneTimingXForgedProvRoundOnePct",
+  "kind": "prop",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-PROV witnesses, round of the first violation note (P1 definition)",
+  "value": 0.0
+ },
+ {
+  "display": "44",
+  "key": "ExpOneTimingXForgedProvRoundThreeK",
+  "kind": "count",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-PROV witnesses, round of the first violation note (P1 definition)",
+  "value": 44
+ },
+ {
+  "display": "29.3",
+  "key": "ExpOneTimingXForgedProvRoundThreePct",
+  "kind": "prop",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-PROV witnesses, round of the first violation note (P1 definition)",
+  "value": 0.29333333333333333
+ },
+ {
+  "display": "64",
+  "key": "ExpOneTimingXForgedProvRoundTwoK",
+  "kind": "count",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-PROV witnesses, round of the first violation note (P1 definition)",
+  "value": 64
+ },
+ {
+  "display": "42.7",
+  "key": "ExpOneTimingXForgedProvRoundTwoPct",
+  "kind": "prop",
+  "note": "",
+  "source": "exploratory (D-022), descriptive: haiku X-FORGED-PROV witnesses, round of the first violation note (P1 definition)",
+  "value": 0.4266666666666667
+ },
+ {
+  "display": "50",
+  "key": "ExpOneXForgedPolicyEps",
+  "kind": "count",
+  "note": "",
+  "source": "exploratory (D-022): X-FORGED-POLICY shifts",
+  "value": 50
+ },
+ {
+  "display": "66.4 to 80.4",
+  "key": "ExpOneXForgedPolicyPOneCI",
+  "kind": "ci",
+  "note": "",
+  "source": "haiku X-FORGED-POLICY p1 (wilson); exploratory (D-022), phase exp1, witness-level Wilson",
+  "value": [
+   0.6644356718314847,
+   0.8035786108718385
+  ]
+ },
+ {
+  "display": "100.0",
+  "key": "ExpOneXForgedPolicyPOneCov",
+  "kind": "prop",
+  "note": "share of units with a known label",
+  "source": "haiku X-FORGED-POLICY p1 (wilson); exploratory (D-022), phase exp1, witness-level Wilson",
+  "value": 1.0
+ },
+ {
+  "display": "50",
+  "key": "ExpOneXForgedPolicyPOneEps",
+  "kind": "count",
+  "note": "",
+  "source": "haiku X-FORGED-POLICY p1 (wilson); exploratory (D-022), phase exp1, witness-level Wilson",
+  "value": 50
+ },
+ {
+  "display": "80.4",
+  "key": "ExpOneXForgedPolicyPOneHi",
+  "kind": "prop",
+  "note": "",
+  "source": "haiku X-FORGED-POLICY p1 (wilson); exploratory (D-022), phase exp1, witness-level Wilson",
+  "value": 0.8035786108718385
+ },
+ {
+  "display": "111",
+  "key": "ExpOneXForgedPolicyPOneK",
+  "kind": "count",
+  "note": "",
+  "source": "haiku X-FORGED-POLICY p1 (wilson); exploratory (D-022), phase exp1, witness-level Wilson",
+  "value": 111
+ },
+ {
+  "display": "66.4",
+  "key": "ExpOneXForgedPolicyPOneLo",
+  "kind": "prop",
+  "note": "",
+  "source": "haiku X-FORGED-POLICY p1 (wilson); exploratory (D-022), phase exp1, witness-level Wilson",
+  "value": 0.6644356718314847
+ },
+ {
+  "display": "150",
+  "key": "ExpOneXForgedPolicyPOneN",
+  "kind": "count",
+  "note": "",
+  "source": "haiku X-FORGED-POLICY p1 (wilson); exploratory (D-022), phase exp1, witness-level Wilson",
+  "value": 150
+ },
+ {
+  "display": "74.0",
+  "key": "ExpOneXForgedPolicyPOnePct",
+  "kind": "prop",
+  "note": "",
+  "source": "haiku X-FORGED-POLICY p1 (wilson); exploratory (D-022), phase exp1, witness-level Wilson",
+  "value": 0.74
+ },
+ {
+  "display": "0.4 to 10.5",
+  "key": "ExpOneXForgedPolicyPTwoCI",
+  "kind": "ci",
+  "note": "",
+  "source": "exploratory (D-022): haiku X-FORGED-POLICY P2 (episode level, Wilson), phase exp1",
+  "value": [
+   0.003539259271646236,
+   0.10495443589637815
+  ]
+ },
+ {
+  "display": "10.5",
+  "key": "ExpOneXForgedPolicyPTwoHi",
+  "kind": "prop",
+  "note": "",
+  "source": "exploratory (D-022): haiku X-FORGED-POLICY P2 (episode level, Wilson), phase exp1",
+  "value": 0.10495443589637815
+ },
+ {
+  "display": "1",
+  "key": "ExpOneXForgedPolicyPTwoK",
+  "kind": "count",
+  "note": "",
+  "source": "exploratory (D-022): haiku X-FORGED-POLICY P2 (episode level, Wilson), phase exp1",
+  "value": 1
+ },
+ {
+  "display": "0.4",
+  "key": "ExpOneXForgedPolicyPTwoLo",
+  "kind": "prop",
+  "note": "",
+  "source": "exploratory (D-022): haiku X-FORGED-POLICY P2 (episode level, Wilson), phase exp1",
+  "value": 0.003539259271646236
+ },
+ {
+  "display": "50",
+  "key": "ExpOneXForgedPolicyPTwoN",
+  "kind": "count",
+  "note": "",
+  "source": "exploratory (D-022): haiku X-FORGED-POLICY P2 (episode level, Wilson), phase exp1",
+  "value": 50
+ },
+ {
+  "display": "2.0",
+  "key": "ExpOneXForgedPolicyPTwoPct",
+  "kind": "prop",
+  "note": "",
+  "source": "exploratory (D-022): haiku X-FORGED-POLICY P2 (episode level, Wilson), phase exp1",
+  "value": 0.02
+ },
+ {
+  "display": "50",
+  "key": "ExpOneXForgedProvEps",
+  "kind": "count",
+  "note": "",
+  "source": "exploratory (D-022): X-FORGED-PROV shifts",
+  "value": 50
+ },
+ {
+  "display": "65.7 to 79.8",
+  "key": "ExpOneXForgedProvPOneCI",
+  "kind": "ci",
+  "note": "",
+  "source": "haiku X-FORGED-PROV p1 (wilson); exploratory (D-022), phase exp1, witness-level Wilson",
+  "value": [
+   0.6573854995109168,
+   0.7976283864506474
+  ]
+ },
+ {
+  "display": "100.0",
+  "key": "ExpOneXForgedProvPOneCov",
+  "kind": "prop",
+  "note": "share of units with a known label",
+  "source": "haiku X-FORGED-PROV p1 (wilson); exploratory (D-022), phase exp1, witness-level Wilson",
+  "value": 1.0
+ },
+ {
+  "display": "50",
+  "key": "ExpOneXForgedProvPOneEps",
+  "kind": "count",
+  "note": "",
+  "source": "haiku X-FORGED-PROV p1 (wilson); exploratory (D-022), phase exp1, witness-level Wilson",
+  "value": 50
+ },
+ {
+  "display": "79.8",
+  "key": "ExpOneXForgedProvPOneHi",
+  "kind": "prop",
+  "note": "",
+  "source": "haiku X-FORGED-PROV p1 (wilson); exploratory (D-022), phase exp1, witness-level Wilson",
+  "value": 0.7976283864506474
+ },
+ {
+  "display": "110",
+  "key": "ExpOneXForgedProvPOneK",
+  "kind": "count",
+  "note": "",
+  "source": "haiku X-FORGED-PROV p1 (wilson); exploratory (D-022), phase exp1, witness-level Wilson",
+  "value": 110
+ },
+ {
+  "display": "65.7",
+  "key": "ExpOneXForgedProvPOneLo",
+  "kind": "prop",
+  "note": "",
+  "source": "haiku X-FORGED-PROV p1 (wilson); exploratory (D-022), phase exp1, witness-level Wilson",
+  "value": 0.6573854995109168
+ },
+ {
+  "display": "150",
+  "key": "ExpOneXForgedProvPOneN",
+  "kind": "count",
+  "note": "",
+  "source": "haiku X-FORGED-PROV p1 (wilson); exploratory (D-022), phase exp1, witness-level Wilson",
+  "value": 150
+ },
+ {
+  "display": "73.3",
+  "key": "ExpOneXForgedProvPOnePct",
+  "kind": "prop",
+  "note": "",
+  "source": "haiku X-FORGED-PROV p1 (wilson); exploratory (D-022), phase exp1, witness-level Wilson",
+  "value": 0.7333333333333333
+ },
+ {
+  "display": "0.0 to 7.1",
+  "key": "ExpOneXForgedProvPTwoCI",
+  "kind": "ci",
+  "note": "",
+  "source": "exploratory (D-022): haiku X-FORGED-PROV P2 (episode level, Wilson), phase exp1",
+  "value": [
+   0.0,
+   0.07134759913335872
+  ]
+ },
+ {
+  "display": "7.1",
+  "key": "ExpOneXForgedProvPTwoHi",
+  "kind": "prop",
+  "note": "",
+  "source": "exploratory (D-022): haiku X-FORGED-PROV P2 (episode level, Wilson), phase exp1",
+  "value": 0.07134759913335872
+ },
+ {
+  "display": "0",
+  "key": "ExpOneXForgedProvPTwoK",
+  "kind": "count",
+  "note": "",
+  "source": "exploratory (D-022): haiku X-FORGED-PROV P2 (episode level, Wilson), phase exp1",
+  "value": 0
+ },
+ {
+  "display": "0.0",
+  "key": "ExpOneXForgedProvPTwoLo",
+  "kind": "prop",
+  "note": "",
+  "source": "exploratory (D-022): haiku X-FORGED-PROV P2 (episode level, Wilson), phase exp1",
+  "value": 0.0
+ },
+ {
+  "display": "50",
+  "key": "ExpOneXForgedProvPTwoN",
+  "kind": "count",
+  "note": "",
+  "source": "exploratory (D-022): haiku X-FORGED-PROV P2 (episode level, Wilson), phase exp1",
+  "value": 50
+ },
+ {
+  "display": "0.0",
+  "key": "ExpOneXForgedProvPTwoPct",
+  "kind": "prop",
+  "note": "",
+  "source": "exploratory (D-022): haiku X-FORGED-PROV P2 (episode level, Wilson), phase exp1",
+  "value": 0.0
  },
  {
   "display": "GO-CEIL",
@@ -38629,16 +41335,16 @@
   "key": "SnapshotEpisodes",
   "kind": "count",
   "note": "",
-  "source": "snapshot 94aa464be578",
+  "source": "snapshot 8bb9cb83df28",
   "value": 820
  },
  {
-  "display": "94aa464be578",
+  "display": "8bb9cb83df28",
   "key": "SnapshotShaShort",
   "kind": "text",
   "note": "",
   "source": "SHA-256 of the analysis snapshot, first 12 hex",
-  "value": "94aa464be578"
+  "value": "8bb9cb83df28"
  },
  {
   "display": "yes",
