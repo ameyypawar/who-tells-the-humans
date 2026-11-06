@@ -341,3 +341,40 @@ def build_data_release(settings: Any, out: Path, *, with_exp1: bool = True) -> d
             "outcomes": {k: v for k, v in ot.items() if k in ("witness_rows", "shift_rows")}, "labels": lt,
             "transcripts": tt, "residual": residual, "fragment_hits": frag, "masked_by_cell": by_cell, "_ot": ot,
             "_episodes": episodes}
+
+
+# ---- command line ----------------------------------------------------------------------------------------------
+
+def main(argv: list[str] | None = None) -> int:
+    """python -I -m wtth.release --out data/release [--runs-dir DIR] [--no-exp1]
+
+    Maintainer entry point: needs the private runs/ database, the judge databases and the withheld strings, none of
+    which are in the repository. Outsiders verify the released numbers with scripts/release_summary.py instead.
+    """
+    import argparse
+
+    import yaml
+
+    from wtth.config import load_settings
+
+    ap = argparse.ArgumentParser(prog="wtth.release", description="Build data/release/ from the private runs/ database.")
+    ap.add_argument("--out", required=True, help="output directory (e.g. data/release)")
+    ap.add_argument("--config", help="experiment config (default: configs/experiment.yaml)")
+    ap.add_argument("--runs-dir", help="override paths.runs_dir")
+    ap.add_argument("--set", action="append", metavar="KEY=VALUE", help="override a setting")
+    ap.add_argument("--no-exp1", action="store_true", help="leave out the D-022 follow-up (phase exp1)")
+    args = ap.parse_args(argv)
+    ov: dict[str, Any] = {}
+    if args.runs_dir:
+        ov["paths.runs_dir"] = str(Path(args.runs_dir).resolve())
+    for item in args.set or []:
+        k, _, v = item.partition("=")
+        ov[k] = yaml.safe_load(v)
+    settings = load_settings(Path(args.config) if args.config else None, ov)
+    summary = build_data_release(settings, Path(args.out), with_exp1=not args.no_exp1)
+    print(json.dumps({k: v for k, v in summary.items() if not k.startswith("_")}, indent=1, default=str))
+    return 1 if summary["residual"] or summary["fragment_hits"] else 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
