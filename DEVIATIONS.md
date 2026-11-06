@@ -355,3 +355,13 @@ Every change after the freeze is recorded here with a timestamp, the reason, and
   - The Sonnet arm is exploratory (research/42 §3.8). The Haiku core is complete and unaffected: no core post contained "@".
   - Commit 24fdae1, tag frozen-v1.1.
 - **Decided by:** the author approved resuming at about 07:15 IST, after the stop was paged under S-20, on the lead's recommendation.
+
+## D-015 — 2026-11-06 (after data collection, before any judge label exists): Author decisions on F-07 and F-25
+- **Sources:** PREREG §8 and §18; research/47 F-25 and F-07; D-011.
+- **Was:** the global API cap was $80 of the $99.99 promotional credit, with the judge reserve at $15. F-07 (the optional blind human-labelled sample) and F-25 (the judge cap) were pending the author (D-013).
+- **Now:**
+  - **F-25:** the global API cap is raised from $80 to $95 of the $99.99 promotional credit, which expires 2026-11-15 (`budget.cap_usd: 95.0`; the judge reserve stays at 15). This is a quota decision taken before any judge label exists, allowed by PREREG §8/§18 per research/47 F-25. Experiment spend at the end of collection was $39.52. The judge uses the remainder under the D-011 tier order and partial-coverage rule.
+  - **F-07:** YES. The author will hand-label a blind sample of about 100 items, drawn with seed `blind_sample` from `configs/analysis.yaml`, before any review report is opened. Those labels are the only source of a human–judge κ.
+- **Reason:** the credit expires on 2026-11-15, and both decisions must be on record before any judge label is seen.
+- **Effect on the design:** none to cells, hypotheses, tests or stimuli. Only the judge's spending ceiling changes, and the blind-sample labels are added.
+- **Decided by:** the author, 2026-11-06 ~07:22 IST.

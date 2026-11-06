@@ -35,7 +35,7 @@ models:
     claude-sonnet-5-5: 0.10
 
 budget:                      # B5: one global ledger across all phases including the judge
-  cap_usd: 80.0
+  cap_usd: 95.0
   warn_usd: 60.0
   prior_spend_usd: 0.0
   reserve_calls: 21          # launch an episode only if spent + committed + reserve_calls * max_budget <= cap
