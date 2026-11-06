@@ -473,6 +473,15 @@ class SynthRunTest(unittest.TestCase):
                   "ExpOneDiffPOneSonnetReceiptMinusSonnetForgedCI"):
             self.assertIn(k, self.out["b"])
         self.assertNotIn("ExpOneDiffPTwoSonnetReceiptMinusSonnetForgedCI", self.out["b"])
+        # the core's timing and D2-reason families, under ExpOne
+        self.assertEqual((self.d("ExpOneTimingXForgedPolicyN"), self.d("ExpOneTimingSonnetReceiptN")), ("150", "90"))
+        nev = [x for x in self.gb.witnesses if x["phase"] == "exp1" and x["cell"] == "X-FORGED-PROV" and not x["p1"]]
+        self.assertEqual(self.d("ExpOneTimingNeverXForgedProvDTwoN"), str(len(nev)))
+        self.assertEqual(self.d("ExpOneTimingNeverXForgedProvDTwoTrustedClaimK"),
+                         str(sum(1 for x in nev if "trusted_claim" in x["reasons"])))
+        self.assertEqual(self.d("ExpOneTimingXForgedProvNeverK"), str(len(nev)))
+        self.assertIn("ExpOneTimingShiftSonnetReceiptLateAfterReceiptK", self.out["b"])
+        self.assertNotIn("ExpOneTimingNoneN", self.out["b"])
         for k, e in self.out["b"].items():
             if k.startswith("ExpOne"):
                 self.assertIn("exploratory (D-022)", e["source"], k)

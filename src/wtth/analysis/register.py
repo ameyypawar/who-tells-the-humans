@@ -444,15 +444,20 @@ def register_robustness(book: NumberBook, M: str, r: Any) -> None:
         book.add(pre + "PZeroMcSe", b.mc_se, "prop2", source=src + "; Monte Carlo standard error sqrt(p(1-p)/B)")
 
 
-def register_timing(book: NumberBook, M: str, t: Any) -> None:
+def register_timing(book: NumberBook, M: str, t: Any, *, cell_tokens: Mapping[str, str] | None = None,
+                    label: str = POSTHOC) -> None:
     """D-021 item 2 (posthoc.TimingResults): witness first-report rounds, the log at the next turn, D2 reasons of
-    never-reporters, and the round of each shift's first witness note."""
+    never-reporters, and the round of each shift's first witness note. The D-022 follow-up uses the same families
+    under M='ExpOne' with its own cell tokens and label."""
     from wtth.analysis.posthoc import NO_VIOLATION_CELLS, REASONS
 
+    def tok(cell: str) -> str:
+        return (cell_tokens or {}).get(cell) or cell_token(cell)
+
     for c in t.cells:
-        pre = M + "Timing" + cell_token(c.cell)
+        pre = M + "Timing" + tok(c.cell)
         tag = " (no violation in this cell)" if c.cell in NO_VIOLATION_CELLS else ""
-        src = f"{POSTHOC}: {t.model} {c.cell} witnesses, round of the first violation note (P1 definition){tag}"
+        src = f"{label}: {t.model} {c.cell} witnesses, round of the first violation note (P1 definition){tag}"
         book.add(pre + "N", c.n, "count", source=src)
         for rr in range(1, 6):
             k = c.by_round.get(rr, 0)
@@ -484,8 +489,8 @@ def register_timing(book: NumberBook, M: str, t: Any) -> None:
                      source=psrc + "; held-off witnesses whose recorded round-3 prompt (exposures) was read")
             book.add(pre + "RecordedAgree", c.recorded_agree, "count",
                      source=psrc + "; of those, the recorded log lines agree with the visibility rule")
-        npre = M + "TimingNever" + cell_token(c.cell) + "DTwo"
-        nsrc = (f"{POSTHOC}: {t.model} {c.cell} witnesses who never sent a violation note, D2 reason codes (final "
+        npre = M + "TimingNever" + tok(c.cell) + "DTwo"
+        nsrc = (f"{label}: {t.model} {c.cell} witnesses who never sent a violation note, D2 reason codes (final "
                 f"labels; a witness can have several){tag}")
         book.add(npre + "N", c.never_d2_n, "count", source=nsrc)
         if c.never_d2_n:
@@ -494,8 +499,8 @@ def register_timing(book: NumberBook, M: str, t: Any) -> None:
                 book.add(npre + token(code) + "K", k, "count", source=nsrc + f"; {code}")
                 _share(book, npre + token(code) + "Pct", k, c.never_d2_n, source=nsrc + f"; {code}")
     for s in t.shifts:
-        pre = M + "TimingShift" + cell_token(s.cell)
-        src = f"{POSTHOC}: {t.model} {s.cell} shifts, round of the first witness violation note"
+        pre = M + "TimingShift" + tok(s.cell)
+        src = f"{label}: {t.model} {s.cell} shifts, round of the first witness violation note"
         book.add(pre + "N", s.n, "count", source=src)
         for rr in range(1, 6):
             k = s.by_round.get(rr, 0)
@@ -579,6 +584,9 @@ def register_exp1(book: NumberBook, x: Any) -> None:
             pre = "ExpOneDiff" + kind + arm_tok + "Minus" + ref
             book.add_contrast(pre, c, source_suffix=f"; {EXPLORATORY_D022}")
             add_excl(book, pre, c.lo, c.hi, f"{c.name} ({EXPLORATORY_D022})")
+    toks = {a.arm.cell: a.arm.token for a in x.arms}
+    for tm in x.timings:          # the core's timing and D2-reason families, under ExpOne
+        register_timing(book, "ExpOne", tm, cell_tokens=toks, label=f"{EXPLORATORY_D022}, descriptive")
 
 
 # ---- the author read (D-021 item 3) ----------------------------------------------------------------------------------

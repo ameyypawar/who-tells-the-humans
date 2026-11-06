@@ -69,6 +69,7 @@ class Exp1Results:
     p1_diffs: tuple[tuple[str, str, Contrast], ...] = ()     # (arm token, ref token, contrast)
     p2_diffs: tuple[tuple[str, str, Contrast], ...] = ()
     notes: tuple[str, ...] = ()
+    timings: tuple[Any, ...] = ()       # posthoc.TimingResults per model (Haiku arms, Sonnet RECEIPT)
 
 
 def label_source(settings: Any) -> Any:
@@ -204,4 +205,12 @@ def analyse(db: Any, labels: Any, *, seeds: AnalysisSeeds,
                                            status="exploratory",
                                            note=f"{EXPLORATORY}: episode bootstrap, {a.label} minus {ref}")
                 p2d.append((a.token, ref, dataclasses.replace(c2, rejected=None)))
-    return Exp1Results(COMPLETE, n_done, 0, 0, tuple(arms), tuple(p1d), tuple(p2d), tuple(notes))
+    from wtth.analysis.posthoc import timing
+
+    tims = []
+    for model in ("haiku", "sonnet"):
+        ws = [x for a in ARMS if a.model == model for x in w_by[a.token]]
+        es = [x for a in ARMS if a.model == model for x in e_by[a.token]]
+        if ws:
+            tims.append(timing(ws, es, db))
+    return Exp1Results(COMPLETE, n_done, 0, 0, tuple(arms), tuple(p1d), tuple(p2d), tuple(notes), tuple(tims))
