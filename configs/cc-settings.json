@@ -1,0 +1,4 @@
+{"crossSessionInbound": "refuse", "autoMemoryEnabled": false, "disableAllHooks": true,
+ "disableClaudeAiConnectors": true, "enableArtifact": false, "includeGitInstructions": false,
+ "attribution": {"commit": "", "pr": ""}, "switchModelsOnFlag": false, "showThinkingSummaries": true,
+ "permissions": {"deny": ["SendMessage", "ListAgents", "SendFeedback", "ToolSearch", "Agent", "Workflow"]}}
