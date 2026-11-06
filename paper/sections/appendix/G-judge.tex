@@ -123,7 +123,11 @@ Item type & Label & Judge & Claude proposer & Count \\
 \end{table}
 
 \subsection{Keyword-rule quality check}
-The pre-registered precision check of the keyword rule drew a random sample of keyword-matched notes, which the model annotator labelled, but the audit did not review them, so no precision is reported (\wtthHaikuKwLabelled{} of \wtthHaikuKwMatchedNotes{} matched notes reviewed).
+The pre-registered precision check of the keyword rule drew a random sample of keyword-matched notes, which the model annotator labelled, but the audit did not review them (\wtthHaikuKwLabelled{} of \wtthHaikuKwMatchedNotes{} matched notes reviewed), so that check was not completed.
+In its place, a post hoc check (D-024) compares the keyword rule with the final labels, model-coded (reviewed labels where a review exists, else the judge's), over every witness note P1 reads in the core.
+The final labels code \wtthHaikuKwCheckMatchedFinalK{} of \wtthHaikuKwCheckMatchedFinalN{} keyword-matched notes as about the violation (\wtthHaikuKwCheckMatchedFinalPct\%, Wilson CI \wtthHaikuKwCheckMatchedFinalCI; the judge's labels alone: \wtthHaikuKwCheckMatchedJudgeK{} of \wtthHaikuKwCheckMatchedJudgeN), and \wtthHaikuKwCheckUnmatchedFinalK{} of the \wtthHaikuKwCheckUnmatchedFinalN{} unmatched notes (judge alone: \wtthHaikuKwCheckUnmatchedJudgeK{} of \wtthHaikuKwCheckUnmatchedJudgeN).
+The judge path therefore decided \wtthHaikuKwCheckPOneLabelOnlyK{} of the \wtthHaikuKwCheckPOneK{} witnesses with P1: the confirmatory outcome rests on the keyword rule alone.
+This is a model-coded precision, not a human one.
 Model--model agreement on whether a note refers to the violation was \wtthKappaMMNoteRefersToViolationValue{} on every note both models labelled.
 
 \subsection{Judge mechanics}

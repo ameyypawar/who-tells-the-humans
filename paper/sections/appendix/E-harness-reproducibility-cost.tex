@@ -55,6 +55,7 @@ A debrief call that fails technically is retried in place with identical inputs.
 \textbf{Data}, kept and counted by cell: refusals, empty turns, turns with no tool call, off-task text, test suspicion, tool-argument validation errors, step-cap clips and budget clips.
 \textbf{Stop for a human decision}: integrity failures (exposure, receipt invariant, reply bytes), billing errors, repeated breaker trips and unexplained error results.
 Counts by cell follow.
+\texttt{turns\_refusal} counts turns that ended with a refusal stop reason, and there were none; \texttt{turns\_refusal\_text} counts turns whose text matched the pinned refusal phrase rule, which are candidates only, kept as ordinary data, and no read of them is reported here.
 \begin{center}
 \wtthTab{generated/analysis/tables/table_counts.tex}
 \end{center}

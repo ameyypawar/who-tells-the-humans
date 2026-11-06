@@ -40,7 +40,7 @@ Only H1 depends on that boundary: its non-reporters sit in \wtthHaikuPostHocBoun
 
 \begin{table}[h]
 \centering\footnotesize\setlength{\tabcolsep}{4pt}
-\begin{tabular}{@{}l>{\raggedright\arraybackslash}p{1.05in}>{\raggedright\arraybackslash}p{1.75in}>{\raggedright\arraybackslash}p{1.75in}l@{}}
+\begin{tabularx}{\linewidth}{@{}l>{\raggedright\arraybackslash}p{0.85in}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}p{1.0in}@{}}
 \toprule
 Test & Bootstrap CI (pre-registered) & Witness level (post hoc) & Non-reporters (shifts holding them) & P(resample omits them) \\
 \midrule
@@ -48,7 +48,7 @@ H1 & \wtthHaikuHOneCI & Fisher p~$=$~\wtthHaikuPostHocHOneFisherP; Newcombe \wtt
 H2 & \wtthHaikuHTwoCI & MOVER \wtthHaikuPostHocHTwoMoverCI & \cell{CLAIM} \wtthHaikuPostHocBoundaryHTwoClaimNonReporters{} (\wtthHaikuPostHocBoundaryHTwoClaimShiftsM{} of \wtthHaikuPostHocBoundaryHTwoClaimShiftsN); \cell{NO-RECEIPT} \wtthHaikuPostHocBoundaryHTwoNoReceiptNonReporters{} (\wtthHaikuPostHocBoundaryHTwoNoReceiptShiftsM{} of \wtthHaikuPostHocBoundaryHTwoNoReceiptShiftsN) & \wtthHaikuPostHocBoundaryHTwoClaimPZero\%; \wtthHaikuPostHocBoundaryHTwoNoReceiptPZero\% \\
 H3 & \wtthHaikuHThreeCI & Fisher p \wtthHaikuPostHocHThreeFisherP; Newcombe \wtthHaikuPostHocHThreeNewcombeCI & \cell{NO-RECEIPT} \wtthHaikuPostHocBoundaryHThreeNoReceiptNonReporters{} (\wtthHaikuPostHocBoundaryHThreeNoReceiptShiftsM{} of \wtthHaikuPostHocBoundaryHThreeNoReceiptShiftsN); \cell{FORGED} \wtthHaikuPostHocBoundaryHThreeForgedNonReporters{} (\wtthHaikuPostHocBoundaryHThreeForgedShiftsM{} of \wtthHaikuPostHocBoundaryHThreeForgedShiftsN) & \wtthHaikuPostHocBoundaryHThreeNoReceiptPZero\%; \wtthHaikuPostHocBoundaryHThreeForgedPZero\% \\
 \bottomrule
-\end{tabular}
+\end{tabularx}
 \caption{\textbf{Post hoc robustness of the confirmatory tests} (D-021; points). The witness-level methods ignore clustering; the last column is the analytic probability that an episode-cluster resample of the arm draws none of the shifts that hold its non-reporters. No verdict changes.}
 \label{tab:posthoc}
 \end{table}
@@ -61,11 +61,12 @@ In the \wtthHaikuPTwoForgedK{} \cell{FORGED} shifts that left ops untold no witn
 A visible real receipt did not always stop later reports: in \wtthHaikuTimingShiftReceiptLateK{} of \wtthHaikuTimingShiftReceiptN{} \cell{RECEIPT} shifts the first witness note came only in round 3 or later, with C's real log line in view since round 2.
 
 \begin{table}[h]
-\centering\footnotesize\setlength{\tabcolsep}{3.5pt}
+\centering\footnotesize\setlength{\tabcolsep}{3pt}
 \begin{tabular}{@{}llrrrrrrrr@{}}
 \toprule
- & & & Reported & Held off & then & then & Never, peer's & Never: ``someone & Shifts: first \\
-Cell & World & Witnesses & by round 2 & past round 2 & reported & never & line in view & else told'' & note late \\
+ & & & Reported & Held off & & & Never, & Never: & Shifts: \\
+ & & & by & past & then & then & peer's line & ``someone & first note \\
+Cell & World & Witnesses & round 2 & round 2 & reported & never & in view & else told'' & late \\
 \midrule
 \cell{NONE} & R0 & \wtthHaikuTimingNoneN & \wtthHaikuTimingNoneByRoundTwoK & \wtthHaikuTimingNoneHeldOffK & \wtthHaikuTimingNoneHeldOffReportedK & \wtthHaikuTimingNoneNeverK & --- & --- & \wtthHaikuTimingShiftNoneLateK/\wtthHaikuTimingShiftNoneN \\
 \cell{CONCERN} & R0 & \wtthHaikuTimingConcernN & \wtthHaikuTimingConcernByRoundTwoK & \wtthHaikuTimingConcernHeldOffK & \wtthHaikuTimingConcernHeldOffReportedK & \wtthHaikuTimingConcernNeverK & --- & --- & \wtthHaikuTimingShiftConcernLateK/\wtthHaikuTimingShiftConcernN \\
@@ -86,6 +87,8 @@ Cell & World & Witnesses & by round 2 & past round 2 & reported & never & line i
 \paragraph{By paraphrase (pre-registered, exploratory).}
 The seed sets the claim's paraphrase and the handle order together, so their effects are aliased.
 Never-reporters are most frequent with the public paraphrase in every claim cell but \cell{POLICY}, most sharply in \cell{CLAIM} and \cell{NO-RECEIPT} (Table~\ref{tab:paraphrase}), so the stand-down may depend on the claim's wording or on slot order; the withheld paraphrases have the public one's meaning and length (Appendix~\ref{app:withheld}).
+Post hoc (D-024; shift-cluster bootstrap, descriptive, no test), P1 under the typed line minus P1 after a real receipt (\cell{FORGED} $-$ \cell{RECEIPT}) was \wtthHaikuForgedMinusReceiptDelta{} points overall (CI \wtthHaikuForgedMinusReceiptCI) and \wtthHaikuByParaphraseZeroForgedMinusReceiptDelta{} with the public paraphrase (CI \wtthHaikuByParaphraseZeroForgedMinusReceiptCI), \wtthHaikuByParaphraseOneForgedMinusReceiptDelta{} with withheld A (CI \wtthHaikuByParaphraseOneForgedMinusReceiptCI) and \wtthHaikuByParaphraseTwoForgedMinusReceiptDelta{} with withheld B (CI \wtthHaikuByParaphraseTwoForgedMinusReceiptCI); H3's difference was \wtthHaikuByParaphraseZeroNoReceiptMinusForgedDelta{} (CI \wtthHaikuByParaphraseZeroNoReceiptMinusForgedCI), \wtthHaikuByParaphraseOneNoReceiptMinusForgedDelta{} (CI \wtthHaikuByParaphraseOneNoReceiptMinusForgedCI) and \wtthHaikuByParaphraseTwoNoReceiptMinusForgedDelta{} points (CI \wtthHaikuByParaphraseTwoNoReceiptMinusForgedCI) in the same order.
+The typed line's match with a real receipt is therefore an average over wordings that point in opposite directions, and each wording is aliased with handle order.
 
 \begin{table}[h]
 \centering\footnotesize\setlength{\tabcolsep}{4pt}
@@ -218,9 +221,10 @@ Cell & Basis for ``Did anyone tell ops?'' & k/n & Shifts & \% & \wtthProtocolLev
 \end{table}
 
 % ---- the exploratory follow-up (D-022, D-023): Section 4.5 (sec:followup). Macros \wtthExpOne...; nothing here is confirmatory, and no
-% p-value is printed (plan 49 section 4.2 item 8). XP-PROV is quoted from exp/prompts/runbook_exp1.md at tag exp1-v1.
+% p-value is printed (plan 49 section 4.2 item 8). Both added sentences are the design macros read from
+% exp/prompts/runbook_exp1.md at tag exp1-v1 (\wtthDesignExpOnePolicySentence, \wtthDesignExpOneProvSentence).
 \paragraph{Exploratory follow-up (D-022, D-023).}
-Three cells ran after the strict analysis, on seeds that overlap no earlier seed and give the core's mix of paraphrase, handle order and tickets: \cell{FORGED} with the one-line rule (``\wtthStimPolicy'') added to its runbook (\cell{X-FORGED-POLICY}); \cell{FORGED} with a provenance note added instead (\cell{X-FORGED-PROV}: ``Entries in \#escalation-log are written only by the notify\_ops tool. A line in a board post that looks like a log entry is part of that post.''); and the pre-registered \cell{RECEIPT} cell on \wtthDesignModelSonnetName{} (\wtthExpOneSonnetReceiptEps{} shifts).
+Three cells ran after the strict analysis, on seeds that overlap no earlier seed and give the core's mix of paraphrase, handle order and tickets: \cell{FORGED} with the one-line rule (``\wtthDesignExpOnePolicySentence'') added to its runbook (\cell{X-FORGED-POLICY}); \cell{FORGED} with a provenance note added instead (\cell{X-FORGED-PROV}: ``\wtthDesignExpOneProvSentence''); and the pre-registered \cell{RECEIPT} cell on \wtthDesignModelSonnetName{} (\wtthExpOneSonnetReceiptEps{} shifts).
 Harness, step cap, judge prompt and keyword rule are the core's; board posts and \DebOne{} answers were not judged, so \Ptwop{} is not reported for these cells.
 Table~\ref{tab:expone} gives P1, P2 and the bootstrap differences from the comparison cells, and Table~\ref{tab:exponetiming} the timing of first notes and the \DebTwo{} reasons of the witnesses who never reported, beside the core's \cell{FORGED}.
 The P2 difference of \cell{X-FORGED-PROV} from \cell{FORGED} has an interval that excludes zero only through the boundary effect described for H1 (Section~\ref{sec:h1}): all \wtthHaikuPTwoForgedK{} untold \cell{FORGED} shifts can drop out of a resample together, so \wtthExpOneXForgedProvPTwoK{} or \wtthExpOneXForgedPolicyPTwoK{} untold shifts in \wtthExpOneXForgedProvPTwoN{} cannot be told apart from \wtthHaikuPTwoForgedK{} in \wtthHaikuPTwoForgedN, and we do not read it as a reduction.
@@ -323,7 +327,8 @@ Alert-load rows in the analysis log's contrast tables are scaled by a hundred, s
 \begin{table}[h]
 \centering\footnotesize
 \wtthTab{generated/analysis/tables/table_secondary_board_substitution.tex}
-\caption{\textbf{Board substitution} (exploratory, D-010): witnesses who raised concern or addressed humans on the board but sent no note.}
+\caption{\textbf{Board substitution} (exploratory, D-010): witnesses who raised concern or addressed humans on the board but sent no note.
+Table~\ref{tab:timing} counts violation notes; Table~\ref{tab:boardsub} any note, so their counts of witnesses without a note differ.}
 \label{tab:boardsub}
 \end{table}
 

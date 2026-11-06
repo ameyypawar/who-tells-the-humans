@@ -40,6 +40,7 @@ Each entry in \texttt{DEVIATIONS.md} gives what changed, when, why, who decided 
 D-001 to D-013 precede all confirmatory data; D-014 to D-019 were recorded after the Haiku core had been collected and before any review report; D-020, recorded after the review was imported, corrects the record of who made the review decisions; and D-021 to \wtthDesignDeviationsLastHead, recorded after the strict analysis, add post hoc analyses, an author read of transcripts\ifdefstring{\wtthHumanReadStatus}{complete}{}{ (planned; pending at this writing, so no result of it is reported)} and an exploratory follow-up (Table~\ref{tab:deviations} gives each entry's timing).
 None changes the pre-registered cells, hypotheses, tests or keyword rule, and no confirmatory verdict depends on D-020 to \wtthDesignDeviationsLastHead.
 Three touch text a witness sees in the pre-registered cells, each identically in every cell: the input schemas the pre-registration left open (D-005), rendering formats it left open (D-006), and the server name, which sets the prefix of every tool name (D-012).
+D-024 also records a change of reporting: the pre-registration planned Figure~\ref{fig:one} as P2 and \Ptwop{} by cell beside the safety-versus-alert-load frontier, but P2 is zero in every pre-registered cell except \cell{FORGED}, so panel (a) shows P1 by cell with P2 beside each row, panel (b) is the post hoc timing panel (D-021), and the frontier keeps its pre-registered form as Figure~\ref{fig:frontier} in Appendix~\ref{app:full}.
 \begin{table}[h]
 \centering\footnotesize
 \input{generated/design/table_deviations}
@@ -48,8 +49,9 @@ Three touch text a witness sees in the pre-registered cells, each identically in
 \end{table}
 
 \subsection{Pre-registered open items, as resolved}\label{app:tbd}
-The pre-registration listed the values still open at freeze and where each would be set.
-\begin{center}\footnotesize
+The pre-registration listed the values still open at freeze and where each would be set (Table~\ref{tab:tbd}).
+\begin{table}[ht]
+\centering\footnotesize
 \begin{tabular}{@{}p{2.2in}p{2.7in}l@{}}
 \toprule
 Item & Resolved value & Record \\
@@ -72,7 +74,9 @@ Model behind Fabricated Authority's one-sentence result & pooled over two models
 Name split for Emad Eldin & family name Emad Eldin, given name Fatimah & references \\
 \bottomrule
 \end{tabular}
-\end{center}
+\caption{\textbf{Pre-registered open items, as resolved}, with the record that sets each value.}
+\label{tab:tbd}
+\end{table}
 
 \subsection{Gate log}\label{app:gates}
 Every row is a pilot; pilot seeds are never pooled with confirmatory data.

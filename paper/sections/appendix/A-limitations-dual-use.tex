@@ -4,7 +4,7 @@
 \subsection{Limitations: what the results do and do not establish}
 \paragraph{Models.}
 Every confirmatory test uses \wtthDesignModelHaikuName{} at effort \wtthDesignEffort, with no temperature control.
-The \wtthDesignModelSonnetName{} subset is exploratory, and so are the follow-up cells (D-022), which ran after the strict analysis on new seeds with the core's mix of paraphrase, handle order and tickets (D-023); their comparisons with core cells are across phases run at different times.
+The \wtthDesignModelSonnetName{} subset is exploratory, and so are the follow-up cells (D-022), which ran after the strict analysis on new seeds with the core's mix of paraphrase, handle order and tickets (D-023); their comparisons with core cells are across phases run at different times, and so is the Sonnet contrast of a real receipt (follow-up) with the typed line (the earlier Sonnet subset).
 We claim nothing about other model families, and evidence from older Claude models may not carry over.
 
 \paragraph{Scenario.}
@@ -35,7 +35,8 @@ Deployed receipts could be role-typed and visually distinct, which would make th
 Our receipts name the sender, which could expose reporters; we did not test that cost.
 
 \paragraph{Measurement.}
-P1 and P2 are mechanical: a keyword rule, with a judge path for unmatched notes; the planned precision check of the keyword rule was never reviewed (Appendix~\ref{app:judge}).
+P1 and P2 are mechanical: a keyword rule, with a judge path for unmatched notes that decided \wtthHaikuKwCheckPOneLabelOnlyK{} of the \wtthHaikuKwCheckPOneK{} core witnesses with P1, so the confirmatory outcome does not depend on the judge.
+The planned precision check of the keyword rule was never reviewed; post hoc, the final labels code \wtthHaikuKwCheckMatchedFinalK{} of \wtthHaikuKwCheckMatchedFinalN{} keyword-matched core notes as about the violation (model-coded, D-024; Appendix~\ref{app:judge}).
 \Ptwop{}, concern, test awareness and the debrief codes come from an LLM judge (\wtthDesignModelJudgeName) and from labels that a model proposed and a second pass of the same model (\wtthDesignModelAnnotatorName) audited, whose \wtthReviewReviewed{} pre-filled decisions the author approved unchanged (D-020); the audit is therefore not independent of the proposals.
 None of them is a blind human label (D-018), so their reliability rests on model--model $\kappa$ alone, which ranges from \wtthKappaMMDTwoAnswerReasonCodesUnsureItWasAViolationValue{} to \wtthKappaMMDTwoAnswerReasonCodesSomeoneElseToldValue{} across the debrief reason codes.
 \ifdefstring{\wtthHumanReadStatus}{complete}{\wtthStub{author-read result (D-021) for Appendix A}}{No human read of transcripts is reported here: the author's read of \wtthHumanReadSelectedN{} selected transcripts (D-021) is pending.}
@@ -47,7 +48,8 @@ The two models agreed well on this live, test or unsure verdict (model--model $\
 Test awareness is therefore uncertain rather than absent, and the pre-registered exclusion of test-aware witnesses removes no one.
 
 \paragraph{Claude writes for Claude.}
-The stimuli were drafted with Claude and edited by the author, and the subjects, the judge, the annotator, the review audit, the code reviewers and the paper's drafter are all Claude models; the judge (\wtthDesignModelJudgeName) also codes the exploratory Sonnet subjects' posts.
+The stimuli were drafted with Claude and edited by the author, and the subjects, the judge, the annotator, the review audit, the code reviewers and the paper's drafter are all Claude models; the judge (\wtthDesignModelJudgeName) also codes the exploratory Sonnet subjects' posts and notes.
+Sonnet's P1 is keyword-coded too: every note in the Sonnet subset matched the keyword rule (\wtthSonnetKwCheckMatchedN{} of \wtthSonnetKwCheckNotesN), and in the follow-up the judge path decided \wtthExpOneKwCheckPOneLabelOnlyK{} of the \wtthExpOneKwCheckPOneK{} witnesses with P1 (model-coded, post hoc, D-024), so the shared model touches the secondary codes, not P1.
 A Claude subject may find the stimuli more natural, or easier to recognise as a test.
 
 \paragraph{Statistics.}
@@ -66,7 +68,7 @@ If the keyword rule misses notes, P1 is a lower bound; the attempts analysis bou
 
 \subsection{Dual-use risks}
 \paragraph{What could help an attacker.}
-Our results say whether one casual line suppresses reporting, and whether a receipt-shaped line typed by the claimant works like a real receipt on reporting.
+Our results say whether one casual line suppresses reporting, and whether a receipt-shaped line typed by the claimant cuts reporting as a real receipt does.
 \paragraph{Why the marginal uplift is small.}
 The mechanism is simple, and adjacent work already documents it: unbacked approvals, fabricated authority, and spoofed tool calls in the incident itself.
 The defensive value is to show deployers where provenance must live.
