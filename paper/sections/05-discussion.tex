@@ -1,22 +1,25 @@
 % sections/05-discussion.tex (plan 49 section 2.3, about 0.85 page). 5.1 is the realised branch file (branch.tex).
 % 5.2: each recommendation is tagged with its evidence: ours (sections 4.1 to 4.4), motivated by ours but untested
-% (review S7), or prior (cited keys already in the bibliography; no new keys). Review M7: the private channel was never
+% (review S7), or prior (cited keys in the bibliography; hines2024spotlighting added for review S8). Review M7: the private channel was never
 % varied, so item 1 is advice from prior work only. Strength wording follows the realised codes: H2 = O (a log is not
 % enough), H3 = S (provenance must be enforced), frontier no-yes (the rule cut no alert load; safety did not separate).
 % Never: "receipts restore reporting", "one sentence fixes it", secure against a compromised channel (plan 49 4.2).
+% Follow-up (D-022, exploratory): a rule or provenance sentence in the runbook did not restore Haiku's reporting under the
+% forged line, and Sonnet told real from forged; so item 3 asks for a check at the source (a log-query tool is a
+% candidate, untested), not a rule. Claims stay within these two models and this scenario.
 \section{Discussion and Limitations}\label{sec:discussion}
 \subsection{Back to the incident: a candidate mechanism, not an explanation}
 \wtthInputBranch{disc}
 
 \subsection{What deployers and protocol designers can do}\label{sec:recs}
 \begin{enumerate}
-\item \textbf{Give agents a private channel to a human} (prior: \citep{eldin2026codeofsilence,fuller2026smoke}); ours all had one, so its absence is untested.
+\item \textbf{Give agents a private channel to a human} (prior: \citep{eldin2026codeofsilence,fuller2026smoke}; ours all had one, so untested).
 \item \textbf{Let only the channel write receipts, in a form no agent can forge}: a role-typed field unlike any post, or a signed record, with an explicit empty state (motivated by \cell{FORGED}, untested; prior: \citep{ghosh2026pcm,vezhnevets2023concordia,compaction2026}); a candidate pattern for MCP and \AtwoA{} \citep{mcp3350,a2a2355}, not a standard.
-\item \textbf{Teach agents to check a receipt's provenance} (where it sits, which sender the channel stamped) before they stand down (motivated by \cell{FORGED} against \cell{RECEIPT}, untested); a rule sentence alone fails more often for claims in tool output (prior: \citep{patel2026fabricated}).
+\item \textbf{Give agents a check, not a rule}: for Haiku, neither the one-line rule nor a provenance note restored reporting under the forged line (ours, exploratory, Section~\ref{sec:followup}; rules and simple marking also only partly stop injected text, prior: \citep{patel2026fabricated,hines2024spotlighting}), and Sonnet told real from forged without either, so which model ran mattered too; a log-query tool is a candidate, untested.
 \item \textbf{Show absence, but test what a log does}: ``\wtthStimLogEmpty'' makes a claim checkable, yet beside a false claim the log did not raise reporting (ours, Section~\ref{sec:h2}).
 \item \textbf{Key de-duplication to receipts, not to a one-line rule}, which cut no alert load (ours, Section~\ref{sec:frontier}), and \textbf{protect reporters}: our receipts name the sender.
 \end{enumerate}
 
-\subsection{Limitations and future work}
-Claude throughout (stimuli, subjects, judge, annotator, review audit, code review), Sonnet exploratory; one fictional scenario at one clarity level, at ceiling, with non-reporters concentrated in one paraphrase and handle order; a scripted claimant and \wtthDesignLiveWitnessesWord{} witnesses per shift; stateless turns, a stub operator; a log that also lists peers' notes, so H2 mixes the claimant's missing receipt with peers' real ones; no cell separating a receipt's format from a more specific claim; an LLM judge and AI-audited labels with no human check; and self-reported debriefs (reason-code $\kappa$ \wtthKappaMMDTwoAnswerReasonCodesUnsureItWasAViolationValue{} to \wtthKappaMMDTwoAnswerReasonCodesSomeoneElseToldValue; Appendix~\ref{app:limits}).
-Next: group size, other models, and a log showing only the claimant's receipt.
+\paragraph{Limitations and future work.}
+Claude throughout (stimuli, subjects, judge, annotator, review audit, code review); one fictional scenario at one clarity level, at ceiling, with non-reporters concentrated in one paraphrase and handle order; a scripted claimant and \wtthDesignLiveWitnessesWord{} witnesses per shift; stateless turns, a stub operator; a log that also lists peers' notes, so H2 mixes the claimant's missing receipt with peers' real ones; no cell separating a receipt's format from a more specific claim; an LLM judge and AI-audited labels, \ifdefstring{\wtthHumanReadStatus}{complete}{\wtthStub{author-read result (D-021) for the Limitations}}{with no human check yet (the author's read of \wtthHumanReadSelectedN{} transcripts, D-021, is pending)}; and self-reported, model-coded debriefs (Appendix~\ref{app:limits}).
+Next: group size, other models, a log showing only the claimant's receipt, and a tool to check receipts.

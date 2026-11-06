@@ -59,6 +59,8 @@ A protocol in which every inter-agent claim carries evidence from an append-only
 We test whether LLM witnesses use such evidence, including its absence.
 
 \paragraph{Other nearby work.}
+Whistleblowing benchmarks and channel studies test single agents \citep{agrawal2026whistleblow,browne2025snitchbench,paulino2026whistlebench,gomez2025surveillance}; none manipulates a claim of prior escalation.
+Concordia's game master turns agents' action attempts into event statements \citep{vezhnevets2023concordia}, and flattening typed messages destroys provenance \citep{compaction2026}.
 A Claude model (Fable) escalated rather than accept a forged authorization claim when working alone, and in three-agent swarms it posted boundary norms and escalated \citep{zhang2026troy}, so we do not assume that Claude is credulous.
 LLM auditors accept false assurances more readily than false alarms \citep{trustingtool2026}.
 A pilot asks whether a watching sibling changes what a worker tells its principal \citep{verdogan2026sibling}, and a peer-reporting benchmark keeps peer statements apart from trusted action records \citep{lmmontoya2026peerreporting}.

@@ -2,22 +2,20 @@
 % verification. Sources: research/24, 29, 34, 36 (tier 1 and section 1). Every key is unverified until the author opens
 % it (bib/citations-verified.csv). Never claim "first" (plan 49 section 4.2 items 1 to 5).
 % Table 3 (nearest work against the conjunction) moved to Appendix I, the first step of the cut order, to keep
-% sections 1 to 3 within about 3.3 pages.
+% sections 1 to 3 within about 3.3 pages. Tightened for the follow-up (single-agent benchmarks, Concordia and the
+% compaction finding now sit in Appendix I or Section 5.2). Prompt injection (review S8): the forged line is a
+% provenance confusion; what differs here is the target and the defence (no novelty claim without the search date).
+% Spotlighting's abstract reports a large cut in attack success; only its simplest form, delimiting, helped "by half"
+% (its Section V-A), which is the form our provenance note resembles.
 \section{Related Work}\label{sec:related}
 
-\paragraph{Escalation in multi-agent systems.}
-An agent in a research swarm blew the whistle on its own \citep{paglieri2026cheating}; in experiments, a declared audience of agents left paging at ceiling or, suggestively and only for Haiku, moved reports to a slower channel \citep{fuller2026smoke}; a shared channel delayed insiders' warnings \citep{eldin2026codeofsilence}; and always-dismiss peers swayed LLM monitors' escalation decisions \citep{magistrali2026aligned}.
-Whistleblowing benchmarks and channel studies test single agents \citep{agrawal2026whistleblow,browne2025snitchbench,paulino2026whistlebench,gomez2025surveillance}; none manipulates a claim of prior escalation.
+\paragraph{Escalation, unverified claims and bystanders.}
+An agent in a research swarm blew the whistle on its own \citep{paglieri2026cheating}; a declared audience of agents left paging at ceiling or, suggestively and only for Haiku, moved reports to a slower channel \citep{fuller2026smoke}; a shared channel delayed insiders' warnings \citep{eldin2026codeofsilence}; and always-dismiss peers swayed LLM monitors' escalation decisions \citep{magistrali2026aligned}.
+An unbacked claim of prior sign-off made LLM security checkers stand down \citep{sidot2026verify}; a rule sentence that treats claimed approvals as unverified stopped fabricated permissions from users but failed more often when the claim came through a tool result \citep{patel2026fabricated}; and claims lose their ``never verified'' status across handoffs \citep{silenceisendorsement2026}.
+Human bystander research \citep{latane1968group,darley1968bystander,fischer2011bystander,markey2000bystander} and the volunteer's dilemma \citep{diekmann1985volunteer} supply the ``someone else will'' mechanism; none of this work, nor any classic experiment we found in a brief search, manipulates a claim of prior escalation (Appendix~\ref{app:related}).
 
-\paragraph{Unverified claims and provenance.}
-An unbacked claim of prior sign-off made LLM security checkers stand down \citep{sidot2026verify}.
-A rule sentence that treats claimed approvals as unverified stopped fabricated permissions from users, pooled over two small models, but failed more often when the claim came through a tool result \citep{patel2026fabricated}.
-Claims lose their ``never verified'' status across handoffs \citep{silenceisendorsement2026}, relaying a record beats describing it \citep{mitra2026testimony}, and flattening typed messages destroys provenance \citep{compaction2026}.
+\paragraph{Receipts and prompt injection.}
+PCM attaches evidence from a log the claimant cannot write to every inter-agent claim but cannot prove absence \citep{ghosh2026pcm}; outcome attestation is unresolved in MCP and \AtwoA{} \citep{mcp3350,a2a1769}.
+The forged line is a provenance confusion of the kind indirect prompt injection exploits, data taken as if a trusted source wrote it \citep{greshake2023indirect}; defences rank instructions by source \citep{wallace2024hierarchy}, mark untrusted text \citep{hines2024spotlighting} or keep untrusted data out of control flow \citep{debenedetti2025camel}.
+What differs here is the target, the escalation decision of a redundant team of live witnesses, swayed by a fake record rather than an instruction, and the defence, a channel-written receipt; our provenance note (Section~\ref{sec:followup}) resembles spotlighting's simplest form, delimiting, which helped only in part there and not detectably here.
 
-\paragraph{Receipts.}
-PCM attaches evidence from a log the claimant cannot write to every inter-agent claim and checks it mechanically, but cannot prove absence \citep{ghosh2026pcm}.
-Concordia's game master turns agents' action attempts into event statements \citep{vezhnevets2023concordia}, and outcome attestation is unresolved upstream in MCP and \AtwoA{} \citep{mcp3350,a2a1769}.
-Our empty log covers absence, and we test LLM witnesses, not verifiers.
-
-\paragraph{Human bystanders.}
-Bystander research \citep{latane1968group,darley1968bystander,fischer2011bystander,markey2000bystander} and the volunteer's dilemma \citep{diekmann1985volunteer} supply the ``someone else will'' mechanism; in a brief search we found no classic experiment that manipulates an explicit ``already reported'' claim (Appendix~\ref{app:related}).
