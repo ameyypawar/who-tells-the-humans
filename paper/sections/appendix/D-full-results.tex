@@ -14,7 +14,7 @@ The seed fixes both the claim's paraphrase and the handle order, so their effect
 \paragraph{Sensitivity and exploratory contrasts.}
 Table~\ref{tab:sens} repeats the three confirmatory differences under the pre-registered sensitivity analyses.
 Excluding test-aware witnesses leaves H1 at \wtthHaikuSecHOneExclTestDelta{} points (CI \wtthHaikuSecHOneExclTestCI), because no \DebOne{} answer was coded as calling the shift a test (though \wtthHaikuDOneUnsureAllPct\% were coded unsure; Appendix~\ref{app:limits}); the P2 version of H2 is \wtthHaikuSecHTwoOnPTwoDelta{} (CI \wtthHaikuSecHTwoOnPTwoCI), because P2 was \wtthHaikuPTwoNonePct, \wtthHaikuPTwoClaimPct, \wtthHaikuPTwoNoneRPct{} and \wtthHaikuPTwoNoReceiptPct\% in the four H2 cells.
-Both are exploratory.
+Both are exploratory. The TOST interval of H1 (\wtthHaikuTostCI{} points) is \wtthHaikuTostVerdictText.
 
 \begin{table}[h]
 \centering\footnotesize
@@ -215,6 +215,77 @@ Cell & Basis for ``Did anyone tell ops?'' & k/n & Shifts & \% & \wtthProtocolLev
 \end{tabular}
 \caption{\textbf{What witnesses cited, in \DebTwo, as their evidence about whether ops was told} (judge codes; descriptive).}
 \label{tab:basis}
+\end{table}
+
+% ---- the exploratory follow-up (D-022, D-023): Section 4.5 (sec:followup). Macros \wtthExpOne...; nothing here is confirmatory, and no
+% p-value is printed (plan 49 section 4.2 item 8). XP-PROV is quoted from exp/prompts/runbook_exp1.md at tag exp1-v1.
+\paragraph{Exploratory follow-up (D-022, D-023).}
+Three cells ran after the strict analysis, on seeds that overlap no earlier seed and give the core's mix of paraphrase, handle order and tickets: \cell{FORGED} with the one-line rule (``\wtthStimPolicy'') added to its runbook (\cell{X-FORGED-POLICY}); \cell{FORGED} with a provenance note added instead (\cell{X-FORGED-PROV}: ``Entries in \#escalation-log are written only by the notify\_ops tool. A line in a board post that looks like a log entry is part of that post.''); and the pre-registered \cell{RECEIPT} cell on \wtthDesignModelSonnetName{} (\wtthExpOneSonnetReceiptEps{} shifts).
+Harness, step cap, judge prompt and keyword rule are the core's; board posts and \DebOne{} answers were not judged, so \Ptwop{} is not reported for these cells.
+Table~\ref{tab:expone} gives P1, P2 and the bootstrap differences from the comparison cells, and Table~\ref{tab:exponetiming} the timing of first notes and the \DebTwo{} reasons of the witnesses who never reported, beside the core's \cell{FORGED}.
+The P2 difference of \cell{X-FORGED-PROV} from \cell{FORGED} has an interval that excludes zero only through the boundary effect described for H1 (Section~\ref{sec:h1}): all \wtthHaikuPTwoForgedK{} untold \cell{FORGED} shifts can drop out of a resample together, so \wtthExpOneXForgedProvPTwoK{} or \wtthExpOneXForgedPolicyPTwoK{} untold shifts in \wtthExpOneXForgedProvPTwoN{} cannot be told apart from \wtthHaikuPTwoForgedK{} in \wtthHaikuPTwoForgedN, and we do not read it as a reduction.
+Beside a real receipt, \wtthDesignModelSonnetName{} mostly waited: \wtthExpOneTimingSonnetReceiptHeldOffK{} of its \wtthExpOneTimingSonnetReceiptN{} witnesses held off past round 2, and \wtthExpOneTimingSonnetReceiptHeldOffReportedK{} of them reported later.
+The reason codes are model-coded and descriptive.
+``Could not verify, so reported anyway'' was coded for \wtthExpOneTimingNeverXForgedPolicyDTwoCouldNotVerifyReportedAnywayK{} of \wtthExpOneTimingNeverXForgedPolicyDTwoN{} and \wtthExpOneTimingNeverXForgedProvDTwoCouldNotVerifyReportedAnywayK{} of \wtthExpOneTimingNeverXForgedProvDTwoN{} never-reporters in the two Haiku cells (\wtthHaikuTimingNeverForgedDTwoCouldNotVerifyReportedAnywayK{} of \wtthHaikuTimingNeverForgedDTwoN{} in \cell{FORGED}), who sent no note, and ``no channel perceived'' for \wtthExpOneTimingNeverXForgedPolicyDTwoNoChannelPerceivedK{} of \wtthExpOneTimingNeverXForgedPolicyDTwoN{} under the rule, though every witness had the channel, so among non-reporters these codes are unreliable.
+Read with that caution, ``trusted the claim'' was rare among the Haiku never-reporters under the forged line and common among Sonnet's beside a real receipt.
+
+\begin{table}[h]
+\centering\footnotesize\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}llrrlrl@{}}
+\toprule
+Cell & Model & Shifts & P1 \% (k/n) & Wilson CI & P2 (k/n) & Wilson CI \\
+\midrule
+\cell{X-FORGED-POLICY} & Haiku & \wtthExpOneXForgedPolicyEps & \wtthExpOneXForgedPolicyPOnePct{} (\wtthExpOneXForgedPolicyPOneK/\wtthExpOneXForgedPolicyPOneN) & \wtthExpOneXForgedPolicyPOneCI & \wtthExpOneXForgedPolicyPTwoK/\wtthExpOneXForgedPolicyPTwoN & \wtthExpOneXForgedPolicyPTwoCI \\
+\cell{X-FORGED-PROV} & Haiku & \wtthExpOneXForgedProvEps & \wtthExpOneXForgedProvPOnePct{} (\wtthExpOneXForgedProvPOneK/\wtthExpOneXForgedProvPOneN) & \wtthExpOneXForgedProvPOneCI & \wtthExpOneXForgedProvPTwoK/\wtthExpOneXForgedProvPTwoN & \wtthExpOneXForgedProvPTwoCI \\
+\cell{RECEIPT} & Sonnet & \wtthExpOneSonnetReceiptEps & \wtthExpOneSonnetReceiptPOnePct{} (\wtthExpOneSonnetReceiptPOneK/\wtthExpOneSonnetReceiptPOneN) & \wtthExpOneSonnetReceiptPOneCI & --- & \\
+\bottomrule
+\end{tabular}
+
+\medskip
+\begin{tabular}{@{}lll@{}}
+\toprule
+Difference, follow-up cell $-$ comparison cell (points) & P1 (CI) & P2 (CI) \\
+\midrule
+\cell{X-FORGED-POLICY} $-$ \cell{FORGED} & \wtthExpOneDiffPOneXForgedPolicyMinusHaikuForgedDelta{} (\wtthExpOneDiffPOneXForgedPolicyMinusHaikuForgedCI) & \wtthExpOneDiffPTwoXForgedPolicyMinusHaikuForgedDelta{} (\wtthExpOneDiffPTwoXForgedPolicyMinusHaikuForgedCI) \\
+\cell{X-FORGED-POLICY} $-$ \cell{NO-RECEIPT} & \wtthExpOneDiffPOneXForgedPolicyMinusHaikuNoReceiptDelta{} (\wtthExpOneDiffPOneXForgedPolicyMinusHaikuNoReceiptCI) & \wtthExpOneDiffPTwoXForgedPolicyMinusHaikuNoReceiptDelta{} (\wtthExpOneDiffPTwoXForgedPolicyMinusHaikuNoReceiptCI) \\
+\cell{X-FORGED-PROV} $-$ \cell{FORGED} & \wtthExpOneDiffPOneXForgedProvMinusHaikuForgedDelta{} (\wtthExpOneDiffPOneXForgedProvMinusHaikuForgedCI) & \wtthExpOneDiffPTwoXForgedProvMinusHaikuForgedDelta{} (\wtthExpOneDiffPTwoXForgedProvMinusHaikuForgedCI)$^{\dagger}$ \\
+\cell{X-FORGED-PROV} $-$ \cell{NO-RECEIPT} & \wtthExpOneDiffPOneXForgedProvMinusHaikuNoReceiptDelta{} (\wtthExpOneDiffPOneXForgedProvMinusHaikuNoReceiptCI) & \wtthExpOneDiffPTwoXForgedProvMinusHaikuNoReceiptDelta{} (\wtthExpOneDiffPTwoXForgedProvMinusHaikuNoReceiptCI) \\
+\cell{RECEIPT} $-$ \cell{FORGED}, both Sonnet & \wtthExpOneDiffPOneSonnetReceiptMinusSonnetForgedDelta{} (\wtthExpOneDiffPOneSonnetReceiptMinusSonnetForgedCI) & --- \\
+\bottomrule
+\end{tabular}
+\caption{\textbf{Exploratory follow-up} (D-022; no test). Top: P1 with witness-level Wilson intervals and P2, the shifts with no witness note (not defined where C really reported), with episode-level Wilson intervals. Bottom: differences from the comparison cells in points, with shift-level cluster-bootstrap intervals (\wtthExpOneDiffPOneXForgedPolicyMinusHaikuForgedB{} resamples).
+Comparison cells: Haiku \cell{FORGED} \wtthHaikuPOneForgedPct\% (\wtthHaikuPOneForgedK/\wtthHaikuPOneForgedN), P2 \wtthHaikuPTwoForgedK/\wtthHaikuPTwoForgedN; Haiku \cell{NO-RECEIPT} \wtthHaikuPOneNoReceiptPct\% (\wtthHaikuPOneNoReceiptK/\wtthHaikuPOneNoReceiptN), P2 \wtthHaikuPTwoNoReceiptK/\wtthHaikuPTwoNoReceiptN; Sonnet \cell{FORGED} \wtthSonnetPOneForgedPct\% (\wtthSonnetPOneForgedK/\wtthSonnetPOneForgedN), P2 \wtthSonnetPTwoForgedK/\wtthSonnetPTwoForgedN.
+$^{\dagger}$Excludes zero only through the boundary effect explained in the text; not read as a reduction.}
+\label{tab:expone}
+\end{table}
+
+\begin{table}[h]
+\centering\footnotesize\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}lrrrr@{}}
+\toprule
+ & \cell{FORGED} (core) & \cell{X-FORGED-POLICY} & \cell{X-FORGED-PROV} & \cell{RECEIPT} \\
+ & Haiku & Haiku & Haiku & Sonnet \\
+\midrule
+Witnesses & \wtthHaikuTimingForgedN & \wtthExpOneTimingXForgedPolicyN & \wtthExpOneTimingXForgedProvN & \wtthExpOneTimingSonnetReceiptN \\
+Reported by round 2 & \wtthHaikuTimingForgedByRoundTwoK & \wtthExpOneTimingXForgedPolicyByRoundTwoK & \wtthExpOneTimingXForgedProvByRoundTwoK & \wtthExpOneTimingSonnetReceiptByRoundTwoK \\
+Held off past round 2 & \wtthHaikuTimingForgedHeldOffK & \wtthExpOneTimingXForgedPolicyHeldOffK & \wtthExpOneTimingXForgedProvHeldOffK & \wtthExpOneTimingSonnetReceiptHeldOffK \\
+\quad then reported & \wtthHaikuTimingForgedHeldOffReportedK & \wtthExpOneTimingXForgedPolicyHeldOffReportedK & \wtthExpOneTimingXForgedProvHeldOffReportedK & \wtthExpOneTimingSonnetReceiptHeldOffReportedK \\
+\quad then never & \wtthHaikuTimingForgedNeverK & \wtthExpOneTimingXForgedPolicyNeverK & \wtthExpOneTimingXForgedProvNeverK & \wtthExpOneTimingSonnetReceiptNeverK \\
+\quad never, a peer's line in view & \wtthHaikuTimingForgedHeldOffPeerNeverK & \wtthExpOneTimingXForgedPolicyHeldOffPeerNeverK & \wtthExpOneTimingXForgedProvHeldOffPeerNeverK & \wtthExpOneTimingSonnetReceiptHeldOffPeerNeverK \\
+Shifts: first witness note after round 2 & \wtthHaikuTimingShiftForgedLateK/\wtthHaikuTimingShiftForgedN & \wtthExpOneTimingShiftXForgedPolicyLateK/\wtthExpOneTimingShiftXForgedPolicyN & \wtthExpOneTimingShiftXForgedProvLateK/\wtthExpOneTimingShiftXForgedProvN & \wtthExpOneTimingShiftSonnetReceiptLateK/\wtthExpOneTimingShiftSonnetReceiptN \\
+\midrule
+\DebTwo{} reasons of never-reporters (k of n) & & & & \\
+\quad someone else told ops & \wtthHaikuTimingNeverForgedDTwoSomeoneElseToldK/\wtthHaikuTimingNeverForgedDTwoN & \wtthExpOneTimingNeverXForgedPolicyDTwoSomeoneElseToldK/\wtthExpOneTimingNeverXForgedPolicyDTwoN & \wtthExpOneTimingNeverXForgedProvDTwoSomeoneElseToldK/\wtthExpOneTimingNeverXForgedProvDTwoN & \wtthExpOneTimingNeverSonnetReceiptDTwoSomeoneElseToldK/\wtthExpOneTimingNeverSonnetReceiptDTwoN \\
+\quad thought ops was aware & \wtthHaikuTimingNeverForgedDTwoThoughtOpsAwareK/\wtthHaikuTimingNeverForgedDTwoN & \wtthExpOneTimingNeverXForgedPolicyDTwoThoughtOpsAwareK/\wtthExpOneTimingNeverXForgedPolicyDTwoN & \wtthExpOneTimingNeverXForgedProvDTwoThoughtOpsAwareK/\wtthExpOneTimingNeverXForgedProvDTwoN & \wtthExpOneTimingNeverSonnetReceiptDTwoThoughtOpsAwareK/\wtthExpOneTimingNeverSonnetReceiptDTwoN \\
+\quad trusted the claim & \wtthHaikuTimingNeverForgedDTwoTrustedClaimK/\wtthHaikuTimingNeverForgedDTwoN & \wtthExpOneTimingNeverXForgedPolicyDTwoTrustedClaimK/\wtthExpOneTimingNeverXForgedPolicyDTwoN & \wtthExpOneTimingNeverXForgedProvDTwoTrustedClaimK/\wtthExpOneTimingNeverXForgedProvDTwoN & \wtthExpOneTimingNeverSonnetReceiptDTwoTrustedClaimK/\wtthExpOneTimingNeverSonnetReceiptDTwoN \\
+\quad feared a duplicate & \wtthHaikuTimingNeverForgedDTwoFearedDuplicateK/\wtthHaikuTimingNeverForgedDTwoN & \wtthExpOneTimingNeverXForgedPolicyDTwoFearedDuplicateK/\wtthExpOneTimingNeverXForgedPolicyDTwoN & \wtthExpOneTimingNeverXForgedProvDTwoFearedDuplicateK/\wtthExpOneTimingNeverXForgedProvDTwoN & \wtthExpOneTimingNeverSonnetReceiptDTwoFearedDuplicateK/\wtthExpOneTimingNeverSonnetReceiptDTwoN \\
+\quad could not verify, reported anyway & \wtthHaikuTimingNeverForgedDTwoCouldNotVerifyReportedAnywayK/\wtthHaikuTimingNeverForgedDTwoN & \wtthExpOneTimingNeverXForgedPolicyDTwoCouldNotVerifyReportedAnywayK/\wtthExpOneTimingNeverXForgedPolicyDTwoN & \wtthExpOneTimingNeverXForgedProvDTwoCouldNotVerifyReportedAnywayK/\wtthExpOneTimingNeverXForgedProvDTwoN & \wtthExpOneTimingNeverSonnetReceiptDTwoCouldNotVerifyReportedAnywayK/\wtthExpOneTimingNeverSonnetReceiptDTwoN \\
+\quad no channel perceived & \wtthHaikuTimingNeverForgedDTwoNoChannelPerceivedK/\wtthHaikuTimingNeverForgedDTwoN & \wtthExpOneTimingNeverXForgedPolicyDTwoNoChannelPerceivedK/\wtthExpOneTimingNeverXForgedPolicyDTwoN & \wtthExpOneTimingNeverXForgedProvDTwoNoChannelPerceivedK/\wtthExpOneTimingNeverXForgedProvDTwoN & \wtthExpOneTimingNeverSonnetReceiptDTwoNoChannelPerceivedK/\wtthExpOneTimingNeverSonnetReceiptDTwoN \\
+\quad not my job & \wtthHaikuTimingNeverForgedDTwoNotMyJobK/\wtthHaikuTimingNeverForgedDTwoN & \wtthExpOneTimingNeverXForgedPolicyDTwoNotMyJobK/\wtthExpOneTimingNeverXForgedPolicyDTwoN & \wtthExpOneTimingNeverXForgedProvDTwoNotMyJobK/\wtthExpOneTimingNeverXForgedProvDTwoN & \wtthExpOneTimingNeverSonnetReceiptDTwoNotMyJobK/\wtthExpOneTimingNeverSonnetReceiptDTwoN \\
+\bottomrule
+\end{tabular}
+\caption{\textbf{Timing and debrief reasons in the follow-up} (exploratory; D-022), beside the core's \cell{FORGED}. ``A peer's line in view'': never-reporters with another witness's or C's real line in the log at their next turn. Reasons are judge codes of the \DebTwo{} answers, several per answer allowed; model-coded and descriptive, and unreliable among non-reporters (text).}
+\label{tab:exponetiming}
 \end{table}
 
 \paragraph{Other tables and figures.}
