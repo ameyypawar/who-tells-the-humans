@@ -13,7 +13,7 @@ nums = {e["key"]: e["display"] for e in json.load(open(os.path.join(AN, "numbers
 p1_nr, p1_f = nums["HaikuPOneNoReceiptPct"], nums["HaikuPOneForgedPct"]
 k, n = nums["HaikuPTwoForgedK"], nums["HaikuPTwoForgedN"]
 line = (f"A receipt-style line typed into a peer's post cut reporting from {p1_nr}% to {p1_f}%, "
-        f"and gave the only shifts where no one told the human ({k}/{n}).")
+        f"and gave the only pre-registered shifts in which no one told the human ({k}/{n}).")
 
 tmp = tempfile.mkdtemp()
 subprocess.run(["pdftoppm", "-png", "-r", "400", "-singlefile",
