@@ -1,0 +1,7 @@
+(version 1)
+; macOS sandbox profile for the local OpenObserve server used by the D-027 monitor.
+; Everything is allowed except outbound IP connections to anything but this machine,
+; so the server cannot reach the network even if a phone-home setting were missed.
+(allow default)
+(deny network-outbound (remote ip "*:*"))
+(allow network-outbound (remote ip "localhost:*"))

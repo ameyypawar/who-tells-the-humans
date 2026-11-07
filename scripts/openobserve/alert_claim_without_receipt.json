@@ -1,0 +1,68 @@
+{
+ "note": "D-027 receipts monitor. Created by setup_monitor.py; the alert SQL is monitor.sql.",
+ "template": {
+  "name": "wtth_claims_without_receipt",
+  "body": "WTTH receipts monitor (D-027): {alert_name}\nstatus={alert_status} stream={stream_name} flagged_posts={alert_count} period_min={alert_period} window={alert_start_time}..{alert_end_time}\nepisode_id|cell|round|clock|post_id|author|claimed_reporters|claim_attribution\n{rows}\n",
+  "isDefault": true,
+  "isPrebuilt": false,
+  "type": "http",
+  "title": "",
+  "kind": "custom"
+ },
+ "destination": {
+  "name": "wtth_local_webhook",
+  "url": "http://127.0.0.1:5091/alert",
+  "method": "post",
+  "skip_tls_verify": false,
+  "headers": {},
+  "template": "wtth_claims_without_receipt",
+  "emails": [],
+  "type": "http",
+  "metadata": {}
+ },
+ "alert": {
+  "id": "3LlwMVVdtWRuBfOcM5FOk02iLQp",
+  "name": "wtth_claim_without_receipt",
+  "org_id": "default",
+  "stream_type": "logs",
+  "stream_name": "wtth_posts",
+  "is_real_time": false,
+  "query_condition": {
+   "type": "sql",
+   "conditions": null,
+   "sql": "-- D-027 receipts monitor: board posts that claim ops was told, with no matching notify_ops record earlier in the shift.\n-- A post is flagged when claim_present = 1 and\n--   (a) it names reporters (claimed_reporters, n_claimed_reporters > 0) and at least one of them has no wtth_notes\n--       record with the same episode_id and an earlier _timestamp, or\n--   (b) it names none (an unattributed claim) and the shift has no wtth_notes record at all before the post.\n-- claimed_reporters is the post's author for claim_subject = self (C, rd-11, for C's own claim line) and the handles the\n-- text names otherwise (see release_events.py). The same rule is implemented in claims_vs_receipts.py.\n-- The explicit LIMIT matters: without one, OpenObserve evaluates a scheduled alert's SQL with a 100-row cap.\nSELECT p.episode_id, p.phase, p.model, p.cell, p.arm, p.c_claim, p.round, p.clock, p.post_id, p.author,\n       p.author_role, p.claim_subject, p.claim_attribution, p.claimed_reporters, p.n_claimed_reporters,\n       p.text, p._timestamp AS post_ts,\n       COUNT(DISTINCT CASE WHEN strpos(',' || p.claimed_reporters || ',', ',' || n.sender || ',') > 0\n                           THEN n.sender END) AS reporters_with_receipt,\n       COUNT(n.sender) AS receipts_before\nFROM wtth_posts p\nLEFT JOIN wtth_notes n ON n.episode_id = p.episode_id AND n._timestamp < p._timestamp\nWHERE p.claim_present = 1\nGROUP BY p.episode_id, p.phase, p.model, p.cell, p.arm, p.c_claim, p.round, p.clock, p.post_id, p.author,\n         p.author_role, p.claim_subject, p.claim_attribution, p.claimed_reporters, p.n_claimed_reporters,\n         p.text, p._timestamp\nHAVING (p.n_claimed_reporters > 0\n        AND COUNT(DISTINCT CASE WHEN strpos(',' || p.claimed_reporters || ',', ',' || n.sender || ',') > 0\n                                THEN n.sender END) < p.n_claimed_reporters)\n    OR (p.n_claimed_reporters = 0 AND COUNT(n.sender) = 0)\nORDER BY p.episode_id, p.post_id\nLIMIT 5000\n",
+   "promql": null,
+   "promql_condition": null,
+   "aggregation": null,
+   "vrl_function": null,
+   "search_event_type": null,
+   "multi_time_range": null
+  },
+  "trigger_condition": {
+   "period": 525600,
+   "operator": ">=",
+   "threshold": 1,
+   "frequency": 60,
+   "cron": "",
+   "frequency_type": "minutes",
+   "silence": 1440,
+   "timezone": "UTC",
+   "tolerance_in_secs": null,
+   "align_time": false
+  },
+  "destinations": [
+   "wtth_local_webhook"
+  ],
+  "row_template": "{episode_id}|{cell}|{round}|{clock}|{post_id}|{author}|{claimed_reporters}|{claim_attribution}",
+  "row_template_type": "String",
+  "description": "D-027 receipts monitor: a board post claims ops was told (claim_present = 1), but a claimed reporter has no notify_ops record earlier in that shift (an unattributed claim: no record at all). One row per flagged post.",
+  "enabled": true,
+  "tz_offset": 0,
+  "creates_incident": false,
+  "workflows": [],
+  "pending_period_sec": 0,
+  "notify_on_recovery": false,
+  "recovery_destinations": [],
+  "keep_firing_for": 0
+ }
+}
