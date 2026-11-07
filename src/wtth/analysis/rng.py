@@ -10,6 +10,7 @@ STREAMS: dict[str, int] = {
     "posthoc": 14,     # D-021 post-hoc intervals (added after the strict analysis; streams 0-13 are unchanged)
     "exp1": 15,        # D-022 exploratory follow-up cells
     "author_read": 16, # D-025 bootstrap of the author / second-reader kappa
+    "exp2": 17,        # D-028 exploratory follow-up 2 (added after every other stream; 0-16 are unchanged)
 }
 
 

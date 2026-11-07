@@ -16,6 +16,7 @@ from wtth.analysis.sets import AnalysisSet
 
 POSTHOC = "post hoc (D-021)"
 EXPLORATORY_D022 = "exploratory (D-022)"
+EXPLORATORY_D028 = "exploratory (D-028)"
 _POSTHOC_R2 = "post hoc (D-021/D-024)"       # research/68 A (final_review.POSTHOC_R2)
 _DESCRIPTIVE = "descriptive"
 
@@ -601,6 +602,112 @@ def register_exp1(book: NumberBook, x: Any) -> None:
     toks = {a.arm.cell: a.arm.token for a in x.arms}
     for tm in x.timings:          # the core's timing and D2-reason families, under ExpOne
         register_timing(book, "ExpOne", tm, cell_tokens=toks, label=f"{EXPLORATORY_D022}, descriptive")
+
+
+# ---- exploratory follow-up 2 (D-028) ----------------------------------------------------------------------------------
+
+def register_exp2(book: NumberBook, x: Any) -> None:
+    """exp2.Exp2Results: the status always; the numbers only when the phase is complete. Every source carries
+    EXPLORATORY_D028."""
+    from wtth.analysis.exp2 import REASON_TEXT, REFS
+    from wtth.analysis.intervals import wilson
+
+    book.add("ExpTwoStatus", x.status, "text",
+             source=f"{EXPLORATORY_D028}: phase exp2 not run / partial / complete (done episodes by cell "
+                    + ", ".join(f"{k} {v}" for k, v in sorted(x.n_done.items())) + ")")
+    if x.status != "complete":
+        return
+    for a in x.arms:
+        pre = "ExpTwo" + a.arm.token
+        book.add(pre + "Eps", a.n_episodes, "count", source=f"{EXPLORATORY_D028}: {a.arm.label} shifts, Haiku, phase exp2")
+        book.add_rate(pre + "POne", a.p1, source_suffix=f"; {EXPLORATORY_D028}, phase exp2, witness-level Wilson")
+        if a.p1_cluster is not None:
+            register_cluster_rates(book, [a.p1_cluster], {a.arm.cell: pre + "POne"},
+                                   label=f"{EXPLORATORY_D028} follow-up 2 cell {a.arm.label}")
+        r = a.p2
+        src = f"{EXPLORATORY_D028}: {r.model} {r.cell} P2, shifts in which no witness sent ops a violation note"
+        wsrc = src + " (shift level, Wilson), phase exp2"
+        for k, v, kind in (("K", r.k, "count"), ("N", r.n, "count"), ("Pct", r.p, "prop"), ("Lo", r.lo, "prop"),
+                           ("Hi", r.hi, "prop"), ("CI", (r.lo, r.hi), "ci")):
+            book.add(pre + "PTwo" + k, v, kind, source=wsrc)
+        lo, hi = a.p2_boot
+        bsrc = (src + f" ({r.k}/{r.n}); P2 is a shift-level outcome, so the shift-level bootstrap resamples the shifts "
+                f"of the cell: percentile 95% interval, B={x.B}, stream exp2"
+                + ("; every resample is the same, so the interval is a single point" if r.k in (0, r.n) else ""))
+        book.add(pre + "PTwoClusterLo", lo, "prop", source=bsrc)
+        book.add(pre + "PTwoClusterHi", hi, "prop", source=bsrc)
+        book.add(pre + "PTwoClusterCI", (lo, hi), "ci", source=bsrc)
+    names = {tok: f"{cell} ({src})" for tok, (src, cell) in REFS.items()}
+    for d in x.diffs:
+        pre = "ExpTwoDiff" + d.kind + d.a + "Minus" + d.b
+        c = d.contrast
+        book.add_contrast(pre, c, source_suffix=f"; {EXPLORATORY_D028}: {d.what}, {names[d.a]} minus {names[d.b]}")
+        add_excl(book, pre, c.lo, c.hi, f"{c.name} ({EXPLORATORY_D028}: {d.what})")
+        ex = d.exact
+        if ex is None:
+            continue
+        src = (f"{EXPLORATORY_D028}: {d.what}: P2 at shift level, {names[d.a]} {ex.k_a}/{ex.n_a} minus {names[d.b]} "
+               f"{ex.k_b}/{ex.n_b} untold shifts (a shift is the unit of P2, so no clustering is ignored)")
+        book.add(pre + "FisherP", ex.fisher_p, "pval", source=src + "; two-sided Fisher exact p")
+        nsrc = src + "; Newcombe hybrid-score (method 10) 95% interval"
+        book.add(pre + "NewcombeDelta", ex.estimate, "pp", source=nsrc)
+        book.add(pre + "NewcombeLo", ex.lo, "pp", source=nsrc)
+        book.add(pre + "NewcombeHi", ex.hi, "pp", source=nsrc)
+        book.add(pre + "NewcombeCI", (ex.lo, ex.hi), "ci", source=nsrc)
+        add_excl(book, pre + "Newcombe", ex.lo, ex.hi, nsrc)
+        book.add(pre + "Boundary", "yes" if ex.boundary else "no", "verdict",
+                 source=src + "; yes when an arm's P2 is 0 or 1: its resamples never vary, so the bootstrap interval "
+                              "rests on the other arm alone and can exclude 0 on a few shifts")
+        if ex.p_zero is not None:
+            book.add(pre + "PZero", ex.p_zero, "prop2",
+                     source=src + "; P(a resampled difference is exactly 0): the arm off the boundary must draw none of "
+                                  "its m shifts off that value, ((n - m) / n)^n, analytic; below 2.5% the percentile "
+                                  "interval excludes 0")
+    t = x.tool
+    if t is not None:
+        src = (f"{EXPLORATORY_D028}, descriptive: lookup_escalation in X-FORGED-CHECK, the only cell that lists it "
+               f"(final attempts; server-recorded calls, accepted or refused, and client-side uses the server never "
+               f"recorded)")
+        for key, k, n, what in (("Witnesses", t.k_witnesses, t.n_witnesses, "witnesses"),
+                                ("Shifts", t.k_shifts, t.n_shifts, "shifts")):
+            s = src + f"; {what} with at least one call"
+            book.add("ExpTwoLookup" + key + "K", k, "count", source=s)
+            book.add("ExpTwoLookup" + key + "N", n, "count", source=s)
+            book.add("ExpTwoLookup" + key + "Pct", (k / n) if n else None, "prop", source=s)
+            if n:
+                book.add("ExpTwoLookup" + key + "CI", wilson(k, n), "ci",
+                         source=s + f"; Wilson 95% interval, {what} as units"
+                                    + (", clustering ignored" if key == "Witnesses" else ""))
+        book.add("ExpTwoLookupCallsN", t.n_calls, "count", source=src + "; calls")
+        book.add("ExpTwoLookupCallsClientK", t.n_calls_client, "count",
+                 source=src + "; client-side uses the server never recorded")
+        for key, k, what in (("Match", t.replies_match, "accepted calls whose reply listed at least one entry"),
+                             ("NoMatch", t.replies_nomatch, "accepted calls answered 'No matching entry.'"),
+                             ("Error", t.replies_error, "calls refused by the server or the client")):
+            book.add("ExpTwoLookupReplies" + key + "K", k, "count", source=src + "; " + what)
+        book.add("ExpTwoLookupTurnsN", t.n_turns_listed, "count",
+                 source=src + "; witness turns (rounds 1-5) whose recorded tool list (exposures.tools_sha) is a toolset "
+                              "with lookup_escalation, i.e. turns with the tool available")
+        book.add("ExpTwoLookupTurnsAllN", t.n_turns, "count", source=src + "; every witness turn of those shifts")
+    if x.timing is not None:      # the core's timing and D2-reason families, under ExpTwo
+        register_timing(book, "ExpTwo", x.timing, cell_tokens={a.arm.cell: a.arm.token for a in x.arms},
+                        label=f"{EXPLORATORY_D028}, descriptive")
+    ranks = ("One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight")
+    for a in x.arms:
+        tops = x.top_reasons.get(a.arm.cell, ())
+        pre = "ExpTwoTimingNever" + a.arm.token + "DTwoTop"
+        src = (f"{EXPLORATORY_D028}, descriptive: haiku {a.arm.cell} witnesses who never sent a violation note, the three "
+               f"most frequent D2 reason codes that give a reason not to report (final labels, several per answer; "
+               f"noticed_violation, judged_rule_broken and other are left out, their counts are in the "
+               f"ExpTwoTimingNever...DTwo family; a tie at the third is listed in full, ties in the rubric's code order)")
+        book.add(pre + "N", len(tops), "count", source=src + "; codes listed")
+        for rank, (code, k, n) in zip(ranks, tops):
+            s = src + f"; rank {rank.lower()}: {code}"
+            book.add(pre + rank + "Code", code, "text", source=s)
+            book.add(pre + rank + "Text", REASON_TEXT.get(code, code), "text", source=s + " (reader wording)")
+            book.add(pre + rank + "K", k, "count", source=s)
+            book.add(pre + rank + "Pct", (k / n) if n else None, "prop", source=s + "; share of the never-reporters "
+                                                                                   "with a D2 label")
 
 
 # ---- the author read (D-021 item 3) ----------------------------------------------------------------------------------

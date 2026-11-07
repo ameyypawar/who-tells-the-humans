@@ -71,16 +71,17 @@ class Exp1Results:
     notes: tuple[str, ...] = ()
     timings: tuple[Any, ...] = ()       # posthoc.TimingResults per model (Haiku arms, Sonnet RECEIPT)
     witnesses: tuple[WitnessOutcome, ...] = ()      # every arm's witness outcomes (the D-024 keyword check)
+    episodes: tuple[EpisodeOutcome, ...] = ()       # every arm's episode outcomes (the D-028 cross-phase P2)
 
 
-def label_source(settings: Any) -> Any:
+def label_source(settings: Any, *, subdir: str = JUDGE_SUBDIR) -> Any:
     """Final labels (reviewed where reviewed, else the judge's) from the exp1 judge database, read from an online
     snapshot of it (runs/analysis/snapshots/judge_exp1-<UTC>.sqlite) so the analysis never writes to, or waits on,
     the live file; an empty source when it does not exist yet, so judge-path notes stay unresolved and the status
-    stays 'partial'."""
+    stays 'partial'. subdir: another exploratory judge database read the same way (judge_exp2, D-028)."""
     from wtth.judge.types import DictLabelSource
 
-    jdb = judge_snapshot(settings)
+    jdb = judge_snapshot(settings, subdir=subdir)
     if jdb is None:
         return DictLabelSource({}, gates={"p1_final": False, "p2prime_final": False})
     from wtth.annotate.final import JudgeDbLabelSource
@@ -88,24 +89,25 @@ def label_source(settings: Any) -> Any:
     return JudgeDbLabelSource(jdb, strict=False)
 
 
-def judge_snapshot(settings: Any) -> Any:
+def judge_snapshot(settings: Any, *, subdir: str = JUDGE_SUBDIR) -> Any:
     """A read-only Db over an online snapshot of the exp1 judge database (runs/analysis/snapshots/judge_exp1-<UTC>.sqlite);
-    None when the database does not exist. Used by label_source and by the data release (wtth.release)."""
+    None when the database does not exist. Used by label_source and by the data release (wtth.release). subdir:
+    another exploratory judge database (judge_exp2, D-028), snapshotted as <subdir>-<UTC>.sqlite."""
     import time
     from datetime import datetime, timezone
     from pathlib import Path
 
     from wtth import db as dbmod
 
-    path = Path(settings.paths.runs_dir) / JUDGE_SUBDIR / "judge.sqlite"
+    path = Path(settings.paths.runs_dir) / subdir / "judge.sqlite"
     if not path.is_file():
         return None
     stamp = datetime.fromtimestamp(time.time(), timezone.utc).strftime("%Y%m%dT%H%M%S")
     snap_dir = Path(settings.paths.runs_dir) / "analysis" / "snapshots"
-    dest = snap_dir / f"{JUDGE_SUBDIR}-{stamp}.sqlite"
+    dest = snap_dir / f"{subdir}-{stamp}.sqlite"
     n = 1
     while dest.exists():
-        dest = snap_dir / f"{JUDGE_SUBDIR}-{stamp}-{n}.sqlite"
+        dest = snap_dir / f"{subdir}-{stamp}-{n}.sqlite"
         n += 1
     dbmod.backup(path, dest)
     return dbmod.Db(dest)
@@ -238,4 +240,4 @@ def analyse(db: Any, labels: Any, *, seeds: AnalysisSeeds,
         if ws:
             tims.append(timing(ws, es, db))
     return Exp1Results(COMPLETE, n_done, 0, 0, tuple(arms), tuple(p1d), tuple(p2d), tuple(notes), tuple(tims),
-                       tuple(x for a in ARMS for x in w_by[a.token]))
+                       tuple(x for a in ARMS for x in w_by[a.token]), tuple(x for a in ARMS for x in e_by[a.token]))

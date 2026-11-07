@@ -16,7 +16,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-from wtth.analysis import exp1, final_review, humanread, hypotheses, posthoc, register, secondary, text
+from wtth.analysis import exp1, exp2, final_review, humanread, hypotheses, posthoc, register, secondary, text
 from wtth.analysis.numbers import MODEL_TOKENS, NumberBook, cell_token, rate_prefix
 from wtth.analysis.outcomes import LabelsIncomplete, episode_outcomes, witness_outcomes
 from wtth.analysis.power import icc1, pilot_p1, power_table
@@ -159,7 +159,8 @@ def _cost(settings: Any, db: Db) -> dict[str, Any]:
     """Keys as tables.table_cost reads them: phase_model [{phase, model, n_calls, usd}], judge_tier [{tier, n_calls,
     usd, n_estimated}] (the confirmatory judge database, runs/judge) and judge_other [{db, tier, ...}] (every other
     runs/judge*/judge.sqlite, e.g. judge_exp1). judge_usd sums every judge database (D-023 item 4); exp1 splits out the
-    D-022 follow-up (run, probes, its judge)."""
+    D-022 follow-up (run, probes, its judge) and exp2 the D-028 follow-up. before_exp1_usd is the spend without either
+    follow-up, before_exp2_usd the spend without the D-028 one."""
     rows = [{"phase": r["phase"], "model": r["model"], "n_calls": int(r["n_turns"]), "usd": float(r["total_usd"] or 0.0),
              "n_estimated": int(r["n_estimated"] or 0)}
             for r in db.read(lambda c: c.execute("SELECT * FROM v_cost ORDER BY phase, model").fetchall())]
@@ -175,15 +176,22 @@ def _cost(settings: Any, db: Db) -> dict[str, Any]:
     judge_core = sum(float(r["usd"]) for r in judge_rows)
     judge = judge_core + sum(float(r["usd"]) for r in other)
     prior = float(settings.budget.prior_spend_usd)
-    x_run = sum(r["usd"] for r in rows if r["phase"] == "exp1")
-    x_probe = sum(r["usd"] for r in rows if r["phase"] == "exp1probe")
-    x_judge = sum(float(r["usd"]) for r in other if r["db"] == "judge_exp1")
     total = main + judge + prior
+
+    def follow_up(phase: str) -> dict[str, float]:
+        run = sum(r["usd"] for r in rows if r["phase"] == phase)
+        probe = sum(r["usd"] for r in rows if r["phase"] == phase + "probe")
+        jud = sum(float(r["usd"]) for r in other if r["db"] == "judge_" + phase)
+        return {"run_usd": run, "probe_usd": probe, "judge_usd": jud, "total_usd": run + probe + jud}
+
+    x1, x2 = follow_up("exp1"), follow_up("exp2")
+    # the total without the D-028 follow-up, summed in the order of the total itself, so the spend before it (and
+    # before_exp1_usd) is exactly the number the analysis printed before it ran
+    before2 = (sum(r["usd"] for r in rows if r["phase"] not in ("exp2", "exp2probe"))
+               + (judge_core + sum(float(r["usd"]) for r in other if r["db"] != "judge_exp2")) + prior)
     return {"phase_model": rows, "judge_tier": judge_rows, "judge_other": other, "main_usd": main, "judge_usd": judge,
-            "judge_core_usd": judge_core, "prior_usd": prior, "total_usd": total,
-            "exp1": {"run_usd": x_run, "probe_usd": x_probe, "judge_usd": x_judge,
-                     "total_usd": x_run + x_probe + x_judge},
-            "before_exp1_usd": total - (x_run + x_probe + x_judge)}
+            "judge_core_usd": judge_core, "prior_usd": prior, "total_usd": total, "exp1": x1, "exp2": x2,
+            "before_exp1_usd": before2 - x1["total_usd"], "before_exp2_usd": before2}
 
 
 def _judge_counts(settings: Any) -> dict[str, Any] | None:
@@ -213,16 +221,19 @@ def _judge_counts(settings: Any) -> dict[str, Any] | None:
 
 
 def _fig1a_rows(p1r: Sequence[Any], son_cluster: Sequence[Any], x1: Any,
-                x1_cluster: Mapping[str, Any]) -> tuple[list[Any], list[Any], list[Any]]:
+                x1_cluster: Mapping[str, Any], x2: Any = None) -> tuple[list[Any], list[Any], list[Any]]:
     """(Haiku rows, Sonnet rows, follow-up FigRows) of Fig. 1a, every P1 with a shift-level cluster-bootstrap interval
     (research/68 A6): the Haiku cells from p1_rates (the intervals of Appendix D), the Sonnet cells and the follow-up
     arms from final_review.cluster_rates. An arm without a cluster rate keeps its Wilson rate (flagged by
-    FigOneAWilsonRowsK)."""
+    FigOneAWilsonRowsK). The D-028 cells follow the D-022 arms as one concurrent pair."""
     from wtth.analysis.figures import FigRow
 
     follow = []
     if x1 is not None and x1.status == exp1.COMPLETE:
         follow = [FigRow(a.arm.label, a.arm.model, x1_cluster.get(a.arm.token) or a.p1, a.p2) for a in x1.arms]
+    if x2 is not None and x2.status == exp2.COMPLETE:
+        follow += [FigRow(a.arm.label, exp2.MODEL, a.p1_cluster or a.p1, a.p2, source="D-028", pair=exp2.PHASE)
+                   for a in x2.arms]
     return list(p1r), list(son_cluster), follow
 
 
@@ -301,10 +312,11 @@ def run_analysis(settings: Any, *, strict: bool, labels: LabelSource | None = No
                  export_paper: Path | None = None, seeds: AnalysisSeeds | None = None,
                  private: Mapping[str, str] | None = None, prefer: str | None = None,
                  phases: Sequence[str] | None = None, human_read_dir: Path | None = None,
-                 exp1_labels: LabelSource | None = None) -> RunOutputs:
+                 exp1_labels: LabelSource | None = None, exp2_labels: LabelSource | None = None) -> RunOutputs:
     """human_read_dir: the author read (D-021 item 3), default annotations/human_read next to the runs directory
     (the repository root for the default runs directory). exp1_labels: labels of the D-022 follow-up, default the
-    exp1 judge database (exp1.label_source)."""
+    exp1 judge database (exp1.label_source); exp2_labels: those of the D-028 follow-up, default the exp2 judge
+    database (exp2.label_source)."""
     seeds = seeds or load_analysis_seeds(settings)
     status = "FINAL" if strict else "PROVISIONAL"
     notes: list[str] = []
@@ -476,6 +488,18 @@ def run_analysis(settings: Any, *, strict: bool, labels: LabelSource | None = No
     summary["exp1"] = {"status": x1.status, "n_done": dict(x1.n_done), "n_open": x1.n_open,
                        "n_pending": x1.n_pending, "notes": list(x1.notes)}
     notes.extend(x1.notes)
+    # exploratory follow-up 2 (D-028): its own episode list from phase exp2, never a confirmatory set
+    x2_labels = exp2_labels if exp2_labels is not None else exp2.label_source(settings)
+    x2 = exp2.analyse(db, x2_labels, seeds=seeds, ref_witnesses=w_by, ref_episodes=e_by, x1=x1,
+                      tool_shas=exp2.lookup_toolset_shas(settings))
+    register.register_exp2(book, x2)
+    if x2.status == exp2.COMPLETE and x2.witnesses:
+        register.register_keyword_check(book, "ExpTwo", posthoc.keyword_check(x2.witnesses, x2_labels),
+                                        scope=f"{exp2.EXPLORATORY} follow-up 2, phase exp2, both cells pooled, labels "
+                                              f"from the exp2 judge database")
+    summary["exp2"] = {"status": x2.status, "n_done": dict(x2.n_done), "n_open": x2.n_open,
+                       "n_pending": x2.n_pending, "notes": list(x2.notes)}
+    notes.extend(x2.notes)
     # the author read (D-021 item 3)
     hr_dir = Path(human_read_dir) if human_read_dir is not None else \
         Path(settings.paths.runs_dir).parent / "annotations" / "human_read"
@@ -496,8 +520,17 @@ def run_analysis(settings: Any, *, strict: bool, labels: LabelSource | None = No
     book.add("CostExpOneJudgeUsd", x["judge_usd"], "usd", source=f"{xsrc}: judge_ledger of runs/judge_exp1")
     book.add("CostExpOneTotalUsd", x["total_usd"], "usd", source=f"{xsrc}: run + probes + judge")
     book.add("CostBeforeExpOneUsd", cost["before_exp1_usd"], "usd",
-             source="spend without the D-022 follow-up: pilots, core, Sonnet arm, their judge (CostTotalUsd minus "
-                    "CostExpOneTotalUsd)")
+             source="spend without the follow-ups (D-022, D-028): pilots, core, Sonnet arm, their judge (CostTotalUsd "
+                    "minus CostExpOneTotalUsd and CostExpTwoTotalUsd)")
+    x = cost["exp2"]
+    xsrc = f"{exp2.EXPLORATORY} follow-up 2 spend"
+    book.add("CostExpTwoRunUsd", x["run_usd"], "usd", source=f"{xsrc}: main ledger, phase exp2")
+    book.add("CostExpTwoProbeUsd", x["probe_usd"], "usd", source=f"{xsrc}: main ledger, phase exp2probe")
+    book.add("CostExpTwoJudgeUsd", x["judge_usd"], "usd", source=f"{xsrc}: judge_ledger of runs/judge_exp2")
+    book.add("CostExpTwoTotalUsd", x["total_usd"], "usd", source=f"{xsrc}: run + probes + judge")
+    book.add("CostBeforeExpTwoUsd", cost["before_exp2_usd"], "usd",
+             source=f"{xsrc}: spend before it, everything but the D-028 follow-up (CostTotalUsd minus "
+                    f"CostExpTwoTotalUsd)")
     judge_pack = _judge_pack(settings, seeds, strict=strict, notes=notes)
     jc = _judge_counts(settings)
     if jc is not None:
@@ -508,7 +541,7 @@ def run_analysis(settings: Any, *, strict: bool, labels: LabelSource | None = No
         register.register_kappa_prevalence(book, judge_pack[1])        # research/68 A9
     fig1a_rows = None
     if hyp is not None:
-        fig1a_rows = _fig1a_rows(p1r, son_cluster, x1, x1_cluster)
+        fig1a_rows = _fig1a_rows(p1r, son_cluster, x1, x1_cluster, x2)
         register.register_fig1a_flags(book, list(fig1a_rows[0]) + list(fig1a_rows[1]) + [r.p1 for r in fig1a_rows[2]],
                                       B=seeds.bootstrap_B)
 

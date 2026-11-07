@@ -536,8 +536,8 @@ class Isolation(unittest.TestCase):
     def test_every_confirmatory_number_is_unchanged(self) -> None:
         """Keys outside the exploratory ExpOne* namespace (the D-022 section, which reads phase exp1 on purpose) are
         identical, except the spend (v_cost sums every phase, the judge cost every runs/judge*/judge.sqlite, D-023
-        item 4, and CostExpOne* is the follow-up's share of it) and the snapshot hash. The spend without the follow-up
-        is the same in A and B."""
+        item 4, CostExpOne* is the follow-up's share of it, and CostBeforeExpTwoUsd, the spend before the D-028
+        follow-up, holds it) and the snapshot hash. The spend without the follow-up is the same in A and B."""
         a, b = self.out["a"], self.out["b"]
         conf_a = {k: v for k, v in a.items() if not k.startswith("ExpOne")}
         conf_b = {k: v for k, v in b.items() if not k.startswith("ExpOne")}
@@ -547,7 +547,8 @@ class Isolation(unittest.TestCase):
         # exp1 turns exist.
         all_phase_integrity = {"TurnIntegrityAllN", "TurnIntegrityOkN", "TurnIntegrityOkNoUsageK"}
         self.assertEqual({"CostMainUsd", "CostJudgeUsd", "CostTotalUsd", "CostExpOneRunUsd", "CostExpOneProbeUsd",
-                          "CostExpOneJudgeUsd", "CostExpOneTotalUsd", "SnapshotShaShort"} | all_phase_integrity, diff)
+                          "CostExpOneJudgeUsd", "CostExpOneTotalUsd", "CostBeforeExpTwoUsd", "SnapshotShaShort"}
+                         | all_phase_integrity, diff)
         self.assertAlmostEqual(b["CostJudgeUsd"][0] - a["CostJudgeUsd"][0], 0.75)       # the exp1 judge ledger
         self.assertAlmostEqual(b["CostExpOneJudgeUsd"][0], 0.75)
         self.assertEqual(a["CostBeforeExpOneUsd"], b["CostBeforeExpOneUsd"])

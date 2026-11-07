@@ -603,7 +603,8 @@ class SynthRunTest(unittest.TestCase):
         checks = (("HaikuPostHoc", "post hoc (D-021)"), ("HaikuTiming", "post hoc (D-021)"),
                   ("HaikuDOneUnsureAll", "post hoc (D-021)"), ("HaikuDOneLiveAll", "post hoc (D-021)"),
                   ("HaikuDOneUnsureM", "post hoc (D-021)"), ("HumanRead", "post hoc (D-021)"),
-                  ("ExpOne", "exploratory (D-022)"), ("HaikuParaphrase", "PREREG §16"), ("HaikuPred", "review M8"))
+                  ("ExpOne", "exploratory (D-022)"), ("ExpTwo", "exploratory (D-028)"), ("HaikuParaphrase", "PREREG §16"),
+                  ("HaikuPred", "review M8"))
         seen = set()
         for k, e in self.out["b"].items():
             for pre, label in checks:

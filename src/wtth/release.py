@@ -4,7 +4,9 @@ curated tables: outcomes, labels and masked transcripts.
 
 Scope: the confirmatory Haiku core and the exploratory Sonnet arm (labels from runs/judge, strict), and since
 DEVIATIONS D-024 the exploratory follow-up of D-022 (phase exp1, its done non-probe episodes, labels from
-runs/judge_exp1 through an online snapshot, as wtth.analysis.exp1 reads them). Every row carries its phase.
+runs/judge_exp1 through an online snapshot, as wtth.analysis.exp1 reads them), and the exploratory follow-up 2 of
+D-028 the same way (phase exp2, labels from runs/judge_exp2, as wtth.analysis.exp2 reads them). Every row carries its
+phase. The witness table adds tool_calls: the witness's tool calls in rounds 1-5 by tool, as the server recorded them.
 
 Masking rule (release): every withheld string is replaced exactly (raw and both JSON-escaped forms) by
 [WITHHELD:claim-paraphrase] (C2.P2/C2.P3 and backups) or [WITHHELD:forged-line] (FORGED_LINE/BK.FORGED_LINE). The
@@ -122,6 +124,18 @@ def _flat(v: Any) -> Any:
     return v
 
 
+def tool_calls_by_witness(db: Any) -> dict[tuple[int, int, int], str]:
+    """(episode_id, attempt, slot) -> the witness's tool calls in rounds 1-5 (final attempts, server-recorded,
+    accepted or refused) by tool, as 'tool:count' joined by '|' in tool order; a witness without one is absent."""
+    rows = db.read(lambda c: c.execute(
+        "SELECT episode_id, attempt, slot, tool, COUNT(*) AS n FROM v_tool_calls_final WHERE slot IS NOT NULL "
+        "AND round BETWEEN 1 AND 5 GROUP BY episode_id, attempt, slot, tool ORDER BY tool").fetchall())
+    by: dict[tuple[int, int, int], list[str]] = {}
+    for r in rows:
+        by.setdefault((int(r["episode_id"]), int(r["attempt"]), int(r["slot"])), []).append(f"{r['tool']}:{r['n']}")
+    return {k: "|".join(v) for k, v in by.items()}
+
+
 def write_csv(path: Path, header: list[str], rows: list[list[Any]]) -> int:
     with open(path, "w", newline="", encoding="utf-8") as fh:
         w = csv.writer(fh, lineterminator="\n")
@@ -132,8 +146,9 @@ def write_csv(path: Path, header: list[str], rows: list[list[Any]]) -> int:
 
 def outcome_tables(settings: Any, db: Any, labels: Any, out: Path,
                    extra: list[tuple[str, Any, Any]] = ()) -> dict[str, Any]:
-    """core and sonnet (strict, `labels`), then each (phase, AnalysisSet, labels) of `extra` (the exp1 arms; not
-    strict, as wtth.analysis.exp1 reads them, but a witness whose P1 is unresolved stops the export)."""
+    """core and sonnet (strict, `labels`), then each (phase, AnalysisSet, labels) of `extra` (the exp1 arms and the
+    exp2 cells; not strict, as wtth.analysis.exp1 and exp2 read them, but a witness whose P1 is unresolved stops the
+    export)."""
     from wtth.analysis.outcomes import episode_outcomes, witness_outcomes
     from wtth.analysis.sets import analysis_set
 
@@ -141,6 +156,7 @@ def outcome_tables(settings: Any, db: Any, labels: Any, out: Path,
     erows: list[list[Any]] = []
     whead = ehead = None
     sets: dict[str, list[Any]] = {}
+    calls = tool_calls_by_witness(db)
     work = [(phase, analysis_set(settings, db, phase), labels, True) for phase in ("core", "sonnet")]
     work += [(phase, aset, lab, False) for phase, aset, lab in extra]
     for phase, aset, lab, strict in work:
@@ -151,9 +167,10 @@ def outcome_tables(settings: Any, db: Any, labels: Any, out: Path,
         if pending:
             raise RuntimeError(f"release: {pending} witness(es) of phase {phase} have an unresolved P1 label")
         wskip = {"notes", "posts"}
-        whead = [f.name for f in fields(w[0]) if f.name not in wskip] + ["n_posts"]
+        whead = [f.name for f in fields(w[0]) if f.name not in wskip] + ["n_posts", "tool_calls"]
         for x in w:
-            wrows.append([_flat(getattr(x, f.name)) for f in fields(x) if f.name not in wskip] + [len(x.posts)])
+            wrows.append([_flat(getattr(x, f.name)) for f in fields(x) if f.name not in wskip]
+                         + [len(x.posts), calls.get((x.episode_id, x.attempt, x.slot), "")])
         ehead = ["phase"] + [f.name for f in fields(e[0])]
         for x in e:
             erows.append([phase] + [_flat(getattr(x, f.name)) for f in fields(x)])
@@ -167,9 +184,9 @@ def outcome_tables(settings: Any, db: Any, labels: Any, out: Path,
 
 def label_tables(jdb: Any, labels: Any, episodes: dict[tuple[int, int], dict], out: Path,
                  extra: list[tuple[Any, Any]] = ()) -> dict[str, int]:
-    """Items of `jdb` (labels: `labels`), then those of each (judge db, labels) in `extra` (the exp1 judge database),
-    restricted to the released `episodes`; one pair of files with the union of label columns. Item ids are opaque
-    per database; an id seen twice stops the export."""
+    """Items of `jdb` (labels: `labels`), then those of each (judge db, labels) in `extra` (the exp1 and exp2 judge
+    databases), restricted to the released `episodes`; one pair of files with the union of label columns. Item ids
+    are opaque per database; an id seen twice stops the export."""
     def read_items(db: Any) -> tuple[list[dict], dict[str, dict]]:
         its = [dict(r) for r in db.read(lambda c: c.execute(
             "SELECT item_id,item_type,source_table,source_id,episode_id,attempt,round,slot,handle,kw_match,tier "
@@ -289,10 +306,11 @@ def transcripts(db: Any, episodes: dict[tuple[int, int], dict], masker: ReleaseM
 
 # ---- driver ----------------------------------------------------------------------------------------------------
 
-def build_data_release(settings: Any, out: Path, *, with_exp1: bool = True) -> dict[str, Any]:
+def build_data_release(settings: Any, out: Path, *, with_exp1: bool = True, with_exp2: bool = True) -> dict[str, Any]:
     """Write data/release/ tables into `out` (CSV + transcripts). Returns a summary. Scans every file afterwards.
-    with_exp1: also release the D-022 follow-up (phase exp1; DEVIATIONS D-024 item 3)."""
-    from wtth.analysis import exp1
+    with_exp1: also release the D-022 follow-up (phase exp1; DEVIATIONS D-024 item 3). with_exp2: also release the
+    D-028 follow-up 2 (phase exp2)."""
+    from wtth.analysis import exp1, exp2
     from wtth.analysis.sets import snapshot_main_db
     from wtth.annotate.final import JudgeDbLabelSource
     from wtth.db import Db
@@ -309,6 +327,11 @@ def build_data_release(settings: Any, out: Path, *, with_exp1: bool = True) -> d
         raise RuntimeError("release: the exp1 judge database is missing; pass with_exp1=False to release without it")
     x_labels = JudgeDbLabelSource(x_jdb, strict=False) if x_jdb is not None else None
     extra = [(exp1.PHASE, aset, x_labels) for _, aset in exp1.arm_sets(db)] if x_jdb is not None else []
+    x2_jdb = exp2.judge_snapshot(settings) if with_exp2 else None
+    if with_exp2 and x2_jdb is None:
+        raise RuntimeError("release: the exp2 judge database is missing; pass with_exp2=False to release without it")
+    x2_labels = JudgeDbLabelSource(x2_jdb, strict=False) if x2_jdb is not None else None
+    extra += [(exp2.PHASE, aset, x2_labels) for _, aset in exp2.arm_sets(db)] if x2_jdb is not None else []
     ot = outcome_tables(settings, db, labels, out, extra=extra)
     episodes: dict[tuple[int, int], dict] = {}
     all_eps = db.read(lambda c: c.execute("SELECT * FROM episodes").fetchall())
@@ -320,7 +343,8 @@ def build_data_release(settings: Any, out: Path, *, with_exp1: bool = True) -> d
                     "episode_id": r["episode_id"], "attempt": r["final_attempt"], "phase": phase, "model": r["model"],
                     "cell": r["cell"], "seed": r["seed"], "world": r["world"], "scenario": r["scenario"],
                     "handles_json": r["handles_json"]}
-    lt = label_tables(jdb, labels, episodes, out, extra=[(x_jdb, x_labels)] if x_jdb is not None else [])
+    lt = label_tables(jdb, labels, episodes, out, extra=[(d, lab) for d, lab in ((x_jdb, x_labels), (x2_jdb, x2_labels))
+                                                         if d is not None])
     masker = ReleaseMasker(settings)
     tt = transcripts(db, episodes, masker, out)
     # scan every exported file
@@ -346,7 +370,7 @@ def build_data_release(settings: Any, out: Path, *, with_exp1: bool = True) -> d
 # ---- command line ----------------------------------------------------------------------------------------------
 
 def main(argv: list[str] | None = None) -> int:
-    """python -I -m wtth.release --out data/release [--runs-dir DIR] [--no-exp1]
+    """python -I -m wtth.release --out data/release [--runs-dir DIR] [--no-exp1] [--no-exp2]
 
     Maintainer entry point: needs the private runs/ database, the judge databases and the withheld strings, none of
     which are in the repository. Outsiders verify the released numbers with scripts/release_summary.py instead.
@@ -363,6 +387,7 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--runs-dir", help="override paths.runs_dir")
     ap.add_argument("--set", action="append", metavar="KEY=VALUE", help="override a setting")
     ap.add_argument("--no-exp1", action="store_true", help="leave out the D-022 follow-up (phase exp1)")
+    ap.add_argument("--no-exp2", action="store_true", help="leave out the D-028 follow-up 2 (phase exp2)")
     args = ap.parse_args(argv)
     ov: dict[str, Any] = {}
     if args.runs_dir:
@@ -371,7 +396,7 @@ def main(argv: list[str] | None = None) -> int:
         k, _, v = item.partition("=")
         ov[k] = yaml.safe_load(v)
     settings = load_settings(Path(args.config) if args.config else None, ov)
-    summary = build_data_release(settings, Path(args.out), with_exp1=not args.no_exp1)
+    summary = build_data_release(settings, Path(args.out), with_exp1=not args.no_exp1, with_exp2=not args.no_exp2)
     print(json.dumps({k: v for k, v in summary.items() if not k.startswith("_")}, indent=1, default=str))
     return 1 if summary["residual"] or summary["fragment_hits"] else 0
 
