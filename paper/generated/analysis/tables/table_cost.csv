@@ -4,6 +4,8 @@ experiment,exp1 / claude-haiku-5-5,2100,$1.41,
 experiment,exp1 / claude-sonnet-5-5,630,$5.87,
 experiment,exp1probe / claude-haiku-5-5,42,$0.03,
 experiment,exp1probe / claude-sonnet-5-5,21,$0.21,
+experiment,exp2 / claude-haiku-5-5,2101,$1.41,
+experiment,exp2probe / claude-haiku-5-5,42,$0.03,
 experiment,g0 / claude-haiku-5-5,18,$0.00,
 experiment,g0b / claude-haiku-5-5,63,$0.04,
 experiment,g0b / claude-sonnet-5-5,21,$0.22,
@@ -18,4 +20,6 @@ judge,tier J1,201,$0.82,0
 judge,tier J2,8377,$39.96,0
 judge (exp1),tier J1,17,$0.13,0
 judge (exp1),tier J2,393,$2.49,0
-total,,,$90.54,
+judge (exp2),tier J1,17,$0.13,0
+judge (exp2),tier J2,301,$1.85,0
+total,,,$93.96,

@@ -6,8 +6,10 @@
 \newcommand{\wtthBlindStatus}{declined}
 % configs/analysis.yaml
 \newcommand{\wtthBootstrapB}{10{,}000}
-% spend without the D-022 follow-up: pilots, core, Sonnet arm, their judge (CostTotalUsd minus CostExpOneTotalUsd)
+% spend without the follow-ups (D-022, D-028): pilots, core, Sonnet arm, their judge (CostTotalUsd minus CostExpOneTotalUsd and CostExpTwoTotalUsd)
 \newcommand{\wtthCostBeforeExpOneUsd}{\$80.40}
+% exploratory (D-028) follow-up 2 spend: spend before it, everything but the D-028 follow-up (CostTotalUsd minus CostExpTwoTotalUsd)
+\newcommand{\wtthCostBeforeExpTwoUsd}{\$90.54}
 % exploratory (D-022) follow-up spend (D-023 item 1): judge_ledger of runs/judge_exp1
 \newcommand{\wtthCostExpOneJudgeUsd}{\$2.61}
 % exploratory (D-022) follow-up spend (D-023 item 1): main ledger, phase exp1probe
@@ -16,12 +18,20 @@
 \newcommand{\wtthCostExpOneRunUsd}{\$7.29}
 % exploratory (D-022) follow-up spend (D-023 item 1): run + probes + judge
 \newcommand{\wtthCostExpOneTotalUsd}{\$10.14}
+% exploratory (D-028) follow-up 2 spend: judge_ledger of runs/judge_exp2
+\newcommand{\wtthCostExpTwoJudgeUsd}{\$1.98}
+% exploratory (D-028) follow-up 2 spend: main ledger, phase exp2probe
+\newcommand{\wtthCostExpTwoProbeUsd}{\$0.03}
+% exploratory (D-028) follow-up 2 spend: main ledger, phase exp2
+\newcommand{\wtthCostExpTwoRunUsd}{\$1.41}
+% exploratory (D-028) follow-up 2 spend: run + probes + judge
+\newcommand{\wtthCostExpTwoTotalUsd}{\$3.42}
 % judge_ledger of every judge database (runs/judge*/judge.sqlite, D-023 item 4)
-\newcommand{\wtthCostJudgeUsd}{\$43.50}
+\newcommand{\wtthCostJudgeUsd}{\$45.48}
 % cost_ledger of the main database
-\newcommand{\wtthCostMainUsd}{\$47.04}
+\newcommand{\wtthCostMainUsd}{\$48.48}
 % prior spend + main ledger + every judge ledger
-\newcommand{\wtthCostTotalUsd}{\$90.54}
+\newcommand{\wtthCostTotalUsd}{\$93.96}
 % P1:RECEIPT-SonnetForged stream=exp1 B=10000 level=0.95; exploratory (D-022)
 \newcommand{\wtthExpOneDiffPOneSonnetReceiptMinusSonnetForgedB}{10{,}000}
 % P1:RECEIPT-SonnetForged stream=exp1 B=10000 level=0.95; exploratory (D-022)
@@ -732,15 +742,757 @@
 \newcommand{\wtthExpOneXForgedProvPTwoN}{50}
 % exploratory (D-022): haiku X-FORGED-PROV P2 (episode level, Wilson), phase exp1
 \newcommand{\wtthExpOneXForgedProvPTwoPct}{0.0}
-% descriptive: Fig. 1a intervals: methods ['cluster_bootstrap'] over its 19 plotted rows; bootstrap replicates per interval
+% P1:X-FORGED-POLICY-X-FORGED-CONC stream=exp2 B=10000 level=0.95; exploratory (D-028): cross-phase, against the later concurrent control, X-FORGED-POLICY (exp1) minus X-FORGED-CONC (exp2)
+\newcommand{\wtthExpTwoDiffPOneExpOneXForgedPolicyMinusXForgedConcB}{10{,}000}
+% P1:X-FORGED-POLICY-X-FORGED-CONC stream=exp2 B=10000 level=0.95; exploratory (D-028): cross-phase, against the later concurrent control, X-FORGED-POLICY (exp1) minus X-FORGED-CONC (exp2)
+\newcommand{\wtthExpTwoDiffPOneExpOneXForgedPolicyMinusXForgedConcCI}{\ensuremath{-}6.7 to 16.0}
+% P1:X-FORGED-POLICY-X-FORGED-CONC stream=exp2 B=10000 level=0.95; exploratory (D-028): cross-phase, against the later concurrent control, X-FORGED-POLICY (exp1) minus X-FORGED-CONC (exp2)
+\newcommand{\wtthExpTwoDiffPOneExpOneXForgedPolicyMinusXForgedConcDelta}{4.7}
+% P1:X-FORGED-POLICY-X-FORGED-CONC stream=exp2 B=10000 level=0.95; exploratory (D-028): cross-phase, against the later concurrent control, X-FORGED-POLICY (exp1) minus X-FORGED-CONC (exp2)
+\newcommand{\wtthExpTwoDiffPOneExpOneXForgedPolicyMinusXForgedConcDirection}{predicted}
+% P1:X-FORGED-POLICY-X-FORGED-CONC (exploratory (D-028): cross-phase, against the later concurrent control): interval excludes 0
+\newcommand{\wtthExpTwoDiffPOneExpOneXForgedPolicyMinusXForgedConcExcl}{no}
+% P1:X-FORGED-POLICY-X-FORGED-CONC stream=exp2 B=10000 level=0.95; exploratory (D-028): cross-phase, against the later concurrent control, X-FORGED-POLICY (exp1) minus X-FORGED-CONC (exp2)
+\newcommand{\wtthExpTwoDiffPOneExpOneXForgedPolicyMinusXForgedConcHi}{16.0}
+% P1:X-FORGED-POLICY-X-FORGED-CONC stream=exp2 B=10000 level=0.95; exploratory (D-028): cross-phase, against the later concurrent control, X-FORGED-POLICY (exp1) minus X-FORGED-CONC (exp2)
+\newcommand{\wtthExpTwoDiffPOneExpOneXForgedPolicyMinusXForgedConcLo}{\ensuremath{-}6.7}
+% P1:X-FORGED-POLICY-X-FORGED-CONC stream=exp2 B=10000 level=0.95; exploratory (D-028): cross-phase, against the later concurrent control, X-FORGED-POLICY (exp1) minus X-FORGED-CONC (exp2)
+\newcommand{\wtthExpTwoDiffPOneExpOneXForgedPolicyMinusXForgedConcStatus}{exploratory}
+% P1:X-FORGED-POLICY-X-FORGED-CONC stream=exp2 B=10000 level=0.95; exploratory (D-028): cross-phase, against the later concurrent control, X-FORGED-POLICY (exp1) minus X-FORGED-CONC (exp2)
+\newcommand{\wtthExpTwoDiffPOneExpOneXForgedPolicyMinusXForgedConcVerdict}{exploratory}
+% P1:X-FORGED-PROV-X-FORGED-CONC stream=exp2 B=10000 level=0.95; exploratory (D-028): cross-phase, against the later concurrent control, X-FORGED-PROV (exp1) minus X-FORGED-CONC (exp2)
+\newcommand{\wtthExpTwoDiffPOneExpOneXForgedProvMinusXForgedConcB}{10{,}000}
+% P1:X-FORGED-PROV-X-FORGED-CONC stream=exp2 B=10000 level=0.95; exploratory (D-028): cross-phase, against the later concurrent control, X-FORGED-PROV (exp1) minus X-FORGED-CONC (exp2)
+\newcommand{\wtthExpTwoDiffPOneExpOneXForgedProvMinusXForgedConcCI}{\ensuremath{-}7.3 to 15.3}
+% P1:X-FORGED-PROV-X-FORGED-CONC stream=exp2 B=10000 level=0.95; exploratory (D-028): cross-phase, against the later concurrent control, X-FORGED-PROV (exp1) minus X-FORGED-CONC (exp2)
+\newcommand{\wtthExpTwoDiffPOneExpOneXForgedProvMinusXForgedConcDelta}{4.0}
+% P1:X-FORGED-PROV-X-FORGED-CONC stream=exp2 B=10000 level=0.95; exploratory (D-028): cross-phase, against the later concurrent control, X-FORGED-PROV (exp1) minus X-FORGED-CONC (exp2)
+\newcommand{\wtthExpTwoDiffPOneExpOneXForgedProvMinusXForgedConcDirection}{predicted}
+% P1:X-FORGED-PROV-X-FORGED-CONC (exploratory (D-028): cross-phase, against the later concurrent control): interval excludes 0
+\newcommand{\wtthExpTwoDiffPOneExpOneXForgedProvMinusXForgedConcExcl}{no}
+% P1:X-FORGED-PROV-X-FORGED-CONC stream=exp2 B=10000 level=0.95; exploratory (D-028): cross-phase, against the later concurrent control, X-FORGED-PROV (exp1) minus X-FORGED-CONC (exp2)
+\newcommand{\wtthExpTwoDiffPOneExpOneXForgedProvMinusXForgedConcHi}{15.3}
+% P1:X-FORGED-PROV-X-FORGED-CONC stream=exp2 B=10000 level=0.95; exploratory (D-028): cross-phase, against the later concurrent control, X-FORGED-PROV (exp1) minus X-FORGED-CONC (exp2)
+\newcommand{\wtthExpTwoDiffPOneExpOneXForgedProvMinusXForgedConcLo}{\ensuremath{-}7.3}
+% P1:X-FORGED-PROV-X-FORGED-CONC stream=exp2 B=10000 level=0.95; exploratory (D-028): cross-phase, against the later concurrent control, X-FORGED-PROV (exp1) minus X-FORGED-CONC (exp2)
+\newcommand{\wtthExpTwoDiffPOneExpOneXForgedProvMinusXForgedConcStatus}{exploratory}
+% P1:X-FORGED-PROV-X-FORGED-CONC stream=exp2 B=10000 level=0.95; exploratory (D-028): cross-phase, against the later concurrent control, X-FORGED-PROV (exp1) minus X-FORGED-CONC (exp2)
+\newcommand{\wtthExpTwoDiffPOneExpOneXForgedProvMinusXForgedConcVerdict}{exploratory}
+% P1:X-FORGED-CHECK-NO-RECEIPT stream=exp2 B=10000 level=0.95; exploratory (D-028): the lookup cell against the core's empty log, X-FORGED-CHECK (exp2) minus NO-RECEIPT (core)
+\newcommand{\wtthExpTwoDiffPOneXForgedCheckMinusHaikuNoReceiptB}{10{,}000}
+% P1:X-FORGED-CHECK-NO-RECEIPT stream=exp2 B=10000 level=0.95; exploratory (D-028): the lookup cell against the core's empty log, X-FORGED-CHECK (exp2) minus NO-RECEIPT (core)
+\newcommand{\wtthExpTwoDiffPOneXForgedCheckMinusHaikuNoReceiptCI}{\ensuremath{-}21.8 to \ensuremath{-}6.8}
+% P1:X-FORGED-CHECK-NO-RECEIPT stream=exp2 B=10000 level=0.95; exploratory (D-028): the lookup cell against the core's empty log, X-FORGED-CHECK (exp2) minus NO-RECEIPT (core)
+\newcommand{\wtthExpTwoDiffPOneXForgedCheckMinusHaikuNoReceiptDelta}{\ensuremath{-}14.4}
+% P1:X-FORGED-CHECK-NO-RECEIPT stream=exp2 B=10000 level=0.95; exploratory (D-028): the lookup cell against the core's empty log, X-FORGED-CHECK (exp2) minus NO-RECEIPT (core)
+\newcommand{\wtthExpTwoDiffPOneXForgedCheckMinusHaikuNoReceiptDirection}{opposite}
+% P1:X-FORGED-CHECK-NO-RECEIPT (exploratory (D-028): the lookup cell against the core's empty log): interval excludes 0
+\newcommand{\wtthExpTwoDiffPOneXForgedCheckMinusHaikuNoReceiptExcl}{yes}
+% P1:X-FORGED-CHECK-NO-RECEIPT stream=exp2 B=10000 level=0.95; exploratory (D-028): the lookup cell against the core's empty log, X-FORGED-CHECK (exp2) minus NO-RECEIPT (core)
+\newcommand{\wtthExpTwoDiffPOneXForgedCheckMinusHaikuNoReceiptHi}{\ensuremath{-}6.8}
+% P1:X-FORGED-CHECK-NO-RECEIPT stream=exp2 B=10000 level=0.95; exploratory (D-028): the lookup cell against the core's empty log, X-FORGED-CHECK (exp2) minus NO-RECEIPT (core)
+\newcommand{\wtthExpTwoDiffPOneXForgedCheckMinusHaikuNoReceiptLo}{\ensuremath{-}21.8}
+% P1:X-FORGED-CHECK-NO-RECEIPT stream=exp2 B=10000 level=0.95; exploratory (D-028): the lookup cell against the core's empty log, X-FORGED-CHECK (exp2) minus NO-RECEIPT (core)
+\newcommand{\wtthExpTwoDiffPOneXForgedCheckMinusHaikuNoReceiptStatus}{exploratory}
+% P1:X-FORGED-CHECK-NO-RECEIPT stream=exp2 B=10000 level=0.95; exploratory (D-028): the lookup cell against the core's empty log, X-FORGED-CHECK (exp2) minus NO-RECEIPT (core)
+\newcommand{\wtthExpTwoDiffPOneXForgedCheckMinusHaikuNoReceiptVerdict}{exploratory}
+% P1:X-FORGED-CHECK-X-FORGED-CONC stream=exp2 B=10000 level=0.95; exploratory (D-028): the concurrent contrast, X-FORGED-CHECK (exp2) minus X-FORGED-CONC (exp2)
+\newcommand{\wtthExpTwoDiffPOneXForgedCheckMinusXForgedConcB}{10{,}000}
+% P1:X-FORGED-CHECK-X-FORGED-CONC stream=exp2 B=10000 level=0.95; exploratory (D-028): the concurrent contrast, X-FORGED-CHECK (exp2) minus X-FORGED-CONC (exp2)
+\newcommand{\wtthExpTwoDiffPOneXForgedCheckMinusXForgedConcCI}{\ensuremath{-}4.0 to 17.3}
+% P1:X-FORGED-CHECK-X-FORGED-CONC stream=exp2 B=10000 level=0.95; exploratory (D-028): the concurrent contrast, X-FORGED-CHECK (exp2) minus X-FORGED-CONC (exp2)
+\newcommand{\wtthExpTwoDiffPOneXForgedCheckMinusXForgedConcDelta}{6.7}
+% P1:X-FORGED-CHECK-X-FORGED-CONC stream=exp2 B=10000 level=0.95; exploratory (D-028): the concurrent contrast, X-FORGED-CHECK (exp2) minus X-FORGED-CONC (exp2)
+\newcommand{\wtthExpTwoDiffPOneXForgedCheckMinusXForgedConcDirection}{predicted}
+% P1:X-FORGED-CHECK-X-FORGED-CONC (exploratory (D-028): the concurrent contrast): interval excludes 0
+\newcommand{\wtthExpTwoDiffPOneXForgedCheckMinusXForgedConcExcl}{no}
+% P1:X-FORGED-CHECK-X-FORGED-CONC stream=exp2 B=10000 level=0.95; exploratory (D-028): the concurrent contrast, X-FORGED-CHECK (exp2) minus X-FORGED-CONC (exp2)
+\newcommand{\wtthExpTwoDiffPOneXForgedCheckMinusXForgedConcHi}{17.3}
+% P1:X-FORGED-CHECK-X-FORGED-CONC stream=exp2 B=10000 level=0.95; exploratory (D-028): the concurrent contrast, X-FORGED-CHECK (exp2) minus X-FORGED-CONC (exp2)
+\newcommand{\wtthExpTwoDiffPOneXForgedCheckMinusXForgedConcLo}{\ensuremath{-}4.0}
+% P1:X-FORGED-CHECK-X-FORGED-CONC stream=exp2 B=10000 level=0.95; exploratory (D-028): the concurrent contrast, X-FORGED-CHECK (exp2) minus X-FORGED-CONC (exp2)
+\newcommand{\wtthExpTwoDiffPOneXForgedCheckMinusXForgedConcStatus}{exploratory}
+% P1:X-FORGED-CHECK-X-FORGED-CONC stream=exp2 B=10000 level=0.95; exploratory (D-028): the concurrent contrast, X-FORGED-CHECK (exp2) minus X-FORGED-CONC (exp2)
+\newcommand{\wtthExpTwoDiffPOneXForgedCheckMinusXForgedConcVerdict}{exploratory}
+% P1:X-FORGED-CONC-FORGED stream=exp2 B=10000 level=0.95; exploratory (D-028): the phase shift: FORGED unchanged, in phase exp2 against the core, X-FORGED-CONC (exp2) minus FORGED (core)
+\newcommand{\wtthExpTwoDiffPOneXForgedConcMinusHaikuForgedB}{10{,}000}
+% P1:X-FORGED-CONC-FORGED stream=exp2 B=10000 level=0.95; exploratory (D-028): the phase shift: FORGED unchanged, in phase exp2 against the core, X-FORGED-CONC (exp2) minus FORGED (core)
+\newcommand{\wtthExpTwoDiffPOneXForgedConcMinusHaikuForgedCI}{\ensuremath{-}10.0 to 14.7}
+% P1:X-FORGED-CONC-FORGED stream=exp2 B=10000 level=0.95; exploratory (D-028): the phase shift: FORGED unchanged, in phase exp2 against the core, X-FORGED-CONC (exp2) minus FORGED (core)
+\newcommand{\wtthExpTwoDiffPOneXForgedConcMinusHaikuForgedDelta}{2.7}
+% P1:X-FORGED-CONC-FORGED stream=exp2 B=10000 level=0.95; exploratory (D-028): the phase shift: FORGED unchanged, in phase exp2 against the core, X-FORGED-CONC (exp2) minus FORGED (core)
+\newcommand{\wtthExpTwoDiffPOneXForgedConcMinusHaikuForgedDirection}{predicted}
+% P1:X-FORGED-CONC-FORGED (exploratory (D-028): the phase shift: FORGED unchanged, in phase exp2 against the core): interval excludes 0
+\newcommand{\wtthExpTwoDiffPOneXForgedConcMinusHaikuForgedExcl}{no}
+% P1:X-FORGED-CONC-FORGED stream=exp2 B=10000 level=0.95; exploratory (D-028): the phase shift: FORGED unchanged, in phase exp2 against the core, X-FORGED-CONC (exp2) minus FORGED (core)
+\newcommand{\wtthExpTwoDiffPOneXForgedConcMinusHaikuForgedHi}{14.7}
+% P1:X-FORGED-CONC-FORGED stream=exp2 B=10000 level=0.95; exploratory (D-028): the phase shift: FORGED unchanged, in phase exp2 against the core, X-FORGED-CONC (exp2) minus FORGED (core)
+\newcommand{\wtthExpTwoDiffPOneXForgedConcMinusHaikuForgedLo}{\ensuremath{-}10.0}
+% P1:X-FORGED-CONC-FORGED stream=exp2 B=10000 level=0.95; exploratory (D-028): the phase shift: FORGED unchanged, in phase exp2 against the core, X-FORGED-CONC (exp2) minus FORGED (core)
+\newcommand{\wtthExpTwoDiffPOneXForgedConcMinusHaikuForgedStatus}{exploratory}
+% P1:X-FORGED-CONC-FORGED stream=exp2 B=10000 level=0.95; exploratory (D-028): the phase shift: FORGED unchanged, in phase exp2 against the core, X-FORGED-CONC (exp2) minus FORGED (core)
+\newcommand{\wtthExpTwoDiffPOneXForgedConcMinusHaikuForgedVerdict}{exploratory}
+% P2:X-FORGED-POLICY-X-FORGED-CONC stream=exp2 B=10000 level=0.95; exploratory (D-028): cross-phase, against the later concurrent control, X-FORGED-POLICY (exp1) minus X-FORGED-CONC (exp2)
+\newcommand{\wtthExpTwoDiffPTwoExpOneXForgedPolicyMinusXForgedConcB}{10{,}000}
+% exploratory (D-028): cross-phase, against the later concurrent control: P2 at shift level, X-FORGED-POLICY (exp1) 1/50 minus X-FORGED-CONC (exp2) 4/50 untold shifts (a shift is the unit of P2, so no clustering is ignored); yes when an arm's P2 is 0 or 1: its resamples never vary, so the bootstrap interval rests on the other arm alone and can exclude 0 on a few shifts
+\newcommand{\wtthExpTwoDiffPTwoExpOneXForgedPolicyMinusXForgedConcBoundary}{no}
+% P2:X-FORGED-POLICY-X-FORGED-CONC stream=exp2 B=10000 level=0.95; exploratory (D-028): cross-phase, against the later concurrent control, X-FORGED-POLICY (exp1) minus X-FORGED-CONC (exp2)
+\newcommand{\wtthExpTwoDiffPTwoExpOneXForgedPolicyMinusXForgedConcCI}{\ensuremath{-}14.0 to 2.0}
+% P2:X-FORGED-POLICY-X-FORGED-CONC stream=exp2 B=10000 level=0.95; exploratory (D-028): cross-phase, against the later concurrent control, X-FORGED-POLICY (exp1) minus X-FORGED-CONC (exp2)
+\newcommand{\wtthExpTwoDiffPTwoExpOneXForgedPolicyMinusXForgedConcDelta}{\ensuremath{-}6.0}
+% P2:X-FORGED-POLICY-X-FORGED-CONC stream=exp2 B=10000 level=0.95; exploratory (D-028): cross-phase, against the later concurrent control, X-FORGED-POLICY (exp1) minus X-FORGED-CONC (exp2)
+\newcommand{\wtthExpTwoDiffPTwoExpOneXForgedPolicyMinusXForgedConcDirection}{opposite}
+% P2:X-FORGED-POLICY-X-FORGED-CONC (exploratory (D-028): cross-phase, against the later concurrent control): interval excludes 0
+\newcommand{\wtthExpTwoDiffPTwoExpOneXForgedPolicyMinusXForgedConcExcl}{no}
+% exploratory (D-028): cross-phase, against the later concurrent control: P2 at shift level, X-FORGED-POLICY (exp1) 1/50 minus X-FORGED-CONC (exp2) 4/50 untold shifts (a shift is the unit of P2, so no clustering is ignored); two-sided Fisher exact p
+\newcommand{\wtthExpTwoDiffPTwoExpOneXForgedPolicyMinusXForgedConcFisherP}{0.362}
+% P2:X-FORGED-POLICY-X-FORGED-CONC stream=exp2 B=10000 level=0.95; exploratory (D-028): cross-phase, against the later concurrent control, X-FORGED-POLICY (exp1) minus X-FORGED-CONC (exp2)
+\newcommand{\wtthExpTwoDiffPTwoExpOneXForgedPolicyMinusXForgedConcHi}{2.0}
+% P2:X-FORGED-POLICY-X-FORGED-CONC stream=exp2 B=10000 level=0.95; exploratory (D-028): cross-phase, against the later concurrent control, X-FORGED-POLICY (exp1) minus X-FORGED-CONC (exp2)
+\newcommand{\wtthExpTwoDiffPTwoExpOneXForgedPolicyMinusXForgedConcLo}{\ensuremath{-}14.0}
+% exploratory (D-028): cross-phase, against the later concurrent control: P2 at shift level, X-FORGED-POLICY (exp1) 1/50 minus X-FORGED-CONC (exp2) 4/50 untold shifts (a shift is the unit of P2, so no clustering is ignored); Newcombe hybrid-score (method 10) 95% interval
+\newcommand{\wtthExpTwoDiffPTwoExpOneXForgedPolicyMinusXForgedConcNewcombeCI}{\ensuremath{-}17.0 to 3.8}
+% exploratory (D-028): cross-phase, against the later concurrent control: P2 at shift level, X-FORGED-POLICY (exp1) 1/50 minus X-FORGED-CONC (exp2) 4/50 untold shifts (a shift is the unit of P2, so no clustering is ignored); Newcombe hybrid-score (method 10) 95% interval
+\newcommand{\wtthExpTwoDiffPTwoExpOneXForgedPolicyMinusXForgedConcNewcombeDelta}{\ensuremath{-}6.0}
+% exploratory (D-028): cross-phase, against the later concurrent control: P2 at shift level, X-FORGED-POLICY (exp1) 1/50 minus X-FORGED-CONC (exp2) 4/50 untold shifts (a shift is the unit of P2, so no clustering is ignored); Newcombe hybrid-score (method 10) 95% interval: interval excludes 0
+\newcommand{\wtthExpTwoDiffPTwoExpOneXForgedPolicyMinusXForgedConcNewcombeExcl}{no}
+% exploratory (D-028): cross-phase, against the later concurrent control: P2 at shift level, X-FORGED-POLICY (exp1) 1/50 minus X-FORGED-CONC (exp2) 4/50 untold shifts (a shift is the unit of P2, so no clustering is ignored); Newcombe hybrid-score (method 10) 95% interval
+\newcommand{\wtthExpTwoDiffPTwoExpOneXForgedPolicyMinusXForgedConcNewcombeHi}{3.8}
+% exploratory (D-028): cross-phase, against the later concurrent control: P2 at shift level, X-FORGED-POLICY (exp1) 1/50 minus X-FORGED-CONC (exp2) 4/50 untold shifts (a shift is the unit of P2, so no clustering is ignored); Newcombe hybrid-score (method 10) 95% interval
+\newcommand{\wtthExpTwoDiffPTwoExpOneXForgedPolicyMinusXForgedConcNewcombeLo}{\ensuremath{-}17.0}
+% P2:X-FORGED-POLICY-X-FORGED-CONC stream=exp2 B=10000 level=0.95; exploratory (D-028): cross-phase, against the later concurrent control, X-FORGED-POLICY (exp1) minus X-FORGED-CONC (exp2)
+\newcommand{\wtthExpTwoDiffPTwoExpOneXForgedPolicyMinusXForgedConcStatus}{exploratory}
+% P2:X-FORGED-POLICY-X-FORGED-CONC stream=exp2 B=10000 level=0.95; exploratory (D-028): cross-phase, against the later concurrent control, X-FORGED-POLICY (exp1) minus X-FORGED-CONC (exp2)
+\newcommand{\wtthExpTwoDiffPTwoExpOneXForgedPolicyMinusXForgedConcVerdict}{exploratory}
+% P2:X-FORGED-PROV-X-FORGED-CONC stream=exp2 B=10000 level=0.95; exploratory (D-028): cross-phase, against the later concurrent control, X-FORGED-PROV (exp1) minus X-FORGED-CONC (exp2)
+\newcommand{\wtthExpTwoDiffPTwoExpOneXForgedProvMinusXForgedConcB}{10{,}000}
+% exploratory (D-028): cross-phase, against the later concurrent control: P2 at shift level, X-FORGED-PROV (exp1) 0/50 minus X-FORGED-CONC (exp2) 4/50 untold shifts (a shift is the unit of P2, so no clustering is ignored); yes when an arm's P2 is 0 or 1: its resamples never vary, so the bootstrap interval rests on the other arm alone and can exclude 0 on a few shifts
+\newcommand{\wtthExpTwoDiffPTwoExpOneXForgedProvMinusXForgedConcBoundary}{yes}
+% P2:X-FORGED-PROV-X-FORGED-CONC stream=exp2 B=10000 level=0.95; exploratory (D-028): cross-phase, against the later concurrent control, X-FORGED-PROV (exp1) minus X-FORGED-CONC (exp2)
+\newcommand{\wtthExpTwoDiffPTwoExpOneXForgedProvMinusXForgedConcCI}{\ensuremath{-}16.0 to \ensuremath{-}2.0}
+% P2:X-FORGED-PROV-X-FORGED-CONC stream=exp2 B=10000 level=0.95; exploratory (D-028): cross-phase, against the later concurrent control, X-FORGED-PROV (exp1) minus X-FORGED-CONC (exp2)
+\newcommand{\wtthExpTwoDiffPTwoExpOneXForgedProvMinusXForgedConcDelta}{\ensuremath{-}8.0}
+% P2:X-FORGED-PROV-X-FORGED-CONC stream=exp2 B=10000 level=0.95; exploratory (D-028): cross-phase, against the later concurrent control, X-FORGED-PROV (exp1) minus X-FORGED-CONC (exp2)
+\newcommand{\wtthExpTwoDiffPTwoExpOneXForgedProvMinusXForgedConcDirection}{opposite}
+% P2:X-FORGED-PROV-X-FORGED-CONC (exploratory (D-028): cross-phase, against the later concurrent control): interval excludes 0
+\newcommand{\wtthExpTwoDiffPTwoExpOneXForgedProvMinusXForgedConcExcl}{yes}
+% exploratory (D-028): cross-phase, against the later concurrent control: P2 at shift level, X-FORGED-PROV (exp1) 0/50 minus X-FORGED-CONC (exp2) 4/50 untold shifts (a shift is the unit of P2, so no clustering is ignored); two-sided Fisher exact p
+\newcommand{\wtthExpTwoDiffPTwoExpOneXForgedProvMinusXForgedConcFisherP}{0.117}
+% P2:X-FORGED-PROV-X-FORGED-CONC stream=exp2 B=10000 level=0.95; exploratory (D-028): cross-phase, against the later concurrent control, X-FORGED-PROV (exp1) minus X-FORGED-CONC (exp2)
+\newcommand{\wtthExpTwoDiffPTwoExpOneXForgedProvMinusXForgedConcHi}{\ensuremath{-}2.0}
+% P2:X-FORGED-PROV-X-FORGED-CONC stream=exp2 B=10000 level=0.95; exploratory (D-028): cross-phase, against the later concurrent control, X-FORGED-PROV (exp1) minus X-FORGED-CONC (exp2)
+\newcommand{\wtthExpTwoDiffPTwoExpOneXForgedProvMinusXForgedConcLo}{\ensuremath{-}16.0}
+% exploratory (D-028): cross-phase, against the later concurrent control: P2 at shift level, X-FORGED-PROV (exp1) 0/50 minus X-FORGED-CONC (exp2) 4/50 untold shifts (a shift is the unit of P2, so no clustering is ignored); Newcombe hybrid-score (method 10) 95% interval
+\newcommand{\wtthExpTwoDiffPTwoExpOneXForgedProvMinusXForgedConcNewcombeCI}{\ensuremath{-}18.8 to 0.6}
+% exploratory (D-028): cross-phase, against the later concurrent control: P2 at shift level, X-FORGED-PROV (exp1) 0/50 minus X-FORGED-CONC (exp2) 4/50 untold shifts (a shift is the unit of P2, so no clustering is ignored); Newcombe hybrid-score (method 10) 95% interval
+\newcommand{\wtthExpTwoDiffPTwoExpOneXForgedProvMinusXForgedConcNewcombeDelta}{\ensuremath{-}8.0}
+% exploratory (D-028): cross-phase, against the later concurrent control: P2 at shift level, X-FORGED-PROV (exp1) 0/50 minus X-FORGED-CONC (exp2) 4/50 untold shifts (a shift is the unit of P2, so no clustering is ignored); Newcombe hybrid-score (method 10) 95% interval: interval excludes 0
+\newcommand{\wtthExpTwoDiffPTwoExpOneXForgedProvMinusXForgedConcNewcombeExcl}{no}
+% exploratory (D-028): cross-phase, against the later concurrent control: P2 at shift level, X-FORGED-PROV (exp1) 0/50 minus X-FORGED-CONC (exp2) 4/50 untold shifts (a shift is the unit of P2, so no clustering is ignored); Newcombe hybrid-score (method 10) 95% interval
+\newcommand{\wtthExpTwoDiffPTwoExpOneXForgedProvMinusXForgedConcNewcombeHi}{0.6}
+% exploratory (D-028): cross-phase, against the later concurrent control: P2 at shift level, X-FORGED-PROV (exp1) 0/50 minus X-FORGED-CONC (exp2) 4/50 untold shifts (a shift is the unit of P2, so no clustering is ignored); Newcombe hybrid-score (method 10) 95% interval
+\newcommand{\wtthExpTwoDiffPTwoExpOneXForgedProvMinusXForgedConcNewcombeLo}{\ensuremath{-}18.8}
+% exploratory (D-028): cross-phase, against the later concurrent control: P2 at shift level, X-FORGED-PROV (exp1) 0/50 minus X-FORGED-CONC (exp2) 4/50 untold shifts (a shift is the unit of P2, so no clustering is ignored); P(a resampled difference is exactly 0): the arm off the boundary must draw none of its m shifts off that value, ((n - m) / n)^n, analytic; below 2.5% the percentile interval excludes 0
+\newcommand{\wtthExpTwoDiffPTwoExpOneXForgedProvMinusXForgedConcPZero}{1.55}
+% P2:X-FORGED-PROV-X-FORGED-CONC stream=exp2 B=10000 level=0.95; exploratory (D-028): cross-phase, against the later concurrent control, X-FORGED-PROV (exp1) minus X-FORGED-CONC (exp2)
+\newcommand{\wtthExpTwoDiffPTwoExpOneXForgedProvMinusXForgedConcStatus}{exploratory}
+% P2:X-FORGED-PROV-X-FORGED-CONC stream=exp2 B=10000 level=0.95; exploratory (D-028): cross-phase, against the later concurrent control, X-FORGED-PROV (exp1) minus X-FORGED-CONC (exp2)
+\newcommand{\wtthExpTwoDiffPTwoExpOneXForgedProvMinusXForgedConcVerdict}{exploratory}
+% P2:X-FORGED-CHECK-NO-RECEIPT stream=exp2 B=10000 level=0.95; exploratory (D-028): the lookup cell against the core's empty log, X-FORGED-CHECK (exp2) minus NO-RECEIPT (core)
+\newcommand{\wtthExpTwoDiffPTwoXForgedCheckMinusHaikuNoReceiptB}{10{,}000}
+% exploratory (D-028): the lookup cell against the core's empty log: P2 at shift level, X-FORGED-CHECK (exp2) 0/50 minus NO-RECEIPT (core) 0/80 untold shifts (a shift is the unit of P2, so no clustering is ignored); yes when an arm's P2 is 0 or 1: its resamples never vary, so the bootstrap interval rests on the other arm alone and can exclude 0 on a few shifts
+\newcommand{\wtthExpTwoDiffPTwoXForgedCheckMinusHaikuNoReceiptBoundary}{yes}
+% P2:X-FORGED-CHECK-NO-RECEIPT stream=exp2 B=10000 level=0.95; exploratory (D-028): the lookup cell against the core's empty log, X-FORGED-CHECK (exp2) minus NO-RECEIPT (core)
+\newcommand{\wtthExpTwoDiffPTwoXForgedCheckMinusHaikuNoReceiptCI}{0.0 to 0.0}
+% P2:X-FORGED-CHECK-NO-RECEIPT stream=exp2 B=10000 level=0.95; exploratory (D-028): the lookup cell against the core's empty log, X-FORGED-CHECK (exp2) minus NO-RECEIPT (core)
+\newcommand{\wtthExpTwoDiffPTwoXForgedCheckMinusHaikuNoReceiptDelta}{0.0}
+% P2:X-FORGED-CHECK-NO-RECEIPT stream=exp2 B=10000 level=0.95; exploratory (D-028): the lookup cell against the core's empty log, X-FORGED-CHECK (exp2) minus NO-RECEIPT (core)
+\newcommand{\wtthExpTwoDiffPTwoXForgedCheckMinusHaikuNoReceiptDirection}{zero}
+% P2:X-FORGED-CHECK-NO-RECEIPT (exploratory (D-028): the lookup cell against the core's empty log): interval excludes 0
+\newcommand{\wtthExpTwoDiffPTwoXForgedCheckMinusHaikuNoReceiptExcl}{no}
+% exploratory (D-028): the lookup cell against the core's empty log: P2 at shift level, X-FORGED-CHECK (exp2) 0/50 minus NO-RECEIPT (core) 0/80 untold shifts (a shift is the unit of P2, so no clustering is ignored); two-sided Fisher exact p
+\newcommand{\wtthExpTwoDiffPTwoXForgedCheckMinusHaikuNoReceiptFisherP}{1.000}
+% P2:X-FORGED-CHECK-NO-RECEIPT stream=exp2 B=10000 level=0.95; exploratory (D-028): the lookup cell against the core's empty log, X-FORGED-CHECK (exp2) minus NO-RECEIPT (core)
+\newcommand{\wtthExpTwoDiffPTwoXForgedCheckMinusHaikuNoReceiptHi}{0.0}
+% P2:X-FORGED-CHECK-NO-RECEIPT stream=exp2 B=10000 level=0.95; exploratory (D-028): the lookup cell against the core's empty log, X-FORGED-CHECK (exp2) minus NO-RECEIPT (core)
+\newcommand{\wtthExpTwoDiffPTwoXForgedCheckMinusHaikuNoReceiptLo}{0.0}
+% exploratory (D-028): the lookup cell against the core's empty log: P2 at shift level, X-FORGED-CHECK (exp2) 0/50 minus NO-RECEIPT (core) 0/80 untold shifts (a shift is the unit of P2, so no clustering is ignored); Newcombe hybrid-score (method 10) 95% interval
+\newcommand{\wtthExpTwoDiffPTwoXForgedCheckMinusHaikuNoReceiptNewcombeCI}{\ensuremath{-}4.6 to 7.1}
+% exploratory (D-028): the lookup cell against the core's empty log: P2 at shift level, X-FORGED-CHECK (exp2) 0/50 minus NO-RECEIPT (core) 0/80 untold shifts (a shift is the unit of P2, so no clustering is ignored); Newcombe hybrid-score (method 10) 95% interval
+\newcommand{\wtthExpTwoDiffPTwoXForgedCheckMinusHaikuNoReceiptNewcombeDelta}{0.0}
+% exploratory (D-028): the lookup cell against the core's empty log: P2 at shift level, X-FORGED-CHECK (exp2) 0/50 minus NO-RECEIPT (core) 0/80 untold shifts (a shift is the unit of P2, so no clustering is ignored); Newcombe hybrid-score (method 10) 95% interval: interval excludes 0
+\newcommand{\wtthExpTwoDiffPTwoXForgedCheckMinusHaikuNoReceiptNewcombeExcl}{no}
+% exploratory (D-028): the lookup cell against the core's empty log: P2 at shift level, X-FORGED-CHECK (exp2) 0/50 minus NO-RECEIPT (core) 0/80 untold shifts (a shift is the unit of P2, so no clustering is ignored); Newcombe hybrid-score (method 10) 95% interval
+\newcommand{\wtthExpTwoDiffPTwoXForgedCheckMinusHaikuNoReceiptNewcombeHi}{7.1}
+% exploratory (D-028): the lookup cell against the core's empty log: P2 at shift level, X-FORGED-CHECK (exp2) 0/50 minus NO-RECEIPT (core) 0/80 untold shifts (a shift is the unit of P2, so no clustering is ignored); Newcombe hybrid-score (method 10) 95% interval
+\newcommand{\wtthExpTwoDiffPTwoXForgedCheckMinusHaikuNoReceiptNewcombeLo}{\ensuremath{-}4.6}
+% exploratory (D-028): the lookup cell against the core's empty log: P2 at shift level, X-FORGED-CHECK (exp2) 0/50 minus NO-RECEIPT (core) 0/80 untold shifts (a shift is the unit of P2, so no clustering is ignored); P(a resampled difference is exactly 0): the arm off the boundary must draw none of its m shifts off that value, ((n - m) / n)^n, analytic; below 2.5% the percentile interval excludes 0
+\newcommand{\wtthExpTwoDiffPTwoXForgedCheckMinusHaikuNoReceiptPZero}{100.00}
+% P2:X-FORGED-CHECK-NO-RECEIPT stream=exp2 B=10000 level=0.95; exploratory (D-028): the lookup cell against the core's empty log, X-FORGED-CHECK (exp2) minus NO-RECEIPT (core)
+\newcommand{\wtthExpTwoDiffPTwoXForgedCheckMinusHaikuNoReceiptStatus}{exploratory}
+% P2:X-FORGED-CHECK-NO-RECEIPT stream=exp2 B=10000 level=0.95; exploratory (D-028): the lookup cell against the core's empty log, X-FORGED-CHECK (exp2) minus NO-RECEIPT (core)
+\newcommand{\wtthExpTwoDiffPTwoXForgedCheckMinusHaikuNoReceiptVerdict}{exploratory}
+% P2:X-FORGED-CHECK-X-FORGED-CONC stream=exp2 B=10000 level=0.95; exploratory (D-028): the concurrent contrast, X-FORGED-CHECK (exp2) minus X-FORGED-CONC (exp2)
+\newcommand{\wtthExpTwoDiffPTwoXForgedCheckMinusXForgedConcB}{10{,}000}
+% exploratory (D-028): the concurrent contrast: P2 at shift level, X-FORGED-CHECK (exp2) 0/50 minus X-FORGED-CONC (exp2) 4/50 untold shifts (a shift is the unit of P2, so no clustering is ignored); yes when an arm's P2 is 0 or 1: its resamples never vary, so the bootstrap interval rests on the other arm alone and can exclude 0 on a few shifts
+\newcommand{\wtthExpTwoDiffPTwoXForgedCheckMinusXForgedConcBoundary}{yes}
+% P2:X-FORGED-CHECK-X-FORGED-CONC stream=exp2 B=10000 level=0.95; exploratory (D-028): the concurrent contrast, X-FORGED-CHECK (exp2) minus X-FORGED-CONC (exp2)
+\newcommand{\wtthExpTwoDiffPTwoXForgedCheckMinusXForgedConcCI}{\ensuremath{-}16.0 to \ensuremath{-}2.0}
+% P2:X-FORGED-CHECK-X-FORGED-CONC stream=exp2 B=10000 level=0.95; exploratory (D-028): the concurrent contrast, X-FORGED-CHECK (exp2) minus X-FORGED-CONC (exp2)
+\newcommand{\wtthExpTwoDiffPTwoXForgedCheckMinusXForgedConcDelta}{\ensuremath{-}8.0}
+% P2:X-FORGED-CHECK-X-FORGED-CONC stream=exp2 B=10000 level=0.95; exploratory (D-028): the concurrent contrast, X-FORGED-CHECK (exp2) minus X-FORGED-CONC (exp2)
+\newcommand{\wtthExpTwoDiffPTwoXForgedCheckMinusXForgedConcDirection}{opposite}
+% P2:X-FORGED-CHECK-X-FORGED-CONC (exploratory (D-028): the concurrent contrast): interval excludes 0
+\newcommand{\wtthExpTwoDiffPTwoXForgedCheckMinusXForgedConcExcl}{yes}
+% exploratory (D-028): the concurrent contrast: P2 at shift level, X-FORGED-CHECK (exp2) 0/50 minus X-FORGED-CONC (exp2) 4/50 untold shifts (a shift is the unit of P2, so no clustering is ignored); two-sided Fisher exact p
+\newcommand{\wtthExpTwoDiffPTwoXForgedCheckMinusXForgedConcFisherP}{0.117}
+% P2:X-FORGED-CHECK-X-FORGED-CONC stream=exp2 B=10000 level=0.95; exploratory (D-028): the concurrent contrast, X-FORGED-CHECK (exp2) minus X-FORGED-CONC (exp2)
+\newcommand{\wtthExpTwoDiffPTwoXForgedCheckMinusXForgedConcHi}{\ensuremath{-}2.0}
+% P2:X-FORGED-CHECK-X-FORGED-CONC stream=exp2 B=10000 level=0.95; exploratory (D-028): the concurrent contrast, X-FORGED-CHECK (exp2) minus X-FORGED-CONC (exp2)
+\newcommand{\wtthExpTwoDiffPTwoXForgedCheckMinusXForgedConcLo}{\ensuremath{-}16.0}
+% exploratory (D-028): the concurrent contrast: P2 at shift level, X-FORGED-CHECK (exp2) 0/50 minus X-FORGED-CONC (exp2) 4/50 untold shifts (a shift is the unit of P2, so no clustering is ignored); Newcombe hybrid-score (method 10) 95% interval
+\newcommand{\wtthExpTwoDiffPTwoXForgedCheckMinusXForgedConcNewcombeCI}{\ensuremath{-}18.8 to 0.6}
+% exploratory (D-028): the concurrent contrast: P2 at shift level, X-FORGED-CHECK (exp2) 0/50 minus X-FORGED-CONC (exp2) 4/50 untold shifts (a shift is the unit of P2, so no clustering is ignored); Newcombe hybrid-score (method 10) 95% interval
+\newcommand{\wtthExpTwoDiffPTwoXForgedCheckMinusXForgedConcNewcombeDelta}{\ensuremath{-}8.0}
+% exploratory (D-028): the concurrent contrast: P2 at shift level, X-FORGED-CHECK (exp2) 0/50 minus X-FORGED-CONC (exp2) 4/50 untold shifts (a shift is the unit of P2, so no clustering is ignored); Newcombe hybrid-score (method 10) 95% interval: interval excludes 0
+\newcommand{\wtthExpTwoDiffPTwoXForgedCheckMinusXForgedConcNewcombeExcl}{no}
+% exploratory (D-028): the concurrent contrast: P2 at shift level, X-FORGED-CHECK (exp2) 0/50 minus X-FORGED-CONC (exp2) 4/50 untold shifts (a shift is the unit of P2, so no clustering is ignored); Newcombe hybrid-score (method 10) 95% interval
+\newcommand{\wtthExpTwoDiffPTwoXForgedCheckMinusXForgedConcNewcombeHi}{0.6}
+% exploratory (D-028): the concurrent contrast: P2 at shift level, X-FORGED-CHECK (exp2) 0/50 minus X-FORGED-CONC (exp2) 4/50 untold shifts (a shift is the unit of P2, so no clustering is ignored); Newcombe hybrid-score (method 10) 95% interval
+\newcommand{\wtthExpTwoDiffPTwoXForgedCheckMinusXForgedConcNewcombeLo}{\ensuremath{-}18.8}
+% exploratory (D-028): the concurrent contrast: P2 at shift level, X-FORGED-CHECK (exp2) 0/50 minus X-FORGED-CONC (exp2) 4/50 untold shifts (a shift is the unit of P2, so no clustering is ignored); P(a resampled difference is exactly 0): the arm off the boundary must draw none of its m shifts off that value, ((n - m) / n)^n, analytic; below 2.5% the percentile interval excludes 0
+\newcommand{\wtthExpTwoDiffPTwoXForgedCheckMinusXForgedConcPZero}{1.55}
+% P2:X-FORGED-CHECK-X-FORGED-CONC stream=exp2 B=10000 level=0.95; exploratory (D-028): the concurrent contrast, X-FORGED-CHECK (exp2) minus X-FORGED-CONC (exp2)
+\newcommand{\wtthExpTwoDiffPTwoXForgedCheckMinusXForgedConcStatus}{exploratory}
+% P2:X-FORGED-CHECK-X-FORGED-CONC stream=exp2 B=10000 level=0.95; exploratory (D-028): the concurrent contrast, X-FORGED-CHECK (exp2) minus X-FORGED-CONC (exp2)
+\newcommand{\wtthExpTwoDiffPTwoXForgedCheckMinusXForgedConcVerdict}{exploratory}
+% P2:X-FORGED-CONC-FORGED stream=exp2 B=10000 level=0.95; exploratory (D-028): the phase shift: FORGED unchanged, in phase exp2 against the core, X-FORGED-CONC (exp2) minus FORGED (core)
+\newcommand{\wtthExpTwoDiffPTwoXForgedConcMinusHaikuForgedB}{10{,}000}
+% exploratory (D-028): the phase shift: FORGED unchanged, in phase exp2 against the core: P2 at shift level, X-FORGED-CONC (exp2) 4/50 minus FORGED (core) 4/50 untold shifts (a shift is the unit of P2, so no clustering is ignored); yes when an arm's P2 is 0 or 1: its resamples never vary, so the bootstrap interval rests on the other arm alone and can exclude 0 on a few shifts
+\newcommand{\wtthExpTwoDiffPTwoXForgedConcMinusHaikuForgedBoundary}{no}
+% P2:X-FORGED-CONC-FORGED stream=exp2 B=10000 level=0.95; exploratory (D-028): the phase shift: FORGED unchanged, in phase exp2 against the core, X-FORGED-CONC (exp2) minus FORGED (core)
+\newcommand{\wtthExpTwoDiffPTwoXForgedConcMinusHaikuForgedCI}{\ensuremath{-}10.0 to 10.0}
+% P2:X-FORGED-CONC-FORGED stream=exp2 B=10000 level=0.95; exploratory (D-028): the phase shift: FORGED unchanged, in phase exp2 against the core, X-FORGED-CONC (exp2) minus FORGED (core)
+\newcommand{\wtthExpTwoDiffPTwoXForgedConcMinusHaikuForgedDelta}{0.0}
+% P2:X-FORGED-CONC-FORGED stream=exp2 B=10000 level=0.95; exploratory (D-028): the phase shift: FORGED unchanged, in phase exp2 against the core, X-FORGED-CONC (exp2) minus FORGED (core)
+\newcommand{\wtthExpTwoDiffPTwoXForgedConcMinusHaikuForgedDirection}{zero}
+% P2:X-FORGED-CONC-FORGED (exploratory (D-028): the phase shift: FORGED unchanged, in phase exp2 against the core): interval excludes 0
+\newcommand{\wtthExpTwoDiffPTwoXForgedConcMinusHaikuForgedExcl}{no}
+% exploratory (D-028): the phase shift: FORGED unchanged, in phase exp2 against the core: P2 at shift level, X-FORGED-CONC (exp2) 4/50 minus FORGED (core) 4/50 untold shifts (a shift is the unit of P2, so no clustering is ignored); two-sided Fisher exact p
+\newcommand{\wtthExpTwoDiffPTwoXForgedConcMinusHaikuForgedFisherP}{1.000}
+% P2:X-FORGED-CONC-FORGED stream=exp2 B=10000 level=0.95; exploratory (D-028): the phase shift: FORGED unchanged, in phase exp2 against the core, X-FORGED-CONC (exp2) minus FORGED (core)
+\newcommand{\wtthExpTwoDiffPTwoXForgedConcMinusHaikuForgedHi}{10.0}
+% P2:X-FORGED-CONC-FORGED stream=exp2 B=10000 level=0.95; exploratory (D-028): the phase shift: FORGED unchanged, in phase exp2 against the core, X-FORGED-CONC (exp2) minus FORGED (core)
+\newcommand{\wtthExpTwoDiffPTwoXForgedConcMinusHaikuForgedLo}{\ensuremath{-}10.0}
+% exploratory (D-028): the phase shift: FORGED unchanged, in phase exp2 against the core: P2 at shift level, X-FORGED-CONC (exp2) 4/50 minus FORGED (core) 4/50 untold shifts (a shift is the unit of P2, so no clustering is ignored); Newcombe hybrid-score (method 10) 95% interval
+\newcommand{\wtthExpTwoDiffPTwoXForgedConcMinusHaikuForgedNewcombeCI}{\ensuremath{-}11.9 to 11.9}
+% exploratory (D-028): the phase shift: FORGED unchanged, in phase exp2 against the core: P2 at shift level, X-FORGED-CONC (exp2) 4/50 minus FORGED (core) 4/50 untold shifts (a shift is the unit of P2, so no clustering is ignored); Newcombe hybrid-score (method 10) 95% interval
+\newcommand{\wtthExpTwoDiffPTwoXForgedConcMinusHaikuForgedNewcombeDelta}{0.0}
+% exploratory (D-028): the phase shift: FORGED unchanged, in phase exp2 against the core: P2 at shift level, X-FORGED-CONC (exp2) 4/50 minus FORGED (core) 4/50 untold shifts (a shift is the unit of P2, so no clustering is ignored); Newcombe hybrid-score (method 10) 95% interval: interval excludes 0
+\newcommand{\wtthExpTwoDiffPTwoXForgedConcMinusHaikuForgedNewcombeExcl}{no}
+% exploratory (D-028): the phase shift: FORGED unchanged, in phase exp2 against the core: P2 at shift level, X-FORGED-CONC (exp2) 4/50 minus FORGED (core) 4/50 untold shifts (a shift is the unit of P2, so no clustering is ignored); Newcombe hybrid-score (method 10) 95% interval
+\newcommand{\wtthExpTwoDiffPTwoXForgedConcMinusHaikuForgedNewcombeHi}{11.9}
+% exploratory (D-028): the phase shift: FORGED unchanged, in phase exp2 against the core: P2 at shift level, X-FORGED-CONC (exp2) 4/50 minus FORGED (core) 4/50 untold shifts (a shift is the unit of P2, so no clustering is ignored); Newcombe hybrid-score (method 10) 95% interval
+\newcommand{\wtthExpTwoDiffPTwoXForgedConcMinusHaikuForgedNewcombeLo}{\ensuremath{-}11.9}
+% P2:X-FORGED-CONC-FORGED stream=exp2 B=10000 level=0.95; exploratory (D-028): the phase shift: FORGED unchanged, in phase exp2 against the core, X-FORGED-CONC (exp2) minus FORGED (core)
+\newcommand{\wtthExpTwoDiffPTwoXForgedConcMinusHaikuForgedStatus}{exploratory}
+% P2:X-FORGED-CONC-FORGED stream=exp2 B=10000 level=0.95; exploratory (D-028): the phase shift: FORGED unchanged, in phase exp2 against the core, X-FORGED-CONC (exp2) minus FORGED (core)
+\newcommand{\wtthExpTwoDiffPTwoXForgedConcMinusHaikuForgedVerdict}{exploratory}
+% model-coded, post hoc (D-024): P1 keyword rule against the refers_to_violation label, exploratory (D-028) follow-up 2, phase exp2, both cells pooled, labels from the exp2 judge database; every witness note P1 reads (tool notes, rounds 1-5); matched notes with final labels (reviewed where reviewed, else the judge's): coded refers_to_violation = 1
+\newcommand{\wtthExpTwoKwCheckMatchedFinalK}{0}
+% model-coded, post hoc (D-024): P1 keyword rule against the refers_to_violation label, exploratory (D-028) follow-up 2, phase exp2, both cells pooled, labels from the exp2 judge database; every witness note P1 reads (tool notes, rounds 1-5); matched notes with final labels (reviewed where reviewed, else the judge's): notes with a label
+\newcommand{\wtthExpTwoKwCheckMatchedFinalN}{0}
+% model-coded, post hoc (D-024): P1 keyword rule against the refers_to_violation label, exploratory (D-028) follow-up 2, phase exp2, both cells pooled, labels from the exp2 judge database; every witness note P1 reads (tool notes, rounds 1-5); matched notes with valid judge labels alone: coded refers_to_violation = 1
+\newcommand{\wtthExpTwoKwCheckMatchedJudgeK}{0}
+% model-coded, post hoc (D-024): P1 keyword rule against the refers_to_violation label, exploratory (D-028) follow-up 2, phase exp2, both cells pooled, labels from the exp2 judge database; every witness note P1 reads (tool notes, rounds 1-5); matched notes with valid judge labels alone: notes with a label
+\newcommand{\wtthExpTwoKwCheckMatchedJudgeN}{0}
+% model-coded, post hoc (D-024): P1 keyword rule against the refers_to_violation label, exploratory (D-028) follow-up 2, phase exp2, both cells pooled, labels from the exp2 judge database; every witness note P1 reads (tool notes, rounds 1-5); notes the keyword rule matches (P1 = 1)
+\newcommand{\wtthExpTwoKwCheckMatchedN}{220}
+% model-coded, post hoc (D-024): P1 keyword rule against the refers_to_violation label, exploratory (D-028) follow-up 2, phase exp2, both cells pooled, labels from the exp2 judge database; every witness note P1 reads (tool notes, rounds 1-5)
+\newcommand{\wtthExpTwoKwCheckNotesN}{237}
+% model-coded, post hoc (D-024): P1 keyword rule against the refers_to_violation label, exploratory (D-028) follow-up 2, phase exp2, both cells pooled, labels from the exp2 judge database; every witness note P1 reads (tool notes, rounds 1-5); witnesses with P1 = 1, and those whose P1 rests on a label alone (no keyword-matched note, so the judge path decided it)
+\newcommand{\wtthExpTwoKwCheckPOneK}{218}
+% model-coded, post hoc (D-024): P1 keyword rule against the refers_to_violation label, exploratory (D-028) follow-up 2, phase exp2, both cells pooled, labels from the exp2 judge database; every witness note P1 reads (tool notes, rounds 1-5); witnesses with P1 = 1, and those whose P1 rests on a label alone (no keyword-matched note, so the judge path decided it)
+\newcommand{\wtthExpTwoKwCheckPOneLabelOnlyK}{0}
+% model-coded, post hoc (D-024): P1 keyword rule against the refers_to_violation label, exploratory (D-028) follow-up 2, phase exp2, both cells pooled, labels from the exp2 judge database; every witness note P1 reads (tool notes, rounds 1-5); unmatched notes with final labels (reviewed where reviewed, else the judge's): Wilson 95% interval, notes as units
+\newcommand{\wtthExpTwoKwCheckUnmatchedFinalCI}{0.0 to 18.4}
+% model-coded, post hoc (D-024): P1 keyword rule against the refers_to_violation label, exploratory (D-028) follow-up 2, phase exp2, both cells pooled, labels from the exp2 judge database; every witness note P1 reads (tool notes, rounds 1-5); unmatched notes with final labels (reviewed where reviewed, else the judge's): coded refers_to_violation = 1
+\newcommand{\wtthExpTwoKwCheckUnmatchedFinalK}{0}
+% model-coded, post hoc (D-024): P1 keyword rule against the refers_to_violation label, exploratory (D-028) follow-up 2, phase exp2, both cells pooled, labels from the exp2 judge database; every witness note P1 reads (tool notes, rounds 1-5); unmatched notes with final labels (reviewed where reviewed, else the judge's): notes with a label
+\newcommand{\wtthExpTwoKwCheckUnmatchedFinalN}{17}
+% model-coded, post hoc (D-024): P1 keyword rule against the refers_to_violation label, exploratory (D-028) follow-up 2, phase exp2, both cells pooled, labels from the exp2 judge database; every witness note P1 reads (tool notes, rounds 1-5); unmatched notes with final labels (reviewed where reviewed, else the judge's): share coded 1
+\newcommand{\wtthExpTwoKwCheckUnmatchedFinalPct}{0.0}
+% model-coded, post hoc (D-024): P1 keyword rule against the refers_to_violation label, exploratory (D-028) follow-up 2, phase exp2, both cells pooled, labels from the exp2 judge database; every witness note P1 reads (tool notes, rounds 1-5); unmatched notes with valid judge labels alone: Wilson 95% interval, notes as units
+\newcommand{\wtthExpTwoKwCheckUnmatchedJudgeCI}{0.0 to 18.4}
+% model-coded, post hoc (D-024): P1 keyword rule against the refers_to_violation label, exploratory (D-028) follow-up 2, phase exp2, both cells pooled, labels from the exp2 judge database; every witness note P1 reads (tool notes, rounds 1-5); unmatched notes with valid judge labels alone: coded refers_to_violation = 1
+\newcommand{\wtthExpTwoKwCheckUnmatchedJudgeK}{0}
+% model-coded, post hoc (D-024): P1 keyword rule against the refers_to_violation label, exploratory (D-028) follow-up 2, phase exp2, both cells pooled, labels from the exp2 judge database; every witness note P1 reads (tool notes, rounds 1-5); unmatched notes with valid judge labels alone: notes with a label
+\newcommand{\wtthExpTwoKwCheckUnmatchedJudgeN}{17}
+% model-coded, post hoc (D-024): P1 keyword rule against the refers_to_violation label, exploratory (D-028) follow-up 2, phase exp2, both cells pooled, labels from the exp2 judge database; every witness note P1 reads (tool notes, rounds 1-5); unmatched notes with valid judge labels alone: share coded 1
+\newcommand{\wtthExpTwoKwCheckUnmatchedJudgePct}{0.0}
+% model-coded, post hoc (D-024): P1 keyword rule against the refers_to_violation label, exploratory (D-028) follow-up 2, phase exp2, both cells pooled, labels from the exp2 judge database; every witness note P1 reads (tool notes, rounds 1-5); notes the keyword rule does not match
+\newcommand{\wtthExpTwoKwCheckUnmatchedN}{17}
+% exploratory (D-028), descriptive: lookup_escalation in X-FORGED-CHECK, the only cell that lists it (final attempts; server-recorded calls, accepted or refused, and client-side uses the server never recorded); client-side uses the server never recorded
+\newcommand{\wtthExpTwoLookupCallsClientK}{0}
+% exploratory (D-028), descriptive: lookup_escalation in X-FORGED-CHECK, the only cell that lists it (final attempts; server-recorded calls, accepted or refused, and client-side uses the server never recorded); calls
+\newcommand{\wtthExpTwoLookupCallsN}{0}
+% exploratory (D-028), descriptive: lookup_escalation in X-FORGED-CHECK, the only cell that lists it (final attempts; server-recorded calls, accepted or refused, and client-side uses the server never recorded); calls refused by the server or the client
+\newcommand{\wtthExpTwoLookupRepliesErrorK}{0}
+% exploratory (D-028), descriptive: lookup_escalation in X-FORGED-CHECK, the only cell that lists it (final attempts; server-recorded calls, accepted or refused, and client-side uses the server never recorded); accepted calls whose reply listed at least one entry
+\newcommand{\wtthExpTwoLookupRepliesMatchK}{0}
+% exploratory (D-028), descriptive: lookup_escalation in X-FORGED-CHECK, the only cell that lists it (final attempts; server-recorded calls, accepted or refused, and client-side uses the server never recorded); accepted calls answered 'No matching entry.'
+\newcommand{\wtthExpTwoLookupRepliesNoMatchK}{0}
+% exploratory (D-028), descriptive: lookup_escalation in X-FORGED-CHECK, the only cell that lists it (final attempts; server-recorded calls, accepted or refused, and client-side uses the server never recorded); shifts with at least one call; Wilson 95% interval, shifts as units
+\newcommand{\wtthExpTwoLookupShiftsCI}{0.0 to 7.1}
+% exploratory (D-028), descriptive: lookup_escalation in X-FORGED-CHECK, the only cell that lists it (final attempts; server-recorded calls, accepted or refused, and client-side uses the server never recorded); shifts with at least one call
+\newcommand{\wtthExpTwoLookupShiftsK}{0}
+% exploratory (D-028), descriptive: lookup_escalation in X-FORGED-CHECK, the only cell that lists it (final attempts; server-recorded calls, accepted or refused, and client-side uses the server never recorded); shifts with at least one call
+\newcommand{\wtthExpTwoLookupShiftsN}{50}
+% exploratory (D-028), descriptive: lookup_escalation in X-FORGED-CHECK, the only cell that lists it (final attempts; server-recorded calls, accepted or refused, and client-side uses the server never recorded); shifts with at least one call
+\newcommand{\wtthExpTwoLookupShiftsPct}{0.0}
+% exploratory (D-028), descriptive: lookup_escalation in X-FORGED-CHECK, the only cell that lists it (final attempts; server-recorded calls, accepted or refused, and client-side uses the server never recorded); every witness turn of those shifts
+\newcommand{\wtthExpTwoLookupTurnsAllN}{750}
+% exploratory (D-028), descriptive: lookup_escalation in X-FORGED-CHECK, the only cell that lists it (final attempts; server-recorded calls, accepted or refused, and client-side uses the server never recorded); witness turns (rounds 1-5) whose recorded tool list (exposures.tools_sha) is a toolset with lookup_escalation, i.e. turns with the tool available
+\newcommand{\wtthExpTwoLookupTurnsN}{750}
+% exploratory (D-028), descriptive: lookup_escalation in X-FORGED-CHECK, the only cell that lists it (final attempts; server-recorded calls, accepted or refused, and client-side uses the server never recorded); witnesses with at least one call; Wilson 95% interval, witnesses as units, clustering ignored
+\newcommand{\wtthExpTwoLookupWitnessesCI}{0.0 to 2.5}
+% exploratory (D-028), descriptive: lookup_escalation in X-FORGED-CHECK, the only cell that lists it (final attempts; server-recorded calls, accepted or refused, and client-side uses the server never recorded); witnesses with at least one call
+\newcommand{\wtthExpTwoLookupWitnessesK}{0}
+% exploratory (D-028), descriptive: lookup_escalation in X-FORGED-CHECK, the only cell that lists it (final attempts; server-recorded calls, accepted or refused, and client-side uses the server never recorded); witnesses with at least one call
+\newcommand{\wtthExpTwoLookupWitnessesN}{150}
+% exploratory (D-028), descriptive: lookup_escalation in X-FORGED-CHECK, the only cell that lists it (final attempts; server-recorded calls, accepted or refused, and client-side uses the server never recorded); witnesses with at least one call
+\newcommand{\wtthExpTwoLookupWitnessesPct}{0.0}
+% exploratory (D-028): phase exp2 not run / partial / complete (done episodes by cell XForgedCheck 50, XForgedConc 50)
+\newcommand{\wtthExpTwoStatus}{complete}
+% exploratory (D-028), descriptive: haiku X-FORGED-CHECK witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); could_not_verify_reported_anyway
+\newcommand{\wtthExpTwoTimingNeverXForgedCheckDTwoCouldNotVerifyReportedAnywayK}{12}
+% exploratory (D-028), descriptive: haiku X-FORGED-CHECK witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); could_not_verify_reported_anyway
+\newcommand{\wtthExpTwoTimingNeverXForgedCheckDTwoCouldNotVerifyReportedAnywayPct}{33.3}
+% exploratory (D-028), descriptive: haiku X-FORGED-CHECK witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); feared_duplicate
+\newcommand{\wtthExpTwoTimingNeverXForgedCheckDTwoFearedDuplicateK}{9}
+% exploratory (D-028), descriptive: haiku X-FORGED-CHECK witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); feared_duplicate
+\newcommand{\wtthExpTwoTimingNeverXForgedCheckDTwoFearedDuplicatePct}{25.0}
+% exploratory (D-028), descriptive: haiku X-FORGED-CHECK witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); judged_rule_broken
+\newcommand{\wtthExpTwoTimingNeverXForgedCheckDTwoJudgedRuleBrokenK}{34}
+% exploratory (D-028), descriptive: haiku X-FORGED-CHECK witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); judged_rule_broken
+\newcommand{\wtthExpTwoTimingNeverXForgedCheckDTwoJudgedRuleBrokenPct}{94.4}
+% exploratory (D-028), descriptive: haiku X-FORGED-CHECK witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several)
+\newcommand{\wtthExpTwoTimingNeverXForgedCheckDTwoN}{36}
+% exploratory (D-028), descriptive: haiku X-FORGED-CHECK witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); no_channel_perceived
+\newcommand{\wtthExpTwoTimingNeverXForgedCheckDTwoNoChannelPerceivedK}{4}
+% exploratory (D-028), descriptive: haiku X-FORGED-CHECK witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); no_channel_perceived
+\newcommand{\wtthExpTwoTimingNeverXForgedCheckDTwoNoChannelPerceivedPct}{11.1}
+% exploratory (D-028), descriptive: haiku X-FORGED-CHECK witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); not_my_job
+\newcommand{\wtthExpTwoTimingNeverXForgedCheckDTwoNotMyJobK}{3}
+% exploratory (D-028), descriptive: haiku X-FORGED-CHECK witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); not_my_job
+\newcommand{\wtthExpTwoTimingNeverXForgedCheckDTwoNotMyJobPct}{8.3}
+% exploratory (D-028), descriptive: haiku X-FORGED-CHECK witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); noticed_violation
+\newcommand{\wtthExpTwoTimingNeverXForgedCheckDTwoNoticedViolationK}{35}
+% exploratory (D-028), descriptive: haiku X-FORGED-CHECK witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); noticed_violation
+\newcommand{\wtthExpTwoTimingNeverXForgedCheckDTwoNoticedViolationPct}{97.2}
+% exploratory (D-028), descriptive: haiku X-FORGED-CHECK witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); other
+\newcommand{\wtthExpTwoTimingNeverXForgedCheckDTwoOtherK}{10}
+% exploratory (D-028), descriptive: haiku X-FORGED-CHECK witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); other
+\newcommand{\wtthExpTwoTimingNeverXForgedCheckDTwoOtherPct}{27.8}
+% exploratory (D-028), descriptive: haiku X-FORGED-CHECK witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); someone_else_told
+\newcommand{\wtthExpTwoTimingNeverXForgedCheckDTwoSomeoneElseToldK}{34}
+% exploratory (D-028), descriptive: haiku X-FORGED-CHECK witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); someone_else_told
+\newcommand{\wtthExpTwoTimingNeverXForgedCheckDTwoSomeoneElseToldPct}{94.4}
+% exploratory (D-028), descriptive: haiku X-FORGED-CHECK witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); thought_ops_aware
+\newcommand{\wtthExpTwoTimingNeverXForgedCheckDTwoThoughtOpsAwareK}{22}
+% exploratory (D-028), descriptive: haiku X-FORGED-CHECK witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); thought_ops_aware
+\newcommand{\wtthExpTwoTimingNeverXForgedCheckDTwoThoughtOpsAwarePct}{61.1}
+% exploratory (D-028), descriptive: haiku X-FORGED-CHECK witnesses who never sent a violation note, the three most frequent D2 reason codes that give a reason not to report (final labels, several per answer; noticed_violation, judged_rule_broken and other are left out, their counts are in the ExpTwoTimingNever...DTwo family; a tie at the third is listed in full, ties in the rubric's code order); codes listed
+\newcommand{\wtthExpTwoTimingNeverXForgedCheckDTwoTopN}{3}
+% exploratory (D-028), descriptive: haiku X-FORGED-CHECK witnesses who never sent a violation note, the three most frequent D2 reason codes that give a reason not to report (final labels, several per answer; noticed_violation, judged_rule_broken and other are left out, their counts are in the ExpTwoTimingNever...DTwo family; a tie at the third is listed in full, ties in the rubric's code order); rank one: someone_else_told
+\newcommand{\wtthExpTwoTimingNeverXForgedCheckDTwoTopOneCode}{someone\_else\_told}
+% exploratory (D-028), descriptive: haiku X-FORGED-CHECK witnesses who never sent a violation note, the three most frequent D2 reason codes that give a reason not to report (final labels, several per answer; noticed_violation, judged_rule_broken and other are left out, their counts are in the ExpTwoTimingNever...DTwo family; a tie at the third is listed in full, ties in the rubric's code order); rank one: someone_else_told
+\newcommand{\wtthExpTwoTimingNeverXForgedCheckDTwoTopOneK}{34}
+% exploratory (D-028), descriptive: haiku X-FORGED-CHECK witnesses who never sent a violation note, the three most frequent D2 reason codes that give a reason not to report (final labels, several per answer; noticed_violation, judged_rule_broken and other are left out, their counts are in the ExpTwoTimingNever...DTwo family; a tie at the third is listed in full, ties in the rubric's code order); rank one: someone_else_told; share of the never-reporters with a D2 label
+\newcommand{\wtthExpTwoTimingNeverXForgedCheckDTwoTopOnePct}{94.4}
+% exploratory (D-028), descriptive: haiku X-FORGED-CHECK witnesses who never sent a violation note, the three most frequent D2 reason codes that give a reason not to report (final labels, several per answer; noticed_violation, judged_rule_broken and other are left out, their counts are in the ExpTwoTimingNever...DTwo family; a tie at the third is listed in full, ties in the rubric's code order); rank one: someone_else_told (reader wording)
+\newcommand{\wtthExpTwoTimingNeverXForgedCheckDTwoTopOneText}{someone else told ops}
+% exploratory (D-028), descriptive: haiku X-FORGED-CHECK witnesses who never sent a violation note, the three most frequent D2 reason codes that give a reason not to report (final labels, several per answer; noticed_violation, judged_rule_broken and other are left out, their counts are in the ExpTwoTimingNever...DTwo family; a tie at the third is listed in full, ties in the rubric's code order); rank three: could_not_verify_reported_anyway
+\newcommand{\wtthExpTwoTimingNeverXForgedCheckDTwoTopThreeCode}{could\_not\_verify\_reported\_anyway}
+% exploratory (D-028), descriptive: haiku X-FORGED-CHECK witnesses who never sent a violation note, the three most frequent D2 reason codes that give a reason not to report (final labels, several per answer; noticed_violation, judged_rule_broken and other are left out, their counts are in the ExpTwoTimingNever...DTwo family; a tie at the third is listed in full, ties in the rubric's code order); rank three: could_not_verify_reported_anyway
+\newcommand{\wtthExpTwoTimingNeverXForgedCheckDTwoTopThreeK}{12}
+% exploratory (D-028), descriptive: haiku X-FORGED-CHECK witnesses who never sent a violation note, the three most frequent D2 reason codes that give a reason not to report (final labels, several per answer; noticed_violation, judged_rule_broken and other are left out, their counts are in the ExpTwoTimingNever...DTwo family; a tie at the third is listed in full, ties in the rubric's code order); rank three: could_not_verify_reported_anyway; share of the never-reporters with a D2 label
+\newcommand{\wtthExpTwoTimingNeverXForgedCheckDTwoTopThreePct}{33.3}
+% exploratory (D-028), descriptive: haiku X-FORGED-CHECK witnesses who never sent a violation note, the three most frequent D2 reason codes that give a reason not to report (final labels, several per answer; noticed_violation, judged_rule_broken and other are left out, their counts are in the ExpTwoTimingNever...DTwo family; a tie at the third is listed in full, ties in the rubric's code order); rank three: could_not_verify_reported_anyway (reader wording)
+\newcommand{\wtthExpTwoTimingNeverXForgedCheckDTwoTopThreeText}{could not verify, reported anyway}
+% exploratory (D-028), descriptive: haiku X-FORGED-CHECK witnesses who never sent a violation note, the three most frequent D2 reason codes that give a reason not to report (final labels, several per answer; noticed_violation, judged_rule_broken and other are left out, their counts are in the ExpTwoTimingNever...DTwo family; a tie at the third is listed in full, ties in the rubric's code order); rank two: thought_ops_aware
+\newcommand{\wtthExpTwoTimingNeverXForgedCheckDTwoTopTwoCode}{thought\_ops\_aware}
+% exploratory (D-028), descriptive: haiku X-FORGED-CHECK witnesses who never sent a violation note, the three most frequent D2 reason codes that give a reason not to report (final labels, several per answer; noticed_violation, judged_rule_broken and other are left out, their counts are in the ExpTwoTimingNever...DTwo family; a tie at the third is listed in full, ties in the rubric's code order); rank two: thought_ops_aware
+\newcommand{\wtthExpTwoTimingNeverXForgedCheckDTwoTopTwoK}{22}
+% exploratory (D-028), descriptive: haiku X-FORGED-CHECK witnesses who never sent a violation note, the three most frequent D2 reason codes that give a reason not to report (final labels, several per answer; noticed_violation, judged_rule_broken and other are left out, their counts are in the ExpTwoTimingNever...DTwo family; a tie at the third is listed in full, ties in the rubric's code order); rank two: thought_ops_aware; share of the never-reporters with a D2 label
+\newcommand{\wtthExpTwoTimingNeverXForgedCheckDTwoTopTwoPct}{61.1}
+% exploratory (D-028), descriptive: haiku X-FORGED-CHECK witnesses who never sent a violation note, the three most frequent D2 reason codes that give a reason not to report (final labels, several per answer; noticed_violation, judged_rule_broken and other are left out, their counts are in the ExpTwoTimingNever...DTwo family; a tie at the third is listed in full, ties in the rubric's code order); rank two: thought_ops_aware (reader wording)
+\newcommand{\wtthExpTwoTimingNeverXForgedCheckDTwoTopTwoText}{thought ops was aware}
+% exploratory (D-028), descriptive: haiku X-FORGED-CHECK witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); trusted_claim
+\newcommand{\wtthExpTwoTimingNeverXForgedCheckDTwoTrustedClaimK}{4}
+% exploratory (D-028), descriptive: haiku X-FORGED-CHECK witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); trusted_claim
+\newcommand{\wtthExpTwoTimingNeverXForgedCheckDTwoTrustedClaimPct}{11.1}
+% exploratory (D-028), descriptive: haiku X-FORGED-CHECK witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); unsure_it_was_a_violation
+\newcommand{\wtthExpTwoTimingNeverXForgedCheckDTwoUnsureItWasAViolationK}{0}
+% exploratory (D-028), descriptive: haiku X-FORGED-CHECK witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); unsure_it_was_a_violation
+\newcommand{\wtthExpTwoTimingNeverXForgedCheckDTwoUnsureItWasAViolationPct}{0.0}
+% exploratory (D-028), descriptive: haiku X-FORGED-CONC witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); could_not_verify_reported_anyway
+\newcommand{\wtthExpTwoTimingNeverXForgedConcDTwoCouldNotVerifyReportedAnywayK}{16}
+% exploratory (D-028), descriptive: haiku X-FORGED-CONC witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); could_not_verify_reported_anyway
+\newcommand{\wtthExpTwoTimingNeverXForgedConcDTwoCouldNotVerifyReportedAnywayPct}{34.8}
+% exploratory (D-028), descriptive: haiku X-FORGED-CONC witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); feared_duplicate
+\newcommand{\wtthExpTwoTimingNeverXForgedConcDTwoFearedDuplicateK}{8}
+% exploratory (D-028), descriptive: haiku X-FORGED-CONC witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); feared_duplicate
+\newcommand{\wtthExpTwoTimingNeverXForgedConcDTwoFearedDuplicatePct}{17.4}
+% exploratory (D-028), descriptive: haiku X-FORGED-CONC witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); judged_rule_broken
+\newcommand{\wtthExpTwoTimingNeverXForgedConcDTwoJudgedRuleBrokenK}{44}
+% exploratory (D-028), descriptive: haiku X-FORGED-CONC witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); judged_rule_broken
+\newcommand{\wtthExpTwoTimingNeverXForgedConcDTwoJudgedRuleBrokenPct}{95.7}
+% exploratory (D-028), descriptive: haiku X-FORGED-CONC witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several)
+\newcommand{\wtthExpTwoTimingNeverXForgedConcDTwoN}{46}
+% exploratory (D-028), descriptive: haiku X-FORGED-CONC witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); no_channel_perceived
+\newcommand{\wtthExpTwoTimingNeverXForgedConcDTwoNoChannelPerceivedK}{9}
+% exploratory (D-028), descriptive: haiku X-FORGED-CONC witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); no_channel_perceived
+\newcommand{\wtthExpTwoTimingNeverXForgedConcDTwoNoChannelPerceivedPct}{19.6}
+% exploratory (D-028), descriptive: haiku X-FORGED-CONC witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); not_my_job
+\newcommand{\wtthExpTwoTimingNeverXForgedConcDTwoNotMyJobK}{5}
+% exploratory (D-028), descriptive: haiku X-FORGED-CONC witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); not_my_job
+\newcommand{\wtthExpTwoTimingNeverXForgedConcDTwoNotMyJobPct}{10.9}
+% exploratory (D-028), descriptive: haiku X-FORGED-CONC witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); noticed_violation
+\newcommand{\wtthExpTwoTimingNeverXForgedConcDTwoNoticedViolationK}{46}
+% exploratory (D-028), descriptive: haiku X-FORGED-CONC witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); noticed_violation
+\newcommand{\wtthExpTwoTimingNeverXForgedConcDTwoNoticedViolationPct}{100.0}
+% exploratory (D-028), descriptive: haiku X-FORGED-CONC witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); other
+\newcommand{\wtthExpTwoTimingNeverXForgedConcDTwoOtherK}{14}
+% exploratory (D-028), descriptive: haiku X-FORGED-CONC witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); other
+\newcommand{\wtthExpTwoTimingNeverXForgedConcDTwoOtherPct}{30.4}
+% exploratory (D-028), descriptive: haiku X-FORGED-CONC witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); someone_else_told
+\newcommand{\wtthExpTwoTimingNeverXForgedConcDTwoSomeoneElseToldK}{37}
+% exploratory (D-028), descriptive: haiku X-FORGED-CONC witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); someone_else_told
+\newcommand{\wtthExpTwoTimingNeverXForgedConcDTwoSomeoneElseToldPct}{80.4}
+% exploratory (D-028), descriptive: haiku X-FORGED-CONC witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); thought_ops_aware
+\newcommand{\wtthExpTwoTimingNeverXForgedConcDTwoThoughtOpsAwareK}{17}
+% exploratory (D-028), descriptive: haiku X-FORGED-CONC witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); thought_ops_aware
+\newcommand{\wtthExpTwoTimingNeverXForgedConcDTwoThoughtOpsAwarePct}{37.0}
+% exploratory (D-028), descriptive: haiku X-FORGED-CONC witnesses who never sent a violation note, the three most frequent D2 reason codes that give a reason not to report (final labels, several per answer; noticed_violation, judged_rule_broken and other are left out, their counts are in the ExpTwoTimingNever...DTwo family; a tie at the third is listed in full, ties in the rubric's code order); rank four: could_not_verify_reported_anyway
+\newcommand{\wtthExpTwoTimingNeverXForgedConcDTwoTopFourCode}{could\_not\_verify\_reported\_anyway}
+% exploratory (D-028), descriptive: haiku X-FORGED-CONC witnesses who never sent a violation note, the three most frequent D2 reason codes that give a reason not to report (final labels, several per answer; noticed_violation, judged_rule_broken and other are left out, their counts are in the ExpTwoTimingNever...DTwo family; a tie at the third is listed in full, ties in the rubric's code order); rank four: could_not_verify_reported_anyway
+\newcommand{\wtthExpTwoTimingNeverXForgedConcDTwoTopFourK}{16}
+% exploratory (D-028), descriptive: haiku X-FORGED-CONC witnesses who never sent a violation note, the three most frequent D2 reason codes that give a reason not to report (final labels, several per answer; noticed_violation, judged_rule_broken and other are left out, their counts are in the ExpTwoTimingNever...DTwo family; a tie at the third is listed in full, ties in the rubric's code order); rank four: could_not_verify_reported_anyway; share of the never-reporters with a D2 label
+\newcommand{\wtthExpTwoTimingNeverXForgedConcDTwoTopFourPct}{34.8}
+% exploratory (D-028), descriptive: haiku X-FORGED-CONC witnesses who never sent a violation note, the three most frequent D2 reason codes that give a reason not to report (final labels, several per answer; noticed_violation, judged_rule_broken and other are left out, their counts are in the ExpTwoTimingNever...DTwo family; a tie at the third is listed in full, ties in the rubric's code order); rank four: could_not_verify_reported_anyway (reader wording)
+\newcommand{\wtthExpTwoTimingNeverXForgedConcDTwoTopFourText}{could not verify, reported anyway}
+% exploratory (D-028), descriptive: haiku X-FORGED-CONC witnesses who never sent a violation note, the three most frequent D2 reason codes that give a reason not to report (final labels, several per answer; noticed_violation, judged_rule_broken and other are left out, their counts are in the ExpTwoTimingNever...DTwo family; a tie at the third is listed in full, ties in the rubric's code order); codes listed
+\newcommand{\wtthExpTwoTimingNeverXForgedConcDTwoTopN}{4}
+% exploratory (D-028), descriptive: haiku X-FORGED-CONC witnesses who never sent a violation note, the three most frequent D2 reason codes that give a reason not to report (final labels, several per answer; noticed_violation, judged_rule_broken and other are left out, their counts are in the ExpTwoTimingNever...DTwo family; a tie at the third is listed in full, ties in the rubric's code order); rank one: someone_else_told
+\newcommand{\wtthExpTwoTimingNeverXForgedConcDTwoTopOneCode}{someone\_else\_told}
+% exploratory (D-028), descriptive: haiku X-FORGED-CONC witnesses who never sent a violation note, the three most frequent D2 reason codes that give a reason not to report (final labels, several per answer; noticed_violation, judged_rule_broken and other are left out, their counts are in the ExpTwoTimingNever...DTwo family; a tie at the third is listed in full, ties in the rubric's code order); rank one: someone_else_told
+\newcommand{\wtthExpTwoTimingNeverXForgedConcDTwoTopOneK}{37}
+% exploratory (D-028), descriptive: haiku X-FORGED-CONC witnesses who never sent a violation note, the three most frequent D2 reason codes that give a reason not to report (final labels, several per answer; noticed_violation, judged_rule_broken and other are left out, their counts are in the ExpTwoTimingNever...DTwo family; a tie at the third is listed in full, ties in the rubric's code order); rank one: someone_else_told; share of the never-reporters with a D2 label
+\newcommand{\wtthExpTwoTimingNeverXForgedConcDTwoTopOnePct}{80.4}
+% exploratory (D-028), descriptive: haiku X-FORGED-CONC witnesses who never sent a violation note, the three most frequent D2 reason codes that give a reason not to report (final labels, several per answer; noticed_violation, judged_rule_broken and other are left out, their counts are in the ExpTwoTimingNever...DTwo family; a tie at the third is listed in full, ties in the rubric's code order); rank one: someone_else_told (reader wording)
+\newcommand{\wtthExpTwoTimingNeverXForgedConcDTwoTopOneText}{someone else told ops}
+% exploratory (D-028), descriptive: haiku X-FORGED-CONC witnesses who never sent a violation note, the three most frequent D2 reason codes that give a reason not to report (final labels, several per answer; noticed_violation, judged_rule_broken and other are left out, their counts are in the ExpTwoTimingNever...DTwo family; a tie at the third is listed in full, ties in the rubric's code order); rank three: trusted_claim
+\newcommand{\wtthExpTwoTimingNeverXForgedConcDTwoTopThreeCode}{trusted\_claim}
+% exploratory (D-028), descriptive: haiku X-FORGED-CONC witnesses who never sent a violation note, the three most frequent D2 reason codes that give a reason not to report (final labels, several per answer; noticed_violation, judged_rule_broken and other are left out, their counts are in the ExpTwoTimingNever...DTwo family; a tie at the third is listed in full, ties in the rubric's code order); rank three: trusted_claim
+\newcommand{\wtthExpTwoTimingNeverXForgedConcDTwoTopThreeK}{16}
+% exploratory (D-028), descriptive: haiku X-FORGED-CONC witnesses who never sent a violation note, the three most frequent D2 reason codes that give a reason not to report (final labels, several per answer; noticed_violation, judged_rule_broken and other are left out, their counts are in the ExpTwoTimingNever...DTwo family; a tie at the third is listed in full, ties in the rubric's code order); rank three: trusted_claim; share of the never-reporters with a D2 label
+\newcommand{\wtthExpTwoTimingNeverXForgedConcDTwoTopThreePct}{34.8}
+% exploratory (D-028), descriptive: haiku X-FORGED-CONC witnesses who never sent a violation note, the three most frequent D2 reason codes that give a reason not to report (final labels, several per answer; noticed_violation, judged_rule_broken and other are left out, their counts are in the ExpTwoTimingNever...DTwo family; a tie at the third is listed in full, ties in the rubric's code order); rank three: trusted_claim (reader wording)
+\newcommand{\wtthExpTwoTimingNeverXForgedConcDTwoTopThreeText}{trusted the claim}
+% exploratory (D-028), descriptive: haiku X-FORGED-CONC witnesses who never sent a violation note, the three most frequent D2 reason codes that give a reason not to report (final labels, several per answer; noticed_violation, judged_rule_broken and other are left out, their counts are in the ExpTwoTimingNever...DTwo family; a tie at the third is listed in full, ties in the rubric's code order); rank two: thought_ops_aware
+\newcommand{\wtthExpTwoTimingNeverXForgedConcDTwoTopTwoCode}{thought\_ops\_aware}
+% exploratory (D-028), descriptive: haiku X-FORGED-CONC witnesses who never sent a violation note, the three most frequent D2 reason codes that give a reason not to report (final labels, several per answer; noticed_violation, judged_rule_broken and other are left out, their counts are in the ExpTwoTimingNever...DTwo family; a tie at the third is listed in full, ties in the rubric's code order); rank two: thought_ops_aware
+\newcommand{\wtthExpTwoTimingNeverXForgedConcDTwoTopTwoK}{17}
+% exploratory (D-028), descriptive: haiku X-FORGED-CONC witnesses who never sent a violation note, the three most frequent D2 reason codes that give a reason not to report (final labels, several per answer; noticed_violation, judged_rule_broken and other are left out, their counts are in the ExpTwoTimingNever...DTwo family; a tie at the third is listed in full, ties in the rubric's code order); rank two: thought_ops_aware; share of the never-reporters with a D2 label
+\newcommand{\wtthExpTwoTimingNeverXForgedConcDTwoTopTwoPct}{37.0}
+% exploratory (D-028), descriptive: haiku X-FORGED-CONC witnesses who never sent a violation note, the three most frequent D2 reason codes that give a reason not to report (final labels, several per answer; noticed_violation, judged_rule_broken and other are left out, their counts are in the ExpTwoTimingNever...DTwo family; a tie at the third is listed in full, ties in the rubric's code order); rank two: thought_ops_aware (reader wording)
+\newcommand{\wtthExpTwoTimingNeverXForgedConcDTwoTopTwoText}{thought ops was aware}
+% exploratory (D-028), descriptive: haiku X-FORGED-CONC witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); trusted_claim
+\newcommand{\wtthExpTwoTimingNeverXForgedConcDTwoTrustedClaimK}{16}
+% exploratory (D-028), descriptive: haiku X-FORGED-CONC witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); trusted_claim
+\newcommand{\wtthExpTwoTimingNeverXForgedConcDTwoTrustedClaimPct}{34.8}
+% exploratory (D-028), descriptive: haiku X-FORGED-CONC witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); unsure_it_was_a_violation
+\newcommand{\wtthExpTwoTimingNeverXForgedConcDTwoUnsureItWasAViolationK}{0}
+% exploratory (D-028), descriptive: haiku X-FORGED-CONC witnesses who never sent a violation note, D2 reason codes (final labels; a witness can have several); unsure_it_was_a_violation
+\newcommand{\wtthExpTwoTimingNeverXForgedConcDTwoUnsureItWasAViolationPct}{0.0}
+% exploratory (D-028), descriptive: haiku X-FORGED-CHECK shifts, round of the first witness violation note; first witness note in round 3 or later
+\newcommand{\wtthExpTwoTimingShiftXForgedCheckLateK}{23}
+% exploratory (D-028), descriptive: haiku X-FORGED-CHECK shifts, round of the first witness violation note; first witness note in round 3 or later
+\newcommand{\wtthExpTwoTimingShiftXForgedCheckLatePct}{46.0}
+% exploratory (D-028), descriptive: haiku X-FORGED-CHECK shifts, round of the first witness violation note
+\newcommand{\wtthExpTwoTimingShiftXForgedCheckN}{50}
+% exploratory (D-028), descriptive: haiku X-FORGED-CHECK shifts, round of the first witness violation note; no witness note
+\newcommand{\wtthExpTwoTimingShiftXForgedCheckNeverK}{0}
+% exploratory (D-028), descriptive: haiku X-FORGED-CHECK shifts, round of the first witness violation note; no witness note
+\newcommand{\wtthExpTwoTimingShiftXForgedCheckNeverPct}{0.0}
+% exploratory (D-028), descriptive: haiku X-FORGED-CHECK shifts, round of the first witness violation note
+\newcommand{\wtthExpTwoTimingShiftXForgedCheckRoundFiveK}{0}
+% exploratory (D-028), descriptive: haiku X-FORGED-CHECK shifts, round of the first witness violation note
+\newcommand{\wtthExpTwoTimingShiftXForgedCheckRoundFivePct}{0.0}
+% exploratory (D-028), descriptive: haiku X-FORGED-CHECK shifts, round of the first witness violation note
+\newcommand{\wtthExpTwoTimingShiftXForgedCheckRoundFourK}{0}
+% exploratory (D-028), descriptive: haiku X-FORGED-CHECK shifts, round of the first witness violation note
+\newcommand{\wtthExpTwoTimingShiftXForgedCheckRoundFourPct}{0.0}
+% exploratory (D-028), descriptive: haiku X-FORGED-CHECK shifts, round of the first witness violation note
+\newcommand{\wtthExpTwoTimingShiftXForgedCheckRoundOneK}{0}
+% exploratory (D-028), descriptive: haiku X-FORGED-CHECK shifts, round of the first witness violation note
+\newcommand{\wtthExpTwoTimingShiftXForgedCheckRoundOnePct}{0.0}
+% exploratory (D-028), descriptive: haiku X-FORGED-CHECK shifts, round of the first witness violation note
+\newcommand{\wtthExpTwoTimingShiftXForgedCheckRoundThreeK}{23}
+% exploratory (D-028), descriptive: haiku X-FORGED-CHECK shifts, round of the first witness violation note
+\newcommand{\wtthExpTwoTimingShiftXForgedCheckRoundThreePct}{46.0}
+% exploratory (D-028), descriptive: haiku X-FORGED-CHECK shifts, round of the first witness violation note
+\newcommand{\wtthExpTwoTimingShiftXForgedCheckRoundTwoK}{27}
+% exploratory (D-028), descriptive: haiku X-FORGED-CHECK shifts, round of the first witness violation note
+\newcommand{\wtthExpTwoTimingShiftXForgedCheckRoundTwoPct}{54.0}
+% exploratory (D-028), descriptive: haiku X-FORGED-CONC shifts, round of the first witness violation note; first witness note in round 3 or later
+\newcommand{\wtthExpTwoTimingShiftXForgedConcLateK}{13}
+% exploratory (D-028), descriptive: haiku X-FORGED-CONC shifts, round of the first witness violation note; first witness note in round 3 or later
+\newcommand{\wtthExpTwoTimingShiftXForgedConcLatePct}{26.0}
+% exploratory (D-028), descriptive: haiku X-FORGED-CONC shifts, round of the first witness violation note
+\newcommand{\wtthExpTwoTimingShiftXForgedConcN}{50}
+% exploratory (D-028), descriptive: haiku X-FORGED-CONC shifts, round of the first witness violation note; no witness note
+\newcommand{\wtthExpTwoTimingShiftXForgedConcNeverK}{4}
+% exploratory (D-028), descriptive: haiku X-FORGED-CONC shifts, round of the first witness violation note; no witness note
+\newcommand{\wtthExpTwoTimingShiftXForgedConcNeverPct}{8.0}
+% exploratory (D-028), descriptive: haiku X-FORGED-CONC shifts, round of the first witness violation note
+\newcommand{\wtthExpTwoTimingShiftXForgedConcRoundFiveK}{0}
+% exploratory (D-028), descriptive: haiku X-FORGED-CONC shifts, round of the first witness violation note
+\newcommand{\wtthExpTwoTimingShiftXForgedConcRoundFivePct}{0.0}
+% exploratory (D-028), descriptive: haiku X-FORGED-CONC shifts, round of the first witness violation note
+\newcommand{\wtthExpTwoTimingShiftXForgedConcRoundFourK}{0}
+% exploratory (D-028), descriptive: haiku X-FORGED-CONC shifts, round of the first witness violation note
+\newcommand{\wtthExpTwoTimingShiftXForgedConcRoundFourPct}{0.0}
+% exploratory (D-028), descriptive: haiku X-FORGED-CONC shifts, round of the first witness violation note
+\newcommand{\wtthExpTwoTimingShiftXForgedConcRoundOneK}{0}
+% exploratory (D-028), descriptive: haiku X-FORGED-CONC shifts, round of the first witness violation note
+\newcommand{\wtthExpTwoTimingShiftXForgedConcRoundOnePct}{0.0}
+% exploratory (D-028), descriptive: haiku X-FORGED-CONC shifts, round of the first witness violation note
+\newcommand{\wtthExpTwoTimingShiftXForgedConcRoundThreeK}{13}
+% exploratory (D-028), descriptive: haiku X-FORGED-CONC shifts, round of the first witness violation note
+\newcommand{\wtthExpTwoTimingShiftXForgedConcRoundThreePct}{26.0}
+% exploratory (D-028), descriptive: haiku X-FORGED-CONC shifts, round of the first witness violation note
+\newcommand{\wtthExpTwoTimingShiftXForgedConcRoundTwoK}{33}
+% exploratory (D-028), descriptive: haiku X-FORGED-CONC shifts, round of the first witness violation note
+\newcommand{\wtthExpTwoTimingShiftXForgedConcRoundTwoPct}{66.0}
+% exploratory (D-028), descriptive: haiku X-FORGED-CHECK witnesses, round of the first violation note (P1 definition); ByRoundTwo
+\newcommand{\wtthExpTwoTimingXForgedCheckByRoundTwoK}{52}
+% exploratory (D-028), descriptive: haiku X-FORGED-CHECK witnesses, round of the first violation note (P1 definition); ByRoundTwo, share of the cell's witnesses
+\newcommand{\wtthExpTwoTimingXForgedCheckByRoundTwoPct}{34.7}
+% exploratory (D-028), descriptive: haiku X-FORGED-CHECK witnesses, round of the first violation note (P1 definition); HeldOff
+\newcommand{\wtthExpTwoTimingXForgedCheckHeldOffK}{98}
+% exploratory (D-028), descriptive: haiku X-FORGED-CHECK witnesses, round of the first violation note (P1 definition); held off (no violation note by the end of round 2), and a peer's line (another witness or C) in the #escalation-log of the round-3 digest
+\newcommand{\wtthExpTwoTimingXForgedCheckHeldOffNoPeerK}{67}
+% exploratory (D-028), descriptive: haiku X-FORGED-CHECK witnesses, round of the first violation note (P1 definition); held off (no violation note by the end of round 2), and a peer's line (another witness or C) in the #escalation-log of the round-3 digest
+\newcommand{\wtthExpTwoTimingXForgedCheckHeldOffNoPeerNeverK}{20}
+% exploratory (D-028), descriptive: haiku X-FORGED-CHECK witnesses, round of the first violation note (P1 definition); held off (no violation note by the end of round 2), and a peer's line (another witness or C) in the #escalation-log of the round-3 digest
+\newcommand{\wtthExpTwoTimingXForgedCheckHeldOffNoPeerReportedK}{47}
+% exploratory (D-028), descriptive: haiku X-FORGED-CHECK witnesses, round of the first violation note (P1 definition); HeldOff, share of the cell's witnesses
+\newcommand{\wtthExpTwoTimingXForgedCheckHeldOffPct}{65.3}
+% exploratory (D-028), descriptive: haiku X-FORGED-CHECK witnesses, round of the first violation note (P1 definition); held off (no violation note by the end of round 2), and a peer's line (another witness or C) in the #escalation-log of the round-3 digest
+\newcommand{\wtthExpTwoTimingXForgedCheckHeldOffPeerK}{31}
+% exploratory (D-028), descriptive: haiku X-FORGED-CHECK witnesses, round of the first violation note (P1 definition); held off (no violation note by the end of round 2), and a peer's line (another witness or C) in the #escalation-log of the round-3 digest
+\newcommand{\wtthExpTwoTimingXForgedCheckHeldOffPeerNeverK}{16}
+% exploratory (D-028), descriptive: haiku X-FORGED-CHECK witnesses, round of the first violation note (P1 definition); held off (no violation note by the end of round 2), and a peer's line (another witness or C) in the #escalation-log of the round-3 digest
+\newcommand{\wtthExpTwoTimingXForgedCheckHeldOffPeerPct}{31.6}
+% exploratory (D-028), descriptive: haiku X-FORGED-CHECK witnesses, round of the first violation note (P1 definition); held off (no violation note by the end of round 2), and a peer's line (another witness or C) in the #escalation-log of the round-3 digest
+\newcommand{\wtthExpTwoTimingXForgedCheckHeldOffPeerReportedK}{15}
+% exploratory (D-028), descriptive: haiku X-FORGED-CHECK witnesses, round of the first violation note (P1 definition); HeldOffReported
+\newcommand{\wtthExpTwoTimingXForgedCheckHeldOffReportedK}{62}
+% exploratory (D-028), descriptive: haiku X-FORGED-CHECK witnesses, round of the first violation note (P1 definition); HeldOffReported, share of the cell's witnesses
+\newcommand{\wtthExpTwoTimingXForgedCheckHeldOffReportedPct}{41.3}
+% exploratory (D-028), descriptive: haiku X-FORGED-CHECK witnesses, round of the first violation note (P1 definition); witnesses with no violation note by the end of round 2 who reported later
+\newcommand{\wtthExpTwoTimingXForgedCheckLaterOfHeldOffPct}{63.3}
+% exploratory (D-028), descriptive: haiku X-FORGED-CHECK witnesses, round of the first violation note (P1 definition); the cell shows #escalation-log
+\newcommand{\wtthExpTwoTimingXForgedCheckLog}{yes}
+% exploratory (D-028), descriptive: haiku X-FORGED-CHECK witnesses, round of the first violation note (P1 definition)
+\newcommand{\wtthExpTwoTimingXForgedCheckN}{150}
+% exploratory (D-028), descriptive: haiku X-FORGED-CHECK witnesses, round of the first violation note (P1 definition); Never
+\newcommand{\wtthExpTwoTimingXForgedCheckNeverK}{36}
+% exploratory (D-028), descriptive: haiku X-FORGED-CHECK witnesses, round of the first violation note (P1 definition); Never, share of the cell's witnesses
+\newcommand{\wtthExpTwoTimingXForgedCheckNeverPct}{24.0}
+% exploratory (D-028), descriptive: haiku X-FORGED-CHECK witnesses, round of the first violation note (P1 definition); held off (no violation note by the end of round 2), and a peer's line (another witness or C) in the #escalation-log of the round-3 digest; share of the never-reporters
+\newcommand{\wtthExpTwoTimingXForgedCheckNeverPeerPct}{44.4}
+% exploratory (D-028), descriptive: haiku X-FORGED-CHECK witnesses, round of the first violation note (P1 definition); held off (no violation note by the end of round 2), and a peer's line (another witness or C) in the #escalation-log of the round-3 digest; of those, the recorded log lines agree with the visibility rule
+\newcommand{\wtthExpTwoTimingXForgedCheckRecordedAgree}{98}
+% exploratory (D-028), descriptive: haiku X-FORGED-CHECK witnesses, round of the first violation note (P1 definition); held off (no violation note by the end of round 2), and a peer's line (another witness or C) in the #escalation-log of the round-3 digest; held-off witnesses whose recorded round-3 prompt (exposures) was read
+\newcommand{\wtthExpTwoTimingXForgedCheckRecordedChecked}{98}
+% exploratory (D-028), descriptive: haiku X-FORGED-CHECK witnesses, round of the first violation note (P1 definition)
+\newcommand{\wtthExpTwoTimingXForgedCheckRoundFiveK}{0}
+% exploratory (D-028), descriptive: haiku X-FORGED-CHECK witnesses, round of the first violation note (P1 definition)
+\newcommand{\wtthExpTwoTimingXForgedCheckRoundFivePct}{0.0}
+% exploratory (D-028), descriptive: haiku X-FORGED-CHECK witnesses, round of the first violation note (P1 definition)
+\newcommand{\wtthExpTwoTimingXForgedCheckRoundFourK}{1}
+% exploratory (D-028), descriptive: haiku X-FORGED-CHECK witnesses, round of the first violation note (P1 definition)
+\newcommand{\wtthExpTwoTimingXForgedCheckRoundFourPct}{0.7}
+% exploratory (D-028), descriptive: haiku X-FORGED-CHECK witnesses, round of the first violation note (P1 definition)
+\newcommand{\wtthExpTwoTimingXForgedCheckRoundOneK}{0}
+% exploratory (D-028), descriptive: haiku X-FORGED-CHECK witnesses, round of the first violation note (P1 definition)
+\newcommand{\wtthExpTwoTimingXForgedCheckRoundOnePct}{0.0}
+% exploratory (D-028), descriptive: haiku X-FORGED-CHECK witnesses, round of the first violation note (P1 definition)
+\newcommand{\wtthExpTwoTimingXForgedCheckRoundThreeK}{61}
+% exploratory (D-028), descriptive: haiku X-FORGED-CHECK witnesses, round of the first violation note (P1 definition)
+\newcommand{\wtthExpTwoTimingXForgedCheckRoundThreePct}{40.7}
+% exploratory (D-028), descriptive: haiku X-FORGED-CHECK witnesses, round of the first violation note (P1 definition)
+\newcommand{\wtthExpTwoTimingXForgedCheckRoundTwoK}{52}
+% exploratory (D-028), descriptive: haiku X-FORGED-CHECK witnesses, round of the first violation note (P1 definition)
+\newcommand{\wtthExpTwoTimingXForgedCheckRoundTwoPct}{34.7}
+% exploratory (D-028), descriptive: haiku X-FORGED-CONC witnesses, round of the first violation note (P1 definition); ByRoundTwo
+\newcommand{\wtthExpTwoTimingXForgedConcByRoundTwoK}{67}
+% exploratory (D-028), descriptive: haiku X-FORGED-CONC witnesses, round of the first violation note (P1 definition); ByRoundTwo, share of the cell's witnesses
+\newcommand{\wtthExpTwoTimingXForgedConcByRoundTwoPct}{44.7}
+% exploratory (D-028), descriptive: haiku X-FORGED-CONC witnesses, round of the first violation note (P1 definition); HeldOff
+\newcommand{\wtthExpTwoTimingXForgedConcHeldOffK}{83}
+% exploratory (D-028), descriptive: haiku X-FORGED-CONC witnesses, round of the first violation note (P1 definition); held off (no violation note by the end of round 2), and a peer's line (another witness or C) in the #escalation-log of the round-3 digest
+\newcommand{\wtthExpTwoTimingXForgedConcHeldOffNoPeerK}{51}
+% exploratory (D-028), descriptive: haiku X-FORGED-CONC witnesses, round of the first violation note (P1 definition); held off (no violation note by the end of round 2), and a peer's line (another witness or C) in the #escalation-log of the round-3 digest
+\newcommand{\wtthExpTwoTimingXForgedConcHeldOffNoPeerNeverK}{28}
+% exploratory (D-028), descriptive: haiku X-FORGED-CONC witnesses, round of the first violation note (P1 definition); held off (no violation note by the end of round 2), and a peer's line (another witness or C) in the #escalation-log of the round-3 digest
+\newcommand{\wtthExpTwoTimingXForgedConcHeldOffNoPeerReportedK}{23}
+% exploratory (D-028), descriptive: haiku X-FORGED-CONC witnesses, round of the first violation note (P1 definition); HeldOff, share of the cell's witnesses
+\newcommand{\wtthExpTwoTimingXForgedConcHeldOffPct}{55.3}
+% exploratory (D-028), descriptive: haiku X-FORGED-CONC witnesses, round of the first violation note (P1 definition); held off (no violation note by the end of round 2), and a peer's line (another witness or C) in the #escalation-log of the round-3 digest
+\newcommand{\wtthExpTwoTimingXForgedConcHeldOffPeerK}{32}
+% exploratory (D-028), descriptive: haiku X-FORGED-CONC witnesses, round of the first violation note (P1 definition); held off (no violation note by the end of round 2), and a peer's line (another witness or C) in the #escalation-log of the round-3 digest
+\newcommand{\wtthExpTwoTimingXForgedConcHeldOffPeerNeverK}{18}
+% exploratory (D-028), descriptive: haiku X-FORGED-CONC witnesses, round of the first violation note (P1 definition); held off (no violation note by the end of round 2), and a peer's line (another witness or C) in the #escalation-log of the round-3 digest
+\newcommand{\wtthExpTwoTimingXForgedConcHeldOffPeerPct}{38.6}
+% exploratory (D-028), descriptive: haiku X-FORGED-CONC witnesses, round of the first violation note (P1 definition); held off (no violation note by the end of round 2), and a peer's line (another witness or C) in the #escalation-log of the round-3 digest
+\newcommand{\wtthExpTwoTimingXForgedConcHeldOffPeerReportedK}{14}
+% exploratory (D-028), descriptive: haiku X-FORGED-CONC witnesses, round of the first violation note (P1 definition); HeldOffReported
+\newcommand{\wtthExpTwoTimingXForgedConcHeldOffReportedK}{37}
+% exploratory (D-028), descriptive: haiku X-FORGED-CONC witnesses, round of the first violation note (P1 definition); HeldOffReported, share of the cell's witnesses
+\newcommand{\wtthExpTwoTimingXForgedConcHeldOffReportedPct}{24.7}
+% exploratory (D-028), descriptive: haiku X-FORGED-CONC witnesses, round of the first violation note (P1 definition); witnesses with no violation note by the end of round 2 who reported later
+\newcommand{\wtthExpTwoTimingXForgedConcLaterOfHeldOffPct}{44.6}
+% exploratory (D-028), descriptive: haiku X-FORGED-CONC witnesses, round of the first violation note (P1 definition); the cell shows #escalation-log
+\newcommand{\wtthExpTwoTimingXForgedConcLog}{yes}
+% exploratory (D-028), descriptive: haiku X-FORGED-CONC witnesses, round of the first violation note (P1 definition)
+\newcommand{\wtthExpTwoTimingXForgedConcN}{150}
+% exploratory (D-028), descriptive: haiku X-FORGED-CONC witnesses, round of the first violation note (P1 definition); Never
+\newcommand{\wtthExpTwoTimingXForgedConcNeverK}{46}
+% exploratory (D-028), descriptive: haiku X-FORGED-CONC witnesses, round of the first violation note (P1 definition); Never, share of the cell's witnesses
+\newcommand{\wtthExpTwoTimingXForgedConcNeverPct}{30.7}
+% exploratory (D-028), descriptive: haiku X-FORGED-CONC witnesses, round of the first violation note (P1 definition); held off (no violation note by the end of round 2), and a peer's line (another witness or C) in the #escalation-log of the round-3 digest; share of the never-reporters
+\newcommand{\wtthExpTwoTimingXForgedConcNeverPeerPct}{39.1}
+% exploratory (D-028), descriptive: haiku X-FORGED-CONC witnesses, round of the first violation note (P1 definition); held off (no violation note by the end of round 2), and a peer's line (another witness or C) in the #escalation-log of the round-3 digest; of those, the recorded log lines agree with the visibility rule
+\newcommand{\wtthExpTwoTimingXForgedConcRecordedAgree}{83}
+% exploratory (D-028), descriptive: haiku X-FORGED-CONC witnesses, round of the first violation note (P1 definition); held off (no violation note by the end of round 2), and a peer's line (another witness or C) in the #escalation-log of the round-3 digest; held-off witnesses whose recorded round-3 prompt (exposures) was read
+\newcommand{\wtthExpTwoTimingXForgedConcRecordedChecked}{83}
+% exploratory (D-028), descriptive: haiku X-FORGED-CONC witnesses, round of the first violation note (P1 definition)
+\newcommand{\wtthExpTwoTimingXForgedConcRoundFiveK}{0}
+% exploratory (D-028), descriptive: haiku X-FORGED-CONC witnesses, round of the first violation note (P1 definition)
+\newcommand{\wtthExpTwoTimingXForgedConcRoundFivePct}{0.0}
+% exploratory (D-028), descriptive: haiku X-FORGED-CONC witnesses, round of the first violation note (P1 definition)
+\newcommand{\wtthExpTwoTimingXForgedConcRoundFourK}{0}
+% exploratory (D-028), descriptive: haiku X-FORGED-CONC witnesses, round of the first violation note (P1 definition)
+\newcommand{\wtthExpTwoTimingXForgedConcRoundFourPct}{0.0}
+% exploratory (D-028), descriptive: haiku X-FORGED-CONC witnesses, round of the first violation note (P1 definition)
+\newcommand{\wtthExpTwoTimingXForgedConcRoundOneK}{0}
+% exploratory (D-028), descriptive: haiku X-FORGED-CONC witnesses, round of the first violation note (P1 definition)
+\newcommand{\wtthExpTwoTimingXForgedConcRoundOnePct}{0.0}
+% exploratory (D-028), descriptive: haiku X-FORGED-CONC witnesses, round of the first violation note (P1 definition)
+\newcommand{\wtthExpTwoTimingXForgedConcRoundThreeK}{37}
+% exploratory (D-028), descriptive: haiku X-FORGED-CONC witnesses, round of the first violation note (P1 definition)
+\newcommand{\wtthExpTwoTimingXForgedConcRoundThreePct}{24.7}
+% exploratory (D-028), descriptive: haiku X-FORGED-CONC witnesses, round of the first violation note (P1 definition)
+\newcommand{\wtthExpTwoTimingXForgedConcRoundTwoK}{67}
+% exploratory (D-028), descriptive: haiku X-FORGED-CONC witnesses, round of the first violation note (P1 definition)
+\newcommand{\wtthExpTwoTimingXForgedConcRoundTwoPct}{44.7}
+% exploratory (D-028): X-FORGED-CHECK shifts, Haiku, phase exp2
+\newcommand{\wtthExpTwoXForgedCheckEps}{50}
+% haiku X-FORGED-CHECK p1 (wilson); exploratory (D-028), phase exp2, witness-level Wilson
+\newcommand{\wtthExpTwoXForgedCheckPOneCI}{68.6 to 82.1}
+% post hoc (D-021/D-024): exploratory (D-028) follow-up 2 cell X-FORGED-CHECK: haiku X-FORGED-CHECK P1 114/150 (50 shifts), shift-level cluster-bootstrap percentile 95% interval (episodes resampled within the cell), stream posthoc (Fig. 1a)
+\newcommand{\wtthExpTwoXForgedCheckPOneClusterCI}{70.0 to 82.0}
+% post hoc (D-021/D-024): exploratory (D-028) follow-up 2 cell X-FORGED-CHECK: haiku X-FORGED-CHECK P1 114/150 (50 shifts), shift-level cluster-bootstrap percentile 95% interval (episodes resampled within the cell), stream posthoc (Fig. 1a)
+\newcommand{\wtthExpTwoXForgedCheckPOneClusterHi}{82.0}
+% post hoc (D-021/D-024): exploratory (D-028) follow-up 2 cell X-FORGED-CHECK: haiku X-FORGED-CHECK P1 114/150 (50 shifts), shift-level cluster-bootstrap percentile 95% interval (episodes resampled within the cell), stream posthoc (Fig. 1a)
+\newcommand{\wtthExpTwoXForgedCheckPOneClusterLo}{70.0}
+% haiku X-FORGED-CHECK p1 (wilson); exploratory (D-028), phase exp2, witness-level Wilson | share of units with a known label
+\newcommand{\wtthExpTwoXForgedCheckPOneCov}{100.0}
+% haiku X-FORGED-CHECK p1 (wilson); exploratory (D-028), phase exp2, witness-level Wilson
+\newcommand{\wtthExpTwoXForgedCheckPOneEps}{50}
+% haiku X-FORGED-CHECK p1 (wilson); exploratory (D-028), phase exp2, witness-level Wilson
+\newcommand{\wtthExpTwoXForgedCheckPOneHi}{82.1}
+% haiku X-FORGED-CHECK p1 (wilson); exploratory (D-028), phase exp2, witness-level Wilson
+\newcommand{\wtthExpTwoXForgedCheckPOneK}{114}
+% haiku X-FORGED-CHECK p1 (wilson); exploratory (D-028), phase exp2, witness-level Wilson
+\newcommand{\wtthExpTwoXForgedCheckPOneLo}{68.6}
+% haiku X-FORGED-CHECK p1 (wilson); exploratory (D-028), phase exp2, witness-level Wilson
+\newcommand{\wtthExpTwoXForgedCheckPOneN}{150}
+% haiku X-FORGED-CHECK p1 (wilson); exploratory (D-028), phase exp2, witness-level Wilson
+\newcommand{\wtthExpTwoXForgedCheckPOnePct}{76.0}
+% exploratory (D-028): haiku X-FORGED-CHECK P2, shifts in which no witness sent ops a violation note (shift level, Wilson), phase exp2
+\newcommand{\wtthExpTwoXForgedCheckPTwoCI}{0.0 to 7.1}
+% exploratory (D-028): haiku X-FORGED-CHECK P2, shifts in which no witness sent ops a violation note (0/50); P2 is a shift-level outcome, so the shift-level bootstrap resamples the shifts of the cell: percentile 95% interval, B=10000, stream exp2; every resample is the same, so the interval is a single point
+\newcommand{\wtthExpTwoXForgedCheckPTwoClusterCI}{0.0 to 0.0}
+% exploratory (D-028): haiku X-FORGED-CHECK P2, shifts in which no witness sent ops a violation note (0/50); P2 is a shift-level outcome, so the shift-level bootstrap resamples the shifts of the cell: percentile 95% interval, B=10000, stream exp2; every resample is the same, so the interval is a single point
+\newcommand{\wtthExpTwoXForgedCheckPTwoClusterHi}{0.0}
+% exploratory (D-028): haiku X-FORGED-CHECK P2, shifts in which no witness sent ops a violation note (0/50); P2 is a shift-level outcome, so the shift-level bootstrap resamples the shifts of the cell: percentile 95% interval, B=10000, stream exp2; every resample is the same, so the interval is a single point
+\newcommand{\wtthExpTwoXForgedCheckPTwoClusterLo}{0.0}
+% exploratory (D-028): haiku X-FORGED-CHECK P2, shifts in which no witness sent ops a violation note (shift level, Wilson), phase exp2
+\newcommand{\wtthExpTwoXForgedCheckPTwoHi}{7.1}
+% exploratory (D-028): haiku X-FORGED-CHECK P2, shifts in which no witness sent ops a violation note (shift level, Wilson), phase exp2
+\newcommand{\wtthExpTwoXForgedCheckPTwoK}{0}
+% exploratory (D-028): haiku X-FORGED-CHECK P2, shifts in which no witness sent ops a violation note (shift level, Wilson), phase exp2
+\newcommand{\wtthExpTwoXForgedCheckPTwoLo}{0.0}
+% exploratory (D-028): haiku X-FORGED-CHECK P2, shifts in which no witness sent ops a violation note (shift level, Wilson), phase exp2
+\newcommand{\wtthExpTwoXForgedCheckPTwoN}{50}
+% exploratory (D-028): haiku X-FORGED-CHECK P2, shifts in which no witness sent ops a violation note (shift level, Wilson), phase exp2
+\newcommand{\wtthExpTwoXForgedCheckPTwoPct}{0.0}
+% exploratory (D-028): X-FORGED-CONC shifts, Haiku, phase exp2
+\newcommand{\wtthExpTwoXForgedConcEps}{50}
+% haiku X-FORGED-CONC p1 (wilson); exploratory (D-028), phase exp2, witness-level Wilson
+\newcommand{\wtthExpTwoXForgedConcPOneCI}{61.5 to 76.2}
+% post hoc (D-021/D-024): exploratory (D-028) follow-up 2 cell X-FORGED-CONC: haiku X-FORGED-CONC P1 104/150 (50 shifts), shift-level cluster-bootstrap percentile 95% interval (episodes resampled within the cell), stream posthoc (Fig. 1a)
+\newcommand{\wtthExpTwoXForgedConcPOneClusterCI}{60.0 to 78.0}
+% post hoc (D-021/D-024): exploratory (D-028) follow-up 2 cell X-FORGED-CONC: haiku X-FORGED-CONC P1 104/150 (50 shifts), shift-level cluster-bootstrap percentile 95% interval (episodes resampled within the cell), stream posthoc (Fig. 1a)
+\newcommand{\wtthExpTwoXForgedConcPOneClusterHi}{78.0}
+% post hoc (D-021/D-024): exploratory (D-028) follow-up 2 cell X-FORGED-CONC: haiku X-FORGED-CONC P1 104/150 (50 shifts), shift-level cluster-bootstrap percentile 95% interval (episodes resampled within the cell), stream posthoc (Fig. 1a)
+\newcommand{\wtthExpTwoXForgedConcPOneClusterLo}{60.0}
+% haiku X-FORGED-CONC p1 (wilson); exploratory (D-028), phase exp2, witness-level Wilson | share of units with a known label
+\newcommand{\wtthExpTwoXForgedConcPOneCov}{100.0}
+% haiku X-FORGED-CONC p1 (wilson); exploratory (D-028), phase exp2, witness-level Wilson
+\newcommand{\wtthExpTwoXForgedConcPOneEps}{50}
+% haiku X-FORGED-CONC p1 (wilson); exploratory (D-028), phase exp2, witness-level Wilson
+\newcommand{\wtthExpTwoXForgedConcPOneHi}{76.2}
+% haiku X-FORGED-CONC p1 (wilson); exploratory (D-028), phase exp2, witness-level Wilson
+\newcommand{\wtthExpTwoXForgedConcPOneK}{104}
+% haiku X-FORGED-CONC p1 (wilson); exploratory (D-028), phase exp2, witness-level Wilson
+\newcommand{\wtthExpTwoXForgedConcPOneLo}{61.5}
+% haiku X-FORGED-CONC p1 (wilson); exploratory (D-028), phase exp2, witness-level Wilson
+\newcommand{\wtthExpTwoXForgedConcPOneN}{150}
+% haiku X-FORGED-CONC p1 (wilson); exploratory (D-028), phase exp2, witness-level Wilson
+\newcommand{\wtthExpTwoXForgedConcPOnePct}{69.3}
+% exploratory (D-028): haiku X-FORGED-CONC P2, shifts in which no witness sent ops a violation note (shift level, Wilson), phase exp2
+\newcommand{\wtthExpTwoXForgedConcPTwoCI}{3.2 to 18.8}
+% exploratory (D-028): haiku X-FORGED-CONC P2, shifts in which no witness sent ops a violation note (4/50); P2 is a shift-level outcome, so the shift-level bootstrap resamples the shifts of the cell: percentile 95% interval, B=10000, stream exp2
+\newcommand{\wtthExpTwoXForgedConcPTwoClusterCI}{2.0 to 16.0}
+% exploratory (D-028): haiku X-FORGED-CONC P2, shifts in which no witness sent ops a violation note (4/50); P2 is a shift-level outcome, so the shift-level bootstrap resamples the shifts of the cell: percentile 95% interval, B=10000, stream exp2
+\newcommand{\wtthExpTwoXForgedConcPTwoClusterHi}{16.0}
+% exploratory (D-028): haiku X-FORGED-CONC P2, shifts in which no witness sent ops a violation note (4/50); P2 is a shift-level outcome, so the shift-level bootstrap resamples the shifts of the cell: percentile 95% interval, B=10000, stream exp2
+\newcommand{\wtthExpTwoXForgedConcPTwoClusterLo}{2.0}
+% exploratory (D-028): haiku X-FORGED-CONC P2, shifts in which no witness sent ops a violation note (shift level, Wilson), phase exp2
+\newcommand{\wtthExpTwoXForgedConcPTwoHi}{18.8}
+% exploratory (D-028): haiku X-FORGED-CONC P2, shifts in which no witness sent ops a violation note (shift level, Wilson), phase exp2
+\newcommand{\wtthExpTwoXForgedConcPTwoK}{4}
+% exploratory (D-028): haiku X-FORGED-CONC P2, shifts in which no witness sent ops a violation note (shift level, Wilson), phase exp2
+\newcommand{\wtthExpTwoXForgedConcPTwoLo}{3.2}
+% exploratory (D-028): haiku X-FORGED-CONC P2, shifts in which no witness sent ops a violation note (shift level, Wilson), phase exp2
+\newcommand{\wtthExpTwoXForgedConcPTwoN}{50}
+% exploratory (D-028): haiku X-FORGED-CONC P2, shifts in which no witness sent ops a violation note (shift level, Wilson), phase exp2
+\newcommand{\wtthExpTwoXForgedConcPTwoPct}{8.0}
+% descriptive: Fig. 1a intervals: methods ['cluster_bootstrap'] over its 21 plotted rows; bootstrap replicates per interval
 \newcommand{\wtthFigOneAIntervalB}{10{,}000}
-% descriptive: Fig. 1a intervals: methods ['cluster_bootstrap'] over its 19 plotted rows
+% descriptive: Fig. 1a intervals: methods ['cluster_bootstrap'] over its 21 plotted rows
 \newcommand{\wtthFigOneAIntervalMethod}{shift-level cluster bootstrap}
-% descriptive: Fig. 1a intervals: methods ['cluster_bootstrap'] over its 19 plotted rows; rows whose interval is a single point (every witness, or none, reported: every resample is the same)
+% descriptive: Fig. 1a intervals: methods ['cluster_bootstrap'] over its 21 plotted rows; rows whose interval is a single point (every witness, or none, reported: every resample is the same)
 \newcommand{\wtthFigOneAPointRowsK}{9}
-% descriptive: Fig. 1a intervals: methods ['cluster_bootstrap'] over its 19 plotted rows; plotted rows (model and cell)
-\newcommand{\wtthFigOneARowsN}{19}
-% descriptive: Fig. 1a intervals: methods ['cluster_bootstrap'] over its 19 plotted rows; rows still drawn with a witness-level Wilson interval
+% descriptive: Fig. 1a intervals: methods ['cluster_bootstrap'] over its 21 plotted rows; plotted rows (model and cell)
+\newcommand{\wtthFigOneARowsN}{21}
+% descriptive: Fig. 1a intervals: methods ['cluster_bootstrap'] over its 21 plotted rows; rows still drawn with a witness-level Wilson interval
 \newcommand{\wtthFigOneAWilsonRowsK}{0}
 % gate_log G0/G1/G2 decisions PASS/CEILING/PASS
 \newcommand{\wtthGateDecision}{GO-CEIL}
@@ -11468,10 +12220,10 @@
 \newcommand{\wtthReviewReviewed}{212}
 % AI-audited, author-approved review
 \newcommand{\wtthReviewShare}{2.5}
-% snapshot 8bb9cb83df28
+% snapshot 5cbfa1f6dcf7
 \newcommand{\wtthSnapshotEpisodes}{820}
 % SHA-256 of the analysis snapshot, first 12 hex
-\newcommand{\wtthSnapshotShaShort}{8bb9cb83df28}
+\newcommand{\wtthSnapshotShaShort}{5cbfa1f6dcf7}
 % P1(NONE) >= 85%
 \newcommand{\wtthSonnetCeiling}{yes}
 % p2:NO-RECEIPT-FORGED
@@ -11887,9 +12639,9 @@
 % sub-tier J2h judged fraction (D-011 F-02)
 \newcommand{\wtthSubtierCovJTwohPct}{99.9}
 % descriptive: every turn of the main database (all phases: pilots, core, Sonnet, follow-up, probes)
-\newcommand{\wtthTurnIntegrityAllN}{21{,}542}
+\newcommand{\wtthTurnIntegrityAllN}{23{,}685}
 % descriptive: every turn of the main database (all phases: pilots, core, Sonnet, follow-up, probes); turns classed ok
-\newcommand{\wtthTurnIntegrityOkN}{21{,}506}
+\newcommand{\wtthTurnIntegrityOkN}{23{,}648}
 % descriptive: every turn of the main database (all phases: pilots, core, Sonnet, follow-up, probes); ok turns with no modelUsage record
 \newcommand{\wtthTurnIntegrityOkNoUsageK}{0}
 % descriptive: every turn of the main database (all phases: pilots, core, Sonnet, follow-up, probes); ok turns whose result modelUsage names a model other than the one requested
