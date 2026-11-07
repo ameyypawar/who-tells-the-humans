@@ -4,6 +4,11 @@ Launch: python -I -m wtth.mcp_server --runs-root <abs runs dir>   (WTTH_* env, s
 Startup order (research/41 section 2.3.5): secret-env check, identity_from_env, tools.yaml check, Db open +
 schema check, one server_starts row (env var NAMES only), run (stdio). Any startup failure: one stderr line,
 a fault line when WTTH_FAULT_DIR/WTTH_TURN_ID allow it, exit code 2 before the handshake.
+
+D-028: a receipts cell's server also gets WTTH_OO_CONFIG (the path of the store's credentials file),
+WTTH_OO_URL and WTTH_OO_STREAM (all three or none; none of the names is credential-like). It then opens the receipts
+store for its shift (wtth.receipts) and reads it once before the handshake; a toolset with a dynamic-reply tool
+(lookup_escalation) refuses to start without it.
 """
 from __future__ import annotations
 
@@ -18,10 +23,11 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from mcp.server.fastmcp import FastMCP
-from mcp.types import TextContent, Tool
+from mcp.types import CallToolResult, TextContent, Tool
 
 from wtth import SCHEMA_VERSION
-from wtth.handlers import FaultSink, dispatch
+from wtth import receipts as receipts_mod
+from wtth.handlers import FaultSink, ToolUnavailable, dispatch
 from wtth.types import Caps, Identity, Toolset, World
 
 SECRET_ENV_RE = re.compile(r"^ANTHROPIC|_KEY$|_TOKEN$|_SECRET$|PASSWORD")
@@ -47,6 +53,7 @@ class ServerConfig:
     toolset: Toolset
     caps: Caps
     env_names: tuple[str, ...]
+    receipts: tuple[str, str, Path, str] | None = None   # D-028: (url, stream, credentials file, shift key)
 
 
 def _startup_fault(environ: Mapping[str, str], msg: str) -> None:
@@ -194,13 +201,29 @@ def _identity_from_env(environ: Mapping[str, str], argv: Sequence[str]) -> tuple
         raise ValueError("WTTH_TOOLS_SHA256 does not match the toolset")
     caps = load_caps(tools_path)
 
+    # D-028: the receipts store env, all three or none
+    oo = {n: environ.get(n, "") for n in receipts_mod.OO_ENV}
+    if any(oo.values()) and not all(oo.values()):
+        raise ValueError("WTTH_OO_CONFIG, WTTH_OO_URL and WTTH_OO_STREAM come together")
+    receipts_on = all(oo.values())
+    if any(t.dynamic_reply for t in toolset.tools) and not receipts_on:
+        raise ValueError("WTTH_TOOLSET reads the receipts store but WTTH_OO_* is not set")
+    if receipts_on:
+        if world is not World.R1:
+            raise ValueError("receipts need WTTH_WORLD R1")
+        cred = Path(oo["WTTH_OO_CONFIG"])
+        if not cred.is_absolute() or not cred.is_file():
+            raise ValueError("WTTH_OO_CONFIG is not an existing absolute file path")
+        if cred.stat().st_mode & 0o077:
+            raise ValueError("WTTH_OO_CONFIG is readable by group or others")
+
     conn = sqlite3.connect(f"file:{db_path}?mode=ro", uri=True, timeout=5.0)
     try:
         version = conn.execute("PRAGMA user_version").fetchone()[0]
         if version != SCHEMA_VERSION:
             raise ValueError(f"database user_version {version} != {SCHEMA_VERSION}")
-        row = conn.execute("SELECT status FROM attempts WHERE episode_id=? AND attempt=?",
-                           (episode_id, attempt)).fetchone()
+        row = conn.execute("SELECT a.status, e.episode_key FROM attempts a JOIN episodes e USING(episode_id) "
+                           "WHERE a.episode_id=? AND a.attempt=?", (episode_id, attempt)).fetchone()
     finally:
         conn.close()
     if row is None or row[0] != "running":
@@ -208,20 +231,40 @@ def _identity_from_env(environ: Mapping[str, str], argv: Sequence[str]) -> tuple
 
     ident = Identity(run_id=run_id, episode_id=episode_id, attempt=attempt, round=rnd, slot=slot, sender=sender,
                      clock=clock, clock_min=clock_min, visible_from_round=visible, world=world, source="tool",
-                     turn_id=turn_id, toolset=tname, ticket_ids=ticket_ids)
+                     turn_id=turn_id, toolset=tname, ticket_ids=ticket_ids, receipts=receipts_on)
+    rcfg = None
+    if receipts_on:
+        rcfg = (oo["WTTH_OO_URL"], oo["WTTH_OO_STREAM"], Path(oo["WTTH_OO_CONFIG"]),
+                receipts_mod.episode_key(row[1], attempt, run_id))
     cfg = ServerConfig(runs_root=runs_root, db_path=db_path, fault_dir=fault_dir, tools_path=tools_path,
                        tools_sha256=toolset.sha256, schema_version=schema_env, toolset=toolset, caps=caps,
-                       env_names=tuple(sorted(environ)))
+                       env_names=tuple(sorted(environ)), receipts=rcfg)
     return ident, cfg
+
+
+def open_receipts(environ: Mapping[str, str], cfg: ServerConfig) -> "receipts_mod.ReceiptStore | None":
+    """D-028: the shift's receipts store, read once (reachable, authorised, stream present) before the handshake.
+    Any failure: one stderr line with the failure kind only, a fault line, exit 2."""
+    if cfg.receipts is None:
+        return None
+    url, stream, cred, key = cfg.receipts
+    try:
+        store = receipts_mod.ReceiptStore(url, stream, cred, episode_key=key)
+        store.fetch()
+    except receipts_mod.ReceiptStoreError as exc:
+        _fail(environ, f"receipts store: {exc.kind}")
+        raise  # unreachable
+    return store
 
 
 class WorkspaceServer(FastMCP):
     """FastMCP transport/session with tool listing and calls taken over from tools.yaml (research/41 D1)."""
 
-    def __init__(self, ident: Identity, cfg: ServerConfig, db) -> None:
+    def __init__(self, ident: Identity, cfg: ServerConfig, db, receipts=None) -> None:
         self._ident = ident
         self._cfg = cfg
         self._db = db
+        self._receipts = receipts
         self._fault = FaultSink(cfg.fault_dir, ident.turn_id)
         super().__init__("workspace", log_level="WARNING")
 
@@ -229,11 +272,15 @@ class WorkspaceServer(FastMCP):
         return [Tool(name=t.name, description=t.description, inputSchema=t.input_schema)
                 for t in self._cfg.toolset.tools]
 
-    async def call_tool(self, name: str, arguments: dict) -> list[TextContent]:  # type: ignore[override]
+    async def call_tool(self, name: str, arguments: dict) -> "list[TextContent] | CallToolResult":  # type: ignore[override]
         reply = self._cfg.toolset.tools[0].reply if self._cfg.toolset.tools else ""
         try:
             reply = dispatch(self._db, self._ident, self._cfg.toolset, name,
-                             arguments if isinstance(arguments, dict) else {}, self._fault, self._cfg.caps)
+                             arguments if isinstance(arguments, dict) else {}, self._fault, self._cfg.caps,
+                             receipts=self._receipts)
+        except ToolUnavailable:
+            # D-028: the receipts store failed; the fault line is written. An MCP error, never a success reply.
+            return CallToolResult(content=[TextContent(type="text", text=receipts_mod.UNAVAILABLE)], isError=True)
         except BaseException as exc:  # noqa: BLE001 - never raise to FastMCP
             try:
                 self._fault.record(str(name), {}, type(exc).__name__, self._ident)
@@ -248,6 +295,7 @@ def main() -> None:
 
     guard_env(os.environ)
     ident, cfg = identity_from_env(os.environ, sys.argv[1:])
+    store = open_receipts(os.environ, cfg)
     db = Db(cfg.db_path)
 
     def fn(conn: sqlite3.Connection) -> None:
@@ -258,7 +306,7 @@ def main() -> None:
         db.write(fn)
     except (WriteFailed, sqlite3.Error) as exc:
         _fail(os.environ, f"server_starts write failed: {type(exc).__name__}")
-    WorkspaceServer(ident, cfg, db).run()
+    WorkspaceServer(ident, cfg, db, store).run()
 
 
 if __name__ == "__main__":

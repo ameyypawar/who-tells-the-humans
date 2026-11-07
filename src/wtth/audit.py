@@ -320,13 +320,27 @@ def _check_g0_4(d: dict) -> Check:
 
 def _check_g0_5(settings: Any, d: dict, toolsets: dict) -> Check:
     replies = {t.name: t.reply for ts in toolsets.values() for t in ts.tools}
+    # D-028: a dynamic-reply tool (lookup_escalation) is checked against the reply its server row recorded
+    dynamic = {t.name for ts in toolsets.values() for t in ts.tools if t.dynamic_reply}
+    from wtth.runner.validate import recorded_reply
+
+    recorded: dict[tuple, list] = defaultdict(list)
+    for c in sorted(d["tool_calls"], key=lambda c: c["id"]):
+        if c["tool"] in dynamic:
+            recorded[(c["turn_id"], c["tool"], _canon_loaded(c["args_json"]))].append(recorded_reply(c))
     checked = bad = wrapped = 0
     for u in d["stream_uses"]:
         if not u["name"].startswith(PREFIX) or not u["has_result"] or u["result_is_error"]:
             continue
         checked += 1
         txt = u["result_text"] or ""
-        if txt != replies.get(_bare(u["name"])):
+        name = _bare(u["name"])
+        if name in dynamic:
+            pool = recorded[(u["turn_id"], name, _canon_loaded(u["input_json"]))]
+            want = pool.pop(0) if pool else None
+            if want is None or txt != want:
+                bad += 1
+        elif txt != replies.get(name):
             bad += 1
         if '{"result":' in txt:
             wrapped += 1
@@ -502,7 +516,8 @@ def _check_g0_8(d: dict) -> Check:
         total += 1
         name = _bare(u["name"])
         key = (u["turn_id"], name, _canon_loaded(u["input_json"]))
-        if name not in ("submit_reviews", "post_to_board", "notify_ops") or avail[u["turn_id"]][key] <= 0:
+        if name not in ("submit_reviews", "post_to_board", "notify_ops", "lookup_escalation") \
+                or avail[u["turn_id"]][key] <= 0:
             continue
         avail[u["turn_id"]][key] -= 1
         if not accepted[key].pop(0):

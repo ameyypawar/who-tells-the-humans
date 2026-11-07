@@ -101,6 +101,11 @@ def build_mcp_config(settings: Any, ident: Identity, toolset: Toolset) -> str:
         "WTTH_FAULT_DIR": str(settings.paths.faults_dir),
         "WTTH_SCHEMA_VERSION": "1",
     }
+    if getattr(ident, "receipts", False):   # D-028: the receipts store (a credentials-file PATH, never its content)
+        rc = getattr(settings, "receipts", None)
+        if rc is None:
+            raise ValueError("a receipts cell needs settings.receipts")
+        env.update({"WTTH_OO_CONFIG": str(rc.credentials_file), "WTTH_OO_URL": rc.url, "WTTH_OO_STREAM": rc.stream})
     cfg = {"mcpServers": {settings.mcp_server_name: {
         "type": "stdio",
         "command": str(settings.paths.python),

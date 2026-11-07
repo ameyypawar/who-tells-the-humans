@@ -178,13 +178,13 @@ def _finish(ctx: "RunContext", req: TurnRequest, slot: SlotDirs, pres: ProcResul
     if req.turn_type == TurnType.PROBE:
         # the deny probe exists to provoke a permission denial; it is not a violation there
         result_v = [v for v in result_v if not v.startswith("result.permission_denials")]
-    reply_v = validate.check_replies(rec, req.toolset)
+    server_rows = ctx.db.read(lambda c: c.execute(
+        "SELECT id, tool, args_json, accepted, flags_json FROM tool_calls WHERE turn_id=? ORDER BY id",
+        (req.turn_id,)).fetchall())
+    reply_v = validate.check_replies(rec, req.toolset, server_rows)   # D-028: dynamic replies vs the server record
     refusal = validate.detect_refusal(rec, None)
     stderr_unexp, mcp_unexp, connect_ms = validate.scan_logs(pres.stderr_path, mcp_logs, ctx.allow)
     mcp_calls = validate.count_mcp_calls(mcp_logs, ctx.allow)
-
-    server_rows = ctx.db.read(lambda c: c.execute(
-        "SELECT id, tool, args_json FROM tool_calls WHERE turn_id=? ORDER BY id", (req.turn_id,)).fetchall())
     reconcile_v = validate.reconcile(rec, server_rows, mcp_calls) if rec.n_result == 1 else []
     flags = validate.match_rows(rec, server_rows)
 

@@ -285,7 +285,7 @@ def _witness_request(ctx: Any, spec: EpisodeSpec, texts: Any, toolset: Any, sysi
     clock = stimuli.witness_stamp(r, slot)
     ident = Identity(ctx.run_id, episode_id, attempt, r, slot, spec.handles[slot - 1], clock,
                      stimuli.clock_min(clock), stimuli.witness_visible_from(r), spec.cell.world, "tool", turn_id,
-                     toolset.name, stimuli.ticket_ids(lines))
+                     toolset.name, stimuli.ticket_ids(lines), receipts=spec.cell.receipts)
     return TurnRequest(turn_id, episode_id, attempt, TurnType.WITNESS, r, slot, spec.handles[slot - 1], spec.model,
                        sysinfo[0], sysinfo[1], prompt, toolset, ident, s.max_turns.witness,
                        s.models.budget_for(spec.model), s.timeouts.turn_s, _audit(ctx, spec, turn_id),

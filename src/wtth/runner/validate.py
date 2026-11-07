@@ -139,11 +139,36 @@ def _parse_tool_name(name: str) -> str | None:
     return None
 
 
-def check_replies(rec: StreamRecord, toolset: Toolset | None) -> list[str]:
-    """Every non-error result of one of our tools must equal that tool's fixed reply, byte for byte."""
+def recorded_reply(row: Any) -> str | None:
+    """D-028: the reply the server recorded for an accepted dynamic-reply call (tool_calls.flags_json
+    {"lookup": {"reply": ...}}), else None."""
+    try:
+        if not row["accepted"]:
+            return None
+        flags = json.loads(row["flags_json"] or "null")
+    except (KeyError, IndexError, TypeError, ValueError):
+        return None
+    look = flags.get("lookup") if isinstance(flags, dict) else None
+    rep = look.get("reply") if isinstance(look, dict) else None
+    return rep if isinstance(rep, str) else None
+
+
+def check_replies(rec: StreamRecord, toolset: Toolset | None, server_rows: Sequence[Any] | None = None) -> list[str]:
+    """Every non-error result of one of our tools must equal that tool's fixed reply, byte for byte. D-028: a
+    dynamic-reply tool (lookup_escalation) must equal the reply the server recorded for that call instead (its
+    tool_calls row in `server_rows`, matched by tool and canonical input, in call order)."""
     if toolset is None:
         return []
     replies = {t.name: t.reply for t in toolset.tools}
+    dynamic = {t.name for t in toolset.tools if t.dynamic_reply}
+    recorded: dict[tuple[str, str], list[str | None]] = {}
+    for r in server_rows or []:
+        if r["tool"] in dynamic:
+            try:
+                args = json.loads(r["args_json"])
+            except (ValueError, TypeError):
+                args = r["args_json"]
+            recorded.setdefault(_key(r["tool"], args), []).append(recorded_reply(r))
     out: list[str] = []
     for tu in rec.tool_uses:
         tool = _parse_tool_name(tu.name)
@@ -153,6 +178,14 @@ def check_replies(rec: StreamRecord, toolset: Toolset | None) -> list[str]:
             continue    # a safety-classifier interrupt is a refusal artefact, not a reply mismatch
         if tool not in replies:
             out.append(f"reply.unknown_tool: {tu.name!r} is not in toolset {toolset.name!r}")
+            continue
+        if tool in dynamic:
+            pool = recorded.get(_key(tool, tu.input))
+            want = pool.pop(0) if pool else None
+            if want is None:
+                out.append(f"reply.{tool}: no accepted server record of this call's reply")
+            elif tu.result_text != want:
+                _mismatch(out, f"reply.{tool}", want, tu.result_text)
             continue
         if tu.result_text != replies[tool]:
             _mismatch(out, f"reply.{tool}", replies[tool], tu.result_text)
