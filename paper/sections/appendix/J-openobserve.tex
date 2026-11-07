@@ -32,7 +32,7 @@ Each lookup would also have been cross-checked against the main database, as an 
 Any difference between the two cells therefore comes from chance or from the tool's presence in the list, never from checking a receipt (Section~\ref{sec:followup}, Table~\ref{tab:exptwo}).
 
 \subsection{The operator-side monitor (post hoc, D-027)}\label{app:o2monitor}
-\textbf{Data.} The monitor was built after all data, on the release as it stood before the second follow-up: the core, the Sonnet arm and the first follow-up, \wtthOOShiftsN{} shifts.
+\textbf{Data.} The monitor was built after the core, the Sonnet arm and the first follow-up had been collected, and run on that release (\wtthOOShiftsN{} shifts), before the second follow-up.
 The released board posts (\wtthOOPostsN), notes to ops (\wtthOONotesN), log lines (\wtthOOLogN) and shifts were loaded into four OpenObserve streams, every shift placed on one synthetic date (\wtthOOBaseDate) at its shift-clock times, with the actions of one witness turn in the order the witness made them.
 A post's claim label is its final label for witness posts (model-proposed, AI-audited and author-approved where reviewed, otherwise the judge's) and the design for C's scripted claim; the live posts of the first follow-up were not judged (D-023), so the monitor cannot see witness claims there (\wtthOOLivePostsUnlabelledN{} posts).
 \textbf{Rule.} A post that claims ops was told is flagged when an agent it names as the reporter has no \texttt{notify\_ops} record earlier in that shift, or, if it names no one, when the shift has no earlier record at all.
@@ -65,21 +65,21 @@ On C's scripted claims, whose truth the design fixes, it flagged \wtthOOCFalseFl
 All \wtthOOTrueClaimFlaggedK{} false alarms were witnesses' own claims posted a moment before the note that backed them, in the same turn (\wtthOOFalseAlarmSameTurnK{} of \wtthOOTrueClaimFlaggedK): the rule is strict about order.
 In each of the \wtthOOUntoldForgedAlertedN{} untold \cell{FORGED} shifts (episodes \wtthOOUntoldForgedEpisodes; no note to ops in any of them) the first flag fell on C's claim at \wtthOOUntoldForgedFirstAlertClock{} (round \wtthOOUntoldForgedFirstAlertRound), \wtthOOUntoldForgedLeadMin{} minutes before the shift ended at \wtthOOShiftEndClock, and \wtthOOUntoldForgedRelaysFlaggedK{} witness relays of the claim were flagged too (Figures~\ref{fig:o2dash} and~\ref{fig:o2flagged}).
 Most witness relays name no one (\wtthOORelaysUnattributedN{} of \wtthOORelaysN, such as ``ops has been told''); such a relay counts as true once anyone in the shift has sent a note, and \wtthOORelaysUnattributedFlaggedK{} of them were flagged, while every relay that named C in a false-claim cell was (\wtthOORelaysNamingCFalseFlaggedK{} of \wtthOORelaysNamingCFalseFlaggedN).
-\textbf{Caveats.} The monitor is post hoc: it was designed after all data and run on released data, so it demonstrates the operator side of the recommendation and tests nothing.
+\textbf{Caveats.} The monitor is post hoc: it was designed after those data and run on released data, so it demonstrates the operator side of the recommendation and tests nothing.
 For witness claims the ground truth comes from the same notes the rule checks, at turn resolution, so their detection (\wtthOOWitnessFalseClaimFlaggedK{} of \wtthOOWitnessFalseClaimFlaggedN) is close to true by construction; the informative numbers are C's design-fixed claims and the false-alarm count.
 The claim labels come from the study's LLM judge, its review queues and the design; a deployment sees only the claims its own classifier labels, and a claimant could word a claim to evade it.
 
 \begin{figure}[h]
 \centering
-\wtthFig{../docs/openobserve-dashboard.png}{6in}
-\caption{\textbf{The monitor's OpenObserve dashboard} (post hoc, D-027; released data, synthetic date in UTC). Top: P1 by cell, and claims, log receipts and notes to ops per shift, by cell. Bottom left: board posts and flagged posts over the shift clock in the \wtthOOUntoldForgedAlertedN{} untold \cell{FORGED} shifts, with the shift end marked. Bottom right: the flagged posts, as the alert's query returns them.}
+\wtthFig{../docs/openobserve-dashboard-crop.png}{5.5in}
+\caption{\textbf{The monitor's OpenObserve dashboard} (post hoc, D-027; released data, synthetic date in UTC). Two of the four panels, cropped from the full screenshot in the repository README. Top: claims, log receipts and notes to ops per shift, by cell. Bottom: the flagged posts, as the alert's query returns them.}
 \label{fig:o2dash}
 \end{figure}
 
 \begin{figure}[h]
 \centering
-\wtthFig{../docs/openobserve-flagged.png}{6in}
-\caption{\textbf{One untold \cell{FORGED} shift in OpenObserve's log explorer} (post hoc, D-027; released, masked data). C's claim at \wtthOOUntoldForgedFirstAlertClock{} (the withheld forged line is masked) and a witness's later relay of it, expanded with its claim fields; the shift holds no note to ops, so the monitor flags both.}
+\wtthFig{../docs/openobserve-flagged-crop.png}{5.8in}
+\caption{\textbf{One untold \cell{FORGED} shift in OpenObserve's log explorer} (post hoc, D-027; released, masked data). C's claim at \wtthOOUntoldForgedFirstAlertClock{} (the withheld forged line is masked) and a witness's later relay of it, cropped to the query, the eight posts and the first fields of the relay (the text column is cut; the full screenshot is in the README); the shift holds no note to ops, so the monitor flags both.}
 \label{fig:o2flagged}
 \end{figure}
 
