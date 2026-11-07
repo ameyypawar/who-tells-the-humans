@@ -118,6 +118,51 @@ def extra_text_problems(settings: Any) -> list[str]:
     return out
 
 
+def receipts_problems(settings: Any, phase: str) -> list[str]:
+    """D-028: every cell of `phase` whose toolset has a dynamic-reply tool writes receipts; and when the phase has a
+    receipts cell, the receipts section exists, its credentials file is private (0600), and the store answers an
+    authorised search on the stream in use. Names and failure kinds only, never a credential."""
+    phases = getattr(settings, "phases", None) or {}
+    ph = phases.get(phase)
+    if ph is None:
+        return []
+    out: list[str] = []
+    try:
+        toolsets = load_toolsets(settings.paths.tools_yaml)
+    except Exception as exc:  # noqa: BLE001
+        return [f"tools file unreadable: {type(exc).__name__}"]
+    need = False
+    for arm in ph.arms:
+        tmap = settings.scenarios[arm.scenario].toolset_map
+        for ac in arm.cells:
+            cell = settings.cells[ac.cell]
+            ts = toolsets.get(tmap.get(cell.toolset, cell.toolset))
+            if ts is None:
+                out.append(f"cell {ac.cell}: toolset {cell.toolset!r} is not in {Path(settings.paths.tools_yaml).name}")
+                continue
+            if any(t.dynamic_reply for t in ts.tools) and not cell.receipts:
+                out.append(f"cell {ac.cell}: toolset {ts.name} reads the receipts store but the cell writes none")
+            need = need or bool(cell.receipts)
+    if not need:
+        return out
+    rc = getattr(settings, "receipts", None)
+    if rc is None:
+        return out + ["receipts cells need a receipts section in the config"]
+    cred = Path(rc.credentials_file)
+    if not cred.is_file():
+        return out + ["receipts credentials file missing"]
+    if cred.stat().st_mode & 0o077:
+        out.append("receipts credentials file is readable by group or others (chmod 600)")
+    from wtth.receipts import ReceiptStore, ReceiptStoreError
+    try:
+        ReceiptStore(rc.url, rc.stream, cred, org=rc.org).check()
+    except ReceiptStoreError as exc:
+        hint = " (create it: python -I -m wtth.receipts init-stream --config <the config>)" \
+            if exc.kind == "stream_missing" else ""
+        out.append(f"receipts store, stream {rc.stream}: {exc.kind}{hint}")
+    return out
+
+
 def freeze_problems(settings: Any, phase: str) -> list[str]:
     """D-022: for a phase listed in settings.freeze, an ANNOTATED tag matching freeze.tag_re exists, the frozen
     paths have no uncommitted or untracked change, and HEAD equals one such tag on those paths. Commits elsewhere
@@ -169,6 +214,7 @@ def verify_startup(settings: Any, mode: str, phase: str) -> list[str]:
     from wtth import prereg
     p.extend(prereg.verify_hashes(paths.prereg_dir, paths.private_dir, files))
     p.extend(extra_text_problems(settings))
+    p.extend(receipts_problems(settings, phase))
     from wtth.orchestrator import guards
     bad = guards.wtth_import_problem(settings)
     if bad:
@@ -299,7 +345,16 @@ def build_manifest(settings: Any, run_id: str, phase: str, mode: str) -> dict:
     except (OSError, subprocess.SubprocessError):
         pass
     sch, b, mt = settings.scheduler, settings.budget, settings.max_turns
-    return {
+    extra: dict = {}
+    rc = getattr(settings, "receipts", None)
+    if rc is not None:   # D-028: where receipts go (the credentials file by path only, never its content)
+        from wtth import receipts as receipts_mod
+        extra["receipts"] = {"backend": rc.backend, "url": rc.url, "org": rc.org, "stream": rc.stream,
+                             "credentials_file": str(rc.credentials_file),
+                             "confirm_timeout_s": receipts_mod.CONFIRM_TIMEOUT_S,
+                             "cells": sorted(c for c, x in settings.cells.items() if x.receipts)}
+        extra["budget_projection_stop_usd"] = b.projection_stop_usd
+    return {**extra,
         "run_id": run_id, "phase": phase, "mode": mode, "harness_version": __version__,
         "git": {"head": _git(settings, "rev-parse", "HEAD"), "dirty": bool(_git(settings, "status", "--porcelain")),
                 "tags": _git(settings, "tag", "--points-at", "HEAD").split(),

@@ -27,7 +27,7 @@ def _parser() -> argparse.ArgumentParser:
     ap = argparse.ArgumentParser(prog="wtth.judge", description="Who Tells the Humans? LLM judge")
     sub = ap.add_subparsers(dest="cmd", required=True)
     e = sub.add_parser("extract", parents=[common])
-    e.add_argument("--phase", required=True, choices=["core", "sonnet", "mvp", "exp1"])  # exp1: --config configs/exp1.yaml
+    e.add_argument("--phase", required=True, choices=["core", "sonnet", "mvp", "exp1", "exp2"])  # exp1/exp2: --config configs/exp1.yaml / exp2.yaml
     e.add_argument("--prefer", choices=["core", "mvp"])
     sub.add_parser("plan", parents=[common])
     v = sub.add_parser("validate", parents=[common])

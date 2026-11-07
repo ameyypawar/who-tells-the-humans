@@ -321,7 +321,7 @@ def extract(settings: Any, main_db: Any, jdb: Any, aset: Any, *, seeds: Any, sna
 
 # ---- D-022 exploratory follow-up ---------------------------------------------------------------------------------
 
-EXPLORATORY_PHASES: tuple[str, ...] = ("exp1",)
+EXPLORATORY_PHASES: tuple[str, ...] = ("exp1", "exp2")   # exp2: D-028 (configs/exp2.yaml, runs/judge_exp2)
 EXPLORATORY_SUBTIERS: tuple[str, ...] = ("J1a", "J1b", "J2c", "J2f")   # non-keyword notes; D2 answers
 
 

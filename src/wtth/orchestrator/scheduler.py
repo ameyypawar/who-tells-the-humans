@@ -635,8 +635,15 @@ class Scheduler:
             extra += cost_of.get(model, 0.0) / c["done"] * rem
         self._max_probed = True
         projected = ctx.cost.spent() + extra
-        if projected > s.budget.cap_usd:
-            self._stop("cost_projection", {"projected_usd": projected, "cap_usd": s.budget.cap_usd}, EXIT_CAP, kill=False)
+        # D-028: budget.projection_stop_usd (exp2: $94.90) when set, else the cap, as before
+        stop = s.budget.projection_stop_usd if getattr(s.budget, "projection_stop_usd", None) is not None \
+            else s.budget.cap_usd
+        if getattr(s.budget, "projection_stop_usd", None) is not None:
+            log_event(ctx.db, ctx.run_id, "info", "cost_projection",
+                      detail={"projected_usd": projected, "stop_usd": stop})
+        if projected > stop:
+            self._stop("cost_projection", {"projected_usd": projected, "cap_usd": s.budget.cap_usd, "stop_usd": stop},
+                       EXIT_CAP, kill=False)
 
     def _breaker_poll(self) -> None:
         ctx, s = self.ctx, self.ctx.settings
