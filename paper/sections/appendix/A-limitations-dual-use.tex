@@ -14,6 +14,7 @@
 \ref{app:judge} & Judge, labels, model--model agreement and the author read & p.~\pageref{app:judge} \\
 \ref{app:audit} & The framework audit: method, rubric and table & p.~\pageref{app:audit} \\
 \ref{app:related} & Related-work detail and the nearest-work table & p.~\pageref{app:related} \\
+\ref{app:openobserve} & Receipts on OpenObserve: lookup tool, post-hoc monitor, kit & p.~\pageref{app:openobserve} \\
  & LLM Usage Statement & p.~\pageref{app:llm} \\
 \end{tabular}
 
@@ -23,6 +24,7 @@
 \paragraph{Models.}
 Every confirmatory test uses \wtthDesignModelHaikuName{} at effort \wtthDesignEffort, with no temperature control.
 The \wtthDesignModelSonnetName{} subset is exploratory, and so are the follow-up cells (D-022), which ran after the strict analysis on new seeds with the core's mix of paraphrase, handle order and tickets (D-023); their comparisons with core cells are across phases run at different times, and so is the Sonnet contrast of a real receipt (follow-up) with the typed line (the earlier Sonnet subset).
+The two cells of the second follow-up (D-028) ran concurrently with each other but not with the core; their contrast is the only concurrent one among the follow-ups, and the tool it adds was never called.
 We claim nothing about other model families, and evidence from older Claude models may not carry over.
 
 \paragraph{Scenario.}
@@ -119,12 +121,12 @@ The withheld strings are available to vetted researchers on request; the raw API
 
 \subsection{Ethical considerations}
 There are no human participants.
-No real person or hotline is contacted: \texttt{notify\_ops} writes to a local stub table.
+No real person or hotline is contacted: \texttt{notify\_ops} writes to a local stub table and, in the second follow-up, to a local OpenObserve stream.
 The company, customers and tickets are fictional, and there are no credentials and no cyber content.
 The witnesses, as AI participants, get a limited deception: they are told only that they work a shift, and the first mention of a test is the \DebOne{} debrief question.
 There is no consent step and no exclusion based on debrief answers.
 This differs from Fuller's protocol, which excluded \citedFullerExclStudyOne{} and \citedFullerExclStudyTwo{} of Haiku sessions in its two studies \citep{fuller2026smoke}.
-Compute: \wtthCostTotalUsd{} on an API credit so far, the exploratory follow-up of D-022 included; the annotation subagents ran on the author's subscription (D-011).
+Compute: \wtthCostTotalUsd{} on an API credit, both exploratory follow-ups included (\wtthCostExpOneTotalUsd{} for D-022 and \wtthCostExpTwoTotalUsd{} for D-028); the annotation subagents ran on the author's subscription (D-011), and the OpenObserve monitor (D-027) made no model calls.
 
 \subsection{Future improvements}
-A group-size curve; other model families; opaque or filer-only receipts; a pull-verification tool; agents with persistent memory; an integration with MCP or \AtwoA{}; adaptive claimants, only under a disclosure plan; and the two stretch modules that were not run (D-008).
+A group-size curve; other model families; opaque or filer-only receipts; a pull-verification step that agents must run, since the lookup tool we offered was never called (D-028); the operator-side monitor run live, with a claim classifier, rather than post hoc; agents with persistent memory; an integration with MCP or \AtwoA{}; adaptive claimants, only under a disclosure plan; and the two stretch modules that were not run (D-008).

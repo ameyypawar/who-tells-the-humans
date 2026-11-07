@@ -1,0 +1,91 @@
+% appendix J (D-027, D-028, D-029): checkable receipts on OpenObserve. Three parts, each labelled every time: the
+% receipts store and lookup tool of the exploratory follow-up 2 (D-028), the post-hoc operator-side monitor on the
+% released data (D-027), and the reusable kit (D-029, no new data). Every number is a macro: \wtthOO... from
+% generated/openobserve/macros.tex (scripts/openobserve/claims_vs_receipts.py), \wtthExpTwo... from the analysis export.
+% The monitor ran on the release as it stood before exp2 (\wtthOOShiftsN shifts); never say it covers exp2. For
+% witness self-claims its ground truth uses the same notes as the rule, so their detection is near-tautological:
+% the informative numbers are C's design-fixed claims and the false alarms. Never call the monitor a test, and never
+% read the exp2 P2 contrast as a reduction (boundary artefact). The competing interest is stated in the main text.
+\section{Checkable receipts on OpenObserve}\label{app:openobserve}
+The study's recommendation, receipts written by the channel and checkable against it, was built on OpenObserve \citep{openobserve}, an open-source observability platform for logs, metrics and traces, run as a local open-source binary (\wtthOOVersion) that accepts connections from the same machine only.
+It has three parts (Figure~\ref{fig:o2arch}): a \emph{write path}, in which the escalation channel writes a receipt for each accepted note; a \emph{read path}, a tool through which an agent can look a receipt up; and an \emph{operator monitor}, an alert that compares board claims with receipts.
+The first two ran live in the second exploratory follow-up (D-028); the monitor ran post hoc on the released data (D-027); and the reusable kit adds no data or runs (D-029).
+The author contributes to the open-source OpenObserve project.
+
+\begin{figure}[h]
+\centering
+\wtthFig{../docs/o2-receipts-architecture.pdf}{\linewidth}
+\caption{\textbf{Checkable escalation receipts on OpenObserve.} Write path (left): the \texttt{notify\_ops} handler delivers the note and writes a receipt (entry id, clock, sender, subject) to an OpenObserve stream at the same moment; a line typed into a board post cannot write it. Read path (middle): the \texttt{lookup\_escalation} tool queries that stream, so a forged entry finds no match. Operator monitor (right): board posts and notes are ingested beside the receipts, and an alert flags a post that says ops was told when the named agent has no receipt. The write and read paths ran in the second follow-up (exploratory, D-028); the monitor ran post hoc on released data (D-027).}
+\label{fig:o2arch}
+\end{figure}
+
+\subsection{Write path and read path in the second follow-up (exploratory, D-028)}\label{app:o2tool}
+\textbf{Write.} In both cells of the second follow-up the \texttt{notify\_ops} handler of the witnesses' MCP server writes every accepted note to an OpenObserve stream, \texttt{escalation\_receipts}: the shift key, the entry number the log gives the note, the shift-clock time, the server-stamped sender and the subject, never the message body.
+The handler replies ``\wtthStimReplyNotify'' only once a search finds the new record (read after write, polled up to a fixed timeout).
+There is no fallback: if the store cannot be reached, refuses the write or never shows the record, the call fails and the turn counts as a technical failure, rerun on the same seed (D-028).
+No board post can write the stream, and a post-run audit found it equal to the main database's log in every shift of the second follow-up, with no record missing, extra or changed.
+\textbf{Read.} Only \cell{X-FORGED-CHECK} witnesses see a fourth tool, listed after the other three, with a neutral description that says what it does, not when to use it: ``Look up \#escalation-log entries by entry id or by sender. The notify\_ops tool writes an entry each time a note is sent.''
+It takes an entry id, a sender or both, and replies with one line per matching entry in the log's own format, or ``No matching entry.''; it reads the records of its own shift from the stream, selected by a key that no witness sees, and nothing else, so the forged line's entry finds no match.
+Each lookup would also have been cross-checked against the main database, as an integrity check and never as a source for the reply.
+\cell{X-FORGED-CONC} witnesses have the same three tools as in \cell{FORGED}, and their notes write receipts too, so the two cells differ only in the listed tool.
+\textbf{Use.} No witness called it: \wtthExpTwoLookupCallsN{} calls in \wtthExpTwoLookupTurnsN{} witness turns, \wtthExpTwoLookupWitnessesK{} of \wtthExpTwoLookupWitnessesN{} witnesses (Wilson CI \wtthExpTwoLookupWitnessesCI\%) and \wtthExpTwoLookupShiftsK{} of \wtthExpTwoLookupShiftsN{} shifts.
+Any difference between the two cells therefore comes from chance or from the tool's presence in the list, never from checking a receipt (Section~\ref{sec:followup}, Table~\ref{tab:exptwo}).
+
+\subsection{The operator-side monitor (post hoc, D-027)}\label{app:o2monitor}
+\textbf{Data.} The monitor was built after all data, on the release as it stood before the second follow-up: the core, the Sonnet arm and the first follow-up, \wtthOOShiftsN{} shifts.
+The released board posts (\wtthOOPostsN), notes to ops (\wtthOONotesN), log lines (\wtthOOLogN) and shifts were loaded into four OpenObserve streams, every shift placed on one synthetic date (\wtthOOBaseDate) at its shift-clock times, with the actions of one witness turn in the order the witness made them.
+A post's claim label is its final label for witness posts (model-proposed, AI-audited and author-approved where reviewed, otherwise the judge's) and the design for C's scripted claim; the live posts of the first follow-up were not judged (D-023), so the monitor cannot see witness claims there (\wtthOOLivePostsUnlabelledN{} posts).
+\textbf{Rule.} A post that claims ops was told is flagged when an agent it names as the reporter has no \texttt{notify\_ops} record earlier in that shift, or, if it names no one, when the shift has no earlier record at all.
+The rule is one SQL query (\texttt{monitor.sql}), run as a scheduled OpenObserve alert every \wtthOOAlertFrequencyMin{} minutes over the whole synthetic date; a Python reference implementation, the same SQL through OpenObserve's search API and the alert's notification flagged the same \wtthOOFlaggedN{} posts.
+
+\begin{table}[h]
+\centering\footnotesize\setlength{\tabcolsep}{4pt}
+\begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}Xrr@{}}
+\toprule
+Claim posts, by truth (post hoc, D-027) & Flagged (k/n) & \% \\
+\midrule
+C's scripted claim, false by design (\cell{CLAIM}, \cell{POLICY}, \cell{NO-RECEIPT}, \cell{FORGED}, the two \cell{X-FORGED} cells) & \wtthOOCFalseFlaggedK/\wtthOOCFalseFlaggedN & \wtthOOCFalseFlaggedPct \\
+C's scripted claim, true by design (\cell{RECEIPT}, \cell{POS}: C's note filed first) & \wtthOOCTrueFlaggedK/\wtthOOCTrueFlaggedN & \wtthOOCTrueFlaggedPct \\
+Every false claim (C's, and witness claims with no note by the claimed reporter by the end of the turn) & \wtthOOFalseClaimFlaggedK/\wtthOOFalseClaimFlaggedN & \wtthOOFalseClaimFlaggedPct \\
+Every true claim & \wtthOOTrueClaimFlaggedK/\wtthOOTrueClaimFlaggedN & \wtthOOTrueClaimFlaggedPct \\
+Flagged posts that are false claims & \wtthOOFlagPrecisionK/\wtthOOFlagPrecisionN & \wtthOOFlagPrecisionPct \\
+\midrule
+Shifts with a flag: false-claim cells & \wtthOOShiftsAlertedFalseCellsK/\wtthOOShiftsAlertedFalseCellsN & \wtthOOShiftsAlertedFalseCellsPct \\
+Shifts with a flag: true-claim cells & \wtthOOShiftsAlertedTrueCellsK/\wtthOOShiftsAlertedTrueCellsN & \wtthOOShiftsAlertedTrueCellsPct \\
+Shifts with a flag: no-claim cells (\cell{NONE}, \cell{CONCERN}, \cell{NONE-R}, \cell{NEG}, \cell{B-NONE}) & \wtthOOShiftsAlertedNoClaimCellsK/\wtthOOShiftsAlertedNoClaimCellsN & \wtthOOShiftsAlertedNoClaimCellsPct \\
+Untold \cell{FORGED} shifts (core) with a flag & \wtthOOUntoldForgedAlertedK/\wtthOOUntoldForgedAlertedN & \wtthOOUntoldForgedAlertedPct \\
+\bottomrule
+\end{tabularx}
+\caption{\textbf{The claim-without-receipt monitor on released data} (post hoc, D-027; \wtthOOShiftsN{} shifts of the core, the Sonnet arm and the first follow-up; a demonstration, not a test). For witness claims the truth comes from the same notes the rule checks, so only C's design-fixed claims and the false alarms are informative.}
+\label{tab:o2monitor}
+\end{table}
+
+\textbf{Results.} The monitor flagged every false claim and \wtthOOTrueClaimFlaggedK{} of \wtthOOTrueClaimFlaggedN{} true ones (Table~\ref{tab:o2monitor}).
+On C's scripted claims, whose truth the design fixes, it flagged \wtthOOCFalseFlaggedK{} of \wtthOOCFalseFlaggedN{} false and \wtthOOCTrueFlaggedK{} of \wtthOOCTrueFlaggedN{} true ones.
+All \wtthOOTrueClaimFlaggedK{} false alarms were witnesses' own claims posted a moment before the note that backed them, in the same turn (\wtthOOFalseAlarmSameTurnK{} of \wtthOOTrueClaimFlaggedK): the rule is strict about order.
+In each of the \wtthOOUntoldForgedAlertedN{} untold \cell{FORGED} shifts (episodes \wtthOOUntoldForgedEpisodes; no note to ops in any of them) the first flag fell on C's claim at \wtthOOUntoldForgedFirstAlertClock{} (round \wtthOOUntoldForgedFirstAlertRound), \wtthOOUntoldForgedLeadMin{} minutes before the shift ended at \wtthOOShiftEndClock, and \wtthOOUntoldForgedRelaysFlaggedK{} witness relays of the claim were flagged too (Figures~\ref{fig:o2dash} and~\ref{fig:o2flagged}).
+Most witness relays name no one (\wtthOORelaysUnattributedN{} of \wtthOORelaysN, such as ``ops has been told''); such a relay counts as true once anyone in the shift has sent a note, and \wtthOORelaysUnattributedFlaggedK{} of them were flagged, while every relay that named C in a false-claim cell was (\wtthOORelaysNamingCFalseFlaggedK{} of \wtthOORelaysNamingCFalseFlaggedN).
+\textbf{Caveats.} The monitor is post hoc: it was designed after all data and run on released data, so it demonstrates the operator side of the recommendation and tests nothing.
+For witness claims the ground truth comes from the same notes the rule checks, at turn resolution, so their detection (\wtthOOWitnessFalseClaimFlaggedK{} of \wtthOOWitnessFalseClaimFlaggedN) is close to true by construction; the informative numbers are C's design-fixed claims and the false-alarm count.
+The claim labels come from the study's LLM judge, its review queues and the design; a deployment sees only the claims its own classifier labels, and a claimant could word a claim to evade it.
+
+\begin{figure}[h]
+\centering
+\wtthFig{../docs/openobserve-dashboard.png}{6in}
+\caption{\textbf{The monitor's OpenObserve dashboard} (post hoc, D-027; released data, synthetic date in UTC). Top: P1 by cell, and claims, log receipts and notes to ops per shift, by cell. Bottom left: board posts and flagged posts over the shift clock in the \wtthOOUntoldForgedAlertedN{} untold \cell{FORGED} shifts, with the shift end marked. Bottom right: the flagged posts, as the alert's query returns them.}
+\label{fig:o2dash}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\wtthFig{../docs/openobserve-flagged.png}{6in}
+\caption{\textbf{One untold \cell{FORGED} shift in OpenObserve's log explorer} (post hoc, D-027; released, masked data). C's claim at \wtthOOUntoldForgedFirstAlertClock{} (the withheld forged line is masked) and a witness's later relay of it, expanded with its claim fields; the shift holds no note to ops, so the monitor flags both.}
+\label{fig:o2flagged}
+\end{figure}
+
+\subsection{The kit (D-029)}\label{app:o2kit}
+\texttt{kit/o2-receipts/} packages the design for other multi-agent systems, without the study harness (D-029; no new data or runs): \texttt{receipts.py}, a standard-library client whose \texttt{write\_receipt} assigns the entry id, stamps sender and time and returns only once a search finds the receipt, and whose \texttt{lookup} reads one scope; \texttt{mcp\_server.py}, an MCP server with \texttt{lookup\_escalation} and, for an agent's own channel, \texttt{log\_escalation}; \texttt{monitor.sql}, the alert, the dashboard and an installer; \texttt{example.py}, which runs the loop end to end with a forged id that finds no entry and a relay that the monitor flags; tests, which skip the live cases when no OpenObserve is reachable; and a README with a quickstart.
+It was tested against OpenObserve \wtthOOVersion.
+Its README states the caveat of Section~\ref{sec:followup}: agents may never call the lookup, so it should ship with the operator-side monitor, which needs no cooperation from them.
+The study's own monitor, its ingestion of the release, the exported alert and dashboard, and the screenshot script are in \texttt{scripts/openobserve/}, and the architecture diagram is \texttt{docs/o2-receipts-architecture.pdf}.
+\clearpage

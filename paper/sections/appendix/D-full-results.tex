@@ -296,6 +296,65 @@ Shifts: first witness note after round 2 & \wtthHaikuTimingShiftForgedLateK/\wtt
 \label{tab:exponetiming}
 \end{table}
 
+% ---- the exploratory follow-up 2 (D-028): Section 4.5 (sec:followup) and Appendix J. Macros \wtthExpTwo...; nothing here
+% is confirmatory. The concurrent contrast is X-FORGED-CHECK minus X-FORGED-CONC; X-FORGED-CONC minus the core's FORGED
+% estimates the phase shift. The P2 contrast excludes zero only through the boundary effect: never read it as a reduction.
+\paragraph{Exploratory second follow-up (D-028).}
+Two Haiku cells ran concurrently, seed-paired and interleaved in one run, on seeds that overlap no earlier seed and repeat the core's rotation of paraphrase, handle order and tickets: \cell{X-FORGED-CHECK}, \cell{FORGED} with the \texttt{lookup\_escalation} tool backed by OpenObserve, and \cell{X-FORGED-CONC}, \cell{FORGED} unchanged; in both, every accepted note also wrote a receipt to OpenObserve (Appendix~\ref{app:openobserve}, tag \texttt{exp2-v1}).
+They used the core's witness-turn harness, step cap, judge prompt and keyword rule; the notes the rule did not match and the \DebTwo{} answers were judged, board posts and \DebOne{} answers were not, so \Ptwop{} is not reported.
+No \cell{X-FORGED-CHECK} witness called the tool (\wtthExpTwoLookupWitnessesK{} of \wtthExpTwoLookupWitnessesN; \wtthExpTwoLookupCallsN{} calls in \wtthExpTwoLookupTurnsN{} turns).
+Table~\ref{tab:exptwo} gives P1, P2 and the differences, with the timing and the \DebTwo{} reasons beside them.
+The P2 contrast of the two cells excludes zero only through the boundary effect described for H1 (Section~\ref{sec:h1}): \cell{X-FORGED-CHECK}'s P2 is zero, so its resamples never vary, and a resample of \cell{X-FORGED-CONC} draws none of its \wtthExpTwoXForgedConcPTwoK{} untold shifts with probability \wtthExpTwoDiffPTwoXForgedCheckMinusXForgedConcPZero\%; Fisher's exact test (p~$=$~\wtthExpTwoDiffPTwoXForgedCheckMinusXForgedConcFisherP) and the Newcombe interval (\wtthExpTwoDiffPTwoXForgedCheckMinusXForgedConcNewcombeCI) do not exclude zero, and we do not read it as a reduction.
+The same holds for the first follow-up's \cell{X-FORGED-PROV} against \cell{X-FORGED-CONC} (Fisher p~$=$~\wtthExpTwoDiffPTwoExpOneXForgedProvMinusXForgedConcFisherP).
+
+\begin{table}[h]
+\centering\footnotesize\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}lrlrl@{}}
+\toprule
+Cell (Haiku, shifts) & P1 \% (k/n) & Wilson CI & P2 (k/n) & Wilson CI \\
+\midrule
+\cell{X-FORGED-CHECK} (\wtthExpTwoXForgedCheckEps) & \wtthExpTwoXForgedCheckPOnePct{} (\wtthExpTwoXForgedCheckPOneK/\wtthExpTwoXForgedCheckPOneN) & \wtthExpTwoXForgedCheckPOneCI & \wtthExpTwoXForgedCheckPTwoK/\wtthExpTwoXForgedCheckPTwoN & \wtthExpTwoXForgedCheckPTwoCI \\
+\cell{X-FORGED-CONC} (\wtthExpTwoXForgedConcEps) & \wtthExpTwoXForgedConcPOnePct{} (\wtthExpTwoXForgedConcPOneK/\wtthExpTwoXForgedConcPOneN) & \wtthExpTwoXForgedConcPOneCI & \wtthExpTwoXForgedConcPTwoK/\wtthExpTwoXForgedConcPTwoN & \wtthExpTwoXForgedConcPTwoCI \\
+\bottomrule
+\end{tabular}
+
+\medskip
+\begin{tabular}{@{}lll@{}}
+\toprule
+Difference (points) & P1 (CI) & P2 (CI) \\
+\midrule
+\cell{X-FORGED-CHECK} $-$ \cell{X-FORGED-CONC} (concurrent) & \wtthExpTwoDiffPOneXForgedCheckMinusXForgedConcDelta{} (\wtthExpTwoDiffPOneXForgedCheckMinusXForgedConcCI) & \wtthExpTwoDiffPTwoXForgedCheckMinusXForgedConcDelta{} (\wtthExpTwoDiffPTwoXForgedCheckMinusXForgedConcCI)$^{\dagger}$ \\
+\cell{X-FORGED-CONC} $-$ core \cell{FORGED} (phase shift) & \wtthExpTwoDiffPOneXForgedConcMinusHaikuForgedDelta{} (\wtthExpTwoDiffPOneXForgedConcMinusHaikuForgedCI) & \wtthExpTwoDiffPTwoXForgedConcMinusHaikuForgedDelta{} (\wtthExpTwoDiffPTwoXForgedConcMinusHaikuForgedCI) \\
+\cell{X-FORGED-CHECK} $-$ core \cell{NO-RECEIPT} & \wtthExpTwoDiffPOneXForgedCheckMinusHaikuNoReceiptDelta{} (\wtthExpTwoDiffPOneXForgedCheckMinusHaikuNoReceiptCI) & \wtthExpTwoDiffPTwoXForgedCheckMinusHaikuNoReceiptDelta{} (\wtthExpTwoDiffPTwoXForgedCheckMinusHaikuNoReceiptCI) \\
+\cell{X-FORGED-POLICY} (first follow-up) $-$ \cell{X-FORGED-CONC} & \wtthExpTwoDiffPOneExpOneXForgedPolicyMinusXForgedConcDelta{} (\wtthExpTwoDiffPOneExpOneXForgedPolicyMinusXForgedConcCI) & \wtthExpTwoDiffPTwoExpOneXForgedPolicyMinusXForgedConcDelta{} (\wtthExpTwoDiffPTwoExpOneXForgedPolicyMinusXForgedConcCI) \\
+\cell{X-FORGED-PROV} (first follow-up) $-$ \cell{X-FORGED-CONC} & \wtthExpTwoDiffPOneExpOneXForgedProvMinusXForgedConcDelta{} (\wtthExpTwoDiffPOneExpOneXForgedProvMinusXForgedConcCI) & \wtthExpTwoDiffPTwoExpOneXForgedProvMinusXForgedConcDelta{} (\wtthExpTwoDiffPTwoExpOneXForgedProvMinusXForgedConcCI)$^{\dagger}$ \\
+\bottomrule
+\end{tabular}
+
+\medskip
+\begin{tabular}{@{}lrr@{}}
+\toprule
+Timing and \DebTwo{} reasons of never-reporters & \cell{X-FORGED-CHECK} & \cell{X-FORGED-CONC} \\
+\midrule
+Witnesses & \wtthExpTwoTimingXForgedCheckN & \wtthExpTwoTimingXForgedConcN \\
+Reported by round 2 & \wtthExpTwoTimingXForgedCheckByRoundTwoK & \wtthExpTwoTimingXForgedConcByRoundTwoK \\
+Held off past round 2 & \wtthExpTwoTimingXForgedCheckHeldOffK & \wtthExpTwoTimingXForgedConcHeldOffK \\
+\quad then reported & \wtthExpTwoTimingXForgedCheckHeldOffReportedK & \wtthExpTwoTimingXForgedConcHeldOffReportedK \\
+\quad then never & \wtthExpTwoTimingXForgedCheckNeverK & \wtthExpTwoTimingXForgedConcNeverK \\
+\quad never, a peer's line in view & \wtthExpTwoTimingXForgedCheckHeldOffPeerNeverK & \wtthExpTwoTimingXForgedConcHeldOffPeerNeverK \\
+Shifts: first witness note after round 2 & \wtthExpTwoTimingShiftXForgedCheckLateK/\wtthExpTwoTimingShiftXForgedCheckN & \wtthExpTwoTimingShiftXForgedConcLateK/\wtthExpTwoTimingShiftXForgedConcN \\
+\quad someone else told ops & \wtthExpTwoTimingNeverXForgedCheckDTwoSomeoneElseToldK/\wtthExpTwoTimingNeverXForgedCheckDTwoN & \wtthExpTwoTimingNeverXForgedConcDTwoSomeoneElseToldK/\wtthExpTwoTimingNeverXForgedConcDTwoN \\
+\quad thought ops was aware & \wtthExpTwoTimingNeverXForgedCheckDTwoThoughtOpsAwareK/\wtthExpTwoTimingNeverXForgedCheckDTwoN & \wtthExpTwoTimingNeverXForgedConcDTwoThoughtOpsAwareK/\wtthExpTwoTimingNeverXForgedConcDTwoN \\
+\quad trusted the claim & \wtthExpTwoTimingNeverXForgedCheckDTwoTrustedClaimK/\wtthExpTwoTimingNeverXForgedCheckDTwoN & \wtthExpTwoTimingNeverXForgedConcDTwoTrustedClaimK/\wtthExpTwoTimingNeverXForgedConcDTwoN \\
+\quad could not verify, reported anyway & \wtthExpTwoTimingNeverXForgedCheckDTwoCouldNotVerifyReportedAnywayK/\wtthExpTwoTimingNeverXForgedCheckDTwoN & \wtthExpTwoTimingNeverXForgedConcDTwoCouldNotVerifyReportedAnywayK/\wtthExpTwoTimingNeverXForgedConcDTwoN \\
+\quad no channel perceived & \wtthExpTwoTimingNeverXForgedCheckDTwoNoChannelPerceivedK/\wtthExpTwoTimingNeverXForgedCheckDTwoN & \wtthExpTwoTimingNeverXForgedConcDTwoNoChannelPerceivedK/\wtthExpTwoTimingNeverXForgedConcDTwoN \\
+\bottomrule
+\end{tabular}
+\caption{\textbf{Exploratory second follow-up} (D-028; no test). Top: P1 with witness-level Wilson intervals and P2, the shifts with no witness note, with episode-level Wilson intervals. Middle: differences in points, with shift-level cluster-bootstrap intervals (\wtthExpTwoDiffPOneXForgedCheckMinusXForgedConcB{} resamples); only the first row is concurrent, the others compare phases. Bottom: timing of first notes, and the model-coded \DebTwo{} reasons of the witnesses who never reported (several per answer), which are unreliable among non-reporters (text above the first follow-up's tables).
+$^{\dagger}$Excludes zero only through the boundary effect explained in the text; not read as a reduction.}
+\label{tab:exptwo}
+\end{table}
+
 \paragraph{Other tables and figures.}
 The full per-cell rates of every secondary label, including \DebOne{} verdicts, concern and the strata by \DebOne{} verdict, are in \nolinkurl{paper/generated/analysis/tables/table_secondary_rates.csv}; they are too long to print.
 Alert-load rows in the analysis log's contrast tables are scaled by a hundred, so the text reports alert load from the cell means.
