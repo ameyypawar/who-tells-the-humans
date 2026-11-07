@@ -173,3 +173,23 @@ UTC with every non-localhost request blocked, and writes `docs/openobserve-dashb
 (the alert's SQL run in the log explorer, with its rows) and `docs/openobserve-flagged.png` (`wtth_posts` for shift 83:
 C's flagged claim at 21:26 and rd-26's relay of it at 21:42, expanded). The default Chrome is the headless shell in
 `~/.cache/puppeteer`; pass `--chrome` for another Chrome or Chromium binary.
+
+## 7. The exp2 receipts stream (D-028)
+
+The exploratory follow-up exp2 (`configs/exp2.yaml`, DEVIATIONS D-028) uses the same instance as a live receipts
+store, written during the shifts by the harness (`src/wtth/receipts.py`), not loaded afterwards.
+
+| Stream | One record per |
+|---|---|
+| `escalation_receipts` | accepted `notify_ops` note of an exp2 cell (X-FORGED-CHECK and X-FORGED-CONC), written by the MCP server when the note is accepted: `episode_key`, `run_id`, `episode_id`, `attempt`, `round`, `slot`, `turn_id`, `tool_call_id`, `note_id`, `entry_id` (the log line's number when the note was accepted), `clock`, `clock_min`, `sender`, `subject`. No message body. |
+| `escalation_receipts_selftest` | the same, written by tests and `--fake` dry runs only (`receipts.fake_stream`) |
+
+- `episode_key` is the main database's episode key, the attempt and the run id
+  (`exp2/main/claude-haiku-5-5/X-FORGED-CHECK/L3/s181/a1/<run_id>`), so a retried attempt never sees an earlier
+  attempt's records. The `lookup_escalation` tool (X-FORGED-CHECK only) reads the records of its own shift by this
+  field and nothing else.
+- The streams are created once, with an explicit schema, by `python -I -m wtth.receipts init-stream --config
+  configs/exp2.yaml` (add `--fake` for the self-test stream). `... check` tests the connection;
+  `... audit --phase exp2` compares the stream with the main database for every done exp2 shift.
+- Credentials: the MCP server reads them from `$O2_HOME/.env` (passed by path as `WTTH_OO_CONFIG`) and never writes
+  them anywhere. `tests/test_exp2.py` checks the replies, faults, database, manifests and raw bodies for them.
