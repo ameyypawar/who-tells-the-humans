@@ -254,8 +254,9 @@ class SideFileTests(unittest.TestCase):
 
     def test_no_literal_key_prefix_in_repo_files(self) -> None:
         prefix = "sk-" + "ant"
+        scripts = [p for p in (REPO / "scripts").rglob("*") if p.is_file() and "__pycache__" not in p.parts]
         for p in list((REPO / "src").rglob("*.py")) + list((REPO / "tests").glob("*.py")) + list(CONFIGS.glob("*")) \
-                + list((REPO / "scripts").glob("*")):
+                + scripts:
             self.assertNotIn(prefix, p.read_text(encoding="utf-8"), str(p))
 
 
