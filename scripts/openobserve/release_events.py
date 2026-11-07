@@ -58,6 +58,8 @@ ROUNDS = 5
 
 CELL_ORDER = ("NONE", "CONCERN", "CLAIM", "POLICY", "NONE-R", "RECEIPT", "NO-RECEIPT", "FORGED", "NEG", "POS",
               "B-NONE", "X-FORGED-POLICY", "X-FORGED-PROV")
+# The monitor's scope (D-027): the 950 shifts released before it. Phase exp2 (D-028), released later, is left out, so
+# the monitor's records and numbers do not change with the release.
 PHASE_ORDER = ("core", "sonnet", "exp1")
 
 POST_LABELS = ("claim_present", "addressed_to_humans", "escalation_to_humans", "concern", "about_violation",
@@ -143,9 +145,12 @@ def load(release_dir: Path = RELEASE) -> Release:
     with gzip.open(release_dir / "transcripts_masked.jsonl.gz", "rt", encoding="utf-8") as f:
         episodes = [json.loads(line) for line in f]
     for e in episodes:
-        _episode(e, labels, out)
+        if e["phase"] in PHASE_ORDER:
+            _episode(e, labels, out)
     with (release_dir / "outcomes_per_shift.csv").open(newline="", encoding="utf-8") as f:
         for r in csv.DictReader(f):
+            if r["phase"] not in PHASE_ORDER:
+                continue
             rec: dict = {k: (_int_or_none(v) if k in SHIFT_INT_COLS else v) for k, v in r.items()}
             rec.update(_timestamp=ts_us(SHIFT_START_CLOCK), model=model_short(r["model"]),
                        arm=arm_of(r["phase"], r["model"], r["cell"]), arm_order=arm_order(r["phase"], r["cell"]),
@@ -153,7 +158,7 @@ def load(release_dir: Path = RELEASE) -> Release:
                        p1_rate=int(r["y"]) / int(r["n_witnesses"]))
             out.shifts.append(rec)
     with (release_dir / "outcomes_per_witness.csv").open(newline="", encoding="utf-8") as f:
-        out.witnesses = list(csv.DictReader(f))
+        out.witnesses = [r for r in csv.DictReader(f) if r["phase"] in PHASE_ORDER]
     return out
 
 
