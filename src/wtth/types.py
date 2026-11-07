@@ -61,6 +61,9 @@ class ToolSpec:
     description: str
     input_schema: dict
     reply: str
+    # D-028: the reply depends on the call (lookup_escalation). `reply` is then the no-match reply; the reply actually
+    # sent is recorded by the server (tool_calls.flags_json) and the runner checks the stream against that record.
+    dynamic_reply: bool = False
 
 
 @dataclass(frozen=True, slots=True)
@@ -95,6 +98,7 @@ class CellSpec:
     v_lines: str  # 'F' | 'BN'
     header_owner: bool = False
     owner: str | None = None  # 'slot1' | handle
+    receipts: bool = False  # D-028: notify_ops also writes each accepted note to the receipts store (settings.receipts)
 
 
 @dataclass(frozen=True, slots=True)
@@ -130,6 +134,7 @@ class Identity:
     turn_id: str | None
     toolset: str
     ticket_ids: tuple[str, ...]
+    receipts: bool = False  # D-028: the cell writes receipts (the orchestrator then passes the WTTH_OO_* server env)
 
 
 @dataclass(frozen=True, slots=True)

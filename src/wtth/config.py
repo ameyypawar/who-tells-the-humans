@@ -8,6 +8,9 @@ are paths only.
 Overlay files (D-022): a config with a top-level `extends: <file>` is merged onto that file (same directory). Mappings
 merge key by key, lists and scalars replace. An overlay may ADD cells, runbook variants and phases but never change
 one the base defines, so the confirmatory definitions in experiment.yaml stay as they are.
+
+D-028 (configs/exp2.yaml) adds a `receipts` section (the OpenObserve receipts store), `receipts: true` on cells whose
+notify_ops also writes there, the toolset main_check, and budget.projection_stop_usd.
 """
 from __future__ import annotations
 
@@ -28,7 +31,7 @@ CONFIGS_DIR = REPO_ROOT / "configs"
 
 C2_VALUES = ("C2.R", "C2.CN", "CLAIM", "CLAIM+FORGED", "C2.OBJ")
 V_LINES_VALUES = ("F", "BN")
-TOOLSET_NAMES = ("main", "backup", "board_only")
+TOOLSET_NAMES = ("main", "backup", "board_only", "main_check")   # main_check: D-028 (configs/tools_exp2.yaml)
 PHASE_MODES = ("live", "fake")
 TIERS = ("full", "lean", "mvp")
 
@@ -150,6 +153,7 @@ class Budget:
     projection_after_episodes: int
     phase_soft_usd: dict[str, float]
     judge_reserve_usd: float = 15.0   # experiment launches test against cap_usd - judge_reserve_usd
+    projection_stop_usd: float | None = None   # D-028: the cost projection drains above this (default: cap_usd)
 
 
 @dataclass(frozen=True, slots=True)
@@ -282,6 +286,20 @@ class Freeze:
 
 
 @dataclass(frozen=True, slots=True)
+class Receipts:
+    """D-028: the receipts store of receipts cells, a stream in a local OpenObserve instance (wtth.receipts).
+    `stream` is the one in use: `fake_stream` when settings.fake, so a dry run never writes to the live stream.
+    `credentials_file` is a path only; the MCP server alone reads it."""
+    backend: str
+    url: str
+    org: str
+    stream: str
+    live_stream: str
+    fake_stream: str
+    credentials_file: Path
+
+
+@dataclass(frozen=True, slots=True)
 class Settings:
     config_path: Path
     repo_root: Path
@@ -307,6 +325,7 @@ class Settings:
     allowed_tools_separate: bool = False  # WP3-ADD: --allowedTools as separate argv elements (research/41 4.3 item 3)
     extra_texts: tuple[ExtraText, ...] = ()   # D-022: exploratory text outside prereg/
     freeze: Freeze | None = None              # D-022: tag-and-tree freeze for exploratory live phases
+    receipts: Receipts | None = None          # D-028: the receipts store (exp2)
 
     def keywords(self, scenario: str) -> tuple[str, ...]:
         return self.scenarios[scenario].keywords
@@ -355,7 +374,8 @@ def _build_cells(raw_cells: dict, runbooks: dict) -> dict[str, CellSpec]:
             spec = CellSpec(
                 name=name, world=World(c["world"]), runbook=c["runbook"], system=c["system"],
                 toolset=c["toolset"], c2=c["c2"], c_note=bool(c["c_note"]), v_lines=c["v_lines"],
-                header_owner=bool(c.get("header_owner", False)), owner=c.get("owner"))
+                header_owner=bool(c.get("header_owner", False)), owner=c.get("owner"),
+                receipts=bool(c.get("receipts", False)))
         except (KeyError, ValueError) as exc:
             raise ConfigError(f"cell {name}: {exc}") from exc
         if spec.c2 not in C2_VALUES:
@@ -447,6 +467,39 @@ def _extra_texts(root: Path, raw: Any) -> tuple[ExtraText, ...]:
     return tuple(out)
 
 
+def _receipts(root: Path, raw: Any, fake: bool) -> Receipts | None:
+    if not raw:
+        return None
+    try:
+        live, fk = str(raw["stream"]), str(raw["fake_stream"])
+        rc = Receipts(str(raw.get("backend", "openobserve")), str(raw["url"]), str(raw.get("org", "default")),
+                      fk if fake else live, live, fk, _path(root, raw["credentials_file"]))
+    except (KeyError, TypeError) as exc:
+        raise ConfigError(f"receipts: {exc}") from exc
+    if rc.backend != "openobserve":
+        raise ConfigError(f"receipts.backend {rc.backend!r} is not 'openobserve'")
+    if live == fk:
+        raise ConfigError("receipts: fake_stream must differ from stream (a dry run never writes to the live stream)")
+    for s in (live, fk):
+        if not re.fullmatch(r"[a-z][a-z0-9_]{0,62}", s):
+            raise ConfigError(f"receipts: bad stream name {s!r}")
+    return rc
+
+
+def _check_receipt_cells(cells: dict[str, CellSpec], receipts: Receipts | None) -> None:
+    """D-028: a receipts cell needs the store, world R1 (the log exists only there) and no scripted C note (the
+    orchestrator files that note itself and would not write it to the store)."""
+    for name, c in cells.items():
+        if not c.receipts:
+            continue
+        if receipts is None:
+            raise ConfigError(f"cell {name}: receipts: true needs a receipts section")
+        if c.world is not World.R1:
+            raise ConfigError(f"cell {name}: receipts need world R1")
+        if c.c_note:
+            raise ConfigError(f"cell {name}: receipts cells file no scripted C note")
+
+
 def _freeze(raw: Any) -> Freeze | None:
     if not raw:
         return None
@@ -489,7 +542,10 @@ def load_settings(path: Path | None = None, overrides: dict | None = None) -> Se
     budget = Budget(float(rb["cap_usd"]), float(rb["warn_usd"]), float(rb["prior_spend_usd"]),
                     int(rb["reserve_calls"]), int(rb["projection_after_episodes"]),
                     {k: float(v) for k, v in rb["phase_soft_usd"].items()},
-                    float(rb.get("judge_reserve_usd", 15.0)))
+                    float(rb.get("judge_reserve_usd", 15.0)),
+                    None if rb.get("projection_stop_usd") is None else float(rb["projection_stop_usd"]))
+    if budget.projection_stop_usd is not None and budget.projection_stop_usd > budget.cap_usd:
+        raise ConfigError("budget.projection_stop_usd is above cap_usd")
     rs = dict(raw["scheduler"])
     rs["debrief_backoff_s"] = tuple(float(x) for x in rs["debrief_backoff_s"])
     try:
@@ -511,6 +567,8 @@ def load_settings(path: Path | None = None, overrides: dict | None = None) -> Se
         for n, s in raw["scenarios"].items()}
     runbooks = {k: list(v) for k, v in raw["runbooks"].items()}
     cells = _build_cells(raw["cells"], runbooks)
+    receipts = _receipts(root, raw.get("receipts"), bool(raw.get("fake", False)))
+    _check_receipt_cells(cells, receipts)
     core_cells = tuple(raw["core_cells"])
     for c in core_cells:
         if c not in cells:
@@ -528,7 +586,8 @@ def load_settings(path: Path | None = None, overrides: dict | None = None) -> Se
         mcp_server_name=str(raw.get("mcp_server_name", "workspace")),  # WP4-ADD
         allowed_tools_separate=bool(raw.get("allowed_tools_separate", False)),  # WP3-ADD
         mcp_env_guard=_mcp_env_guard(raw.get("mcp_env_guard", "refuse")),  # WP2-ADD
-        extra_texts=_extra_texts(root, raw.get("extra_texts")), freeze=_freeze(raw.get("freeze")))
+        extra_texts=_extra_texts(root, raw.get("extra_texts")), freeze=_freeze(raw.get("freeze")),
+        receipts=receipts)
 
 
 # ---- tools.yaml -------------------------------------------------------------------------------------
@@ -548,7 +607,8 @@ def load_toolsets(path: Path) -> dict[str, Toolset]:
     raw = _read_yaml(Path(path))
     out: dict[str, Toolset] = {}
     for name, ts in raw["toolsets"].items():
-        tools = tuple(ToolSpec(t["name"], t["description"], t["input_schema"], t["reply"]) for t in ts["tools"])
+        tools = tuple(ToolSpec(t["name"], t["description"], t["input_schema"], t["reply"],
+                               bool(t.get("dynamic_reply", False))) for t in ts["tools"])
         out[name] = Toolset(name, ts["id_field"], tools, tools_sha(tools))
     return out
 

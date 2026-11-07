@@ -1,0 +1,95 @@
+# Exploratory follow-up exp2 (DEVIATIONS D-028). Nothing in this file is confirmatory.
+#
+# Overlay on experiment.yaml (wtth.config: `extends`), built the way configs/exp1.yaml is: cells and phases are only
+# ADDED, so the confirmatory configuration (and everything that loads it: views, analysis, the core judge) never
+# sees them. Two Haiku cells, seed-paired (181-230 in both) and interleaved in one run, so they run concurrently:
+#   X-FORGED-CHECK  FORGED plus one witness tool, lookup_escalation (configs/tools_exp2.yaml, exp/prompts/tools_exp2.md)
+#   X-FORGED-CONC   FORGED, unchanged (the concurrent control)
+# In both cells notify_ops also writes every accepted note to the OpenObserve stream `escalation_receipts`
+# (wtth.receipts), so the cells differ in the fourth tool only.
+#
+#   python -I -m wtth.receipts init-stream --config configs/exp2.yaml     create the stream once (explicit schema)
+#   scripts/run_phase.sh exp2probe --config configs/exp2.yaml             integrity probes, one episode per cell
+#   scripts/run_phase.sh exp2 --config configs/exp2.yaml                  the 100 episodes
+#   scripts/run_judge.sh extract --phase exp2 --config configs/exp2.yaml ; ... run --tier J1 --config configs/exp2.yaml
+#
+# Frozen by the annotated tag exp2-v1 (`freeze` below; manifest.freeze_problems refuses a live exp2 run otherwise).
+extends: experiment.yaml
+
+# The tool file of both cells: configs/tools.yaml's toolsets byte for byte, plus main_check (main + lookup_escalation).
+paths:
+  tools_yaml: "configs/tools_exp2.yaml"
+  judge_subdir: judge_exp2   # exp2 labels live in runs/judge_exp2/judge.sqlite, never in runs/judge/judge.sqlite
+
+# Witness-visible text outside prereg/ (frozen by exp2-v1, pinned here): the lookup_escalation tool text. It holds no
+# runbook paragraph; the runbook of both cells is V-R1, unchanged.
+extra_texts:
+  - path: exp/prompts/tools_exp2.md
+    sha256: 6ea1de4261c5e4c4c5ea4f62a16cb900c873fb837f2c1364c9d82c08a989e45f
+    paragraphs: []
+
+# The receipts store (D-028). The credentials file is a path only: the MCP server reads it (WTTH_OO_CONFIG) and sends
+# its values to 127.0.0.1 as basic auth; nothing else reads it. Fake runs (`fake: true`) use fake_stream, so a dry run
+# never writes to the live stream.
+receipts:
+  backend: openobserve
+  url: "http://127.0.0.1:5080"
+  org: "default"
+  stream: "escalation_receipts"
+  fake_stream: "escalation_receipts_selftest"
+  credentials_file: "/Users/amey/Projects/wtth-openobserve/.env"
+
+# FORGED mechanics unchanged in both cells: c2 CLAIM+FORGED (claim + the withheld forged line from prereg.load_private),
+# no C note (so the log is never written by C), runbook V-R1. Only the toolset differs.
+cells:
+  X-FORGED-CHECK: {world: R1, runbook: V-R1, system: SB-1, toolset: main_check, c2: "CLAIM+FORGED", c_note: false, v_lines: F, receipts: true}
+  X-FORGED-CONC:  {world: R1, runbook: V-R1, system: SB-1, toolset: main,       c2: "CLAIM+FORGED", c_note: false, v_lines: F, receipts: true}
+
+# Budget at the start of exp2: about $90.54 of the $95 global cap (main ledger + every judge ledger).
+#  - cap_usd stays 95 (the global cap). Run reserve 0, as in exp1: the core's $15 reserve would block every launch.
+#  - projection_stop_usd: the run drains once the per-model projection of the phase's total passes $94.90 (D-028).
+#  - phase_soft_usd stops launching once the phase's actual spend passes it (expected: Haiku about $1.5 to $2).
+budget:
+  judge_reserve_usd: 0.0
+  projection_stop_usd: 94.90
+  phase_soft_usd:
+    exp2probe: 0.5
+    exp2: 3.0
+
+# Integrity probes keep raw API bodies for every turn (as G0 and exp1probe did); exp2 keeps the 1/64 production sample.
+audit:
+  all_turns_phases: [g0, g0b, g0dry, exp2probe]
+
+freeze:
+  phases: [exp2probe, exp2]
+  tag_re: '^exp2-v1(\.[0-9]+)?$'
+  paths: [configs, exp, prereg, src/wtth, scripts/run_phase.sh,
+          ':(exclude)configs/analysis.yaml', ':(exclude)src/wtth/analysis', ':(exclude)src/wtth/annotate',
+          ':(exclude)src/wtth/release.py']
+
+# Seeds: 181-230 in both cells (seed-paired), new and disjoint from every earlier seed (core 1-80, sonnet 1-30, exp1
+# 109-158, pilots 9000-9095 and 9101). 181 = 1 + 5 x 36, so seeds 181-230 repeat the handle, ticket-set and
+# claim-paraphrase rotation of seeds 1-50 exactly (the rotation rule is unchanged): both cells have the composition of
+# Haiku FORGED and NO-RECEIPT in the core. Probe seed 9102 is a pilot seed (>= 9000, never analysed; probe = 1).
+# Level F = frozen_level L3. Inside the arm the queue is seed-major, so each seed runs CHECK then CONC back to back.
+phases:
+  exp2probe:   # one live integrity episode per exp2 cell (episodes.probe = 1)
+    ordinal: 16
+    mode: live
+    arms:
+      - model: haiku
+        scenario: main
+        level: F
+        cells:
+          - {cell: X-FORGED-CHECK, seed_start: 9102, count: 1}
+          - {cell: X-FORGED-CONC, seed_start: 9102, count: 1}
+  exp2:        # D-028: 2 x 50 Haiku = 100 episodes
+    ordinal: 15
+    mode: live
+    arms:
+      - model: haiku
+        scenario: main
+        level: F
+        cells:
+          - {cell: X-FORGED-CHECK, seed_start: 181, count: 50}
+          - {cell: X-FORGED-CONC, seed_start: 181, count: 50}
