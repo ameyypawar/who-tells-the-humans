@@ -115,6 +115,14 @@ def followup_rows():
             figures.FigRow("RECEIPT (Sonnet)", "sonnet", s[0], None)]
 
 
+def followup_pair_rows():
+    """The D-022 rows plus the D-028 concurrent pair."""
+    r = wilson_rates("haiku", {"X-FORGED-CHECK": (114, 150), "X-FORGED-CONC": (104, 150)})
+    p = p2_shifts("haiku", {"X-FORGED-CHECK": (0, 50), "X-FORGED-CONC": (4, 50)})
+    return followup_rows() + [figures.FigRow("X-FORGED-CHECK", "haiku", r[0], p[0], source="D-028", pair="exp2"),
+                              figures.FigRow("X-FORGED-CONC", "haiku", r[1], p[1], source="D-028", pair="exp2")]
+
+
 def fig1a_full(d, followup=()):
     return figures.fig1a(wilson_rates("haiku", P1_KN), p2_shifts("haiku", HAIKU_P2), d, model_label="Haiku 5.5",
                          sonnet_p1=wilson_rates("sonnet", SONNET_KN),
@@ -215,11 +223,11 @@ class TestFigures(unittest.TestCase):
 
     def test_fig1_text_never_overlaps_and_stays_on_the_page(self):
         """Fig. 1 at its printed size: no two texts overlap and none is clipped by the figure edge, with and without
-        the D-022 follow-up group."""
+        the D-022 follow-up group, and with the D-028 concurrent pair added to it."""
         d = tmp_dir("wp6_fig_overlap")
-        for variant in ("main", "followup"):
+        for variant in ("main", "followup", "pair"):
             with Capture() as cap:
-                fig1a_full(d, followup_rows() if variant == "followup" else ())
+                fig1a_full(d, {"main": (), "followup": followup_rows(), "pair": followup_pair_rows()}[variant])
                 figures.fig1b(timing_fixture(), d, model_label="Haiku 5.5")
             for stem in ("fig1a", "fig1b"):
                 boxes, page = cap.texts[stem]
@@ -291,6 +299,36 @@ class TestFigures(unittest.TestCase):
         self.assertEqual({r["block"] for r in fu}, {"follow-up"})
         self.assertEqual([r["c_really_told_ops"] for r in fu], ["no", "no", "yes"])
         self.assertIn("follow-up (exploratory, D-022; a later phase, not concurrent", f.alt_txt.read_text())
+        self.assertEqual({r["concurrent_pair"] for r in rows}, {""})
+
+    def test_concurrent_pair(self):
+        """D-028: the two concurrent rows close the follow-up group, a bracket marked 'concurrent' joins them, the
+        legend says the follow-up is not concurrent with the core, and Fig. 1a keeps the printed height it had with
+        the D-022 group alone."""
+        from PIL import Image
+
+        d1, d2 = tmp_dir("wp6_fig_pair_a"), tmp_dir("wp6_fig_pair_b")
+        a = fig1a_full(d1, followup_rows())
+        with Inspect() as ins:
+            b = fig1a_full(d2, followup_pair_rows())
+        rows = read_csv(b.data_csv)
+        fu = [r for r in rows if r["group"].startswith("follow-up")]
+        self.assertEqual({r["group"] for r in fu}, {"follow-up (exploratory, D-022, D-028)"})
+        self.assertEqual([(r["label"], r["concurrent_pair"], r["ops_never_told"]) for r in fu][3:],
+                         [("X-FORGED-CHECK", "exp2", "0/50"), ("X-FORGED-CONC", "exp2", "4/50")])
+        self.assertEqual({r["concurrent_pair"] for r in fu[:3]}, {""})
+        texts = ins.info["fig1a"]["texts"]
+        self.assertEqual(texts.count(figures.PAIR_TEXT), 1)
+        self.assertIn(figures.FOLLOWUP_LEGEND_PAIR, texts)
+        self.assertNotIn(figures.FOLLOWUP_LEGEND, texts)
+        for g in ("+ log lookup tool", "FORGED, unchanged"):
+            self.assertIn(g, texts)
+        self.assertEqual(ins.info["fig1a"]["dashed"], 5)
+        alt = b.alt_txt.read_text()
+        self.assertIn("a bracket marked 'concurrent' joins X-FORGED-CHECK and X-FORGED-CONC", alt)
+        self.assertIn("follow-up (exploratory, D-022, D-028; later phases, not concurrent with the core", alt)
+        with Image.open(a.png) as ia, Image.open(b.png) as ib:
+            self.assertEqual(ia.size, ib.size)
 
     def test_series_are_distinguishable_without_colour(self):
         pairs = list(style.CELL_STYLE.values())

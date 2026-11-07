@@ -55,14 +55,20 @@ def _err(ax: Any, x: float, y: float | None, lo: float | None, hi: float | None,
 # 'ops never told' column reads an em dash where it does not apply; the panel is labelled (a); the axis says that
 # higher means ops was told; the intervals are whatever the rates carry (shift-level cluster bootstrap in the paper,
 # named in the header); follow-up rows (a later phase) are drawn hollow with dashed intervals under a heavier rule.
+# D-028 adds two follow-up rows run concurrently with each other (X-FORGED-CHECK and its control X-FORGED-CONC): a
+# bracket labelled "concurrent" joins them, and the rows tighten so Fig. 1a keeps its printed height.
 
 FIG1_GROUPS: tuple[tuple[str, tuple[str, ...]], ...] = (
     ("no log (R0)", ("NONE", "CONCERN", "CLAIM", "POLICY")),
     ("log (R1)", ("NONE-R", "NO-RECEIPT", "RECEIPT", "FORGED")),
     ("controls", ("NEG", "POS", "B-NONE")))
 GROUP_DISPLAY = {"no log (R0)": "no log (R0)", "log (R1)": "log (R1)", "controls": "controls"}   # drawn rotated
-FOLLOWUP_GROUP = "follow-up (exploratory, D-022)"         # the CSV / alt-text name
+FOLLOWUP_GROUP = "follow-up (exploratory, D-022)"         # the CSV / alt-text name (D-022 rows only)
 FOLLOWUP_DISPLAY = "follow-up"
+FOLLOWUP_LEGEND = "follow-up: later phase, not concurrent"
+FOLLOWUP_LEGEND_PAIR = "follow-up: later phases, not concurrent with the core"
+PAIR_TEXT = "concurrent"
+FIG1A_ROWS_IN = 0.126 * (14 + 0.40 * 3 + 0.4)             # the rows' height with the D-022 group (research/68)
 C_TOLD_CELLS = ("RECEIPT", "POS")          # C really reported, so P2 is not defined there (PREREG 10)
 NO_VIOLATION_CELLS = ("B-NONE",)
 HAIKU_COLOUR, SONNET_COLOUR = PALETTE["blue"], PALETTE["orange"]     # validated: CVD dE 29 (protan)
@@ -78,7 +84,8 @@ GLOSS: Mapping[str, str] = {
     "NEG": "duplicate cost, no claim", "POS": "real receipt + duplicate cost", "B-NONE": "no violation"}
 FOLLOWUP_GLOSS: Mapping[tuple[str, str], str] = {
     ("X-FORGED-POLICY", "haiku"): "+ one-line rule", ("X-FORGED-PROV", "haiku"): "+ provenance note",
-    ("RECEIPT", "sonnet"): "real receipt"}
+    ("RECEIPT", "sonnet"): "real receipt", ("X-FORGED-CHECK", "haiku"): "+ log lookup tool",
+    ("X-FORGED-CONC", "haiku"): "FORGED, unchanged"}
 INTERVAL_TEXT = {"cluster_bootstrap": "lines: 95% shift-level cluster-bootstrap intervals",
                  "wilson": "lines: 95% Wilson intervals, witness level"}
 INTERVAL_ALT = {"cluster_bootstrap": "shift-level cluster-bootstrap 95% intervals (shifts resampled within each cell)",
@@ -91,12 +98,20 @@ PANEL_PT = 8.0
 
 @dataclass(frozen=True, slots=True)
 class FigRow:
-    """An extra row of Fig. 1a (the D-022 follow-up group): P1 with its interval (method in the rate); P2 None where C
-    reported."""
+    """An extra row of Fig. 1a (the follow-up group): P1 with its interval (method in the rate); P2 None where C
+    reported. source: the deviation that added the row; rows with the same non-empty pair ran concurrently with each
+    other and are joined by a bracket."""
     label: str
     model: str              # 'haiku' | 'sonnet'
     p1: CellRate
     p2: EpisodeRate | None
+    source: str = "D-022"
+    pair: str = ""
+
+
+def followup_group(followup: Sequence[FigRow]) -> str:
+    """The CSV / alt-text name of the follow-up group: the deviations its rows come from."""
+    return f"follow-up (exploratory, {', '.join(sorted({fr.source for fr in followup}))})"
 
 
 def _kn(r: EpisodeRate | None, cell: str) -> str:
@@ -161,9 +176,10 @@ def fig1a(haiku_p1: Sequence[CellRate], haiku_p2: Sequence[EpisodeRate], out_dir
     for gname, cells in FIG1_GROUPS:
         g = [{"label": c, "cell": c, "gloss": GLOSS.get(c, ""), "haiku": h1.get(c), "sonnet": s1.get(c),
               "p2h": _kn(h2.get(c), c), "p2s": _kn(s2.get(c), c) if c in s1 else "", "followup": False,
-              "c_told": c in C_TOLD_CELLS} for c in cells if c in h1 or c in s1]
+              "c_told": c in C_TOLD_CELLS, "pair": ""} for c in cells if c in h1 or c in s1]
         if g:
             groups.append((gname, GROUP_DISPLAY.get(gname, gname), g))
+    follow_name = followup_group(followup) if followup else FOLLOWUP_GROUP
     if followup:
         g = []
         for fr in followup:
@@ -171,14 +187,16 @@ def fig1a(haiku_p1: Sequence[CellRate], haiku_p2: Sequence[EpisodeRate], out_dir
             p2 = C_TOLD_TEXT if fr.p2 is None else f"{fr.p2.k}/{fr.p2.n}"
             g.append({"label": fr.label, "cell": fr.p1.cell, "gloss": _gloss(fr.p1.cell, fr.model, True),
                       "haiku": fr.p1 if hs else None, "sonnet": None if hs else fr.p1, "p2h": p2 if hs else "",
-                      "p2s": "" if hs else p2, "followup": True, "c_told": fr.p2 is None})
-        groups.append((FOLLOWUP_GROUP, FOLLOWUP_DISPLAY, g))
+                      "p2s": "" if hs else p2, "followup": True, "c_told": fr.p2 is None, "pair": fr.pair})
+        groups.append((follow_name, FOLLOWUP_DISPLAY, g))
     rows_all = [r for _, _, g in groups for r in g]
     n_rows = len(rows_all)
-    # the follow-up group adds three rows and the header a third line: tighter rows, gaps and header lines keep
-    # Fig. 1a at the height it had before research/68 (the main text has no line to spare)
+    pairs = {r["pair"] for r in rows_all if r["pair"]}
+    # the follow-up group adds rows and the header a third line: tighter rows, gaps and header lines keep Fig. 1a at
+    # the height it had before research/68 (the main text has no line to spare); rows beyond the D-022 group's three
+    # tighten further, so the height stays
     gap = 0.55 if not followup else 0.40
-    pitch_in = 0.148 if not followup else 0.126
+    pitch_in = 0.148 if not followup else min(0.126, FIG1A_ROWS_IN / (n_rows + gap * (len(groups) - 1) + 0.4))
     top_in, bottom_in = 0.42, 0.36
     height = top_in + bottom_in + pitch_in * (n_rows + gap * (len(groups) - 1) + 0.4)
     width = FIG1A_WIDTH_IN
@@ -205,7 +223,7 @@ def fig1a(haiku_p1: Sequence[CellRate], haiku_p2: Sequence[EpisodeRate], out_dir
     gpos: list[tuple[str, float]] = []
     for gi, (gname, disp, g) in enumerate(groups):
         if gi:
-            seps.append((y - 0.5 - gap / 2.0, gname == FOLLOWUP_GROUP))
+            seps.append((y - 0.5 - gap / 2.0, gname == follow_name))
         first = y
         for r in g:
             fu = r["followup"]
@@ -238,6 +256,14 @@ def fig1a(haiku_p1: Sequence[CellRate], haiku_p2: Sequence[EpisodeRate], out_dir
     for xv in (0, 25, 50, 75, 100):
         ax.axvline(xv, color=PALETTE["black"], alpha=0.10, linewidth=0.6, zorder=0)
     ax.spines["left"].set_visible(False)
+    for key in sorted(pairs):        # a bracket at the left of the plot joins rows that ran concurrently
+        ys = [r["y"] for r in rows_all if r["pair"] == key]
+        y0, y1 = min(ys) - 0.32, max(ys) + 0.32
+        ax.plot([3.4, 1.0, 1.0, 3.4], [y0, y0, y1, y1], color=PALETTE["black"], alpha=0.75, linewidth=0.8,
+                solid_joinstyle="miter", zorder=2, clip_on=False)
+        ax.text(4.6, (min(ys) + max(ys)) / 2.0, PAIR_TEXT, ha="left", va="center", fontsize=NOTE_PT,
+                color=PALETTE["black"], zorder=2,
+                bbox={"boxstyle": "square,pad=0.15", "facecolor": "#FFFFFF", "edgecolor": "none"})
     for ys, heavy in seps:
         ax.add_line(Line2D([0.006, 0.996], [ys, ys], transform=figx, color=PALETTE["black"],
                            alpha=0.55 if heavy else 0.25, linewidth=0.9 if heavy else 0.6, clip_on=False))
@@ -273,7 +299,7 @@ def fig1a(haiku_p1: Sequence[CellRate], haiku_p2: Sequence[EpisodeRate], out_dir
     if followup:
         handles.append(Line2D([], [], color=PALETTE["black"], marker="o", linestyle=(0, (2.2, 1.4)), linewidth=1.0,
                               markersize=4.2, markerfacecolor="#FFFFFF", markeredgewidth=1.0,
-                              label="follow-up: later phase, not concurrent"))
+                              label=FOLLOWUP_LEGEND_PAIR if pairs else FOLLOWUP_LEGEND))
     x_leg = (x_group + _text_width_in("(a)", PANEL_PT) + 0.12 - left_in) / ax_w
     ax.legend(handles=handles, loc="center left", bbox_to_anchor=(x_leg, hy[0]), ncol=len(handles),
               fontsize=NOTE_PT, frameon=False, handlelength=1.6, borderaxespad=0.0, borderpad=0.0,
@@ -311,7 +337,7 @@ def fig1a(haiku_p1: Sequence[CellRate], haiku_p2: Sequence[EpisodeRate], out_dir
                                  "model": model, "k": rate.k, "n": rate.n, "p": rate.p, "lo": rate.lo, "hi": rate.hi,
                                  "method": rate.method, "ops_never_told": p2,
                                  "c_really_told_ops": "yes" if r["c_told"] else "no",
-                                 "block": "follow-up" if r["followup"] else "core"})
+                                 "block": "follow-up" if r["followup"] else "core", "concurrent_pair": r["pair"]})
                 parts.append(f"{r['label']} ({r['gloss']}) {model}: P1 {_p(rate.p)} ({_ci(rate.lo, rate.hi)}), "
                              f"ops never told {p2 or 'not shown'}")
     how = "; ".join(INTERVAL_ALT.get(m, m) for m in methods)
@@ -319,8 +345,12 @@ def fig1a(haiku_p1: Sequence[CellRate], haiku_p2: Sequence[EpisodeRate], out_dir
            f"higher means ops was told. {model_label} is drawn as filled circles"
            + (f", the exploratory {sonnet_label} arm as hollow diamonds where it ran" if has_s else "")
            + ". Each row code carries a short gloss. Rows are grouped: no log (R0), log (R1), controls"
-           + (", follow-up (exploratory, D-022; a later phase, not concurrent, drawn hollow with dashed intervals)"
-              if followup else "")
+           + (f", {follow_name[:-1]}; "
+              + ("later phases, not concurrent with the core" if pairs else "a later phase, not concurrent")
+              + ", drawn hollow with dashed intervals)" if followup else "")
+           + "".join(f"; a bracket marked '{PAIR_TEXT}' joins "
+                     + " and ".join(r["label"] for r in rows_all if r["pair"] == key)
+                     + ", which ran concurrently with each other" for key in sorted(pairs))
            + ". Shaded rows are those where C really told ops, so standing down there is correct. Text columns give P1 "
              "in percent and the number of shifts in which ops was never told (P2, k of n); an em dash marks the "
              f"cells where P2 does not apply (C really told ops, or no violation). Values: {'; '.join(parts)}.")
