@@ -1,0 +1,62 @@
+{
+ "note": "Claim-without-receipt monitor for checkable escalation receipts. install_monitor.py creates the template, the destination (with your webhook URL) and the alert from this file. The alert's SQL is monitor.sql, verbatim.",
+ "template": {
+  "name": "claims_without_receipt",
+  "body": "Escalation receipts monitor: {alert_name}\nstatus={alert_status} stream={stream_name} flagged_posts={alert_count} period_min={alert_period} window={alert_start_time}..{alert_end_time}\nscope|post_id|author|claimed_reporters|receipts_before\n{rows}\n",
+  "type": "http",
+  "title": ""
+ },
+ "destination": {
+  "name": "receipts_webhook",
+  "url": "https://hooks.example.com/replace-with-your-webhook",
+  "method": "post",
+  "skip_tls_verify": false,
+  "headers": {},
+  "template": "claims_without_receipt",
+  "type": "http"
+ },
+ "alert": {
+  "name": "claim_without_receipt",
+  "org_id": "default",
+  "stream_type": "logs",
+  "stream_name": "board_posts",
+  "is_real_time": false,
+  "query_condition": {
+   "type": "sql",
+   "conditions": null,
+   "sql": "-- Claim without receipt: board posts that say someone escalated to the humans, with no escalation receipt from\n-- that agent earlier in the same scope. It is the query of the alert in alert.json, verbatim.\n--   board_posts          scope, post_id, author, text, claim_present (1 = the post says someone escalated),\n--                        claimed_reporters (comma-separated handles it says escalated; '' = it names no one),\n--                        n_claimed_reporters\n--   escalation_receipts  scope, entry_id, sender, subject: written by the escalation channel (receipts.py)\n-- A post is flagged when claim_present = 1 and\n--   (a) it names reporters and at least one of them has no receipt in the same scope with an earlier _timestamp, or\n--   (b) it names no one (\"ops has been told\") and the scope has no receipt at all before the post.\n-- Handles must be written the same way in both streams (receipts.py stores them in lower case, without '@').\n-- Keep the explicit LIMIT: without one, OpenObserve evaluates a scheduled alert's SQL with a 100-row cap.\nSELECT p.scope, p.post_id, p.author, p.claimed_reporters, p.n_claimed_reporters, p.text,\n       p._timestamp AS post_ts,\n       COUNT(DISTINCT CASE WHEN strpos(',' || COALESCE(p.claimed_reporters, '') || ',', ',' || r.sender || ',') > 0\n                           THEN r.sender END) AS reporters_with_receipt,\n       COUNT(r.sender) AS receipts_before\nFROM board_posts p\nLEFT JOIN escalation_receipts r ON r.scope = p.scope AND r._timestamp < p._timestamp\nWHERE p.claim_present = 1\nGROUP BY p.scope, p.post_id, p.author, p.claimed_reporters, p.n_claimed_reporters, p.text, p._timestamp\nHAVING (COALESCE(p.n_claimed_reporters, 0) > 0\n        AND COUNT(DISTINCT CASE WHEN strpos(',' || COALESCE(p.claimed_reporters, '') || ',', ',' || r.sender || ',') > 0\n                                THEN r.sender END) < COALESCE(p.n_claimed_reporters, 0))\n    OR (COALESCE(p.n_claimed_reporters, 0) = 0 AND COUNT(r.sender) = 0)\nORDER BY p.scope, p._timestamp\nLIMIT 5000\n",
+   "promql": null,
+   "promql_condition": null,
+   "aggregation": null,
+   "vrl_function": null,
+   "search_event_type": null,
+   "multi_time_range": null
+  },
+  "trigger_condition": {
+   "period": 1440,
+   "operator": ">=",
+   "threshold": 1,
+   "frequency": 10,
+   "cron": "",
+   "frequency_type": "minutes",
+   "silence": 60,
+   "timezone": "UTC",
+   "tolerance_in_secs": null,
+   "align_time": false
+  },
+  "destinations": [
+   "receipts_webhook"
+  ],
+  "row_template": "{scope}|{post_id}|{author}|{claimed_reporters}|{receipts_before}",
+  "row_template_type": "String",
+  "description": "A board post says someone escalated to the humans (claim_present = 1), but a claimed reporter has no escalation receipt earlier in the same scope (for a claim that names no one: no receipt at all). One row per flagged post.",
+  "enabled": true,
+  "tz_offset": 0,
+  "creates_incident": false,
+  "workflows": [],
+  "pending_period_sec": 0,
+  "notify_on_recovery": false,
+  "recovery_destinations": [],
+  "keep_firing_for": 0
+ }
+}

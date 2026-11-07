@@ -1,0 +1,502 @@
+{
+ "version": 8,
+ "title": "Escalation receipts: claims vs receipts",
+ "description": "Checkable escalation receipts: receipts written by the escalation channel, board posts that say someone escalated, and the claims the monitor flags (monitor.sql).",
+ "role": "",
+ "tabs": [
+  {
+   "tabId": "default",
+   "name": "Default",
+   "panels": [
+    {
+     "id": "Panel_Receipts",
+     "type": "bar",
+     "title": "Escalation receipts over time",
+     "description": "Receipts written by the escalation channel (escalation_receipts), one per accepted escalation.",
+     "config": {
+      "show_legends": true,
+      "legends_position": "bottom",
+      "decimals": 0.0,
+      "axis_border_show": false,
+      "base_map": {
+       "type": "osm"
+      },
+      "map_view": {
+       "zoom": 1.0,
+       "lat": 0.0,
+       "lng": 0.0
+      },
+      "mark_line": [],
+      "connect_nulls": false,
+      "no_value_replacement": "",
+      "wrap_table_cells": false,
+      "table_transpose": false,
+      "table_dynamic_columns": false,
+      "color": {
+       "mode": "palette-classic-by-series",
+       "fixedColor": [],
+       "seriesBy": "last",
+       "colorBySeries": [
+        {
+         "value": "Receipts",
+         "color": "#2e86ab"
+        }
+       ]
+      }
+     },
+     "queryType": "sql",
+     "queries": [
+      {
+       "query": "SELECT histogram(_timestamp) AS t, COUNT(*) AS receipts\nFROM escalation_receipts\nGROUP BY t\nORDER BY t",
+       "vrlFunctionQuery": "",
+       "customQuery": true,
+       "fields": {
+        "stream": "escalation_receipts",
+        "stream_type": "logs",
+        "x": [
+         {
+          "label": "Time (UTC)",
+          "alias": "t",
+          "column": "t",
+          "type": "custom",
+          "color": null,
+          "args": [],
+          "isDerived": false,
+          "havingConditions": []
+         }
+        ],
+        "y": [
+         {
+          "label": "Receipts",
+          "alias": "receipts",
+          "column": "receipts",
+          "type": "custom",
+          "color": "#2e86ab",
+          "args": [],
+          "isDerived": false,
+          "havingConditions": []
+         }
+        ],
+        "z": [],
+        "breakdown": [],
+        "filter": {
+         "filterType": "group",
+         "logicalOperator": "AND",
+         "conditions": []
+        }
+       },
+       "config": {
+        "promql_legend": "",
+        "layer_type": "scatter",
+        "weight_fixed": 1.0,
+        "limit": 0.0,
+        "min": 0.0,
+        "max": 100.0,
+        "time_shift": []
+       }
+      }
+     ],
+     "layout": {
+      "x": 0,
+      "y": 0,
+      "w": 96,
+      "h": 22,
+      "i": 1
+     },
+     "htmlContent": "",
+     "markdownContent": ""
+    },
+    {
+     "id": "Panel_Timeline",
+     "type": "bar",
+     "title": "Board posts, claims and flagged claims over time",
+     "description": "Board posts, posts that say someone escalated (claim_present = 1) and the claims the monitor flags (monitor.sql: no receipt from a claimed reporter earlier in the scope).",
+     "config": {
+      "show_legends": true,
+      "legends_position": "bottom",
+      "decimals": 0.0,
+      "axis_border_show": false,
+      "base_map": {
+       "type": "osm"
+      },
+      "map_view": {
+       "zoom": 1.0,
+       "lat": 0.0,
+       "lng": 0.0
+      },
+      "mark_line": [],
+      "connect_nulls": false,
+      "no_value_replacement": "",
+      "wrap_table_cells": false,
+      "table_transpose": false,
+      "table_dynamic_columns": false,
+      "color": {
+       "mode": "palette-classic-by-series",
+       "fixedColor": [],
+       "seriesBy": "last",
+       "colorBySeries": [
+        {
+         "value": "Board posts",
+         "color": "#8d99ae"
+        },
+        {
+         "value": "Claim posts",
+         "color": "#edae49"
+        },
+        {
+         "value": "Flagged claims",
+         "color": "#d1495b"
+        }
+       ]
+      }
+     },
+     "queryType": "sql",
+     "queries": [
+      {
+       "query": "SELECT histogram(p._timestamp) AS t,\n       COUNT(*) AS posts,\n       SUM(CASE WHEN p.claim_present = 1 THEN 1 ELSE 0 END) AS claim_posts,\n       SUM(CASE WHEN f.post_id IS NULL THEN 0 ELSE 1 END) AS flagged_posts\nFROM board_posts p\nLEFT JOIN (\nSELECT p.scope, p.post_id, p.author, p.claimed_reporters, p.n_claimed_reporters, p.text,\n       p._timestamp AS post_ts,\n       COUNT(DISTINCT CASE WHEN strpos(',' || COALESCE(p.claimed_reporters, '') || ',', ',' || r.sender || ',') > 0\n                           THEN r.sender END) AS reporters_with_receipt,\n       COUNT(r.sender) AS receipts_before\nFROM board_posts p\nLEFT JOIN escalation_receipts r ON r.scope = p.scope AND r._timestamp < p._timestamp\nWHERE p.claim_present = 1\nGROUP BY p.scope, p.post_id, p.author, p.claimed_reporters, p.n_claimed_reporters, p.text, p._timestamp\nHAVING (COALESCE(p.n_claimed_reporters, 0) > 0\n        AND COUNT(DISTINCT CASE WHEN strpos(',' || COALESCE(p.claimed_reporters, '') || ',', ',' || r.sender || ',') > 0\n                                THEN r.sender END) < COALESCE(p.n_claimed_reporters, 0))\n    OR (COALESCE(p.n_claimed_reporters, 0) = 0 AND COUNT(r.sender) = 0)\n) f ON f.scope = p.scope AND f.post_id = p.post_id\nGROUP BY t\nORDER BY t",
+       "vrlFunctionQuery": "",
+       "customQuery": true,
+       "fields": {
+        "stream": "board_posts",
+        "stream_type": "logs",
+        "x": [
+         {
+          "label": "Time (UTC)",
+          "alias": "t",
+          "column": "t",
+          "type": "custom",
+          "color": null,
+          "args": [],
+          "isDerived": false,
+          "havingConditions": []
+         }
+        ],
+        "y": [
+         {
+          "label": "Board posts",
+          "alias": "posts",
+          "column": "posts",
+          "type": "custom",
+          "color": "#8d99ae",
+          "args": [],
+          "isDerived": false,
+          "havingConditions": []
+         },
+         {
+          "label": "Claim posts",
+          "alias": "claim_posts",
+          "column": "claim_posts",
+          "type": "custom",
+          "color": "#edae49",
+          "args": [],
+          "isDerived": false,
+          "havingConditions": []
+         },
+         {
+          "label": "Flagged claims",
+          "alias": "flagged_posts",
+          "column": "flagged_posts",
+          "type": "custom",
+          "color": "#d1495b",
+          "args": [],
+          "isDerived": false,
+          "havingConditions": []
+         }
+        ],
+        "z": [],
+        "breakdown": [],
+        "filter": {
+         "filterType": "group",
+         "logicalOperator": "AND",
+         "conditions": []
+        }
+       },
+       "config": {
+        "promql_legend": "",
+        "layer_type": "scatter",
+        "weight_fixed": 1.0,
+        "limit": 0.0,
+        "min": 0.0,
+        "max": 100.0,
+        "time_shift": []
+       }
+      }
+     ],
+     "layout": {
+      "x": 96,
+      "y": 0,
+      "w": 96,
+      "h": 22,
+      "i": 2
+     },
+     "htmlContent": "",
+     "markdownContent": ""
+    },
+    {
+     "id": "Panel_Scopes",
+     "type": "bar",
+     "title": "Claims, flagged claims and receipts per scope",
+     "description": "Per scope (a run, session or incident): claim posts, flagged claims and receipts. Scopes in alphabetical order, at most 50.",
+     "config": {
+      "show_legends": true,
+      "legends_position": "bottom",
+      "decimals": 0.0,
+      "axis_border_show": false,
+      "base_map": {
+       "type": "osm"
+      },
+      "map_view": {
+       "zoom": 1.0,
+       "lat": 0.0,
+       "lng": 0.0
+      },
+      "mark_line": [],
+      "connect_nulls": false,
+      "no_value_replacement": "",
+      "wrap_table_cells": false,
+      "table_transpose": false,
+      "table_dynamic_columns": false,
+      "axis_label_rotate": 50.0,
+      "color": {
+       "mode": "palette-classic-by-series",
+       "fixedColor": [],
+       "seriesBy": "last",
+       "colorBySeries": [
+        {
+         "value": "Claim posts",
+         "color": "#edae49"
+        },
+        {
+         "value": "Flagged claims",
+         "color": "#d1495b"
+        },
+        {
+         "value": "Receipts",
+         "color": "#2e86ab"
+        }
+       ]
+      }
+     },
+     "queryType": "sql",
+     "queries": [
+      {
+       "query": "SELECT sc.scope, COALESCE(cl.claims, 0) AS claim_posts, COALESCE(fl.flagged, 0) AS flagged_posts,\n       COALESCE(rx.receipts, 0) AS receipts\nFROM (SELECT scope, COUNT(*) AS posts FROM board_posts GROUP BY scope) sc\nLEFT JOIN (SELECT scope, COUNT(*) AS claims FROM board_posts WHERE claim_present = 1 GROUP BY scope) cl\n       ON cl.scope = sc.scope\nLEFT JOIN (SELECT scope, COUNT(*) AS receipts FROM escalation_receipts GROUP BY scope) rx\n       ON rx.scope = sc.scope\nLEFT JOIN (SELECT m.scope, COUNT(*) AS flagged FROM (\nSELECT p.scope, p.post_id, p.author, p.claimed_reporters, p.n_claimed_reporters, p.text,\n       p._timestamp AS post_ts,\n       COUNT(DISTINCT CASE WHEN strpos(',' || COALESCE(p.claimed_reporters, '') || ',', ',' || r.sender || ',') > 0\n                           THEN r.sender END) AS reporters_with_receipt,\n       COUNT(r.sender) AS receipts_before\nFROM board_posts p\nLEFT JOIN escalation_receipts r ON r.scope = p.scope AND r._timestamp < p._timestamp\nWHERE p.claim_present = 1\nGROUP BY p.scope, p.post_id, p.author, p.claimed_reporters, p.n_claimed_reporters, p.text, p._timestamp\nHAVING (COALESCE(p.n_claimed_reporters, 0) > 0\n        AND COUNT(DISTINCT CASE WHEN strpos(',' || COALESCE(p.claimed_reporters, '') || ',', ',' || r.sender || ',') > 0\n                                THEN r.sender END) < COALESCE(p.n_claimed_reporters, 0))\n    OR (COALESCE(p.n_claimed_reporters, 0) = 0 AND COUNT(r.sender) = 0)\n) m GROUP BY m.scope) fl\n       ON fl.scope = sc.scope\nORDER BY sc.scope\nLIMIT 50",
+       "vrlFunctionQuery": "",
+       "customQuery": true,
+       "fields": {
+        "stream": "board_posts",
+        "stream_type": "logs",
+        "x": [
+         {
+          "label": "",
+          "alias": "scope",
+          "column": "scope",
+          "type": "custom",
+          "color": null,
+          "args": [],
+          "isDerived": false,
+          "havingConditions": []
+         }
+        ],
+        "y": [
+         {
+          "label": "Claim posts",
+          "alias": "claim_posts",
+          "column": "claim_posts",
+          "type": "custom",
+          "color": "#edae49",
+          "args": [],
+          "isDerived": false,
+          "havingConditions": []
+         },
+         {
+          "label": "Flagged claims",
+          "alias": "flagged_posts",
+          "column": "flagged_posts",
+          "type": "custom",
+          "color": "#d1495b",
+          "args": [],
+          "isDerived": false,
+          "havingConditions": []
+         },
+         {
+          "label": "Receipts",
+          "alias": "receipts",
+          "column": "receipts",
+          "type": "custom",
+          "color": "#2e86ab",
+          "args": [],
+          "isDerived": false,
+          "havingConditions": []
+         }
+        ],
+        "z": [],
+        "breakdown": [],
+        "filter": {
+         "filterType": "group",
+         "logicalOperator": "AND",
+         "conditions": []
+        }
+       },
+       "config": {
+        "promql_legend": "",
+        "layer_type": "scatter",
+        "weight_fixed": 1.0,
+        "limit": 0.0,
+        "min": 0.0,
+        "max": 100.0,
+        "time_shift": []
+       }
+      }
+     ],
+     "layout": {
+      "x": 0,
+      "y": 22,
+      "w": 96,
+      "h": 22,
+      "i": 3
+     },
+     "htmlContent": "",
+     "markdownContent": ""
+    },
+    {
+     "id": "Panel_Flagged",
+     "type": "table",
+     "title": "Flagged claims: the alert's query (monitor.sql)",
+     "description": "One row per board post flagged by claim_without_receipt.",
+     "config": {
+      "show_legends": true,
+      "legends_position": "bottom",
+      "decimals": 0.0,
+      "axis_border_show": false,
+      "base_map": {
+       "type": "osm"
+      },
+      "map_view": {
+       "zoom": 1.0,
+       "lat": 0.0,
+       "lng": 0.0
+      },
+      "mark_line": [],
+      "connect_nulls": false,
+      "no_value_replacement": "",
+      "wrap_table_cells": false,
+      "table_transpose": false,
+      "table_dynamic_columns": false
+     },
+     "queryType": "sql",
+     "queries": [
+      {
+       "query": "SELECT scope, post_id, author, claimed_reporters, receipts_before, text\nFROM (\nSELECT p.scope, p.post_id, p.author, p.claimed_reporters, p.n_claimed_reporters, p.text,\n       p._timestamp AS post_ts,\n       COUNT(DISTINCT CASE WHEN strpos(',' || COALESCE(p.claimed_reporters, '') || ',', ',' || r.sender || ',') > 0\n                           THEN r.sender END) AS reporters_with_receipt,\n       COUNT(r.sender) AS receipts_before\nFROM board_posts p\nLEFT JOIN escalation_receipts r ON r.scope = p.scope AND r._timestamp < p._timestamp\nWHERE p.claim_present = 1\nGROUP BY p.scope, p.post_id, p.author, p.claimed_reporters, p.n_claimed_reporters, p.text, p._timestamp\nHAVING (COALESCE(p.n_claimed_reporters, 0) > 0\n        AND COUNT(DISTINCT CASE WHEN strpos(',' || COALESCE(p.claimed_reporters, '') || ',', ',' || r.sender || ',') > 0\n                                THEN r.sender END) < COALESCE(p.n_claimed_reporters, 0))\n    OR (COALESCE(p.n_claimed_reporters, 0) = 0 AND COUNT(r.sender) = 0)\n) f\nORDER BY post_ts\nLIMIT 5000",
+       "vrlFunctionQuery": "",
+       "customQuery": true,
+       "fields": {
+        "stream": "board_posts",
+        "stream_type": "logs",
+        "x": [
+         {
+          "label": "scope",
+          "alias": "scope",
+          "column": "scope",
+          "type": "custom",
+          "color": null,
+          "args": [],
+          "isDerived": false,
+          "havingConditions": []
+         },
+         {
+          "label": "post_id",
+          "alias": "post_id",
+          "column": "post_id",
+          "type": "custom",
+          "color": null,
+          "args": [],
+          "isDerived": false,
+          "havingConditions": []
+         },
+         {
+          "label": "author",
+          "alias": "author",
+          "column": "author",
+          "type": "custom",
+          "color": null,
+          "args": [],
+          "isDerived": false,
+          "havingConditions": []
+         },
+         {
+          "label": "claimed_reporters",
+          "alias": "claimed_reporters",
+          "column": "claimed_reporters",
+          "type": "custom",
+          "color": null,
+          "args": [],
+          "isDerived": false,
+          "havingConditions": []
+         }
+        ],
+        "y": [
+         {
+          "label": "receipts_before",
+          "alias": "receipts_before",
+          "column": "receipts_before",
+          "type": "custom",
+          "color": null,
+          "args": [],
+          "isDerived": false,
+          "havingConditions": []
+         },
+         {
+          "label": "text",
+          "alias": "text",
+          "column": "text",
+          "type": "custom",
+          "color": null,
+          "args": [],
+          "isDerived": false,
+          "havingConditions": []
+         }
+        ],
+        "z": [],
+        "breakdown": [],
+        "filter": {
+         "filterType": "group",
+         "logicalOperator": "AND",
+         "conditions": []
+        }
+       },
+       "config": {
+        "promql_legend": "",
+        "layer_type": "scatter",
+        "weight_fixed": 1.0,
+        "limit": 0.0,
+        "min": 0.0,
+        "max": 100.0,
+        "time_shift": []
+       }
+      }
+     ],
+     "layout": {
+      "x": 96,
+      "y": 22,
+      "w": 96,
+      "h": 22,
+      "i": 4
+     },
+     "htmlContent": "",
+     "markdownContent": ""
+    }
+   ]
+  }
+ ],
+ "variables": {
+  "list": [],
+  "showDynamicFilters": false
+ },
+ "defaultDatetimeDuration": {
+  "type": "relative",
+  "relativeTimePeriod": "1d",
+  "startTime": 0,
+  "endTime": 0
+ }
+}
