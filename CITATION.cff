@@ -1,0 +1,18 @@
+cff-version: 1.2.0
+message: "If you use this work, please cite it as below."
+title: "Who Tells the Humans? Phantom Escalation and Channel-Written Receipts in Agent Swarms"
+type: software
+authors:
+  - family-names: Pawar
+    given-names: Amey
+    email: ameypawar1237@gmail.com
+    affiliation: "Independent Researcher"
+repository-code: "https://github.com/ameyypawar/who-tells-the-humans"
+license: MIT
+date-released: 2026-11-07
+keywords:
+  - multi-agent systems
+  - AI safety
+  - escalation
+  - pre-registration
+  - LLM agents
