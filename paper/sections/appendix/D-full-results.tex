@@ -324,7 +324,7 @@ Cell (Haiku, shifts) & P1 \% (k/n) & Wilson CI & P2 (k/n) & Wilson CI \\
 Difference (points) & P1 (CI) & P2 (CI) \\
 \midrule
 \cell{X-FORGED-CHECK} $-$ \cell{X-FORGED-CONC} (concurrent) & \wtthExpTwoDiffPOneXForgedCheckMinusXForgedConcDelta{} (\wtthExpTwoDiffPOneXForgedCheckMinusXForgedConcCI) & \wtthExpTwoDiffPTwoXForgedCheckMinusXForgedConcDelta{} (\wtthExpTwoDiffPTwoXForgedCheckMinusXForgedConcCI)$^{\dagger}$ \\
-\cell{X-FORGED-CONC} $-$ core \cell{FORGED} (phase shift) & \wtthExpTwoDiffPOneXForgedConcMinusHaikuForgedDelta{} (\wtthExpTwoDiffPOneXForgedConcMinusHaikuForgedCI) & \wtthExpTwoDiffPTwoXForgedConcMinusHaikuForgedDelta{} (\wtthExpTwoDiffPTwoXForgedConcMinusHaikuForgedCI) \\
+\cell{X-FORGED-CONC} $-$ core \cell{FORGED} (phase effect) & \wtthExpTwoDiffPOneXForgedConcMinusHaikuForgedDelta{} (\wtthExpTwoDiffPOneXForgedConcMinusHaikuForgedCI) & \wtthExpTwoDiffPTwoXForgedConcMinusHaikuForgedDelta{} (\wtthExpTwoDiffPTwoXForgedConcMinusHaikuForgedCI) \\
 \cell{X-FORGED-CHECK} $-$ core \cell{NO-RECEIPT} & \wtthExpTwoDiffPOneXForgedCheckMinusHaikuNoReceiptDelta{} (\wtthExpTwoDiffPOneXForgedCheckMinusHaikuNoReceiptCI) & \wtthExpTwoDiffPTwoXForgedCheckMinusHaikuNoReceiptDelta{} (\wtthExpTwoDiffPTwoXForgedCheckMinusHaikuNoReceiptCI) \\
 \cell{X-FORGED-POLICY} (first follow-up) $-$ \cell{X-FORGED-CONC} & \wtthExpTwoDiffPOneExpOneXForgedPolicyMinusXForgedConcDelta{} (\wtthExpTwoDiffPOneExpOneXForgedPolicyMinusXForgedConcCI) & \wtthExpTwoDiffPTwoExpOneXForgedPolicyMinusXForgedConcDelta{} (\wtthExpTwoDiffPTwoExpOneXForgedPolicyMinusXForgedConcCI) \\
 \cell{X-FORGED-PROV} (first follow-up) $-$ \cell{X-FORGED-CONC} & \wtthExpTwoDiffPOneExpOneXForgedProvMinusXForgedConcDelta{} (\wtthExpTwoDiffPOneExpOneXForgedProvMinusXForgedConcCI) & \wtthExpTwoDiffPTwoExpOneXForgedProvMinusXForgedConcDelta{} (\wtthExpTwoDiffPTwoExpOneXForgedProvMinusXForgedConcCI)$^{\dagger}$ \\
@@ -334,7 +334,7 @@ Difference (points) & P1 (CI) & P2 (CI) \\
 \medskip
 \begin{tabular}{@{}lrr@{}}
 \toprule
-Timing and \DebTwo{} reasons of never-reporters & \cell{X-FORGED-CHECK} & \cell{X-FORGED-CONC} \\
+Timing of the first note & \cell{X-FORGED-CHECK} & \cell{X-FORGED-CONC} \\
 \midrule
 Witnesses & \wtthExpTwoTimingXForgedCheckN & \wtthExpTwoTimingXForgedConcN \\
 Reported by round 2 & \wtthExpTwoTimingXForgedCheckByRoundTwoK & \wtthExpTwoTimingXForgedConcByRoundTwoK \\
@@ -343,6 +343,8 @@ Held off past round 2 & \wtthExpTwoTimingXForgedCheckHeldOffK & \wtthExpTwoTimin
 \quad then never & \wtthExpTwoTimingXForgedCheckNeverK & \wtthExpTwoTimingXForgedConcNeverK \\
 \quad never, a peer's line in view & \wtthExpTwoTimingXForgedCheckHeldOffPeerNeverK & \wtthExpTwoTimingXForgedConcHeldOffPeerNeverK \\
 Shifts: first witness note after round 2 & \wtthExpTwoTimingShiftXForgedCheckLateK/\wtthExpTwoTimingShiftXForgedCheckN & \wtthExpTwoTimingShiftXForgedConcLateK/\wtthExpTwoTimingShiftXForgedConcN \\
+\midrule
+\DebTwo{} reasons of never-reporters (k of n) & & \\
 \quad someone else told ops & \wtthExpTwoTimingNeverXForgedCheckDTwoSomeoneElseToldK/\wtthExpTwoTimingNeverXForgedCheckDTwoN & \wtthExpTwoTimingNeverXForgedConcDTwoSomeoneElseToldK/\wtthExpTwoTimingNeverXForgedConcDTwoN \\
 \quad thought ops was aware & \wtthExpTwoTimingNeverXForgedCheckDTwoThoughtOpsAwareK/\wtthExpTwoTimingNeverXForgedCheckDTwoN & \wtthExpTwoTimingNeverXForgedConcDTwoThoughtOpsAwareK/\wtthExpTwoTimingNeverXForgedConcDTwoN \\
 \quad trusted the claim & \wtthExpTwoTimingNeverXForgedCheckDTwoTrustedClaimK/\wtthExpTwoTimingNeverXForgedCheckDTwoN & \wtthExpTwoTimingNeverXForgedConcDTwoTrustedClaimK/\wtthExpTwoTimingNeverXForgedConcDTwoN \\
