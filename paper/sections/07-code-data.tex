@@ -3,11 +3,13 @@
 % bodies never. The repository has always been private until submission; never call it a public registration.
 % The harness reads the withheld file at start-up (prereg.load_private); no public-paraphrase-only mode exists in the
 % code read on 2026-11-06, so none is claimed here. Review 2 S5 and D-024: the release holds every analysed shift, the follow-up
-% included (no shift-count macro exists, so the scope is worded without digits).
+% included (no shift-count macro exists, so the scope is worded without digits). D-029: the release adds follow-up 2,
+% and the OpenObserve kit and monitor scripts are named.
 \section*{Code and Data}\label{sec:code}
 \addcontentsline{toc}{section}{Code and Data}
 Repository: \url{https://github.com/ameyypawar/who-tells-the-humans}, public from submission; code under MIT, data under \CCBY.
-It holds the pre-registration (tag \texttt{prereg-v1}), deviations log, harness (tags \texttt{frozen-v1}; \texttt{frozen-v1.1} after the D-014 fix; \texttt{exp1-v1}, follow-up), code and paper sources; \texttt{wtth.analysis} regenerates every result from the run database (snapshot \texttt{\wtthSnapshotShaShort}); that database is not released, because it contains the withheld strings and raw API bodies, and \texttt{scripts/release\_summary.py} recomputes the headline P1, P2 and H3 numbers from the released CSVs.
-Released, for every analysed shift: masked transcripts, per-shift and per-witness outcomes, judge and reviewed labels.
+It holds the pre-registration (tag \texttt{prereg-v1}), deviations log, harness (tags \texttt{frozen-v1}, \texttt{frozen-v1.1}, \texttt{exp1-v1} and \texttt{exp2-v1}), code and paper sources; \texttt{wtth.analysis} regenerates every result from the run database (snapshot \texttt{\wtthSnapshotShaShort}); that database, which holds the withheld strings and raw API bodies, is not released, and \nolinkurl{scripts/release_summary.py} recomputes the headline numbers from the released CSVs.
+Released, for every analysed shift, both follow-ups included (D-029): masked transcripts, per-shift and per-witness outcomes, judge and reviewed labels.
+\texttt{kit/o2-receipts/} is a standalone kit for channel-written, checkable receipts on OpenObserve, and \nolinkurl{scripts/openobserve/} holds the post-hoc monitor (Appendix~\ref{app:openobserve}).
 Withheld: the two claim paraphrases and the forged line (SHA-256: Appendix~\ref{app:withheld}), for vetted researchers on request; raw API bodies, never.
 \textbf{Preexisting work} predates the sprint start, \wtthDesignTZero{} (Appendix~\ref{app:preexisting}); all study code came after it.

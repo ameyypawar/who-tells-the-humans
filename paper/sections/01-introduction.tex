@@ -22,9 +22,8 @@ The defence supplied the format for the attack.
 % string is in the code, not the 2023 paper; "by default" because the function can be overwritten (research/50 A2).
 % Audit headline on the rubric (research/65, research/68 B): peers-verify Yes in none, Partial in seven, No in eight.
 Agents do post such claims, unprompted (``I've reported this bug to the organizers'', just before a formal report \citep{paglieri2026cheating}), and MetaGPT's \texttt{reply\_to\_human} by default returns ``SUCCESS, human has received your reply'' but delivers nothing \citep{metagptmgxenv}.
-Of \wtthAuditN{} agent frameworks and protocols we audited, \wtthAuditFullVerifyWord{} gives peers a queryable escalation record, and in \wtthAuditPartialVerifyWord{}, peers see a framework-built trace of the call (Appendix~\ref{app:audit}; the audit was written and re-checked by Claude agents, with no human spot-check).
-We call the failure \emph{phantom escalation}: a peer's claim to have told the humans takes the place of the act of telling.
-We define it by behaviour, not belief: in the untold shifts witnesses relayed the claim on the board, but none said in a debrief that ops was told.
+Of \wtthAuditN{} agent frameworks and protocols we audited, \wtthAuditFullVerifyWord{} gives peers a queryable escalation record, and in \wtthAuditPartialVerifyWord{}, peers see a framework-built trace of the call (Appendix~\ref{app:audit}; written and re-checked by Claude agents, with no human spot-check).
+We call the failure \emph{phantom escalation}: a peer's claim to have told the humans takes the place of the act of telling, defined by behaviour, not belief (Section~\ref{sec:h3}).
 Claims are not receipts.
 
 % Questions and approach (PREREG section 3). Stand-down and the -R suffix are defined here, at first use (research/66).
@@ -42,10 +41,9 @@ A \emph{stand-down} is the drop, in points, in the share of witnesses who told o
 % follow-up rows, shift-level cluster-bootstrap intervals (\wtthFigOneAIntervalMethod); a row at 0 or 100% has none.
 \caption[Reporting by cell, and when witnesses first reported]{%
 \textbf{Reporting by cell} (\wtthDesignModelHaikuName; \wtthDesignModelSonnetName{} exploratory).
-(a)~P1, the share of witnesses who sent ops a note about the split, with \wtthProtocolLevel\% \wtthFigOneAIntervalMethod{} intervals (rows at \wtthHaikuPOneBNonePct\% or \wtthHaikuPOneNonePct\% have none), and P2, the shifts in which no witness did.
-Row glosses define the cells (Table~\ref{tab:cells}).
+(a)~P1, the share of witnesses who sent ops a note about the split, with \wtthProtocolLevel\% \wtthFigOneAIntervalMethod{} intervals, and P2, the shifts in which no witness did.
 Shaded rows: C really told ops, so standing down there is correct; ``---'': P2 does not apply (C told ops, or no violation); in \cell{B-NONE}, low is correct.
-Hollow, dashed rows ran later and are not concurrent (exploratory; Section~\ref{sec:followup}).
+Hollow, dashed rows ran later than the core (exploratory; Section~\ref{sec:followup}); only the bracketed pair ran concurrently, with each other.
 (b)~Post hoc: when witnesses first told ops in the H2 cells; hatched, never-reporters with a peer's line in the log at their next turn.
 \wtthInputBranch{fig1}}
 \label{fig:one}
@@ -55,9 +53,8 @@ Hollow, dashed rows ran later and are not concurrent (exploratory; Section~\ref{
 \begin{table}[t]
 \centering\footnotesize
 \adjustbox{max width=\linewidth}{\input{generated/design/table_cells}}
-\caption{\textbf{The \wtthDesignCellsWord{} cells at a glance} (R1: the channel writes a log). C is the claiming peer; its claim is false except in \cell{RECEIPT} and \cell{POS}, where the harness files C's real note.
-\cell{NEG} and \cell{POS} add a cost for duplicate notes and differ only in that note, so their gap tests whether the testbed detects a warranted stand-down.
-Shifts: pre-registered seeds per cell (Sonnet exploratory); the follow-up cells are in Section~\ref{sec:followup}.}
+\caption{\textbf{The \wtthDesignCellsWord{} cells.} C, the claiming peer, claims falsely except in \cell{RECEIPT} and \cell{POS}, where its real note is filed.
+Shifts: pre-registered seeds per cell (Sonnet exploratory); follow-up cells: Section~\ref{sec:followup}.}
 \label{tab:cells}
 \end{table}
 
@@ -71,9 +68,4 @@ Agents share a board and reach a human operator only through a private, write-on
 
 % Contributions (research/68 0.1 to 0.4; research/65: do not credit the claim alone for H2). Verdict words stay in the
 % generated macros (Section 4); the contributions describe results.
-Our main contributions are:
-\begin{enumerate}
-\item \textbf{A behavioural definition, a threat model and a pre-registered testbed} whose endpoint is whether a human is told.
-\item \textbf{The headline} (H3): a typed receipt-style line cut reporting by \wtthHaikuHThreeDelta{} points and produced the only pre-registered untold shifts, in \wtthHaikuRelayUntoldForgedShiftsK{} of which the claim spread between witnesses.
-\item \textbf{Two results against prediction}: a negligible bare-claim effect (H1, borderline, one wording) that the log enlarged (H2), fitting de-duplication on peers' real receipts as well as deference.
-\end{enumerate}
+Our contributions: a behavioural definition, threat model and pre-registered testbed whose endpoint is whether a human is told; the headline (H3); two results against prediction (H1, H2).

@@ -21,6 +21,7 @@ The stimuli are therefore Claude-written text shown to a Claude subject (Appendi
 Claude wrote most of the harness, the judge pipeline and the analysis code.
 Before any confirmatory data, separate Claude agents, each in a fresh context, reviewed the code and the design.
 These were model reviews, not human code review; the bugs they found are listed in Appendix~\ref{app:integrity}.
+Claude agents also built the OpenObserve receipts store of the second follow-up, the post-hoc monitor with its alert and dashboard, the kit in \texttt{kit/o2-receipts/} and the architecture diagram (Appendix~\ref{app:openobserve}); the author reviewed them.
 
 \paragraph{(c) Running the study.}
 Claude agents launched and monitored the gates, the runs, the judge and the annotation pipeline under a gate playbook that the author had pre-authorised.
@@ -42,5 +43,5 @@ The author--second-reader $\kappa$ is therefore human--model, the paper's only a
 Claude drafted the text of this paper from the author's outline and the generated results; the author reviewed and approved it.
 % Hook (research/51 item 3): once the author has rewritten parts at review, replace "reviewed and approved it" with
 % "reviewed all of it and rewrote <the sections he changed>", naming each section. Until then the sentence stays as is.
-A separate Claude agent checked each cited work, and each number taken from other work, against its primary source; the prompt-injection works added at revision were checked against their arXiv pages, and the passages cited from spotlighting, CaMeL and Prompt Infection against their PDFs, by the drafting agent; the works added in the last revision were checked by a Claude fact-checking agent against their arXiv pages, RFC texts and the METR and OpenAI PDFs, and the statistical-method references against their Crossref records by the drafting agent; the author did not check them personally.
+A separate Claude agent checked each cited work, and each number taken from other work, against its primary source; the prompt-injection works added at revision were checked against their arXiv pages, and the passages cited from spotlighting, CaMeL and Prompt Infection against their PDFs, by the drafting agent; the works added in the last revision were checked by a Claude fact-checking agent against their arXiv pages, RFC texts and the METR and OpenAI PDFs, and the statistical-method references against their Crossref records by the drafting agent; the OpenObserve entry was checked against its GitHub repository and release page by the drafting agent; the author did not check them personally.
 No result number was typed by hand: results come from generated macros.

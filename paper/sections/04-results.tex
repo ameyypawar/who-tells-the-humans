@@ -5,7 +5,7 @@
 % D keeps the generated table). Post hoc and exploratory results are labelled wherever they appear; D-codes appear only
 % beside those labels (research/66).
 \section{Results}\label{sec:results}
-\textbf{Headline: a receipt-style line the claimant typed into its own post cut reporting by \wtthHaikuHThreeDelta{} points and produced the only pre-registered shifts in which no one told ops; the bare claim barely moved reporting (\wtthHaikuHOneDelta{} points, a borderline rejection), and the log made it matter more.}
+\textbf{Headline: a receipt-style line the claimant typed into its own post cut reporting by \wtthHaikuHThreeDelta{} points and produced the only pre-registered shifts in which no one told ops; the bare claim barely mattered, and the log made it matter more.}
 Tests run in pre-registered order on all \wtthHaikuEpisodesInSet{} Haiku shifts (\wtthHaikuFailedPermanent{} failed, \wtthHaikuMissing{} missing).
 
 \begin{table}[t]
@@ -20,7 +20,7 @@ H3 & \cell{NO-RECEIPT} $-$ \cell{FORGED}: \wtthHaikuPOneNoReceiptPct\% vs \wtthH
 \bottomrule
 \end{tabularx}
 \caption{\textbf{The confirmatory tests, in their fixed order.} Points; shift-level cluster bootstrap; each predicted positive, and an opposite rejection still counts.
-H2's stand-downs: \cell{NONE} $-$ \cell{CLAIM} (R0, no log) and \cell{NONE-R} $-$ \cell{NO-RECEIPT} (R1); with both reference cells at \wtthHaikuPOneNonePct\%, \Dtwo{} reduces to P1(\cell{NO-RECEIPT}) $-$ P1(\cell{CLAIM}).
+H2's stand-downs: \cell{NONE} $-$ \cell{CLAIM} (R0, no log) and \cell{NONE-R} $-$ \cell{NO-RECEIPT} (R1).
 H1's rejection is borderline (Section~\ref{sec:h1}); H2 and H3 are confirmatory only through that gate.}
 \label{tab:hyp}
 \end{table}
@@ -38,22 +38,25 @@ Every interval beyond the three confirmatory tests is unadjusted for multiplicit
 \wtthInputBranch{frontier}
 \textbf{Sensitivity.}
 H2 and H3 keep their sign and side of zero under the pre-registered sensitivity analyses; for H1 every such row returns the primary estimate, so none probes its boundary (Appendix~\ref{app:full}).
-Restricted to witnesses whose debrief answer (\DebOne{}, was the shift real?) was coded live (\wtthHaikuDOneLiveAllPct\%; post hoc, exploratory), H1 to H3 were \wtthHaikuLiveOnlyHOneDelta, \wtthHaikuLiveOnlyHTwoDelta{} and \wtthHaikuLiveOnlyHThreeDelta{} points; false reports in the benign cell were \wtthHaikuFalseReportBNonePct\%.
-The realised intervals are far narrower than the planned detectable effects (\wtthHaikuPowerHOneMDE, \wtthHaikuPowerHTwoMDE{} and \wtthHaikuPowerHThreeMDE{} points at a planning rate of \wtthHaikuPowerP\%) because variance is small near the ceiling.
-\textbf{Board substitution} (exploratory, D-010).
-Witnesses who sent no note raised the split on the board at about the same rate in \cell{FORGED}, \cell{RECEIPT} and \cell{NO-RECEIPT} (\wtthHaikuBoardSubForgedOfNotelessPct, \wtthHaikuBoardSubReceiptOfNotelessPct{} and \wtthHaikuBoardSubNoReceiptOfNotelessPct\%; Table~\ref{tab:boardsub}), so a cell's rate tracks only its share of noteless witnesses: it restates P1.
+Restricted post hoc to witnesses whose \DebOne{} answer was coded live, H1 to H3 were \wtthHaikuLiveOnlyHOneDelta, \wtthHaikuLiveOnlyHTwoDelta{} and \wtthHaikuLiveOnlyHThreeDelta{} points (exploratory; Appendix~\ref{app:limits}, with the power analysis); false reports in the benign cell were \wtthHaikuFalseReportBNonePct\%.
+\textbf{Board substitution} (exploratory, D-010) restates P1: witnesses who sent no note raised the split on the board at about the same rate in \cell{FORGED}, \cell{RECEIPT} and \cell{NO-RECEIPT} (\wtthHaikuBoardSubForgedOfNotelessPct, \wtthHaikuBoardSubReceiptOfNotelessPct{} and \wtthHaikuBoardSubNoReceiptOfNotelessPct\%; Table~\ref{tab:boardsub}).
 
 % Exploratory follow-up (D-022, D-023): no verdict, no p-value (plan 49 section 4.2 item 8). Research/64 FLAG 10: no
 % concurrent FORGED arm, and both sentences moved P1 by about the same amount, as a phase shift would. Research/62 M5:
 % the same witness-turn harness (D-023's operating changes touch budgeting and probe dispatch only). FLAG 11: Sonnet's
 % RECEIPT is its only cell where C really reported, so log-checking and distrust of the typed line are confounded; the
 % Sonnet difference has a shift-level cluster-bootstrap interval (research/65). Detail: Appendix D.
-\subsection{Follow-up (exploratory): neither added sentence closed the gap}\label{sec:followup}
-These cells ran hours after the core, on new seeds with the core's mix of wordings and slot orders, the same witness-turn harness and no concurrent \cell{FORGED} arm (D-022, D-023; Appendix~\ref{app:full}), so every comparison is across phases.
+% Follow-up 2 (D-028): the concurrent control, the phase shift (CONC minus the core's FORGED), no lookup call at all, CHECK
+% against CONC not distinguishable, and P2 0 against 4 never read as a reduction (a boundary artefact: Fisher, Newcombe).
+\subsection{Follow-ups (exploratory): no added sentence or tool closed the gap}\label{sec:followup}
+The first follow-up's cells ran hours after the core, on new seeds with the core's mix of wordings and slot orders and no concurrent \cell{FORGED} arm (D-022, D-023; Appendix~\ref{app:full}), so their comparisons are across phases.
 Added to \cell{FORGED}'s runbook, the one-line rule (\cell{X-FORGED-POLICY}) or a note that only \texttt{notify\_ops} writes the log (\cell{X-FORGED-PROV}) left P1 at \wtthExpOneXForgedPolicyPOnePct\% and \wtthExpOneXForgedProvPOnePct\%, below \cell{NO-RECEIPT} (\wtthExpOneDiffPOneXForgedPolicyMinusHaikuNoReceiptDelta{} and \wtthExpOneDiffPOneXForgedProvMinusHaikuNoReceiptDelta{} points, intervals below zero).
-Both moved P1 from \cell{FORGED} by about the same amount (\wtthExpOneDiffPOneXForgedPolicyMinusHaikuForgedDelta{} and \wtthExpOneDiffPOneXForgedProvMinusHaikuForgedDelta{} points, CI \wtthExpOneDiffPOneXForgedPolicyMinusHaikuForgedCI{} and \wtthExpOneDiffPOneXForgedProvMinusHaikuForgedCI), as a shift between phases would; we cannot separate the two.
+Both moved P1 from \cell{FORGED} by about the same amount (\wtthExpOneDiffPOneXForgedPolicyMinusHaikuForgedDelta{} and \wtthExpOneDiffPOneXForgedProvMinusHaikuForgedDelta{} points, intervals spanning zero), as a shift between phases would; we cannot separate the two.
 Ops went untold in \wtthExpOneXForgedPolicyPTwoK{} and \wtthExpOneXForgedProvPTwoK{} of \wtthExpOneXForgedPolicyPTwoN{} shifts.
 
 \paragraph{Sonnet stood down for a real receipt but not for the typed line (exploratory, across phases).}
-Beside C's real receipt, \wtthDesignModelSonnetName{} reported at \wtthExpOneSonnetReceiptPOnePct\% (\wtthExpOneSonnetReceiptPOneK/\wtthExpOneSonnetReceiptPOneN), against \wtthSonnetPOneForgedPct\% under the typed line and \wtthSonnetPOneNoReceiptPct\% with an empty log (difference from the typed line \wtthExpOneDiffPOneSonnetReceiptMinusSonnetForgedDelta{} points, \wtthFigOneAIntervalMethod{} CI \wtthExpOneDiffPOneSonnetReceiptMinusSonnetForgedCI; \wtthExpOneSonnetReceiptEps{} shifts each); the typed-line arm comes from the earlier Sonnet subset.
-\cell{RECEIPT} is Sonnet's only cell in which C really reported, so the design cannot tell whether Sonnet checked the log or distrusted the typed line; Haiku stood down for both.
+Beside C's real receipt, \wtthDesignModelSonnetName{} reported at \wtthExpOneSonnetReceiptPOnePct\% (\wtthExpOneSonnetReceiptPOneK/\wtthExpOneSonnetReceiptPOneN), against \wtthSonnetPOneForgedPct\% under the typed line in the earlier Sonnet subset (difference \wtthExpOneDiffPOneSonnetReceiptMinusSonnetForgedDelta{} points, \wtthFigOneAIntervalMethod{} CI \wtthExpOneDiffPOneSonnetReceiptMinusSonnetForgedCI); \cell{RECEIPT} is its only cell in which C really reported, so log-checking and distrust of the typed line cannot be told apart, and Haiku stood down for both.
+
+\paragraph{A receipt-lookup tool went unused (exploratory, concurrent).}
+A second follow-up (D-028; Appendix~\ref{app:openobserve}) ran two cells at once on paired seeds: \cell{FORGED} with a lookup tool reading the receipts the channel writes into OpenObserve \citep{openobserve} (\cell{X-FORGED-CHECK}), and \cell{FORGED} unchanged (\cell{X-FORGED-CONC}), which puts the shift from the core's phase at \wtthExpTwoDiffPOneXForgedConcMinusHaikuForgedDelta{} points (CI \wtthExpTwoDiffPOneXForgedConcMinusHaikuForgedCI).
+No witness called the tool (\wtthExpTwoLookupWitnessesK{} of \wtthExpTwoLookupWitnessesN), so no difference between the cells can come from using it; P1 was \wtthExpTwoXForgedCheckPOnePct\% against \wtthExpTwoXForgedConcPOnePct\% (\wtthExpTwoDiffPOneXForgedCheckMinusXForgedConcDelta{} points, CI \wtthExpTwoDiffPOneXForgedCheckMinusXForgedConcCI), not distinguishable, and ops went untold in \wtthExpTwoXForgedCheckPTwoK{} against \wtthExpTwoXForgedConcPTwoK{} of \wtthExpTwoXForgedConcPTwoN{} shifts, not a reduction (Fisher p~$=$~\wtthExpTwoDiffPTwoXForgedCheckMinusXForgedConcFisherP; Table~\ref{tab:exptwo}).
