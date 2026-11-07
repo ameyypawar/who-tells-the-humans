@@ -59,7 +59,8 @@ for w in ("PLACEHOLDER", "PROVISIONAL", "n/a", "??", "[AUTHOR", "[A:", "TODO", "
 
 # ---- 2 definitions ----------------------------------------------------------------------------------------------
 loaded = [PAPER / n for n in ("preamble.tex", "loaders.tex", "branch.tex", "main.tex", "cited.tex")] + [src] + \
-         [PAPER / f"generated/design/{n}.tex" for n in ("design", "stimuli", "audit")]
+         [PAPER / f"generated/design/{n}.tex" for n in ("design", "stimuli", "audit")] + \
+         [PAPER / "generated/openobserve/macros.tex"]  # D-027 monitor macros (\wtthOO...), input by loaders.tex
 defs = set()
 for f in loaded:
     t = f.read_text(encoding="utf-8")

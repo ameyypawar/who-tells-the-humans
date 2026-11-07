@@ -4,7 +4,7 @@ from pathlib import Path
 
 from _common import PAPER, write_generated
 
-OWN = ("wtthDesign", "wtthStim", "wtthAudit")
+OWN = ("wtthDesign", "wtthStim", "wtthAudit", "wtthOO")  # always loaded by loaders.tex, never placeholders
 SRC = [PAPER / "main.tex", PAPER / "cited.tex"] + sorted((PAPER / "sections").rglob("*.tex"))
 DEFINING = [PAPER / n for n in ("preamble.tex", "loaders.tex", "branch.tex", "main.tex", "cited.tex")]
 COMMENT = re.compile(r"(?<!\\)%.*")

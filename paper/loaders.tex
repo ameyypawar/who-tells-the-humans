@@ -3,6 +3,7 @@
 %   results     generated/analysis/macros.tex | macros.provisional.tex | generated/placeholder/macros.placeholder.tex
 %   design      generated/design/design.tex, audit.tex        (\wtthDesign..., \wtthAudit...)
 %   stimuli     generated/design/stimuli.tex                  (\wtthStim...)
+%   openobserve generated/openobserve/macros.tex              (\wtthOO..., the post-hoc D-027 monitor on released data)
 %   cited       cited.tex                                     (\cited..., numbers from other works only)
 
 % ---- helpers ------------------------------------------------------------------------------------------------
@@ -30,6 +31,9 @@
 \wtthRequire{generated/design/design.tex}
 \wtthRequire{generated/design/stimuli.tex}
 \wtthRequire{generated/design/audit.tex}
+
+% ---- the post-hoc OpenObserve monitor (D-027): written by scripts/openobserve/claims_vs_receipts.py ----------------
+\wtthRequire{generated/openobserve/macros.tex}
 
 % ---- status ----
 \newif\ifwtthFinal
