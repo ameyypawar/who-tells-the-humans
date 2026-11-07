@@ -649,3 +649,16 @@ Every change after the freeze is recorded here with a timestamp, the reason, and
   - Budget: about $3.5, under the $95 cap. The global cap and the breaker apply; stop if projected spend exceeds $94.90.
   - If OpenObserve is unreachable, the turn counts as a technical failure and is retried under B1/B2. The tool never falls back to another backend.
 - **Decided by:** the author, 2026-11-07 ~13:35 IST.
+
+## D-029 — 2026-11-07 (after exp2; no new data): Release extended to exp2, and OpenObserve engineering artifacts added
+- **Sources:** D-024 item 3, D-027, D-028; commits 6b25403 (`kit/o2-receipts/`), 1e833e1 (architecture diagram), 7cadbf6 (release rows); the author's request to present the OpenObserve work.
+- **Was:** the data release held the core, the Sonnet arm and exp1, 950 shifts in all. The repo had no reusable receipts code.
+- **Now:**
+  1. The release adds the 100 exp2 shifts, with the same masking rules and a per-witness `tool_calls` column. That makes 1,050 shifts. The residual and fragment scans are 0.
+  2. Two artifacts are added. Neither involves new data or runs.
+     - `kit/o2-receipts/`: a standalone kit that writes channel receipts to OpenObserve, confirms each write by reading it back, provides a `lookup_escalation` MCP server, and installs the "claim without receipt" alert and dashboard.
+     - `docs/o2-receipts-architecture.*`: an architecture diagram.
+  3. The paper carries a competing-interests line: the author contributes to the open-source OpenObserve project.
+- **Reason:** every reported number has to be checkable from released data, and the receipts design should be reusable. The author asked for the OpenObserve implementation to be presented, so the disclosure is stated.
+- **Effect:** no number, label or verdict changes.
+- **Decided by:** the author (presentation, disclosure) and the lead (release scope), 2026-11-07 ~16:45 IST.
